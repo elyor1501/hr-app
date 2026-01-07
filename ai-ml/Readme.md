@@ -80,8 +80,10 @@ cd services/ai-ml
 pip install -r requirements.txt
 
 Run the service locally
+```bash
 cd services/ai-ml
 python -m uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
+```
 
 Access endpoints
 Swagger UI:
