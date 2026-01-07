@@ -111,25 +111,5 @@ GEMINI_API_KEY
 REQUEST_TIMEOUT
 ENVIRONMENT
 
-API keys are never logged and are not required at this stage unless real AI calls are implemented.
 
-API Design Notes
-This service is not exposed to the frontend
-The backend service is the only consumer
-/v1/inference acts as a single internal entry point for AI/ML processing
-AI internals can evolve without breaking backend integration
-
-Logging & Observability
-Structured JSON logging via structlog
-Request-level tracing using X-Request-ID
-Logs are emitted to stdout (Docker-friendly)
-
-Security & Rate Limiting
-security.py exists as a rate limiting placeholder
-Actual enforcement can be enabled later without API changes
-
-Docker Support
-Dockerfile included
-Service can run independently in a container
-Designed to be integrated into docker-compose with backend service
 
