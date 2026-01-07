@@ -1,0 +1,24 @@
+[project]
+name = "hr-app-backend"
+version = "0.1.0"
+description = "FastAPI backend for HR App"
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+fix = true
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["api", "core", "models", "services", "repositories"]
+combine-as-imports = true
+force-sort-within-sections = true
