@@ -25,7 +25,7 @@ services/backend/
 └── README.md
 
 ---
-
+```
 ## ⚡ Features
 
 - FastAPI application with **async support**
