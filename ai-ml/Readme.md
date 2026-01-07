@@ -6,6 +6,7 @@ It is a backend-facing, internal service responsible for AI/ML workloads such as
 The service is designed to be independent, extensible, and production-ready, and is called only by the backend service, not directly by the frontend.
 
 Project Structure-
+```bash
 services/
 └── ai-ml/
     ├── src/
@@ -53,8 +54,7 @@ services/
     ├── Dockerfile                   # Docker image for AI/ML service
     ├── requirements.txt             # Python dependencies
     └── README.md
-
-
+```
 Features
 
 Standalone FastAPI microservice running on port 8001
