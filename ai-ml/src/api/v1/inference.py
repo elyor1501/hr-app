@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
-from src.models.requests import InferenceRequest
-from src.models.responses import InferenceResponse
+from src.schemas.requests import InferenceRequest
+from src.schemas.responses import InferenceResponse
 
 router = APIRouter()
 
