@@ -34,7 +34,7 @@ ENV/
 # =========================
 .DS_Store
 Thumbs.db
-.vscode/
+.vscode/C
 .idea/
 
 # =========================
@@ -50,3 +50,7 @@ htmlcov/
 build/
 dist/
 *.egg-info/
+# Python cache
+**/__pycache__/
+*.py[cod]
+*$py.class

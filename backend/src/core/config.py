@@ -1,6 +1,8 @@
+# D:\hr-app\services\backend\src\core\config.py
+
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,6 +20,39 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=list)
 
     log_level: str = Field(default="INFO")
+
+    # Database settings
+    database_host: str = Field(default="localhost")
+    database_port: int = Field(default=5432)
+    database_user: str = Field(default="postgres")
+    database_password: str = Field(default="postgres")
+    database_name: str = Field(default="hr_app")
+
+    # Connection pool settings
+    database_pool_size: int = Field(default=5)
+    database_max_overflow: int = Field(default=10)
+    database_pool_timeout: int = Field(default=30)
+
+    # Vector dimension (768 for Gemini, 1536 for OpenAI)
+    vector_dimension: int = Field(default=768)
+
+    @computed_field
+    @property
+    def database_url(self) -> str:
+        """Construct async database URL."""
+        return (
+            f"postgresql+asyncpg://{self.database_user}:{self.database_password}"
+            f"@{self.database_host}:{self.database_port}/{self.database_name}"
+        )
+
+    @computed_field
+    @property
+    def database_url_sync(self) -> str:
+        """Construct sync database URL for migrations."""
+        return (
+            f"postgresql://{self.database_user}:{self.database_password}"
+            f"@{self.database_host}:{self.database_port}/{self.database_name}"
+        )
 
     model_config = SettingsConfigDict(
         env_prefix="HR_APP_",
