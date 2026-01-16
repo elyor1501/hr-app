@@ -6,7 +6,7 @@ It provides core APIs, health checks, and configuration management using Pydanti
 ---
 
 ## 📂 Project Structure
-
+```bash
 services/backend/
 ├── src/
 │ ├── main.py # FastAPI app initialization
@@ -25,7 +25,7 @@ services/backend/
 └── README.md
 
 ---
-
+```
 ## ⚡ Features
 
 - FastAPI application with **async support**
