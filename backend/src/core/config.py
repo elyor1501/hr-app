@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import Field, computed_field
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,7 +36,6 @@ class Settings(BaseSettings):
     # Vector dimension (768 for Gemini, 1536 for OpenAI)
     vector_dimension: int = Field(default=768)
 
-    @computed_field
     @property
     def database_url(self) -> str:
         """Construct async database URL."""
@@ -45,7 +44,6 @@ class Settings(BaseSettings):
             f"@{self.database_host}:{self.database_port}/{self.database_name}"
         )
 
-    @computed_field
     @property
     def database_url_sync(self) -> str:
         """Construct sync database URL for migrations."""

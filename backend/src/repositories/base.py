@@ -3,10 +3,10 @@
 from typing import Any, Generic, TypeVar
 from uuid import UUID
 
-import structlog
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
+import structlog
 
 from src.db.base import Base
 
@@ -18,16 +18,11 @@ ModelType = TypeVar("ModelType", bound=Base)
 class BaseRepository(Generic[ModelType]):
     """
     Base repository with generic CRUD operations.
-    All repositories should inherit from this class.
     """
 
     def __init__(self, model: type[ModelType], session: AsyncSession) -> None:
         """
         Initialize repository with model class and database session.
-        
-        Args:
-            model: SQLAlchemy model class
-            session: Async database session
         """
         self.model = model
         self.session = session
@@ -35,12 +30,6 @@ class BaseRepository(Generic[ModelType]):
     async def create(self, **kwargs: Any) -> ModelType:
         """
         Create a new record.
-        
-        Args:
-            **kwargs: Model field values
-            
-        Returns:
-            Created model instance
         """
         try:
             instance = self.model(**kwargs)
@@ -65,12 +54,6 @@ class BaseRepository(Generic[ModelType]):
     async def get_by_id(self, record_id: UUID | int) -> ModelType | None:
         """
         Get a record by ID.
-        
-        Args:
-            record_id: Record primary key
-            
-        Returns:
-            Model instance or None if not found
         """
         try:
             result = await self.session.execute(
@@ -93,13 +76,6 @@ class BaseRepository(Generic[ModelType]):
     ) -> list[ModelType]:
         """
         Get all records with pagination.
-        
-        Args:
-            skip: Number of records to skip
-            limit: Maximum number of records to return
-            
-        Returns:
-            List of model instances
         """
         try:
             result = await self.session.execute(
@@ -121,13 +97,6 @@ class BaseRepository(Generic[ModelType]):
     ) -> ModelType | None:
         """
         Update a record by ID.
-        
-        Args:
-            record_id: Record primary key
-            **kwargs: Fields to update
-            
-        Returns:
-            Updated model instance or None if not found
         """
         try:
             await self.session.execute(
@@ -136,8 +105,6 @@ class BaseRepository(Generic[ModelType]):
                 .values(**kwargs)
             )
             await self.session.commit()
-            
-            # Fetch updated record
             instance = await self.get_by_id(record_id)
             if instance:
                 logger.info(
@@ -159,12 +126,6 @@ class BaseRepository(Generic[ModelType]):
     async def delete(self, record_id: UUID | int) -> bool:
         """
         Delete a record by ID.
-        
-        Args:
-            record_id: Record primary key
-            
-        Returns:
-            True if deleted, False if not found
         """
         try:
             result = await self.session.execute(
@@ -192,12 +153,6 @@ class BaseRepository(Generic[ModelType]):
     async def exists(self, record_id: UUID | int) -> bool:
         """
         Check if a record exists.
-        
-        Args:
-            record_id: Record primary key
-            
-        Returns:
-            True if exists, False otherwise
         """
         result = await self.get_by_id(record_id)
         return result is not None

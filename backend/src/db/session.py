@@ -1,8 +1,5 @@
-# D:\hr-app\services\backend\src\db\session.py
-
 from collections.abc import AsyncGenerator
 
-import structlog
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
@@ -10,6 +7,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+import structlog
 
 from src.core.config import settings
 
@@ -21,7 +19,7 @@ engine = create_async_engine(
     pool_size=settings.database_pool_size,
     max_overflow=settings.database_max_overflow,
     pool_timeout=settings.database_pool_timeout,
-    pool_pre_ping=True,  # Enable connection health checks
+    pool_pre_ping=True,
     echo=settings.environment == "development",
 )
 
@@ -38,7 +36,6 @@ async_session_maker = async_sessionmaker(
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency for getting async database sessions.
-    Yields a session and ensures it's closed after use.
     """
     session = async_session_maker()
     try:
@@ -58,7 +55,6 @@ async def init_db_connection() -> None:
     """
     try:
         async with engine.begin() as conn:
-            # Enable pgvector extension
             await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
             logger.info("pgvector extension enabled")
 
@@ -88,7 +84,6 @@ async def close_db_connection() -> None:
 async def check_db_connection() -> bool:
     """
     Check if database connection is healthy.
-    Used for readiness probe.
     """
     try:
         async with engine.connect() as conn:

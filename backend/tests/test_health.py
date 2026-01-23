@@ -1,7 +1,7 @@
 # D:\hr-app\services\backend\tests\test_health.py
 
-import pytest
 from httpx import AsyncClient
+import pytest
 
 
 class TestHealthEndpoints:
@@ -13,7 +13,7 @@ class TestHealthEndpoints:
     ) -> None:
         """Test /health endpoint returns healthy status."""
         response = await client.get("/health")
-        
+
         assert response.status_code == 200
         assert response.json() == {"status": "healthy"}
 
@@ -23,7 +23,7 @@ class TestHealthEndpoints:
     ) -> None:
         """Test /ready endpoint returns readiness status with checks."""
         response = await client.get("/ready")
-        
+
         assert response.status_code in [200, 503]
         data = response.json()
         assert "status" in data
@@ -34,6 +34,6 @@ class TestHealthEndpoints:
     async def test_root_endpoint(self, client: AsyncClient) -> None:
         """Test root endpoint returns welcome message."""
         response = await client.get("/")
-        
+
         assert response.status_code == 200
         assert "message" in response.json()

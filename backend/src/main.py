@@ -1,11 +1,9 @@
-# D:\hr-app\services\backend\src\main.py
-
-from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
-import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import structlog
 
 from src.api.health import router as health_router
 from src.core.config import settings
@@ -19,7 +17,6 @@ logger = structlog.get_logger()
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     Manage application lifespan events.
-    Handles startup and shutdown of database connections.
     """
     # Startup
     logger.info("Starting up application...")
@@ -29,9 +26,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as e:
         logger.error("Failed to start application", error=str(e))
         raise
-    
+
     yield
-    
+
     # Shutdown
     logger.info("Shutting down application...")
     try:

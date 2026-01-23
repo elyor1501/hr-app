@@ -1,24 +1,23 @@
-# D:\hr-app\services\backend\pyproject.toml
-
 [project]
 name = "hr-app-backend"
 version = "0.1.0"
 description = "FastAPI backend for HR App"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py39"
 fix = true
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle errors
-    "F",   # pyflakes
-    "I",   # isort
-    "UP",  # pyupgrade
+    "E",
+    "F",
+    "I",
 ]
-ignore = []
+ignore = [
+    "UP007",
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]

@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\db\base.py
-
 from datetime import datetime
 from typing import Any
 

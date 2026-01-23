@@ -69,3 +69,82 @@ Check code quality with **Ruff**:
 ```bash
 cd services/backend
 ruff check .
+```
+
+
+
+# HR App Backend Service
+
+FastAPI backend service for the AI-powered HR application with PostgreSQL and pgvector support.
+
+---
+
+```bash
+## 📂 Project Structure
+services/backend/
+├── src/
+│ ├── main.py # FastAPI app initialization
+│ ├── api/ # REST endpoints
+│ │ └── health.py # Health and readiness endpoints
+│ ├── core/ # Config and logging setup
+│ │ ├── config.py
+│ │ └── logging.py
+│ ├── db/ # Database layer
+│ │ ├── session.py # Connection pool & session management
+│ │ └── base.py # SQLAlchemy base models
+│ ├── models/ # Pydantic schemas
+│ ├── services/ # Business logic
+│ └── repositories/ # Data access layer
+│ └── base.py # Base repository with CRUD
+├── tests/ # Unit tests
+│ ├── conftest.py
+│ ├── test_database.py
+│ ├── test_health.py
+│ └── test_repository.py
+├── .env.example
+├── Dockerfile
+├── pyproject.toml
+├── README.md
+└── requirements.txt
+
+```
+
+text
+
+
+---
+
+## ⚡ Features
+
+- FastAPI with **async support**
+- **PostgreSQL with pgvector** for vector storage
+- **SQLAlchemy 2.0 async** patterns
+- **asyncpg** for high-performance database access
+- Connection pooling with lifecycle management
+- Base repository pattern for CRUD operations
+- `/health` and `/ready` endpoints with database health check
+- Configuration with **Pydantic Settings**
+- Structured JSON logging with **structlog**
+- PEP-8 compliant, passes **Ruff linting**
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Docker Desktop
+- PostgreSQL with pgvector (via Docker)
+
+### Database Setup
+
+```powershell
+# Start PostgreSQL with pgvector
+docker run -d --name hr-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=hr_app -p 5432:5432 pgvector/pgvector:pg16
+
+# Enable pgvector extension
+docker exec -it hr-postgres psql -U postgres -d hr_app -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
+# Verify
+docker exec -it hr-postgres psql -U postgres -d hr_app -c "\dx"

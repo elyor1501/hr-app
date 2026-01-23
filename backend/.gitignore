@@ -4,11 +4,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-# =========================
-# Ruff
-# =========================
-.ruff_cache/
+*.pyo
+*.pyd
+.Python
 
 # =========================
 # Virtual Environments
@@ -17,32 +15,53 @@ venv/
 .venv/
 env/
 ENV/
+.env/
 
 # =========================
-# Environment variables
+# Environment Variables
 # =========================
 .env
-.env.*
+.env.local
+.env.*.local
+!.env.example
+
+# =========================
+# Ruff / Linting
+# =========================
+.ruff_cache/
+
+# =========================
+# Testing / Coverage
+# =========================
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
 
 # =========================
 # Logs
 # =========================
 *.log
+logs/
 
 # =========================
-# OS / Editor files
+# OS / Editor Files
 # =========================
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
-.vscode/C
+ehthumbs.db
+.vscode/
 .idea/
-
-# =========================
-# Test / Coverage
-# =========================
-.coverage
-htmlcov/
-.pytest_cache/
+*.swp
+*.swo
+*~
 
 # =========================
 # Build / Distribution
@@ -50,7 +69,20 @@ htmlcov/
 build/
 dist/
 *.egg-info/
-# Python cache
-**/__pycache__/
-*.py[cod]
-*$py.class
+*.egg
+.eggs/
+wheels/
+pip-wheel-metadata/
+MANIFEST
+
+# =========================
+# MyPy / Type Checking
+# =========================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# =========================
+# Jupyter Notebooks
+# =========================
+.ipynb_checkpoints/

@@ -36,7 +36,6 @@ class TestDatabaseConnection:
         assert is_healthy is True
 
     @pytest.mark.asyncio
-    async def test_connection_pool_size(self) -> None:
+    async def test_connection_pool_configured(self) -> None:
         """Test that connection pool is properly configured."""
-        pool = engine.pool
-        assert pool.size() >= 0  # Pool is active
+        assert engine.pool.size() >= 0

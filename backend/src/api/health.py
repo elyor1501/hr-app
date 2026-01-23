@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\api\health.py
-
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
@@ -31,16 +29,18 @@ async def readiness_check() -> JSONResponse:
     Includes database connectivity check.
     """
     db_healthy = await check_db_connection()
-    
+
     checks = {
         "database": "healthy" if db_healthy else "unhealthy",
     }
-    
-    all_healthy = all(status == "healthy" for status in checks.values())
-    
+
+    all_healthy = all(s == "healthy" for s in checks.values())
+
     overall_status = "ready" if all_healthy else "not_ready"
-    http_status = status.HTTP_200_OK if all_healthy else status.HTTP_503_SERVICE_UNAVAILABLE
-    
+    http_status = (
+        status.HTTP_200_OK if all_healthy else status.HTTP_503_SERVICE_UNAVAILABLE
+    )
+
     return JSONResponse(
         content={
             "status": overall_status,

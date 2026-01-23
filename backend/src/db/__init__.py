@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\db\__init__.py
-
 from src.db.base import Base, BaseModel, TimestampMixin
 from src.db.session import (
     async_session_maker,
