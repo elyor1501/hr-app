@@ -1,7 +1,8 @@
 import axios, { AxiosError } from 'axios';
+import { redirectToLogin } from './utils/auth';
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '/api',
   timeout: 10000,
 });
 
@@ -21,7 +22,7 @@ api.interceptors.response.use(
   },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      window.location.href = '/login';
+      redirectToLogin();
     }
     return Promise.reject(error);
   }
