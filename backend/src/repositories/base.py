@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\repositories\base.py
-
 from typing import Any, Generic, TypeVar
 from uuid import UUID
 

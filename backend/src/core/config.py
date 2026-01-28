@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\core\config.py
-
 from functools import lru_cache
 
 from pydantic import Field

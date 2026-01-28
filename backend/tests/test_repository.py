@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\tests\test_repository.py
-
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 

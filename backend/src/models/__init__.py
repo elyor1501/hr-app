@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\models\__init__.py
-
 from src.models.base import (
     BaseSchema,
     EmbeddingMixin,

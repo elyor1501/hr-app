@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\tests\test_models.py
-
 from datetime import datetime
 from decimal import Decimal
 from uuid import uuid4

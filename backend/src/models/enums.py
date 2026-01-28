@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\models\enums.py
-
 from enum import Enum
 
 

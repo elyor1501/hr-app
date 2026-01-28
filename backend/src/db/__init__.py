@@ -7,6 +7,8 @@ from src.db.session import (
     get_db_session,
     init_db_connection,
 )
+# IMPORTS REQUIRED for Table Creation
+from src.db.models import Candidate, Job
 
 __all__ = [
     "Base",
@@ -18,4 +20,6 @@ __all__ = [
     "init_db_connection",
     "close_db_connection",
     "check_db_connection",
+    "Candidate",
+    "Job",
 ]

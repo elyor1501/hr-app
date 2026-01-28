@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\models\candidate.py
-
 from __future__ import annotations
 
 import re

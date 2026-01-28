@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\tests\test_database.py
-
 import pytest
 from sqlalchemy import text
 

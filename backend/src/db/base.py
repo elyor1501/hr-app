@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Any
+from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import DateTime, func
@@ -42,6 +43,12 @@ class BaseModel(Base, TimestampMixin):
     """
 
     __abstract__ = True
+
+    id: Mapped[UUID] = mapped_column(
+        primary_key=True,
+        default=uuid4,
+        nullable=False
+    )
 
     def to_dict(self) -> dict[str, Any]:
         """Convert model to dictionary."""

@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\tests\test_health.py
-
 from httpx import AsyncClient
 import pytest
 

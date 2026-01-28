@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\tests\conftest.py
-
 import asyncio
 from collections.abc import AsyncGenerator, Generator
 
@@ -17,7 +15,7 @@ from src.main import create_app
 def get_test_settings() -> Settings:
     """Get settings configured for testing."""
     return Settings(
-        database_name="hr_app",
+        database_name="hr_app_test",
         environment="testing",
     )
 

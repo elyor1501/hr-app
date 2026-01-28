@@ -1,5 +1,3 @@
-# D:\hr-app\services\backend\src\models\job.py
-
 from __future__ import annotations
 
 from datetime import datetime
