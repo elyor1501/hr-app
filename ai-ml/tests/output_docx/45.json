@@ -1,0 +1,240 @@
+{
+  "file_name": "45.docx",
+  "total_blocks": 38,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Russia, Fryazino |  | /\nSUMMARY\n 2 years of web application development experience.\n Experience in the full cycle of creating web applications: architecture, server, code,\ndeployment.\n Know how to work with legacy, why tests are needed, how to communicate with team\nmembers to achieve the best results.\nSKILLS ACCOMPLISHMENTS\nLanguages: Python, JS, HTML, CSS.  Optimized critical services. Reduced\nFrameworks: Django, DRF, React. response time from a few minutes to\nLibraries: asyncio, aiohttp, aiogram. a few seconds.\nDatabases: PostgreSQL, Redis.  Managed a team of 2 developers.\nTools: PyCharm, Git, Lens, Docker, Acted as a mentor.\nYouTrack, TeamCity, Sentry, Bitbucket.  Independently developed 3\nTechniques: OOP, TDD, Scrum commercial projects from scratch.\nEDUCATION\nPython Developer ()\nYandex.Practicum\nBack-End Python Developer Professional Training Course\nSoftware Engineer  Unfinished higher education ()\nMoscow State Forest University, Moscow\nElectronics and systems engineering, Applied mathematics and computer science\nWORK EXPERIENCE\nPython Developer (Aug. 2021  to present)\nClaustrophobia, \nProjects: Website, Store, API, CRM, Dashboard, Game Bot\nTechnologies: Python, Django, DRF, Docker, PostgreSQL, Redis, React, HTML, CSS, JS\nPython Developer (Apr. 2021  Aug. 2021)\nLegsy Socks, \nProjects: Financial Bot, Automation Bot\nTechnologies: Python, Django, DRF, asyncio, aiohttp, Docker, PostgreSQL, Nginx, Selenium\nPython Developer (Education, Sep. 2020  Aug. 2021)\nYandex.Practicum, \nProjects: Social Network, Notification Bot, Catalogs, API\nTechnologies: Python, Django, DRF, Docker, SQLite, Nginx, HTML, CSS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Russia, Fryazino",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "|  |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "/",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SUMMARY",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2 years of web application development experience.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience in the full cycle of creating web applications: architecture, server, code,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "deployment.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Know how to work with legacy, why tests are needed, how to communicate with team",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "members to achieve the best results.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS ACCOMPLISHMENTS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: Python, JS, HTML, CSS.  Optimized critical services. Reduced",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks: Django, DRF, React. response time from a few minutes to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Libraries: asyncio, aiohttp, aiogram. a few seconds.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: PostgreSQL, Redis.  Managed a team of 2 developers.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tools: PyCharm, Git, Lens, Docker, Acted as a mentor.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "YouTrack, TeamCity, Sentry, Bitbucket.  Independently developed 3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Techniques: OOP, TDD, Scrum commercial projects from scratch.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python Developer ()",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Yandex.Practicum",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Back-End Python Developer Professional Training Course",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Engineer  Unfinished higher education ()",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Moscow State Forest University, Moscow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Electronics and systems engineering, Applied mathematics and computer science",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WORK EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python Developer (Aug. 2021  to present)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Claustrophobia,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Projects: Website, Store, API, CRM, Dashboard, Game Bot",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Python, Django, DRF, Docker, PostgreSQL, Redis, React, HTML, CSS, JS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python Developer (Apr. 2021  Aug. 2021)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Legsy Socks,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Projects: Financial Bot, Automation Bot",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Python, Django, DRF, asyncio, aiohttp, Docker, PostgreSQL, Nginx, Selenium",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python Developer (Education, Sep. 2020  Aug. 2021)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Yandex.Practicum,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Projects: Social Network, Notification Bot, Catalogs, API",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Python, Django, DRF, Docker, SQLite, Nginx, HTML, CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

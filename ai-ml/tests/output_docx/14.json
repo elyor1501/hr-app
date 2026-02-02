@@ -1,0 +1,356 @@
+{
+  "file_name": "14.docx",
+  "total_blocks": 57,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Rehovot, Israel  \nAbout me\nSenior solution architect with wide experience of creating and maintaining IT systems. Deep knowledge of\nC#, JavaScript, SQL, PHP and many other technologies; 10+ experience in Microsoft technologies. I've\nimplemented a large number of projects on SharePoint (2007, 2010 and 2019) platforms. Developed\napplications both for SharePoint and standalone, integrated them with external databases and web-\nservices.\nOver fifteen years experience in programming and a Master degree in engineering makes me capable of\nexecuting complicated and challenging projects.\nMy family and I did Alia last year and Im looking for a company to continue my career in Israel.\nTechnical Skills Set\n Development of environments: Asp.Net, C#, Java Script and frameworks (React, jQuery, NodeJS),\nXHTML, CSS, XML, DOM, PHP, PowerShell, Windows cmd-scripts, UNIX shell scripts.\n Development applications for SharePoint  web-parts, timer jobs, web-services; MVC\napplications .Net and net.Core\n Deep experience with Databases Microsoft SQL Server 2008, 2012, MySQL  writing complex SQL\nqueries, creating stored procedures, views, optimization of SQL queries.\nExperience\n2008  2022 GPB, financial company\n. Senior Software Engineer\nI successfully completed the Portal migration from SharePoint 2010 to SharePoint 2019 - 25k+ active\nusers, ~1Tb content databases, about 50 various applications and customizations. I made a substantial\nanalysis of the existing system, its infrastructure, applications and integration with external systems. I\ncreated a migration plan and then managed the process, also I developed and implemented several\napplications for direct data migration from SharePoint 2010 to 2019.\nAutomated the development process based on SharePoint 2019 and Net.Core applications with\nTeamCity, Bitbucket. Successfully leaded the team of 13 employees. Managed full stack development\nfrom receiving a task to a complete solution.\n2010 - 2015. Full-stack SharePoint Software developer.\nFull life cycle support of the Portal system based on Microsoft SharePoint. Collaborated with contractors\nto offer and then develop and implement different solutions. Integrate various features and technical\nspecifications of applications, continuous functionality of the Portal system, developed SharePoint\nsolutions for internal needs.\nDeveloped an Employee information application (Asp.net, C#, MSSQL, SharePoint) with custom database,\nintegrated with employee accounting system and Active Directory. Aggregation data from several\ndatabases, synchronous and asynchronous exchanges between different data sources. Created a number\nof applications that use SharePoint objects as datasource, custom web-parts for SharePoint.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2008  2010. Junior software developer.\nDevelopment of simple applications and functions for internal needs of the company - polls, photogallery,\nmaking promo-pages. Simple SQL requests and usage in web-applications.\n2007  2008. Traverse avia service, air flights organization, Head engineer\nCreated and supported company web-sites on PHP and MySQL using self-made CMS.\n2006  2007. Protek, pharmaceutical company, IT-specialist\nDeveloped a multivariable search system of drugs in pharmacies in Moscow using PHP and MySQL, a\nwebsite search system with multivariable filters.\n. RBC, Media company, Web-master\nMember of a team of developers.\nEducation:\n1998  .\nMost recent courses:\nSharePoint 2016: Administration (Microsoft); IIS 7.5 Administration and troubleshooting (Microsoft);\nVisual Studio 2012 ALM Testing Tools (Microsoft)\nHobbies:\nSports  fitness, snowboard, photo, arduino.\nLanguages: Russian (native), English (Upper Intermediate)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Rehovot, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "About me",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior solution architect with wide experience of creating and maintaining IT systems. Deep knowledge of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "C#, JavaScript, SQL, PHP and many other technologies; 10+ experience in Microsoft technologies. I've",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "implemented a large number of projects on SharePoint (2007, 2010 and 2019) platforms. Developed",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "applications both for SharePoint and standalone, integrated them with external databases and web-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "services.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Over fifteen years experience in programming and a Master degree in engineering makes me capable of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "executing complicated and challenging projects.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "My family and I did Alia last year and Im looking for a company to continue my career in Israel.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technical Skills Set",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of environments: Asp.Net, C#, Java Script and frameworks (React, jQuery, NodeJS),",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "XHTML, CSS, XML, DOM, PHP, PowerShell, Windows cmd-scripts, UNIX shell scripts.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development applications for SharePoint  web-parts, timer jobs, web-services; MVC",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "applications .Net and net.Core",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Deep experience with Databases Microsoft SQL Server 2008, 2012, MySQL  writing complex SQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "queries, creating stored procedures, views, optimization of SQL queries.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2008  2022 GPB, financial company",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ". Senior Software Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I successfully completed the Portal migration from SharePoint 2010 to SharePoint 2019 - 25k+ active",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "users, ~1Tb content databases, about 50 various applications and customizations. I made a substantial",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "analysis of the existing system, its infrastructure, applications and integration with external systems. I",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "created a migration plan and then managed the process, also I developed and implemented several",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "applications for direct data migration from SharePoint 2010 to 2019.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Automated the development process based on SharePoint 2019 and Net.Core applications with",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "TeamCity, Bitbucket. Successfully leaded the team of 13 employees. Managed full stack development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "from receiving a task to a complete solution.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2010 - 2015. Full-stack SharePoint Software developer.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full life cycle support of the Portal system based on Microsoft SharePoint. Collaborated with contractors",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "to offer and then develop and implement different solutions. Integrate various features and technical",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "specifications of applications, continuous functionality of the Portal system, developed SharePoint",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "solutions for internal needs.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed an Employee information application (Asp.net, C#, MSSQL, SharePoint) with custom database,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "integrated with employee accounting system and Active Directory. Aggregation data from several",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "databases, synchronous and asynchronous exchanges between different data sources. Created a number",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "of applications that use SharePoint objects as datasource, custom web-parts for SharePoint.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2008  2010. Junior software developer.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of simple applications and functions for internal needs of the company - polls, photogallery,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "making promo-pages. Simple SQL requests and usage in web-applications.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2007  2008. Traverse avia service, air flights organization, Head engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created and supported company web-sites on PHP and MySQL using self-made CMS.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2006  2007. Protek, pharmaceutical company, IT-specialist",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed a multivariable search system of drugs in pharmacies in Moscow using PHP and MySQL, a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "website search system with multivariable filters.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ". RBC, Media company, Web-master",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Member of a team of developers.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "1998  .",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Most recent courses:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SharePoint 2016: Administration (Microsoft); IIS 7.5 Administration and troubleshooting (Microsoft);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Visual Studio 2012 ALM Testing Tools (Microsoft)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hobbies:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sports  fitness, snowboard, photo, arduino.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: Russian (native), English (Upper Intermediate)",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

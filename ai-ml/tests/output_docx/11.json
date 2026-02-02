@@ -1,0 +1,391 @@
+{
+  "file_name": "11.docx",
+  "total_blocks": 49,
+  "confidence": 0.88,
+  "time_taken": 0.03,
+  "memory_mb": 0.17,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "********************",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Section Title"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Experience in C, C++ and C# programming",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Working knowledge of Agile, Jira and Git",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Basic knowledge of Java",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Skilled in Windows, AIX and Linux system administration.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Common knowledge of TCP/IP protocol and SSL",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Good understanding of all stages of software development process including debugging and code analysis to troubleshoot and fix software bugs, advising software support team",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "High understanding of design and working process of operating system, experience in system programming",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Working knowledge of UNIX shell scripting",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Experienced in developing user interfaces",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Skilled in understanding software security concepts and application compliance with security standards like",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Good experience in cross-platform application development",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Higher education in computer science, master degree in computer science (neural networks).",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Motivation, potential and great desire to work well and get knowledge.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "SKILLS SUMMARY",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Section Title"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EDUCATION and TRAINING",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Section Title"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Certificate  “DB2 9 Fundamentals” in June 2014",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "English Pre-advanced (IBA certificate, 2015)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "A bachelor’s degree in computer science, “Computer systems and networks” faculty, Belarusian State University of Informatics and Radio-electronics, Minsk (2013)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "A master degree in computer science, Belarusian State University of Informatics and Radio-electronics, Minsk (2016)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Education course D8L89 IBM Lotus Domino 8.5 System Administration at the Institute of IT & Business Administration (2016)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Certificate “Red Hat System Administration” in November 2016",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Certificate “Rocket MV Certification exam - U2 Family Application Development” in June 2017",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Education course Java Basics at the Institute of IT & Business Administration  in June 2020",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Item"
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "Programming Languages:",
+            "C++, C, C#, SQL, UniVerse BASIC, Java",
+            "C++, C, C#, SQL, UniVerse BASIC, Java",
+            "C++, C, C#, SQL, UniVerse BASIC, Java"
+          ],
+          [
+            "Operating Systems:",
+            "Windows, Linux, AIX, Solaris, Symbian (a mobile computing platform for smart phones).",
+            "Windows, Linux, AIX, Solaris, Symbian (a mobile computing platform for smart phones).",
+            "Windows, Linux, AIX, Solaris, Symbian (a mobile computing platform for smart phones)."
+          ],
+          [
+            "Web Technologies:",
+            "HTML, XML.",
+            "HTML, XML.",
+            "HTML, XML."
+          ],
+          [
+            "Databases:",
+            "IBM DB2, Rocket UniVerse, UniData;",
+            "IBM DB2, Rocket UniVerse, UniData;",
+            "IBM DB2, Rocket UniVerse, UniData;"
+          ],
+          [
+            "Other Skills:",
+            "IBM Tivoli storage Manager (TSM);  IBM General Parallel File System (GPFS);   IBM Configuration Management Version Control (CMVC); Git, Jira, Agile, SVN; Unix Shells (ksh, bash); IBM Domino; Common knowledge of TCP/IP protocol and SSL; The GNU: Compiler Collection (gcc & g++), developer's tool for directing; recompilation (make), debugger (gdb); An open source developer's tool for browsing source code (cscope). MS Visual C++ (2010, 2017); WinAPI; WPF MFC, STL, Qt SDK (a cross-platform application framework), Code::Blocks SBXA, Wintegrate.",
+            "IBM Tivoli storage Manager (TSM);  IBM General Parallel File System (GPFS);   IBM Configuration Management Version Control (CMVC); Git, Jira, Agile, SVN; Unix Shells (ksh, bash); IBM Domino; Common knowledge of TCP/IP protocol and SSL; The GNU: Compiler Collection (gcc & g++), developer's tool for directing; recompilation (make), debugger (gdb); An open source developer's tool for browsing source code (cscope). MS Visual C++ (2010, 2017); WinAPI; WPF MFC, STL, Qt SDK (a cross-platform application framework), Code::Blocks SBXA, Wintegrate.",
+            "IBM Tivoli storage Manager (TSM);  IBM General Parallel File System (GPFS);   IBM Configuration Management Version Control (CMVC); Git, Jira, Agile, SVN; Unix Shells (ksh, bash); IBM Domino; Common knowledge of TCP/IP protocol and SSL; The GNU: Compiler Collection (gcc & g++), developer's tool for directing; recompilation (make), debugger (gdb); An open source developer's tool for browsing source code (cscope). MS Visual C++ (2010, 2017); WinAPI; WPF MFC, STL, Qt SDK (a cross-platform application framework), Code::Blocks SBXA, Wintegrate."
+          ],
+          [
+            "Foreign Languages:",
+            "English",
+            "Upper Intermediate",
+            "Good knowledge of grammar. Can understand, discuss, and write texts on both business and general activities, including technical discussions, and explain a viewpoint on an issue or a particular theme."
+          ]
+        ]
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "********************",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience in C, C++ and C# programming",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Working knowledge of Agile, Jira and Git",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Basic knowledge of Java",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skilled in Windows, AIX and Linux system administration.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Common knowledge of TCP/IP protocol and SSL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Good understanding of all stages of software development process including debugging and code analysis to troubleshoot and fix software bugs, advising software support team",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "High understanding of design and working process of operating system, experience in system programming",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Working knowledge of UNIX shell scripting",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experienced in developing user interfaces",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skilled in understanding software security concepts and application compliance with security standards like",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Good experience in cross-platform application development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Higher education in computer science, master degree in computer science (neural networks).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Motivation, potential and great desire to work well and get knowledge.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS SUMMARY",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION and TRAINING",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Certificate  “DB2 9 Fundamentals” in June 2014",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English Pre-advanced (IBA certificate, 2015)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "A bachelor’s degree in computer science, “Computer systems and networks” faculty, Belarusian State University of Informatics and Radio-electronics, Minsk (2013)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "A master degree in computer science, Belarusian State University of Informatics and Radio-electronics, Minsk (2016)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education course D8L89 IBM Lotus Domino 8.5 System Administration at the Institute of IT & Business Administration (2016)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Certificate “Red Hat System Administration” in November 2016",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Certificate “Rocket MV Certification exam - U2 Family Application Development” in June 2017",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education course Java Basics at the Institute of IT & Business Administration  in June 2020",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

@@ -1,0 +1,294 @@
+{
+  "file_name": "62.docx",
+  "total_blocks": 47,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Haifa, Israel\n\n(+972) \n\nC/C++ Developer, Python Developer\n/\nStudent of the M.V. Lomonosov Moscow State\n\nUniversity, Faculty of Mechanics and Mathematics\nwith over than 3 years experience of mathematical\nmodelling, numerical computations and algorithms\nrealisation.\nConsidering full-time, part-time and remote work with\npossibility of relocation from current place of\nresidence.\nEDUCATION SKILLS\nProgramming languages\nMoscow State University,Faculty of Mechanics and\nMathematics  C (3+ years)  C++ (2+ years)  Python (3+ years)\nSep 2019 - present\nMathematical Software\n2-4 year student at the Chair of Theoretical Mechanics and\n Wolfram Mathematica  Maple  Origin\nMechatronics with research work at the Chair of Differential\nGeometry and Applications.\nData visualisation & Computer graphics\nCourse Papers:\n Gnuplot  Matplotlib  OpenGL\nBifurcation analysis of the dynamics of a two-link\nmathematical pendulum in a rotating frame of reference\nOperating Systems\n Some applications of Nijenhuis geometry to integrable\n Windows  Linux\nHamiltonian systems\nVirtual Machines\nMoscow State University,Department of Chemistry\n Oracle VM VIrtualBox\nSep 2018 - Aug 2019\nProject Management\n1 year student with research work at the Laboratory of\n GitHub\nSemiconductive Materials Chemistry and Physics.\nCourse Paper: Influence of scandium doping on\nsemiconductive properties of zinc oxide.\nMoscow Institute of Physics and Technology, LANGUAGES\nEvening School of Physics and Technology\nEnglish (fluent), Russian (native), Hebrew (basic).\nSep 2017 - May 2018\nLast-year student, graduated with excellent marks.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Haifa, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(+972)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "C/C++ Developer, Python Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "/",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Student of the M.V. Lomonosov Moscow State",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "University, Faculty of Mechanics and Mathematics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "with over than 3 years experience of mathematical",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "modelling, numerical computations and algorithms",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "realisation.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Considering full-time, part-time and remote work with",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "possibility of relocation from current place of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "residence.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Moscow State University,Faculty of Mechanics and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mathematics  C (3+ years)  C++ (2+ years)  Python (3+ years)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sep 2019 - present",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mathematical Software",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2-4 year student at the Chair of Theoretical Mechanics and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Wolfram Mathematica  Maple  Origin",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mechatronics with research work at the Chair of Differential",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Geometry and Applications.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Data visualisation & Computer graphics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Course Papers:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gnuplot  Matplotlib  OpenGL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bifurcation analysis of the dynamics of a two-link",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "mathematical pendulum in a rotating frame of reference",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Operating Systems",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Some applications of Nijenhuis geometry to integrable",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Windows  Linux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hamiltonian systems",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Virtual Machines",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Moscow State University,Department of Chemistry",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Oracle VM VIrtualBox",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sep 2018 - Aug 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project Management",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "1 year student with research work at the Laboratory of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "GitHub",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Semiconductive Materials Chemistry and Physics.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Course Paper: Influence of scandium doping on",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "semiconductive properties of zinc oxide.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Moscow Institute of Physics and Technology, LANGUAGES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Evening School of Physics and Technology",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English (fluent), Russian (native), Hebrew (basic).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sep 2017 - May 2018",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Last-year student, graduated with excellent marks.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

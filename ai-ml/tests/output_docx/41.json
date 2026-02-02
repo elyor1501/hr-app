@@ -1,0 +1,210 @@
+{
+  "file_name": "41.docx",
+  "total_blocks": 33,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Fullstack Web Developer\nPhone:  Email: \nResidence: Hadera Languages: Hebrew, English, Russian\nExperience Summary\n WEB technologies: VueJs, Angular, Webpack, REST, HTML, CSS, BootStrap, NodeJS\n Programming languages: JavaScript, Typescript, Python, Perl\n DataBases: SQLite, MySQL, MongoDB, neo4j, tinyDB, SnowFlake\n Methodology : Agile, Waterfall, SCRUM\nExperience\n - present Intelos (Tel Aviv, Israel) Web FrontEnd Developer\n Description: Development of a program for visualizing various data on a geographic map. Structuring\ninformation for display and processing. Developing part of Business Logic that moved to Client Side.\n Responsibilities: Development and support of the client side of the project based on the Vue framework\nusing modern techniques and technologies. Also supporting API on backend, e.g. controllers.\n Technologies used: HTML5, CSS3 ,VueJs 2, EcmaScript, JavaScript\n -  Britannica (Tel Aviv, Israel) Web Full Stack Developer\n Description: Knowledgebase project with time and resource management for educational processes in\ncommercial specialized educational institutions.\n Responsibilities: renewed and optimized UI and UX, renewed REST API, migrated from legacy solution\n(ASPX) to newest solutions and technologies(Angular 7+, NodeJS microservices), refactored code.\n Technologies used: HTML5, CSS3 , Angular(7+), Typescript, NodeJS, WebSocket, MongoDB\n -  Athena (Holon, Israel) Web Front End Developer\n Description: Documentation accounting system. Search engine for seeking information in open sources\nand building structured knowledge base with internal search.\n Responsibilities: renewed and optimized UI and UX. renewed API. Migrated legacy code to newest\nsolutions and technologies.\n Technologies used: HTML5, CSS3, Angular(2+), Typescript, NodeJS, WebSocket, MongoDB, Neo4j\nEducation\n -  National Mining University, Dnipropetrovsk Ukraine\n Degree: Computer Science Master Degree\nRecommendations available upon request.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Fullstack",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:  Email:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Residence: Hadera Languages: Hebrew, English, Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience Summary",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WEB technologies: VueJs, Angular, Webpack, REST, HTML, CSS, BootStrap, NodeJS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: JavaScript, Typescript, Python, Perl",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DataBases: SQLite, MySQL, MongoDB, neo4j, tinyDB, SnowFlake",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Methodology : Agile, Waterfall, SCRUM",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- present Intelos (Tel Aviv, Israel) Web FrontEnd Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Development of a program for visualizing various data on a geographic map. Structuring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "information for display and processing. Developing part of Business Logic that moved to Client Side.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: Development and support of the client side of the project based on the Vue framework",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "using modern techniques and technologies. Also supporting API on backend, e.g. controllers.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, CSS3 ,VueJs 2, EcmaScript, JavaScript",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-  Britannica (Tel Aviv, Israel) Web Full Stack Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Knowledgebase project with time and resource management for educational processes in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "commercial specialized educational institutions.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: renewed and optimized UI and UX, renewed REST API, migrated from legacy solution",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(ASPX) to newest solutions and technologies(Angular 7+, NodeJS microservices), refactored code.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, CSS3 , Angular(7+), Typescript, NodeJS, WebSocket, MongoDB",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-  Athena (Holon, Israel) Web Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Documentation accounting system. Search engine for seeking information in open sources",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and building structured knowledge base with internal search.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: renewed and optimized UI and UX. renewed API. Migrated legacy code to newest",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "solutions and technologies.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, CSS3, Angular(2+), Typescript, NodeJS, WebSocket, MongoDB, Neo4j",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-  National Mining University, Dnipropetrovsk Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Degree: Computer Science Master Degree",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations available upon request.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

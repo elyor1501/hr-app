@@ -1,0 +1,666 @@
+{
+  "file_name": "13.docx",
+  "total_blocks": 97,
+  "confidence": 0.87,
+  "time_taken": 0.03,
+  "memory_mb": 0.12,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "*****************",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Front-end Developer",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Mobile phone:       **********",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Linkedln:\t         ********************************************************",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Github:                    **************************",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Professional skills:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tLanguages: Python 2.7 and 3.6, Javascript(ES4, ES5, ES6), HTML5, DHTML, XHTML, CSS3, SCSS, LESS, Php Fundamentals",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tFrameworks: Django, Flask, JQuery, Foundation, Express.js",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tLibraries: Redux, React, Redux Form, Redux Saga, Bootstrap, Material-UI, BeautifulSoup, Underscore, SQAlchemy, Lodash",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tServer Technologies: Node.js Fundamentals, Apache Fundamentals, MAMP, WAMP",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tDB: MySQL, SQLite, PostgreSQL",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tOS: Mac, Linux, Windows",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tOther: Git, virtualenv, npm, Gulp, ESLint, Babel, CyPress, Zeplin, Kanban, Asana, Jira, Flux, UI/UX",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Work experience:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Front-End Developer - 2019",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Trucknet - Rishon LeZion, Israel",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tDeveloping responsive web applications using Javascript, React and Redux",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tResponsible for implementation of new mainframe development project",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tWriting new components using Material-UI and Redux Form",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tAnalyzed UI/UX design for responsive layout for improved usability",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tWorked with team of developers to resolve front-end and CSS issues",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Education:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tNAU(National Aviation University). Computer science, 2012-2014",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tWSEI(High School of Economics and Innovations). Programming 2014-2018",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tIITC/InterBit, MASA TLALIM 2018-2019",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Recommendations:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Trucknet - Eilat, Israel",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Alexander Gusev**********",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Languages knowledge:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tNative Russian,  native Ukrainian,",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tUpper Intermediate English B2, Intermediate Polish B1",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Volunteering:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tVolunteering in organization “Maidan’s Hospital”. Helping people, who took part in Maidan Revolution and soldiers in ATO Zone",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tHelping old people in christian nursing home",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tVolunteering on festival of Ukrainian culture in Poland",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tVolunteering on Congress of Eastern European Initiatives",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "•\tVolunteering on festival of Japanese culture “Nejiro”",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "*****************",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front-end Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mobile phone:       **********",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linkedln:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "********************************************************",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Github:                    **************************",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional skills:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: Python 2.7 and 3.6, Javascript(ES4, ES5, ES6), HTML5, DHTML, XHTML, CSS3, SCSS, LESS, Php Fundamentals",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks: Django, Flask, JQuery, Foundation, Express.js",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Libraries: Redux, React, Redux Form, Redux Saga, Bootstrap, Material-UI, BeautifulSoup, Underscore, SQAlchemy, Lodash",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Server Technologies: Node.js Fundamentals, Apache Fundamentals, MAMP, WAMP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DB: MySQL, SQLite, PostgreSQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OS: Mac, Linux, Windows",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Other: Git, virtualenv, npm, Gulp, ESLint, Babel, CyPress, Zeplin, Kanban, Asana, Jira, Flux, UI/UX",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front-End Developer - 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Trucknet - Rishon LeZion, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developing responsive web applications using Javascript, React and Redux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsible for implementation of new mainframe development project",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Writing new components using Material-UI and Redux Form",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Analyzed UI/UX design for responsive layout for improved usability",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Worked with team of developers to resolve front-end and CSS issues",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "NAU(National Aviation University). Computer science, 2012-2014",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WSEI(High School of Economics and Innovations). Programming 2014-2018",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IITC/InterBit, MASA TLALIM 2018-2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Trucknet - Eilat, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Alexander Gusev**********",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages knowledge:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Native Russian,  native Ukrainian,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Upper Intermediate English B2, Intermediate Polish B1",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Volunteering:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Volunteering in organization “Maidan’s Hospital”. Helping people, who took part in Maidan Revolution and soldiers in ATO Zone",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Helping old people in christian nursing home",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Volunteering on festival of Ukrainian culture in Poland",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Volunteering on Congress of Eastern European Initiatives",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "•",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Volunteering on festival of Japanese culture “Nejiro”",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

@@ -1,0 +1,228 @@
+{
+  "file_name": "22.docx",
+  "total_blocks": 36,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Birth year: 1990 | City: Kiriat Yam, Israel | LinkedIn\n     \nEmail:  | Telegram:  | Phone: \n      \nSummary:\nI have 6+ years of experience in server-side development. I have been developing DWH with\nETL processes, data input forms and OLAP reports. I have been implementing business\nlogic in PL/SQL. Now I am learning Hebrew on MASA in Kiriat Yam.\nProfessional skills: SQL (Oracle), PL/SQL, C#, Python\n\nLanguages: Russian: native; English: B1.\n\nExperience:\n   Pro IT Resource  Oracle developer Perm, Russia\n\nDevelopment and support of OLAP financial data monitoring systems.\nThe business logic of the systems was implemented as PL/SQL packages. Main tasks\nwhich were implemented:\n Data loading from external systems in form of incremental daily updates in XML;\n Maintenance of various directories and indicators, data input according to them;\n Development of OLAP reports based on input data.\n   KIBERone  Tutor Perm, Russia\n\n   ER-Telecom  Oracle developer Perm, Russia\n\n Support of the Equipment Manager system (network equipment accounting\nsystem);\n Finalization of the electronic document management system in Equipment\nManager: transferring documents to 1C and billing system;\n   JSC PROGNOZ  Junior tester Perm, Russia\n\nThe Perm State Regional Universal Library\n   named after A.M.Gorky  Perm, Russia\n\nComputer lab administrator\nEducation:\nPerm National Research Polytechnic University\n2011  2017 Electrical Engineering Faculty, speciality: automated control and\ninformation processing systems (extramural, incomplete)\nPerm State National Research University\n2007  2010 Faculty of Mechanics and Mathematics, speciality: mechanics, applied\nmathematics (incomplete)\nHobbies and other activity: I like running, fencing and hiking. I have experience as a\n\nvolunteer.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Birth year: 1990 | City: Kiriat Yam, Israel | LinkedIn",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Email:  | Telegram:  | Phone:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Summary:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I have 6+ years of experience in server-side development. I have been developing DWH with",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ETL processes, data input forms and OLAP reports. I have been implementing business",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "logic in PL/SQL. Now I am learning Hebrew on MASA in Kiriat Yam.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional skills: SQL (Oracle), PL/SQL, C#, Python",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: Russian: native; English: B1.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Pro IT Resource  Oracle developer Perm, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development and support of OLAP financial data monitoring systems.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The business logic of the systems was implemented as PL/SQL packages. Main tasks",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "which were implemented:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Data loading from external systems in form of incremental daily updates in XML;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Maintenance of various directories and indicators, data input according to them;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of OLAP reports based on input data.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "KIBERone  Tutor Perm, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ER-Telecom  Oracle developer Perm, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Support of the Equipment Manager system (network equipment accounting",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "system);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Finalization of the electronic document management system in Equipment",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Manager: transferring documents to 1C and billing system;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JSC PROGNOZ  Junior tester Perm, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The Perm State Regional Universal Library",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "named after A.M.Gorky  Perm, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Computer lab administrator",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Perm National Research Polytechnic University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2011  2017 Electrical Engineering Faculty, speciality: automated control and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "information processing systems (extramural, incomplete)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Perm State National Research University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2007  2010 Faculty of Mechanics and Mathematics, speciality: mechanics, applied",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "mathematics (incomplete)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hobbies and other activity: I like running, fencing and hiking. I have experience as a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "volunteer.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

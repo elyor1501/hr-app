@@ -1,0 +1,312 @@
+{
+  "file_name": "48.docx",
+  "total_blocks": 50,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "ANALYTICS LEAD\nExperience\nCompetitve Analytics Team Lead\nOZON | 2022 - Present\nLeading team of 18 Analysts, providing busisness isnights for inhouse\nProfile\nstakeholders: pricing, promotions, comepetitive activities, GMV and\nI like challenging tasks and assortment analysis. Presenting results to C-level with Tableau, Powe\nbringing projects done from BI, Powerpoint tools. Maintaining dashbords and data marts.\nscratch to full execution. I Team Stack:\nlove learning and quickly adapt SQL/Postgre/Python/Airflow/Hadoop/Kafka/Vertica/Tableau/PowerBI\nto new envirioment and tasks.\nCategory Business Manager\nSamsung | 2019 - 2022\nDevelopment and execution strategy of Home Appiances development\nin CIS. Sales stucture, Assortment/Pricing/Marketing/PLC/P&L.\nGrew ctaegory GMV, Profit and introduced new product type (DW)\nMS 0.5% ->7%\nDW MS 0% -> 11%\nProduct Manager\nNikon | 2013 - 2019\nNikon DSLR & Optics mangement #1 MS, development of accessories\nsales strategy. Sport Optics development #1 MS, promotions and\nproduct creation in collaboration with HQ.\nEducation\nMBA (Sales & Marketing)\nIBDA, Moscow | 2015 - 2017\nClassic MBA for Sales & Marketing Management.\nPsychology/Masters Degree\nMoscow State University, Moscow | 2005 - 2010\nDescription of the education/course.\nSkills\nSkills Language\nTeam Leading English\nPlanning Russian\nProject French\nmanagement Hebrew\nSales\nNegotiations\nAnalytics\nContact\nTools\n Arad (IL)/ Moscow (RU)\nMS Office\n \nBI Tools\n \nSQL/Python\n  SAP\n /victor.kravtsov.92",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "ANALYTICS LEAD",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Competitve",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Analytics Team Lead",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OZON | 2022 - Present",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Leading team of 18 Analysts, providing busisness isnights for inhouse",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Profile",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "stakeholders: pricing, promotions, comepetitive activities, GMV and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I like challenging tasks and assortment analysis. Presenting results to C-level with Tableau, Powe",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "bringing projects done from BI, Powerpoint tools. Maintaining dashbords and data marts.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "scratch to full execution. I Team Stack:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "love learning and quickly adapt SQL/Postgre/Python/Airflow/Hadoop/Kafka/Vertica/Tableau/PowerBI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "to new envirioment and tasks.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Category Business Manager",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Samsung | 2019 - 2022",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development and execution strategy of Home Appiances development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "in CIS. Sales stucture, Assortment/Pricing/Marketing/PLC/P&L.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Grew ctaegory GMV, Profit and introduced new product type (DW)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MS 0.5% ->7%",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DW MS 0% -> 11%",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Product Manager",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Nikon | 2013 - 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Nikon DSLR & Optics mangement #1 MS, development of accessories",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "sales strategy. Sport Optics development #1 MS, promotions and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "product creation in collaboration with HQ.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MBA (Sales & Marketing)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IBDA, Moscow | 2015 - 2017",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Classic MBA for Sales & Marketing Management.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Psychology/Masters Degree",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Moscow State University, Moscow | 2005 - 2010",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description of the education/course.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills Language",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Team Leading English",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Planning Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project French",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "management Hebrew",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sales",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Negotiations",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Analytics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Contact",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tools",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Arad (IL)/ Moscow (RU)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MS Office",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "BI Tools",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SQL/Python",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SAP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "/victor.kravtsov.92",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

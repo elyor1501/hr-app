@@ -1,0 +1,29 @@
+{
+  "category": "Arts",
+  "file_name": "Arts_multipage.pdf",
+  "total_pages": 2,
+  "confidence": 0.78,
+  "time_taken": 1.29,
+  "memory_mb": 3.75,
+  "pages": [
+    {
+      "page_number": 1,
+      "method": "structured",
+      "confidence": 0.79,
+      "text": {
+        "text": "ANANYA MEHRA\nVisual Artist / Creative Professional\nMumbai, India | ananya.mehra@email.com | +91-9XXXXXXXXX\nPROFESSIONAL SUMMARY\nVisual Artist with 10+ years of experience in fine arts, mixed media, illustration, and contemporary visual practices.\nStrong background in concept development, visual storytelling, and exhibition curation. Experienced in\ncollaborating with galleries, cultural institutions, and interdisciplinary teams to deliver compelling artistic outcomes.\nARTISTIC SKILLS & MEDIUMS\n(cid:127) Fine Arts: Acrylic, Oil, Watercolor\n(cid:127) Mixed Media & Installation Art\n(cid:127) Illustration & Concept Art\n(cid:127) Digital Art: Photoshop, Procreate\n(cid:127) Visual Storytelling & Composition\n(cid:127) Exhibition Design & Curation\nPROFESSIONAL EXPERIENCE\nIndependent Visual Artist (2016 – Present)\n(cid:127) Created original artworks for solo and group exhibitions at national and international galleries.\n(cid:127) Developed thematic series exploring identity, culture, and urban life.\n(cid:127) Collaborated with curators and cultural organizations for site-specific installations and public art projects.\n(cid:127) Managed the full creative lifecycle from ideation to final presentation.",
+        "tables": []
+      }
+    },
+    {
+      "page_number": 2,
+      "method": "structured",
+      "confidence": 0.76,
+      "text": {
+        "text": "Illustrator & Art Educator (2012 – 2016)\n(cid:127) Delivered commissioned illustrations for editorial, branding, and publishing projects.\n(cid:127) Conducted art workshops and training programs for students and emerging artists.\n(cid:127) Mentored junior artists on technique, portfolio development, and conceptual thinking.\nEXHIBITIONS & PROJECTS\n(cid:127) Solo Exhibition – “Urban Narratives”, Mumbai Art Gallery\n(cid:127) Group Exhibition – National Contemporary Art Show, Delhi\n(cid:127) Public Art Installation – City Cultural Festival, Mumbai\nEDUCATION\n(cid:127) Bachelor of Fine Arts (BFA) – Sir J.J. School of Art, Mumbai\nAWARDS & RECOGNITION\n(cid:127) Emerging Artist Award – State Art Council\n(cid:127) Featured Artist – National Art Magazine\nADDITIONAL INFORMATION\n(cid:127) Strong visual communication and presentation skills\n(cid:127) Experience working with multidisciplinary creative teams\n(cid:127) Passionate about cultural storytelling and contemporary art practices",
+        "tables": []
+      }
+    }
+  ],
+  "error": null
+}

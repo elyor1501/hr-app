@@ -1,0 +1,342 @@
+{
+  "file_name": "60.docx",
+  "total_blocks": 55,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "CONTACTS MOTOVILOV PAVEL\n  \nFRONTEND WEB DEVELOPER.\ncom  Rehovot  Age: 27 years old\n  WORK EXPERIENCE \n\n  Sipl-Biz\n  Present.\nFrontend Web Developer\n/profile.php?\nid=  Development of the client side and adding\nfunctionality\n \n Creation of functionality, setting up servers\n6  Technical support, optimization\n Writing technical specifications for designers and\nback-end developers\n Development of client-server applications\nLANGUAGES\n Optimization, bug fixing, refactoring\n Development of frontend projects from scratch\nEnglish\nB1 - Intermediate   Elpisor LTD\n\nFrontend Web developer\nHebrew\nA2 - Elementary  Development of client-server applications\n Optimization, bug fixing, refactoring\n Development of frontend projects from scratch\n Creation of user interfaces\nSKILLS\n Writing technical specifications for designers\n Refactoring someone else's code\n React  Responsive, cross-browser layout\nProfessional\n Javascript\nEDUCATION \nProfessional\n typescript 2021 Ural Institute: Expert\nExperienced MSc in Computer Science\n redux\nProfessional COURSES \n Git,GitHub\n2020 Special program for adaptation of software developer\nExperienced\naccording to Israel IT technologies\n Webpack,Docker\nBasic\n ECMAScript (es6) ABOUT ME \nProfessional\nI have always been interested in web development. I want to work on\n Adaptive layout,Cross-\nvarious projects. I have some experience with node.js. I want to\nbrowser layout\ncontinue to grow in this attachment\nProfessional\n HTML5,CSS3\nProfessional",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "CONTACTS MOTOVILOV PAVEL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FRONTEND WEB DEVELOPER.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "com  Rehovot  Age: 27 years old",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WORK EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sipl-Biz",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Present.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend Web Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "/profile.php?",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "id=  Development of the client side and adding",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "functionality",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Creation of functionality, setting up servers",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "6  Technical support, optimization",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Writing technical specifications for designers and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "back-end developers",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of client-server applications",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LANGUAGES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Optimization, bug fixing, refactoring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of frontend projects from scratch",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "B1 - Intermediate   Elpisor LTD",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend Web developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hebrew",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "A2 - Elementary  Development of client-server applications",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Optimization, bug fixing, refactoring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of frontend projects from scratch",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Creation of user interfaces",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Writing technical specifications for designers",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Refactoring someone else's code",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "React  Responsive, cross-browser layout",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Javascript",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "typescript 2021 Ural Institute: Expert",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experienced MSc in Computer Science",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "redux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional COURSES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Git,GitHub",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020 Special program for adaptation of software developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experienced",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "according to Israel IT technologies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Webpack,Docker",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Basic",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ECMAScript (es6) ABOUT ME",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I have always been interested in web development. I want to work on",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Adaptive layout,Cross-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "various projects. I have some experience with node.js. I want to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "browser layout",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "continue to grow in this attachment",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HTML5,CSS3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

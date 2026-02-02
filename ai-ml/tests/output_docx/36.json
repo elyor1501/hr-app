@@ -1,0 +1,300 @@
+{
+  "file_name": "36.docx",
+  "total_blocks": 48,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "ERGEI HCHIPANOV\nI am a Soware Engineer with 6+ years experience in development and\ndesign on a wide technological stack. My main proficiency is building\nhighload Java backends. I design and build crical parts for core business\napplicaons such as integraon buses, CI/CD and infrastructure\napplicaons.\nLooking f or t he S enior S oware E ngineer p osion.\nLanguages: E nglish, H ebrew, R ussian ( nave).\n27 y .o., K far S aba, I srael\nSkills: J ava, J ava 8 , T ypeScript, C ++, C #;\nMaven, G radle, G ulp;\nTel: \nSpring, S pring B oot, N odeJs, A pache C amel, A pache K aa;\nEmail: t \nJUnit, J Unit 5 , M ockito, C ucumber;\nLN: l inkedin.com/in/s-shipanov\nPL S QL, M S S QL, P ostgreSQL; M ongoDB, C ouchbase;\nGit, T FS;\nJenkins, T eamCity; D ocker, K ubernetes;\nAgile, K anban, S crum;\nWork experience\nSogo Services ( Israel, Tel-Aviv) Im w orking a s a S oware E ngineer w ith t he b usiness c rical p rojects o n\nSoware E ngineer a w ide t echnological s tack\nDecember 2 019 - p resent - J ava, T ypeScript, S pring, S pring B oot, N odeJs, A pache K aa\n- V oIP, C IrcleCI, G it\nAmdocs ( Israel, Raanana) I w as d esigning b ackend f or t he t elecom c ompanies c ustomers s upport\nSoware E ngineer applicaon a s a p art o f t he h uge i nternaonal t eam\nJune 2 019 - D ecember 2 019 - J ava, A pache C amel, H ibernate\n- D ocker, J enkins, P erforce\n- C ouchbase, P ostgreSQL\nNexign ( Russia, Moscow) I w as r esponsible f or b uilding t he b ackend f or c ustomer U I u sed i n t op 3\nSenior S oware E ngineer telecom c arriers. I w as a ble t o m ake m ulple i nfrastructure u pdates s uch\nFebruary 2 018 - D ecember 2 018 as p roper c onfiguraon m anagement, e dge i nterfaces a nd A PI r edesign,\nremoving b olenecks i n t he i ntegraon p rocess.\n- J ava, S pring, S pring B oot\n- D ocker, J enkins, T eamCity\n- M ongoDB\nAlfaGroup ( Russia, Moscow) I w as a m ember o f c ore s ervice b us d evelopment t eam\nJava D eveloper - J ava, S pring, R edHat J Boss F use, J enkins\nJune 2 017 - F ebruary 2 018 - M S S QL, P L S QL\nLuxo ( Russia, Moscow) Developed v isual d atabase q uery b uilder a nd r elated t ools.\nJava D eveloper - J ava, E clipse\nOctober 2 014 - J une 2 017 - D B2, J azz, O S Z , J enkins\nEducaon\nMEPhI, Naonal Research Mastrer's ( 2'nd) d egree. F aculty o f C ybernecs, A utomated S ystems.\nNuclear University\n2011  2 016",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "ERGEI HCHIPANOV",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I am a Soware Engineer with 6+ years experience in development and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "design on a wide technological stack. My main proficiency is building",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "highload Java backends. I design and build crical parts for core business",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "applicaons such as integraon buses, CI/CD and infrastructure",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "applicaons.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Looking f or t he S enior S oware E ngineer p osion.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: E nglish, H ebrew, R ussian ( nave).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "27 y .o., K far S aba, I srael",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills: J ava, J ava 8 , T ypeScript, C ++, C #;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Maven, G radle, G ulp;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Spring, S pring B oot, N odeJs, A pache C amel, A pache K aa;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Email: t",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JUnit, J Unit 5 , M ockito, C ucumber;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LN: l inkedin.com/in/s-shipanov",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PL S QL, M S S QL, P ostgreSQL; M ongoDB, C ouchbase;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Git, T FS;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Jenkins, T eamCity; D ocker, K ubernetes;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Agile, K anban, S crum;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sogo Services ( Israel, Tel-Aviv) Im w orking a s a S oware E ngineer w ith t he b usiness c rical p rojects o n",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Soware E ngineer a w ide t echnological s tack",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "December 2 019 - p resent - J ava, T ypeScript, S pring, S pring B oot, N odeJs, A pache K aa",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- V oIP, C IrcleCI, G it",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Amdocs ( Israel, Raanana) I w as d esigning b ackend f or t he t elecom c ompanies c ustomers s upport",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Soware E ngineer applicaon a s a p art o f t he h uge i nternaonal t eam",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "June 2 019 - D ecember 2 019 - J ava, A pache C amel, H ibernate",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- D ocker, J enkins, P erforce",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- C ouchbase, P ostgreSQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Nexign ( Russia, Moscow) I w as r esponsible f or b uilding t he b ackend f or c ustomer U I u sed i n t op 3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior S oware E ngineer telecom c arriers. I w as a ble t o m ake m ulple i nfrastructure u pdates s uch",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "February 2 018 - D ecember 2 018 as p roper c onfiguraon m anagement, e dge i nterfaces a nd A PI r edesign,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "removing b olenecks i n t he i ntegraon p rocess.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- J ava, S pring, S pring B oot",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- D ocker, J enkins, T eamCity",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- M ongoDB",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "AlfaGroup ( Russia, Moscow) I w as a m ember o f c ore s ervice b us d evelopment t eam",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java D eveloper - J ava, S pring, R edHat J Boss F use, J enkins",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "June 2 017 - F ebruary 2 018 - M S S QL, P L S QL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Luxo ( Russia, Moscow) Developed v isual d atabase q uery b uilder a nd r elated t ools.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java D eveloper - J ava, E clipse",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "October 2 014 - J une 2 017 - D B2, J azz, O S Z , J enkins",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Educaon",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MEPhI, Naonal Research Mastrer's ( 2'nd) d egree. F aculty o f C ybernecs, A utomated S ystems.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Nuclear University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2011  2 016",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

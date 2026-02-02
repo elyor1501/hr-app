@@ -1,0 +1,246 @@
+{
+  "file_name": "20.docx",
+  "total_blocks": 39,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Full-Stack Developer\nSUMMARY Main stack: PHP, Node.js, React.js (Redux, Mobx), MySQL/PostgreSQL.\nDon't have experience but would like to develop skills with Python, Golang, MongoDB,\nAngular, and Vue.js.\nDon't want to work with CSS/LESS/SASS.\nWORK Tanndu  Full Stack Developer (  now)\nEXPERIENCE Experience with external APIs;\nIntegrated PayPal and authorization with Apple/Google/Facebook;\nGained experience in ReactJS (Redux, MobX), ReactNative, PHP, MySQL, Docker, Chrome\nExtensions;\nDeployed projects on AWS/Heroku;\nWas involved in the hiring process developer positions, interviewed candidates.\nBOOKIE iGaming  Full-Stack Developer (  )\nImplemented new features;\nDeveloped strong skills in React JS, Backbone.js, Node.js, PHP;\nMigrated the project from gulp + RequireJS to Webpack (ES6);\nAcquired software design pattern knowledge;\nGained eld relevant experience;\nOn-job skills advancement for career growth;\nLearned good programming practices from seasoned developers.\nMapsoft  Junior Full-Stack Developer (  )\nImplemented new features;\nManaged bug xes;\nGained experience in Symfony 2.8, ExtJS.\nEDUCATION Belarusian State University of Informatics and Radioelectronics  Bachelor's Degree (2017 \n2021)\nEngineering-Psychological Maintenance Of Information Technologies\nMCB  Associate's Degree (2012  2017)\nInformation Technology Software\nSOFT SKILLS Team player\nCondent\nGetting things done\nIndependent\nPassionate and enthusiastic\nCONTACTS linkedin: \nemail: \n\nwhatsapp: \nPowered by",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Full-Stack Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SUMMARY Main stack: PHP, Node.js, React.js (Redux, Mobx), MySQL/PostgreSQL.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Don't have experience but would like to develop skills with Python, Golang, MongoDB,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Angular, and Vue.js.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Don't want to work with CSS/LESS/SASS.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WORK Tanndu  Full Stack Developer (  now)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE Experience with external APIs;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Integrated PayPal and authorization with Apple/Google/Facebook;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gained experience in ReactJS (Redux, MobX), ReactNative, PHP, MySQL, Docker, Chrome",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Extensions;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Deployed projects on AWS/Heroku;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Was involved in the hiring process developer positions, interviewed candidates.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "BOOKIE iGaming  Full-Stack Developer (  )",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implemented new features;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed strong skills in React JS, Backbone.js, Node.js, PHP;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Migrated the project from gulp + RequireJS to Webpack (ES6);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Acquired software design pattern knowledge;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gained eld relevant experience;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "On-job skills advancement for career growth;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Learned good programming practices from seasoned developers.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mapsoft  Junior Full-Stack Developer (  )",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implemented new features;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Managed bug xes;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gained experience in Symfony 2.8, ExtJS.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION Belarusian State University of Informatics and Radioelectronics  Bachelor's Degree (2017",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Engineering-Psychological Maintenance Of Information Technologies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MCB  Associate's Degree (2012  2017)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Information Technology Software",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SOFT SKILLS Team player",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Condent",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Getting things done",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Independent",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Passionate and enthusiastic",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CONTACTS linkedin:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "email:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "whatsapp:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Powered by",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

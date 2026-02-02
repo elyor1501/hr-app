@@ -1,0 +1,372 @@
+{
+  "file_name": "21.docx",
+  "total_blocks": 60,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 2.18,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "PROFILE\nIm from Saratov, Russian Federation. I was a lawyer with experience in\ncontract law. It has always been my desire to work in IT. Now I am looking\nfor an opportunity to change my eld of activity and nally come to what\nI wanted for a long time. Previously I studied the MS SQL by myself and\nwas an intern in writing requests. Now I am studying to be a web\ndeveloper, namely studying interaction of HTML, CSS and JavaScript.\nI am MASA program graduated in the eld of web development. As a\nresult of the course, I gained the skills necessary for Front-end\ndevelopment.\nANGELINA NISSIM\nI did my internship in SerVC, Herzlia, Israel. As part of the MASA program,\nFRONT END DEVELOPER\nI studied React framework, during the internship I was taught a new\nframework for me - Angular on which the project was written and with\nwhich I worked throughout the entire internship.\nCONTACT INFO\n + \nEXPERIENCE\n \n JAN 2022 - APR 2022 FRONT END DEVELOPER INTERN\nwww.linkedin.com/angelina- SERVC During the internship I did many tasks among which:\nnissim\nRedesigned all tables in the project in accordance\n \nwith the layout in Figma and thus improved the user\n Tel Aviv, Israel experience based on customer feedback.\nCreated a library of components such as inputs,\nselectors, icons to improve DX.\nEDUCATION\nWas responsible for rewriting the login page (both\nOctober 2021-December 2021 frontend and backend).\nMASA Web Development\nCource | Israel OCT 2021 - DEC 2021 STUDENT\nMASA During the cource I created projects that helped me\n improve my front-end development skills.\nMA In Jurisprudence\nFor example, this is a quiz game project and simple\nSaratov State Law Academy |\ncalculator.\nRussia\nThese and other projects created by me are attached\nto the portfolio.\n\nBA In Jurisprudence\nSaratov State Law Academy | APRIL 2021 SQL FREELANCE\nRussia FREELANCE Compilation of SQL queries\nEnsuring the operation of databases\nOCT 2020 - DEC 2020 LEGAL ADVISER\nLANGUAGES NORNICKEL Norilsk Nikel is the worlds largest producer of nickel\nand palladium.\nHebrew Created and edited over 200 contracts\nNegotiated with more than 10 counterparties,\nEnglish including government agencies\nUser of corporate database systems\nRussian\nPROFESSIONAL SKILLS\nHTML\nCSS\nJAVASCRIPT\nSQL\nANGULAR",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "PROFILE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Im from Saratov, Russian Federation. I was a lawyer with experience in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "contract law. It has always been my desire to work in IT. Now I am looking",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "for an opportunity to change my eld of activity and nally come to what",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I wanted for a long time. Previously I studied the MS SQL by myself and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "was an intern in writing requests. Now I am studying to be a web",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "developer, namely studying interaction of HTML, CSS and JavaScript.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I am MASA program graduated in the eld of web development. As a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "result of the course, I gained the skills necessary for Front-end",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ANGELINA NISSIM",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I did my internship in SerVC, Herzlia, Israel. As part of the MASA program,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FRONT END DEVELOPER",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I studied React framework, during the internship I was taught a new",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "framework for me - Angular on which the project was written and with",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "which I worked throughout the entire internship.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CONTACT INFO",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "+",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JAN 2022 - APR 2022 FRONT END DEVELOPER INTERN",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "www.linkedin.com/angelina- SERVC During the internship I did many tasks among which:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "nissim",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Redesigned all tables in the project in accordance",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "with the layout in Figma and thus improved the user",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel Aviv, Israel experience based on customer feedback.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created a library of components such as inputs,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "selectors, icons to improve DX.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Was responsible for rewriting the login page (both",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "October 2021-December 2021 frontend and backend).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MASA Web Development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Cource | Israel OCT 2021 - DEC 2021 STUDENT",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MASA During the cource I created projects that helped me",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "improve my front-end development skills.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MA In Jurisprudence",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "For example, this is a quiz game project and simple",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Saratov State Law Academy |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "calculator.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "These and other projects created by me are attached",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "to the portfolio.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "BA In Jurisprudence",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Saratov State Law Academy | APRIL 2021 SQL FREELANCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russia FREELANCE Compilation of SQL queries",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ensuring the operation of databases",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OCT 2020 - DEC 2020 LEGAL ADVISER",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LANGUAGES NORNICKEL Norilsk Nikel is the worlds largest producer of nickel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and palladium.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hebrew Created and edited over 200 contracts",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Negotiated with more than 10 counterparties,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English including government agencies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "User of corporate database systems",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFESSIONAL SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HTML",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JAVASCRIPT",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ANGULAR",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

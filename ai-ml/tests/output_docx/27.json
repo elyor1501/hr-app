@@ -1,0 +1,404 @@
+{
+  "file_name": "27.docx",
+  "total_blocks": 65,
+  "confidence": 0.85,
+  "time_taken": 0.04,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Golang Developer\nKarmiEl, Israel (Able to relocate)\n\n\nTelegram: \nGithub: entertainment-veks\nGENERAL\nIm a Golang Back-end developer who migrated from Android (Java/Kotlin) 7\nmonth ago. Got a half+ of a year of development web-apps near blockchain and\ndigital currency. Also have 2.5 years of experience in developing android-apps.\nAlso took a couple of courses from Yandex.Practicum. More details below \nSKILLS\nGolang:Go standard library, Gorilla, Go testing,Gogoc, Go database, Go vet + Go analyze\n(custom linters), Go Validation (ozzo/playground), FacebookGo inject, Loggers\nArchitecture:MVC, MVP, MVVM, SOLID, ACID, OOP, Goproject layout\nAndroid/General:Java Core, Kotlin Core, Hibernate,JPA, SQL, Firebase, JDBC, some Spring\nmodules, REST, Websocket, Migrate, Docker, Docker Compose, Makefiles, Cron, MySQL,\nPostgreSQL, SQLite, LiveData, Multithreading, Coroutines, Room, Dagger2, Koin, Hilt, NavUI, Rx\nbasic, Glide, Gson, Android design components, Android Jetpack, Espresso, JUnit etc..\nLanguage:Ukrainian, Russian - Native, English - UpperIntermediate, Hebrew - Beginner\nPROJECTS\nGolang:\nDemo Project Gophermart-web service for accumulativeloyalty system[still in progress]\nApplication X*-client for one of the digital currencyexchange likeBinance(in Company X*)\nApplication X*-client for one of the digital currencywallets storagelikeMetamask(in Company X*)\nAndroid:\nDemo Project \"News App\"- news app (June 2021)\nGoDog-app for training dogs (in LeverX)\nApplication X* -shop-app for the biggest Germanycustomer (in LeverX)\nConsulty -platform for expert consultations on alltopics (in Sk.WebStudio)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "WORK EXPERIENCE\nGolang Developer - Company X* (Kyiv, remote) - product/outsourceIT company\n Casual developer. Has finished a few projects.\n Generally was making clients for services which related with blockchain\nand digital currency like Binance, Metamask etc.\n Got knowledge of how blockchain and digital currency works, also got knowledge about\nmicroservice architecture and instruments like Kaa or websockets\n from November 2021 till now\nAndroid Developer - LeverX (Kyiv office, local) -outsource IT company\n Participated in few projects, mostly casual client-side android front-end apps.\n Was leading a small part of the team (2-5 developers).\n from March 2021 till November 2021\nAndroid Developer - Sk.WebStudio (International, remote) - outsource IT company\n Casual developer. First experience in an international team.\n from July 2020 till March 2021\nEDUCATION\nCouple of courses Go web inYandex.Practicum-asbeta-tester\n A Tour of Go\n Go Web\n Go Web Advanced\n Multithreading in Go\nJava Back-end inMate Academy-IT academy\n Java Core\n JDBC + Hibernate\n Java Web\n Spring\n Multithreading\nertificateAndroid-development onCoursera-quickstart in Android-development.\nCourse from MIPT.\n Android components and interface elements\n Multithreading and networking in Android\n Android Application Architecture\nNotes:\nApplication X - cannot tell the name of the application cause of NDA\nCompany X - cannot tell the name of the company cause of NDA",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Golang Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "KarmiEl, Israel (Able to relocate)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Telegram:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Github: entertainment-veks",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "GENERAL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Im a Golang Back-end developer who migrated from Android (Java/Kotlin) 7",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "month ago. Got a half+ of a year of development web-apps near blockchain and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "digital currency. Also have 2.5 years of experience in developing android-apps.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Also took a couple of courses from Yandex.Practicum. More details below",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Golang:Go standard library, Gorilla, Go testing,Gogoc, Go database, Go vet + Go analyze",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(custom linters), Go Validation (ozzo/playground), FacebookGo inject, Loggers",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Architecture:MVC, MVP, MVVM, SOLID, ACID, OOP, Goproject layout",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android/General:Java Core, Kotlin Core, Hibernate,JPA, SQL, Firebase, JDBC, some Spring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "modules, REST, Websocket, Migrate, Docker, Docker Compose, Makefiles, Cron, MySQL,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PostgreSQL, SQLite, LiveData, Multithreading, Coroutines, Room, Dagger2, Koin, Hilt, NavUI, Rx",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "basic, Glide, Gson, Android design components, Android Jetpack, Espresso, JUnit etc..",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Language:Ukrainian, Russian - Native, English - UpperIntermediate, Hebrew - Beginner",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROJECTS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Golang:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Demo Project Gophermart-web service for accumulativeloyalty system[still in progress]",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Application X*-client for one of the digital currencyexchange likeBinance(in Company X*)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Application X*-client for one of the digital currencywallets storagelikeMetamask(in Company X*)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Demo Project \"News App\"- news app (June 2021)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "GoDog-app for training dogs (in LeverX)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Application X* -shop-app for the biggest Germanycustomer (in LeverX)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Consulty -platform for expert consultations on alltopics (in Sk.WebStudio)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WORK EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Golang Developer - Company X* (Kyiv, remote) - product/outsourceIT company",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Casual developer. Has finished a few projects.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Generally was making clients for services which related with blockchain",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and digital currency like Binance, Metamask etc.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Got knowledge of how blockchain and digital currency works, also got knowledge about",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "microservice architecture and instruments like Kaa or websockets",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "from November 2021 till now",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android Developer - LeverX (Kyiv office, local) -outsource IT company",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Participated in few projects, mostly casual client-side android front-end apps.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Was leading a small part of the team (2-5 developers).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "from March 2021 till November 2021",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android Developer - Sk.WebStudio (International, remote) - outsource IT company",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Casual developer. First experience in an international team.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "from July 2020 till March 2021",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Couple of courses Go web inYandex.Practicum-asbeta-tester",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "A Tour of Go",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Go Web",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Go Web Advanced",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Multithreading in Go",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java Back-end inMate Academy-IT academy",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java Core",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JDBC + Hibernate",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java Web",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Spring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Multithreading",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ertificateAndroid-development onCoursera-quickstart in Android-development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Course from MIPT.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android components and interface elements",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Multithreading and networking in Android",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android Application Architecture",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Notes:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Application X - cannot tell the name of the application cause of NDA",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Company X - cannot tell the name of the company cause of NDA",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

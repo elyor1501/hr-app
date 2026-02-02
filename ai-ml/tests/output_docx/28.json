@@ -1,0 +1,300 @@
+{
+  "file_name": "28.docx",
+  "total_blocks": 48,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "FULL STACK DEVELOPER WITH 7+ YEARS OF EXPERIENCE\n70% FRONT END: TypeScript / React / Redux\n30% BACK END: JavaScript / NodeJS / MongoDB\nPhone:  E-mail: \nLinkedIn:  Residence: Netanya, Israel\nBirthday:  Languages: Hebrew, English, Russian\nPROFESSIONAL SKILLS:\nProgramming languages: JavaScript, TypeScript, JAVA, PHP, C++\nWeb: HTML5, CSS3, Flex, Grid, CSS Modules, Node JS, REST API, JQuery, Bootstrap, Material Design, React,\nReact Icon, React Day Picker, React Carousel, React Router, Redux, Redux Thunk, Redux DevTools, Styled\ncomponent, Context API, Axios, Fetch, Lodash, Nodemon, Google Map API, Google Geocoding API\nIDE/Tools: Eclipse, IntelliJ IDEA, WebStorm, VS Code, GitHub, Heroku, Firebase, Postman, MongoDB Atlas\nTechnologies: Express, Spring, Spring Boot, Multithreading, Maven, Lombok, Swagger, Hibernate\nDatabases: NoSQL (MongoDB, Firebase), SQL (MySQL) OS: Mac OS, Windows, Linux\nAdditional skills: Graphic & 3D design (Photoshop, Illustrator, CorelDraw, 3Ds Max)\nPROFESSIONAL EXPERIENCE:\n2021 - current time: Full Stack Developer at Optisor LTD (Rehovot, Israel)\nLatest project: Corporate web application for a creative event agency.\nMy tasks: Thinking over and developing the web application interface, integrating the approved design\nlayout, creating and filling the site pages, creating components, galleries, adding a registration and\nauthorization system for potential customers, administrators, setting up a content management system,\ncreating and optimizing the database.\nUsed: TypeScript, React, Redux, MUI, Axios, JavaScript, NodeJS, Express, Nodemon, Google MAP API\n2019 - 2021: Front End Developer at VClouds (Moscow, Russia)\nLatest project: Development and maintenance of the corporate website of the company VClouds.\nMy tasks: Layout and organization of the functionality of the web application components based on the\napproved interface and design layout. Implementation of the order management system, registration of new\ncustomers, content administration.\nUsed: JavaScript, React, Redux, Bootstrap, HTML, CSS, Firebase\n2014 - 2019: Front End Developer at Insight (Moscow, Russia)\nProject: Web application for automating the work of the training center.\nMy tasks: Creating components for displaying current training courses with the ability to apply various filters\nand sorting options, creating an authorization system for various user groups, organizing routing based on\nthe type of current authorized user, setting up statistics components with a visual display of data for the\ninternal needs of the company.\nUsed: HTML, CSS, JavaScript, PHP, Laravel, Bootstrap, MySQL\nProject: Online store for a supermarket chain.\nMy tasks: Creating an order management system through an online service, creating a registration and\nauthorization system, developing an order administration system, writing site pages and filling content,\ncreating a database and a site management system.\nUsed: HTML, CSS, JavaScript, PHP, MySQL\nMY EDUCATION:\n2005 - 2009: MSU, Faculty of Computational Mathematics and Cybernetics, Department of System\nProgramming, Bachelor degree\n2020 - 2021: Tel-Ran Educational Center, Israel. Special program for adaptation of software developer\naccording to Israel IT technologies\nRecommendations are available upon request",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "FULL STACK DEVELOPER WITH 7+ YEARS OF EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "70% FRONT END: TypeScript / React / Redux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "30% BACK END: JavaScript / NodeJS / MongoDB",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:  E-mail:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LinkedIn:  Residence: Netanya, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Birthday:  Languages: Hebrew, English, Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFESSIONAL SKILLS:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: JavaScript, TypeScript, JAVA, PHP, C++",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web: HTML5, CSS3, Flex, Grid, CSS Modules, Node JS, REST API, JQuery, Bootstrap, Material Design, React,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "React Icon, React Day Picker, React Carousel, React Router, Redux, Redux Thunk, Redux DevTools, Styled",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "component, Context API, Axios, Fetch, Lodash, Nodemon, Google Map API, Google Geocoding API",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IDE/Tools: Eclipse, IntelliJ IDEA, WebStorm, VS Code, GitHub, Heroku, Firebase, Postman, MongoDB Atlas",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Express, Spring, Spring Boot, Multithreading, Maven, Lombok, Swagger, Hibernate",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: NoSQL (MongoDB, Firebase), SQL (MySQL) OS: Mac OS, Windows, Linux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Additional skills: Graphic & 3D design (Photoshop, Illustrator, CorelDraw, 3Ds Max)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFESSIONAL EXPERIENCE:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021 - current time: Full Stack Developer at Optisor LTD (Rehovot, Israel)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Latest project: Corporate web application for a creative event agency.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "My tasks: Thinking over and developing the web application interface, integrating the approved design",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "layout, creating and filling the site pages, creating components, galleries, adding a registration and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "authorization system for potential customers, administrators, setting up a content management system,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "creating and optimizing the database.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used: TypeScript, React, Redux, MUI, Axios, JavaScript, NodeJS, Express, Nodemon, Google MAP API",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019 - 2021: Front End Developer at VClouds (Moscow, Russia)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Latest project: Development and maintenance of the corporate website of the company VClouds.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "My tasks: Layout and organization of the functionality of the web application components based on the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "approved interface and design layout. Implementation of the order management system, registration of new",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "customers, content administration.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used: JavaScript, React, Redux, Bootstrap, HTML, CSS, Firebase",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2014 - 2019: Front End Developer at Insight (Moscow, Russia)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project: Web application for automating the work of the training center.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "My tasks: Creating components for displaying current training courses with the ability to apply various filters",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and sorting options, creating an authorization system for various user groups, organizing routing based on",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "the type of current authorized user, setting up statistics components with a visual display of data for the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "internal needs of the company.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used: HTML, CSS, JavaScript, PHP, Laravel, Bootstrap, MySQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project: Online store for a supermarket chain.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "My tasks: Creating an order management system through an online service, creating a registration and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "authorization system, developing an order administration system, writing site pages and filling content,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "creating a database and a site management system.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used: HTML, CSS, JavaScript, PHP, MySQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MY EDUCATION:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2005 - 2009: MSU, Faculty of Computational Mathematics and Cybernetics, Department of System",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming, Bachelor degree",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020 - 2021: Tel-Ran Educational Center, Israel. Special program for adaptation of software developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "according to Israel IT technologies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations are available upon request",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

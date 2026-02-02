@@ -1,0 +1,276 @@
+{
+  "file_name": "25.docx",
+  "total_blocks": 44,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": ", Senior .NET Engineer,   \"\n,  , 36 \" , \nSkills  C#, .NET Core, Web API, GraphQL, ASP.NET MVC, TypeScript, Angular 4+, RxJS,\nNgRx, NGXS, Bootstrap, Material, Node.js, Expres, HTML, CSS, MS SQL, EF Core,\nDapper, Redis, MongoDB, Database design, T-SQL, LINQ, MS Dynamics CRM;\n Microsoft Azure: AppService, Functions, Service Bus, Redis, Queues, Key-\nVault, Application Insights; Azure DevOps; AWS; DigitalOcean, Heroku;\n Auth0, PowerBI, SSRS, Git;\nWork experience 04/2022  07/2022 (project employment)\nFull Stack Engineer,  , Jerusalem, Israel\nDesigned and developed the educational application for the teachers and students using .NET Core, Angular\n13, and MongoDB.\n08/2021  07/2022 (project employment)\n.NET Team/Tech Lead, Management Consultant, A-TeamGlobal, Zaporizhya, Ukraine\nWorking as a team lead on a backend of mobile project related to European political parties, set up an working\nenvironment and proper SDLC, providing management and delivery consultations to company management,\nclosely working with customers with working scope negotiations, considering human resources, participating\nin interviews.\n04/2020  08/2021\n.NET Team Lead, WebLegends Kyiv, Ukraine\nLeading software development of two projects simultaneously, making a decision about the technical stack\nand priorities, allocating human resources, communicating with stakeholders.\n10/2019  03/2020 (project employment)\nBootcamp Manager/.NET Teacher, Tbilisi, Georgia\nLecturing programming classes for several groups of students, managing another teaching members, creating\nworkflow for final students project including creating project from scratch, setting up all the development and\ntask tracking environments, supervising of creating specifications and prototypes for project, leading 15\ntrainee developers finishing MVP and making demo.\n02/2011  10/2019\n.NET Developer, various companies, Ukraine\nWeb development using ASP.NET MVC, Web API, JavaScript.\nEducation Bachelor's degree 01/2022\nMykolaiv Building College Ethereum Blockchain Developer Bootcamp With\nSoftware Engineering Solidity  Udemy\n09/2008 - 06//2021\nFlashloans  EatTheBlocks\n01/2014\nASP.NET MVC Advanced  CyberBionicSystematics\n06/2013\nC# for Professionals  CyberBionicSystematics\nAbout Have perfect communication skills, decent experience in mentorship and education.\nIm amateur runner, have completed certificate of first aid courses, good sense of humor.\nHebrew  \\ , English  professional proficiency, Ukrainian/Russian  native.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": ", Senior .NET Engineer,   \"",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ",  , 36 \" ,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills  C#, .NET Core, Web API, GraphQL, ASP.NET MVC, TypeScript, Angular 4+, RxJS,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "NgRx, NGXS, Bootstrap, Material, Node.js, Expres, HTML, CSS, MS SQL, EF Core,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Dapper, Redis, MongoDB, Database design, T-SQL, LINQ, MS Dynamics CRM;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Microsoft Azure: AppService, Functions, Service Bus, Redis, Queues, Key-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Vault, Application Insights; Azure DevOps; AWS; DigitalOcean, Heroku;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Auth0, PowerBI, SSRS, Git;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work experience 04/2022  07/2022 (project employment)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full Stack Engineer,  , Jerusalem, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Designed and developed the educational application for the teachers and students using .NET Core, Angular",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "13, and MongoDB.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "08/2021  07/2022 (project employment)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ".NET Team/Tech Lead, Management Consultant, A-TeamGlobal, Zaporizhya, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Working as a team lead on a backend of mobile project related to European political parties, set up an working",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "environment and proper SDLC, providing management and delivery consultations to company management,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "closely working with customers with working scope negotiations, considering human resources, participating",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "in interviews.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "04/2020  08/2021",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ".NET Team Lead, WebLegends Kyiv, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Leading software development of two projects simultaneously, making a decision about the technical stack",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and priorities, allocating human resources, communicating with stakeholders.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "10/2019  03/2020 (project employment)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bootcamp Manager/.NET Teacher, Tbilisi, Georgia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Lecturing programming classes for several groups of students, managing another teaching members, creating",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "workflow for final students project including creating project from scratch, setting up all the development and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "task tracking environments, supervising of creating specifications and prototypes for project, leading 15",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "trainee developers finishing MVP and making demo.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "02/2011  10/2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ".NET Developer, various companies, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web development using ASP.NET MVC, Web API, JavaScript.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education Bachelor's degree 01/2022",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mykolaiv Building College Ethereum Blockchain Developer Bootcamp With",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Engineering Solidity  Udemy",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "09/2008 - 06//2021",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Flashloans  EatTheBlocks",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "01/2014",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ASP.NET MVC Advanced  CyberBionicSystematics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "06/2013",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "C# for Professionals  CyberBionicSystematics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "About Have perfect communication skills, decent experience in mentorship and education.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Im amateur runner, have completed certificate of first aid courses, good sense of humor.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hebrew  \\ , English  professional proficiency, Ukrainian/Russian  native.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

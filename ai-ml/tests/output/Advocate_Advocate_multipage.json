@@ -1,0 +1,29 @@
+{
+  "category": "Advocate",
+  "file_name": "Advocate_multipage.pdf",
+  "total_pages": 2,
+  "confidence": 0.77,
+  "time_taken": 0.73,
+  "memory_mb": 3.32,
+  "pages": [
+    {
+      "page_number": 1,
+      "method": "structured",
+      "confidence": 0.77,
+      "text": {
+        "text": "ADV. RAHUL SHARMA\nSenior Advocate / Legal Consultant\nNew Delhi, India | rahul.sharma@email.com | +91-9XXXXXXXXX\nPROFESSIONAL SUMMARY\nAdvocate with 11+ years of experience in civil, criminal, and commercial litigation. Extensive practice before\nDistrict Courts, High Courts, and Tribunals. Known for strong legal drafting, courtroom advocacy, and client\nadvisory skills across diverse legal matters.\nAREAS OF PRACTICE\n(cid:127) Civil & Commercial Litigation\n(cid:127) Criminal Law & Procedure\n(cid:127) Corporate & Contract Law\n(cid:127) Arbitration & Dispute Resolution\n(cid:127) Legal Drafting & Opinions\nPROFESSIONAL EXPERIENCE\nSenior Advocate – Sharma & Associates (2017 – Present)\n(cid:127) Represent clients in complex litigation matters before District Courts and High Courts.\n(cid:127) Draft pleadings, agreements, contracts, and legal opinions for corporate and individual clients.\n(cid:127) Successfully argued over 120 matters with a success rate exceeding 75%.\n(cid:127) Advised companies on regulatory compliance and dispute resolution.",
+        "tables": []
+      }
+    },
+    {
+      "page_number": 2,
+      "method": "structured",
+      "confidence": 0.76,
+      "text": {
+        "text": "Legal Associate – Verma Legal Chambers (2012 – 2017)\n(cid:127) Assisted senior counsels in litigation strategy, drafting, and research.\n(cid:127) Appeared independently for procedural hearings and tribunal matters.\n(cid:127) Conducted legal research and prepared case briefs for senior advocates.\n(cid:127) Managed client communication and case documentation.\nKEY ACHIEVEMENTS\n(cid:127) Successfully handled high-value commercial disputes exceeding INR 50 Crores.\n(cid:127) Recognized for precision in legal drafting and argumentation.\nEDUCATION\n(cid:127) Bachelor of Laws (LL.B) – University of Delhi\n(cid:127) Bachelor of Arts (B.A) – University of Delhi\nBAR ENROLLMENT\n(cid:127) Bar Council of Delhi\nADDITIONAL INFORMATION\n(cid:127) Strong advocacy and negotiation skills\n(cid:127) Excellent legal research and documentation abilities\n(cid:127) Comfortable managing multiple cases under pressure",
+        "tables": []
+      }
+    }
+  ],
+  "error": null
+}

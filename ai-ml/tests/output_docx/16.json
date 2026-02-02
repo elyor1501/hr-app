@@ -1,0 +1,258 @@
+{
+  "file_name": "16.docx",
+  "total_blocks": 41,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Senior Software Engineer (Java/Kotlin Backend Developer)\nIsrael, Beer Sheva\nContacts\nEducation\nTelegram \nWhatsApp \nNational Research University Moscow\nPower Engineering Institute\n\n\nSep 2006 - June 2010\nBachelor's degree, Computer Science\nCell \nSep 2011 - June 2013\nExperience\nMaster's degree, Engineering and Technology\nin Computer Science\nRaiffeisen Bank Russia Jan 2022 - June 2022\nSenior Software Developer\nSkills & Expertise\n system design of a new KYC platform\n collecting business requirements  Java\n development from scratch (Java, Kotlin)  Spring Framework\n SQL, Postgres, Oracle\nDeutsche Bank Aug 2018 - Dec 2021  Kafka, Cassandra\nSoftware Engineer / Senior Software Engineer  Git, Docker, TeamCity, GitLab\n Agile, Scrum, SAFE methodologies\n international teams in risk management  Basic JavaScript, HTML, CSS\n instances in different locations across the globe  Kotlin, Scala, Python\n Java (mainly), Python, Scala\n development of new features Languages\n SL3 support\nRussian native, English advanced\nQIWI Dec 2015 - Aug 2018\nSoftware Developer / Senior Software Developer\n new features for payment processing engine\n refactoring of legacy systems\n mentor for interns\nI-Teco May 2013 - Jan 2015\nJunior Java Developer / Java Developer\n outsource projects\n Java, GWT, HTML, CSS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Senior Software Engineer (Java/Kotlin Backend Developer)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Israel, Beer Sheva",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Contacts",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Telegram",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WhatsApp",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "National Research University Moscow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Power Engineering Institute",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sep 2006 - June 2010",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bachelor's degree, Computer Science",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Cell",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sep 2011 - June 2013",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Master's degree, Engineering and Technology",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "in Computer Science",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Raiffeisen Bank Russia Jan 2022 - June 2022",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior Software Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills & Expertise",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "system design of a new KYC platform",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "collecting business requirements  Java",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development from scratch (Java, Kotlin)  Spring Framework",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SQL, Postgres, Oracle",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Deutsche Bank Aug 2018 - Dec 2021  Kafka, Cassandra",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Engineer / Senior Software Engineer  Git, Docker, TeamCity, GitLab",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Agile, Scrum, SAFE methodologies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "international teams in risk management  Basic JavaScript, HTML, CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "instances in different locations across the globe  Kotlin, Scala, Python",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java (mainly), Python, Scala",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development of new features Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SL3 support",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian native, English advanced",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "QIWI Dec 2015 - Aug 2018",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Developer / Senior Software Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "new features for payment processing engine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "refactoring of legacy systems",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "mentor for interns",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I-Teco May 2013 - Jan 2015",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Junior Java Developer / Java Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "outsource projects",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java, GWT, HTML, CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

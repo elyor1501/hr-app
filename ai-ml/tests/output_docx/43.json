@@ -1,0 +1,336 @@
+{
+  "file_name": "43.docx",
+  "total_blocks": 54,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Backend Developer\nLocation: Israel\n  GitHub\n  LinkedIn\nExperience Skills\nLanguages:\nGolang Developer\nGolang, Java, Python,\nSber Technologies\nC++\nNov 2021 - Present\nTechnologies:\nDeveloped microservice backend in Golang for a new project  an educational platform that\nPostgreSQL,\noffers user-created scenarios and a sandbox virtual environment each time you start a lesson\nMongoDB, Redis,\nMy responsibilities mostly included writing APIs (REST, WebSocket, gRPC) and developing\nKafka\nbusiness features\nOther:\nDetected and fixed multiple non-obvious bugs regarding virtual environment sessions timeouts,\nREST, gRPC,\nincreasing overall product stability\nMicroservices,\nMachine Learning Engineer Intern Prometheus,\nLinux/Bash, Docker,\nRingCentral\nSQL\nMay 2019 - Oct 2019\nWorked closely with Data Scientists, building data transformation pipelines, delivering ML Education\nmodels to production and building REST APIs for model predictions, all using Python\nProjects I participated in were a recommendation system and a fraud detection service Applied Mathematics\nand Informatics\nOther projects Saint-Petersburg Academic\nUniversity\nFerretDB Aug 2019 - July 2023\nI made some contributions to an open-source project FerretDB (>5k stars on GitHub), an open-\nAlgorithmic Biology\nsource alternative to MongoDB written in Golang that uses Postgres at its core for document\nstorage. Working on this project made me learn a lot about subtleties of MongoDB Bioinformatics Institute\nAug 2020 - June 2021\nApache Ranger and OpenSearch Integration\nThe project was a part of a summer school event/hackathon held by Samsung in Sept 2021. We\nAlso\nwere offered a problem of integrating OpenSearch, a for of ElasticSearch, with an authentication\nsystem Apache Ranger. Our team was able to propose a solution, getting 2nd place in the Languages: English (C1),\nhackathon out of 20 participants Russian (native)\nGood at Linux\nImproving GraphBin2 Metagenomic Data Binning Algorithm\nThis was a course project in my university. The goal of the project was research, performance\nevaluation and possible improvement of a novel algorithm for genomic data classification\nGraphBin2\nGeorgy Ginzburg 1",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Backend Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Location: Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "GitHub",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LinkedIn",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience Skills",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Golang Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Golang, Java, Python,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sber Technologies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "C++",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Nov 2021 - Present",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed microservice backend in Golang for a new project  an educational platform that",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PostgreSQL,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "offers user-created scenarios and a sandbox virtual environment each time you start a lesson",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MongoDB, Redis,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "My responsibilities mostly included writing APIs (REST, WebSocket, gRPC) and developing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Kafka",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "business features",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Other:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Detected and fixed multiple non-obvious bugs regarding virtual environment sessions timeouts,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "REST, gRPC,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "increasing overall product stability",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Microservices,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Machine Learning Engineer Intern Prometheus,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linux/Bash, Docker,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "RingCentral",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "May 2019 - Oct 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Worked closely with Data Scientists, building data transformation pipelines, delivering ML Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "models to production and building REST APIs for model predictions, all using Python",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Projects I participated in were a recommendation system and a fraud detection service Applied Mathematics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and Informatics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Other projects Saint-Petersburg Academic",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FerretDB Aug 2019 - July 2023",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I made some contributions to an open-source project FerretDB (>5k stars on GitHub), an open-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Algorithmic Biology",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "source alternative to MongoDB written in Golang that uses Postgres at its core for document",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "storage. Working on this project made me learn a lot about subtleties of MongoDB Bioinformatics Institute",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Aug 2020 - June 2021",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Apache Ranger and OpenSearch Integration",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The project was a part of a summer school event/hackathon held by Samsung in Sept 2021. We",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Also",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "were offered a problem of integrating OpenSearch, a for of ElasticSearch, with an authentication",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "system Apache Ranger. Our team was able to propose a solution, getting 2nd place in the Languages: English (C1),",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "hackathon out of 20 participants Russian (native)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Good at Linux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Improving GraphBin2 Metagenomic Data Binning Algorithm",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "This was a course project in my university. The goal of the project was research, performance",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "evaluation and possible improvement of a novel algorithm for genomic data classification",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "GraphBin2",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Georgy Ginzburg 1",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

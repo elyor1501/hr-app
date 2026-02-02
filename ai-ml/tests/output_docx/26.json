@@ -1,0 +1,288 @@
+{
+  "file_name": "26.docx",
+  "total_blocks": 46,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Tel Aviv\n(cid:72) \n(cid:66) \nSenior Software Developer (cid:205)\nagrml.github.io/me/\nFor more than 5 years I develop software with an urge to help people\nsolve their problems. I develop product rather than close issues.\nProactivity, empathy, focusing on the product result, end-user\nexperience, and runtime stability  these are the qualities I value most\nboth in colleagues and myself. Do we match?\nSkills summary\nPro-level Backend development [Python/Django/asyncio/PyTest, PostgreSQL, Docker]\nMid-level Kubernets, Elastic Search. Mentoring. Team leading\nLanguages English (fluent), Russian (mothertongue)\nProfessional Experience\n20212021 BestDoctor, Senior backend dev in the medical insurance sphere.\nPython/Django/PyTest, Docker, zero-code intergrations\n(cid:123) Implemented multiple features in a huge Django Admin with a bit of JS\n(cid:123) Solved a problem by a paid service instead of a month of coding from scratch\n20202021 Domclick (Sberbank), Tech lead and backend dev in a new buildings storefront.\nPython/asyncio/FastAPI/PyTest, Docker, Kubernets, PostgreSQL, Elastic\n(cid:123) Improved stability, performance, test-coverage and architecture of several micro-services\n(cid:123) Introduced SRE practices (monitorings, safe migrations) and processes on keeping them go\n(cid:123) Improved work processes, e.g. made scrum work as much as it was possible.\n(cid:123) Closely worked with the product manager (designed principal implementations; helped to fit features to sprints)\n20182020 Yandex, Backend development in the intranet department.\nPython/Django/Celery/PyTest, Docker, PostgreSQL/YQL\n(cid:123) Worked with more than 10 projects, mainly with the internal hiring system.\n(cid:123) Increased Yandex employee hiring rate and decreased leaving rate by developing reference giving system and\nemployee rotation system\n(cid:123) Launched a negotiation service. Designed a state machine for creating a new negotiation.\n(cid:123) LeadedmigrationtoanewPaaS.Improved5affectedlibs/tools,migrated3projectsmyself,managedmigration\nof 10 other projects.\n(cid:123) Mentored in Yandex Backend Development school\n20162017 ARCCN, RnD in the field of Software-Defined Networking.\n(cid:123) Developed of a link state monitoring system (C++, Python. BFD, OpenFlow protocols)\n(cid:123) Designed a rule caching system for OpenFlow software switches (C, Intel DPDK. P4 protocol)\nEducation\n20142018 Bachelor of Computer Science, Moscow State University.\nDepartment of Computational Mathematics and Cybernetics\nPublications and teaching\n2021 \"Developing backend using Django,\" an online course author and lecturer: \n2021 \"The way I develop software,\" an article on Medium [RU]: \n2017 \"UsinghashfunctionstoaccelerateperformanceofOpenFlowswitches,\"AgranovskiyM.,ShalimovA.//Program\nsystems and toolware, MSU, 2017",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Tel Aviv",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:72)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:66)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior Software Developer (cid:205)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "agrml.github.io/me/",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "For more than 5 years I develop software with an urge to help people",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "solve their problems. I develop product rather than close issues.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Proactivity, empathy, focusing on the product result, end-user",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "experience, and runtime stability  these are the qualities I value most",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "both in colleagues and myself. Do we match?",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills summary",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Pro-level Backend development [Python/Django/asyncio/PyTest, PostgreSQL, Docker]",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mid-level Kubernets, Elastic Search. Mentoring. Team leading",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages English (fluent), Russian (mothertongue)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "20212021 BestDoctor, Senior backend dev in the medical insurance sphere.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python/Django/PyTest, Docker, zero-code intergrations",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Implemented multiple features in a huge Django Admin with a bit of JS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Solved a problem by a paid service instead of a month of coding from scratch",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "20202021 Domclick (Sberbank), Tech lead and backend dev in a new buildings storefront.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python/asyncio/FastAPI/PyTest, Docker, Kubernets, PostgreSQL, Elastic",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Improved stability, performance, test-coverage and architecture of several micro-services",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Introduced SRE practices (monitorings, safe migrations) and processes on keeping them go",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Improved work processes, e.g. made scrum work as much as it was possible.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Closely worked with the product manager (designed principal implementations; helped to fit features to sprints)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "20182020 Yandex, Backend development in the intranet department.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python/Django/Celery/PyTest, Docker, PostgreSQL/YQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Worked with more than 10 projects, mainly with the internal hiring system.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Increased Yandex employee hiring rate and decreased leaving rate by developing reference giving system and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "employee rotation system",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Launched a negotiation service. Designed a state machine for creating a new negotiation.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) LeadedmigrationtoanewPaaS.Improved5affectedlibs/tools,migrated3projectsmyself,managedmigration",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "of 10 other projects.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Mentored in Yandex Backend Development school",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "20162017 ARCCN, RnD in the field of Software-Defined Networking.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Developed of a link state monitoring system (C++, Python. BFD, OpenFlow protocols)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(cid:123) Designed a rule caching system for OpenFlow software switches (C, Intel DPDK. P4 protocol)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "20142018 Bachelor of Computer Science, Moscow State University.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Department of Computational Mathematics and Cybernetics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Publications and teaching",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021 \"Developing backend using Django,\" an online course author and lecturer:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021 \"The way I develop software,\" an article on Medium [RU]:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017 \"UsinghashfunctionstoaccelerateperformanceofOpenFlowswitches,\"AgranovskiyM.,ShalimovA.//Program",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "systems and toolware, MSU, 2017",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

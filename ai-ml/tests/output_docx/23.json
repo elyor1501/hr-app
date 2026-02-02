@@ -1,0 +1,380 @@
+{
+  "file_name": "23.docx",
+  "total_blocks": 61,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Israel, Rishon LeTsiyon\nSoftware Developer / Linux Kernel Developer / Database developer\nContacts:\n\nL inkedIn\nPhone/WhatsApp: \nSkills:\nLinux, Linux kernel development, POSIX, TCP/IP, IPv6, GTK, ProtoBuf, C/C++, Java, Go,\nPerl, Python, JavaScript/jQuery, PHP, Ruby, D lang, bash/csh/ksh scripting, FreeBSD\nadministration, SQLite, MySQL, PostgreSQL, PlPgSQL, KVM, Docker, Ant, Autotools, GNU\nmake, Cmake, Git, Subversion, Mercurial, Redmine, JIRA, Jenkins\nLanguages:\nEnglish  Intermediate\nRussian  Native\nHebrew  Learning\nEmployment History:\nLinux Kernel Developer / Senior Linux Kernel Developer\n4/2016  5/2022, LLC Confident/SoftProject\n Design, development and maintaining of the filesystem access control system based\non LSM (C, Linux kernel: LSM, VFS, scheduler).\n Development of the external ports control management subsystem (C++, udev).\n Partial development of the building/deploying infrastructure for the projects.\nSoftware Developer\n5/2012  10/2014, Motorola Solutions\n Development of the inner company telecom products and tools (C/C++, IDL,\nethereal/wireshark dissection API).\n Source control management and automation (Clearcase, bash, Solaris ksh, Active\nPerl).",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Freelance Software Developer\n8/2011  4/2012, customer  St. Petersburg Psychology and Acmeology Private University\n Full cycle development of the crossplatform psychology testing software (GTK, librsvg,\nD language).\nDatabase Developer\n9/2010  12/2011, LLC ProxyCentre\n Redesign and rework the legacy DBMS to support the first stage of the APEC Russia\n2012 event (PostgreSQL).\n Development of the DB ordinary stored procedures and procedures/libraries to\nintercommunicate to other APEC infrastructure units (plPgSQL/plRuby/libpq).\nSoftware Engineer / Senior Software Engineer\n8/2008  12/2009, CJSC NTC RIF\n Embedded systems programming (C, QNX).\n Development of realtime analog signal processing software.\n Application development for Windows platform (Visual C/C++).\n Project management, software architecture and development of the computer control\nsystem for the mobile diesel power plant.\nSoftware Engineer\n10/2005  7/2008, CJSC NPP Systema\n Software development for Windows and Linux platforms (C/C++, Java).\n Partial development and testing of the military survivability expert system for a ship.\n Partial development of the weapons accounting and management software.\n OSS systems and technologies integration (Linux, FreeBSD, PostgreSQL).\nWeb developer / System Administrator\n2/2004  5/2005, LLC BlackCat\n Development of the content management system (Apache, PHP, MySQL).\n Development and support of the accounting system of payments (Perl, MySQL).\n Database administration.\n Local server administration (FreeBSD).\nEducation:\n, St. Petersburg State Technological Institute\n, St. Petersburg Electrotechnical University",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Israel, Rishon LeTsiyon",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Developer / Linux Kernel Developer / Database developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Contacts:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "L inkedIn",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone/WhatsApp:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linux, Linux kernel development, POSIX, TCP/IP, IPv6, GTK, ProtoBuf, C/C++, Java, Go,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Perl, Python, JavaScript/jQuery, PHP, Ruby, D lang, bash/csh/ksh scripting, FreeBSD",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "administration, SQLite, MySQL, PostgreSQL, PlPgSQL, KVM, Docker, Ant, Autotools, GNU",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "make, Cmake, Git, Subversion, Mercurial, Redmine, JIRA, Jenkins",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English  Intermediate",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian  Native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hebrew  Learning",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Employment History:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linux Kernel Developer / Senior Linux Kernel Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "4/2016  5/2022, LLC Confident/SoftProject",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Design, development and maintaining of the filesystem access control system based",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "on LSM (C, Linux kernel: LSM, VFS, scheduler).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of the external ports control management subsystem (C++, udev).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Partial development of the building/deploying infrastructure for the projects.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "5/2012  10/2014, Motorola Solutions",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of the inner company telecom products and tools (C/C++, IDL,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ethereal/wireshark dissection API).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Source control management and automation (Clearcase, bash, Solaris ksh, Active",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Perl).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Freelance Software Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "8/2011  4/2012, customer  St. Petersburg Psychology and Acmeology Private University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full cycle development of the crossplatform psychology testing software (GTK, librsvg,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "D language).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Database Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "9/2010  12/2011, LLC ProxyCentre",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Redesign and rework the legacy DBMS to support the first stage of the APEC Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2012 event (PostgreSQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of the DB ordinary stored procedures and procedures/libraries to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "intercommunicate to other APEC infrastructure units (plPgSQL/plRuby/libpq).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Engineer / Senior Software Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "8/2008  12/2009, CJSC NTC RIF",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Embedded systems programming (C, QNX).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of realtime analog signal processing software.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Application development for Windows platform (Visual C/C++).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project management, software architecture and development of the computer control",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "system for the mobile diesel power plant.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "10/2005  7/2008, CJSC NPP Systema",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software development for Windows and Linux platforms (C/C++, Java).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Partial development and testing of the military survivability expert system for a ship.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Partial development of the weapons accounting and management software.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OSS systems and technologies integration (Linux, FreeBSD, PostgreSQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web developer / System Administrator",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2/2004  5/2005, LLC BlackCat",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of the content management system (Apache, PHP, MySQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development and support of the accounting system of payments (Perl, MySQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Database administration.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Local server administration (FreeBSD).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ", St. Petersburg State Technological Institute",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ", St. Petersburg Electrotechnical University",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

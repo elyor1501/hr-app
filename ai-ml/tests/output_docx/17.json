@@ -1,0 +1,246 @@
+{
+  "file_name": "17.docx",
+  "total_blocks": 39,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "|  | LinkedIn-profile | Israel, Rishon Lezion\nFrontend developer with extensive experience designing, developing, implementing, and\nmaintaining software used in sales, rental apartments, e-commerce, and human resources.\nGood knowledge and understanding of current frontend development technologies. Successful\nexperience using different JS frameworks. Experience in server-side development, database\nmanagement systems administration.\nI love my profession because it's not just a job, it's my hobby. It makes me passionate, driven\nand an effective team player.\nEXPERIENCE\n2020  Present Frontend developer at Noviopus, Rishon Lezion, Israel\n I manage and responsible for the development of two front-end applications of an\nintelligent recruitment system.\n Extended functionality of the existing application, refactored existing code base and\nprepared the application release.\n Develope the application from scratch based on React, designed the architecture of the\napplication, implemented the core modules of the application.\nStack: React, Redux, Material-UI, Cypress.\n2018 -  Designed, developed, and deployed frontend applications from scratch and implemented\nnew features of existing projects. Used stack: React, Redux, Vue.js, Backbone.js,\nMarionette.js, jQuery, Sass.\n Developed the API endpoints for the distributed sales management system.\nUsed stack: Django Framework, PostgreSQL, Docker, Vagrant.\n Optimized system performance by monitoring and rewriting SQL queries (PostgreSQL).\n Collaborated with technical support and assistance team in resolving customer technical\nissues.\n2017 - 2018 Full Stack developer at kvartirka.com, Chelyabinsk, Russia\n Migrated an Backbone.js codebase into React.\n Developed the API endpoints (Django framework)\n ode coverage with unit tests (pytest)\n2015 -  Build custom e-commerce shops, commercial and corporate websites based on existing\nsolutions and development from scratch. (Django, HTML, CSS, Bitbucket).\n Design, implementation and operating of database (MySQL)\nEDUCATION\n1999 - 2004 South Ural State University (SUSU), Chelyabinsk, Russia\nEngineer's Degree - Urban Construction and Management.\n2016 - GeekBrains - MAIL.RU group - course HTML/CSS, JavaScript, Python, Django.\nLanguages: English, Hebrew, Russian.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "|  |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LinkedIn-profile | Israel, Rishon Lezion",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend developer with extensive experience designing, developing, implementing, and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "maintaining software used in sales, rental apartments, e-commerce, and human resources.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Good knowledge and understanding of current frontend development technologies. Successful",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "experience using different JS frameworks. Experience in server-side development, database",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "management systems administration.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I love my profession because it's not just a job, it's my hobby. It makes me passionate, driven",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and an effective team player.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020  Present Frontend developer at Noviopus, Rishon Lezion, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I manage and responsible for the development of two front-end applications of an",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "intelligent recruitment system.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Extended functionality of the existing application, refactored existing code base and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "prepared the application release.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Develope the application from scratch based on React, designed the architecture of the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "application, implemented the core modules of the application.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stack: React, Redux, Material-UI, Cypress.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2018 -  Designed, developed, and deployed frontend applications from scratch and implemented",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "new features of existing projects. Used stack: React, Redux, Vue.js, Backbone.js,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Marionette.js, jQuery, Sass.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed the API endpoints for the distributed sales management system.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used stack: Django Framework, PostgreSQL, Docker, Vagrant.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Optimized system performance by monitoring and rewriting SQL queries (PostgreSQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Collaborated with technical support and assistance team in resolving customer technical",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "issues.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017 - 2018 Full Stack developer at kvartirka.com, Chelyabinsk, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Migrated an Backbone.js codebase into React.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed the API endpoints (Django framework)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ode coverage with unit tests (pytest)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2015 -  Build custom e-commerce shops, commercial and corporate websites based on existing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "solutions and development from scratch. (Django, HTML, CSS, Bitbucket).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Design, implementation and operating of database (MySQL)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "1999 - 2004 South Ural State University (SUSU), Chelyabinsk, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Engineer's Degree - Urban Construction and Management.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016 - GeekBrains - MAIL.RU group - course HTML/CSS, JavaScript, Python, Django.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: English, Hebrew, Russian.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

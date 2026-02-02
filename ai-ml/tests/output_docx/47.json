@@ -1,0 +1,542 @@
+{
+  "file_name": "47.docx",
+  "total_blocks": 88,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "(050) \n\nHaifa, Israel\nJunior Java backend developer\nIm self-taught, so everything I know, I learned on my own. An ardent optimization fan. Wherever I work, everything that Ido\ndaily and routinely has always been automated by me personally. I like to analyze processes and turn them into code.Slightly\nburdened by perfectionism, but detail-oriented, organized, and meticulous employee. Enthusiastic team player ready to\ncontribute to company success.\nProgramming languages\n Java;\n C#.\nSkills\n Spring Framework, Spring Boot;\n Databases: Microsoft SQL, PostgresSQL;\n Version control: Git;\n Application Programmer Interface (API): REST and SOAP web services;\n Knowledge about managing the cloud environment;\n Microservices;\n Logging.\nWork history\nBusiness Owner Butchery, Ekaterinburg, Russia\nOct 2018 - Mar 2022  Created from scratch a highly profitable business for cutting and selling meat and\nsemi-finished meat products;\n Managed a team of 20 people.\nC# Software Developer Professional Registry Center, Ekaterinburg, Russia\nJan 2016 - Oct 2018  Implemented a software development project from scratch that radically reorganized\nthe work of the entire organization;\n Full story about my development experience is highlighted in a separate section and\nlocated on the second sheet.\nStock Market Specialist Professional Registry Center, Ekaterinburg, Russia\nApr 2005 - Jan 2016  Work with clients, paperwork, advice, and legal support of transactions with securities.\nEducation\nEngineer Ural State University of Economics\nSep 2003 - Aug 2009 Food production process engineer\nSpecialist National Association of Stock Market Participants\nAug 2008 - Sep 2008 Stock market specialist for maintaining the register of securities.\nLanguages\n English - full understanding, slow speaking;\n Russian - native.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "The essence of my story\nThe essence of work in one of my positions was to check the documents for the correctness of their completion.\nHowever, the documents were all filled out manually, by simply entering data into an MS Word file. Document flow\nincluded more than 30 different forms. For each client, it was required to fill in from 5 to 30 documents. The\ndocuments contained repetitive data, such as last name, first name, ID data, and so on. Filling out and checking150+\ndocuments a day is a laborious job, which was done by 5 employees. Any error in the document was the reason for\nrefusing to provide the service to the client.\nPossible solution\nThere was a need for software with strong data typing, multi-factor data validation at theinputstage,andaccounting\nfor all data in the database for subsequent reuse.\nWhat did I do?\nIstarteddevelopmentfromscratch,intheabsenceofanyknowledgeandexperienceinprogramming.Icametoworka\ncouple of hours before the start and stayed for several hours after work, as well as within the working dayinmyfree\ntime from the main tasks - all for the sake of development about 1.5 years passed from the time the development\nbegan to the program was put into operation.\nAs a result, I made an application that significantly reorganized the work of the entire enterprise.\nSo, about the application:\n It is a Windows desktop .NET application, using WPF and C# with the Model-View-ViewModel pattern;\n Organized data layer using entity framework with code-first approach;\n All data entered by the operator is strictly verified and standardized: from a simple calculation of the validity of a\npassport to the useofvariousdatabasesofthirdpartiesforfillingandstructuringaddresses,TINs,bankinformation\nand the like (thanks to the dadata.ru service);\n The entire history of customer requests is collected in a single MicrosoftSQLdatabase,whereallactionsrelatedto\nthe client are stored;\n Well-designed, user-friendly application interface, with the ability to enter data without using the mouse;\n All fields of documents, the filling of which can later be reused, are converted into a reference book;\n Organized a mechanism for interaction with office telephony:startingacallwithoneclickandopeningaclientcard\nwith an incoming call;\nWhat is the result?\n The organization, in fact, received a self-written customer relationship management system.\n The number of errors in the preparation of documents decreased by 30 times.\n The time to receive new customers was reduced by 8 times.\n The entire history of client requests is now collected in a single database and the speed of generating documents\nfrom clients in the event of a repeated request becomes instantaneous.\n The staff of the organization in all branches of the country, which were engagedinreceivingclientsandprocessing\ndocuments, decreased by 4 times (Oops )\n The application is still in use (4 years) and, surprisingly, it works stably and does not require any maintenance.\nLink to the project on GitHub:\nHowever, in 2018, friends suggested that I open my own meat trading business, and my potential as a developer\nremained unfulfilled. But the war unleashed by Putin changed everything. Now I am in Israel, a country of high\ntechnologies, and I want to get into software development because I have a passion for this work. I will try to do\neverything necessary to ensure that my dreamthistimedoes not remainjust a dream.\nAt the moment I am actively looking forajoborinternship,IenjoylearningJava,springframework,git,docker,setting\nup a server on AWS EC-worldapplications,oneofwhich\nperforms basic CRUD operations in the database with accessing the corresponding API methods, and the second is a\nTelegram bot that communicates with Telegram via webhooks.\nPerhaps you have a more exciting task to hone my skills? Im open to any offers!",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "(050)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Haifa, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Junior Java backend developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Im",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "self-taught, so everything I know, I learned on my own. An ardent optimization fan. Wherever I work, everything that Ido",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "daily and routinely has always been automated by me personally. I like to analyze processes and turn them into code.Slightly",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "burdened by perfectionism, but detail-oriented, organized, and meticulous employee. Enthusiastic team player ready to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "contribute to company success.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "C#.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Spring Framework, Spring Boot;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: Microsoft SQL, PostgresSQL;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Version control: Git;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Application Programmer Interface (API): REST and SOAP web services;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Knowledge about managing the cloud environment;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Microservices;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Logging.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work history",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Business Owner Butchery, Ekaterinburg, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Oct 2018 - Mar 2022  Created from scratch a highly profitable business for cutting and selling meat and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "semi-finished meat products;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Managed a team of 20 people.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "C# Software Developer Professional Registry Center, Ekaterinburg, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Jan 2016 - Oct 2018  Implemented a software development project from scratch that radically reorganized",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "the work of the entire organization;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full story about my development experience is highlighted in a separate section and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "located on the second sheet.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stock Market Specialist Professional Registry Center, Ekaterinburg, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Apr 2005 - Jan 2016  Work with clients, paperwork, advice, and legal support of transactions with securities.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Engineer Ural State University of Economics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sep 2003 - Aug 2009 Food production process engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Specialist National Association of Stock Market Participants",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Aug 2008 - Sep 2008 Stock market specialist for maintaining the register of securities.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English - full understanding, slow speaking;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian - native.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The essence of my story",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The essence of work in one of my positions was to check the documents for the correctness of their completion.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "However, the documents were all filled out manually, by simply entering data into an MS Word file. Document flow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "included more than 30 different forms. For each client, it was required to fill in from 5 to 30 documents. The",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "documents contained repetitive data, such as last name, first name, ID data, and so on. Filling out and checking150+",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "documents a day is a laborious job, which was done by 5 employees. Any error in the document was the reason for",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "refusing to provide the service to the client.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Possible solution",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "There was a need for software with strong data typing, multi-factor data validation at theinputstage,andaccounting",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "for all data in the database for subsequent reuse.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "What did I do?",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Istarteddevelopmentfromscratch,intheabsenceofanyknowledgeandexperienceinprogramming.Icametoworka",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "couple of hours before the start and stayed for several hours after work, as well as within the working dayinmyfree",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "time from the main tasks - all for the sake of development about 1.5 years passed from the time the development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "began to the program was put into operation.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "As a result, I made an application that significantly reorganized the work of the entire enterprise.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "So, about the application:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "It is a Windows desktop .NET application, using WPF and C# with the Model-View-ViewModel pattern;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Organized data layer using entity framework with code-first approach;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "All data entered by the operator is strictly verified and standardized: from a simple calculation of the validity of a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "passport to the useofvariousdatabasesofthirdpartiesforfillingandstructuringaddresses,TINs,bankinformation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and the like (thanks to the dadata.ru service);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The entire history of customer requests is collected in a single MicrosoftSQLdatabase,whereallactionsrelatedto",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "the client are stored;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Well-designed, user-friendly application interface, with the ability to enter data without using the mouse;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "All fields of documents, the filling of which can later be reused, are converted into a reference book;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Organized a mechanism for interaction with office telephony:startingacallwithoneclickandopeningaclientcard",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "with an incoming call;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "What is the result?",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The organization, in fact, received a self-written customer relationship management system.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The number of errors in the preparation of documents decreased by 30 times.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The time to receive new customers was reduced by 8 times.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The entire history of client requests is now collected in a single database and the speed of generating documents",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "from clients in the event of a repeated request becomes instantaneous.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The staff of the organization in all branches of the country, which were engagedinreceivingclientsandprocessing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "documents, decreased by 4 times (Oops )",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The application is still in use (4 years) and, surprisingly, it works stably and does not require any maintenance.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Link to the project on GitHub:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "However, in 2018, friends suggested that I open my own meat trading business, and my potential as a developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "remained unfulfilled. But the war unleashed by Putin changed everything. Now I am in Israel, a country of high",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "technologies, and I want to get into software development because I have a passion for this work. I will try to do",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "everything necessary to ensure that my dreamthistimedoes not remainjust a dream.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "At the moment I am actively looking forajoborinternship,IenjoylearningJava,springframework,git,docker,setting",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "up a server on AWS EC-worldapplications,oneofwhich",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "performs basic CRUD operations in the database with accessing the corresponding API methods, and the second is a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Telegram bot that communicates with Telegram via webhooks.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Perhaps you have a more exciting task to hone my skills? Im open to any offers!",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

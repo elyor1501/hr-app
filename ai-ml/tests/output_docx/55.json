@@ -1,0 +1,484 @@
+{
+  "file_name": "55.docx",
+  "total_blocks": 78,
+  "confidence": 0.85,
+  "time_taken": 0.04,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Contact \n (Home)\n Full Stack Developer (Golang / JS / TS)\nTel Aviv\nwww.\nSummary\nTop Skills\nHello, my name is David, and I am a Frontend / Full-Stack Developer\nReact\nJavaScript I have 3 years of Frontend Experience and the last 6 months working\nGo (Programming Language)\nas a Full Stack Developer, the backend language is Golang, also\nhave a small experience with Node.js\nLanguages\nEnglish (Professional Working) Languages: JavaScript, TypeScript, Golang\nRussian (Native or Bilingual)\nWebpack\nWebSockets, GraphQL\nFrontend:\nFrameworks: React, Angular, Vue\nHTML5, CSS3, SCSS, LESS\nWebpack\nRxJs, NgRx, Redux, Thunk, Saga,\nCSS-modules, Styled Components\nBootstrap\nAnimations (CSSTransition, CSS Animate)\nBackend\nNode.js:\nFrameworks: Express, Koa, Nest\nMongoose, Sequelize\nGolang: Logrus, Validator, Echo, Unit Tests\nREST API, gRPC\nMongoDB\nDocker/Docker-Compose/Nginx\nPage 1 of 3",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Experience\nOZON.ru\nFull-stack Developer\nOctober 2021 - Present (8 months)\nCreating the Cart / Checkout part of Ozon.ru Marketplace\nFrontend:\nVue, TypeScript, WebPack, SCSS\nBackend - Golang, Postgres, MemCached\nBeeline Russia\nFrontend Engineer (Angular, Vue)\nOctober 2020 - October 2021 (1 year 1 month)\nDeveloping of React SPA application\nTypeScript, MobX, Styled\nWebPack, GraphQL\nBefore june:\nDevelopment of main client app, an Angular SPA, and back office on Vue 2\n \"\"\nFrontend Engineer\nNovember 2019 - October 2020 (1 year)\nAdding new features and legacy code support to government web service -\nNational Accreditation System\nAdding functionality to micro SPA on React\n JavaScript, TypeScript\n Angular 2+, React, RxJs\n HTML5/SCSS\n Git, GitLab, TeamCity, Docker\n  24\nFrontend Engineer\nAugust 2019 - October 2019 (3 months)\n, \nDevelopment of SPA Angular 7 web-application for business client managers\n JavaScript, TypeScript, Angular 7, RxJs\n SCSS, Bootstrap 4\nPage 2 of 3",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Git, tfs, agile\nEducation\nMoscow State Institute of Radio Engineering, Electronics and\nAutomation (Technical University)\nBachelor's degree, technical systems  (2015 - 2019)\nPage 3 of 3",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Contact",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(Home)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full Stack Developer (Golang / JS / TS)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel Aviv",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "www.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Summary",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Top Skills",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hello, my name is David, and I am a Frontend / Full-Stack Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "React",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JavaScript I have 3 years of Frontend Experience and the last 6 months working",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Go (Programming Language)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "as a Full Stack Developer, the backend language is Golang, also",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "have a small experience with Node.js",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English (Professional Working) Languages: JavaScript, TypeScript, Golang",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian (Native or Bilingual)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Webpack",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WebSockets, GraphQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks: React, Angular, Vue",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HTML5, CSS3, SCSS, LESS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Webpack",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "RxJs, NgRx, Redux, Thunk, Saga,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CSS-modules, Styled Components",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bootstrap",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Animations (CSSTransition, CSS Animate)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Backend",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Node.js:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks: Express, Koa, Nest",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mongoose, Sequelize",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Golang: Logrus, Validator, Echo, Unit Tests",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "REST API, gRPC",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MongoDB",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Docker/Docker-Compose/Nginx",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Page 1 of 3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OZON.ru",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full-stack Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "October 2021 - Present (8 months)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Creating the Cart / Checkout part of Ozon.ru Marketplace",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Vue, TypeScript, WebPack, SCSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Backend - Golang, Postgres, MemCached",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Beeline Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend Engineer (Angular, Vue)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "October 2020 - October 2021 (1 year 1 month)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developing of React SPA application",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "TypeScript, MobX, Styled",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WebPack, GraphQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Before june:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of main client app, an Angular SPA, and back office on Vue 2",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "\"\"",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "November 2019 - October 2020 (1 year)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Adding new features and legacy code support to government web service -",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "National Accreditation System",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Adding functionality to micro SPA on React",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JavaScript, TypeScript",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Angular 2+, React, RxJs",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HTML5/SCSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Git, GitLab, TeamCity, Docker",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "24",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "August 2019 - October 2019 (3 months)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ",",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of SPA Angular 7 web-application for business client managers",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JavaScript, TypeScript, Angular 7, RxJs",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SCSS, Bootstrap 4",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Page 2 of 3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Git, tfs, agile",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Moscow State Institute of Radio Engineering, Electronics and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Automation (Technical University)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bachelor's degree, technical systems  (2015 - 2019)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Page 3 of 3",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

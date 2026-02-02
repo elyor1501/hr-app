@@ -1,0 +1,336 @@
+{
+  "file_name": "52.docx",
+  "total_blocks": 54,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Phone: \nAddress: Petah-Tikva, Hadera 1\nPortfolio:\nEmail: \nSenior .Net developer with 10+ years experience in architecture analysis, software design and\nmentoring. Problem-solver with strong interpersonal and teamwork skills who is excited to work in\nagile and fast-paced team. Fluent proficiency in English and native Russian language.\nSkills\nFrameworks Databases DevOps\n .Net 3.1 - 6.0, Asp Net  Posgres (latest)  Linux (CentOS, Debian)\nMVC, Http Web API,  MS SQL  Docker\nGRPC, Microservices  Mongo DB (latest)  CI/CD (TFS, Azure\n .Net Classic (4.0-4.8) Pipelines, Jenkins)\n Unit testing (NUnit)\n EF, Linq2Db\n Multithreading\nUI Cloud: Other\n Web UI (html, js, css,  AWS (S3, EC2)  Asterisk\njQuery, MVC Razor)  Azure (Cloud Computing,  Apache Kafka\n Windows Desktop Service Bus)\n(WinForms, WPF)  Other (Yandex cloud)\n MacOS (Xamarin Cocoa\n+ Mono)\nExperience\nMTS Developing voice-bot (Asterisk + .Net 6.0, microservices, kafka,\nSenior Software postgres, s3).\nDeveloper Achievement: Within 3 month created alpha version from scratch by\nMAR 2022 TO PRESENT implementing rtp voice traffic real-time high frequency low latency\ntransfer between Asterisk & microservices (GRPC, multithreading)\nRuncall.ru Developing & maintaining voice-bot (Postgres, .net core 3.1-5.0,\nLead Software Developer Rest Api, MVR Razor & jQuery, Asterisk + .Net microservices, kafka,\nMAR 2019 TO MAR 2022 AWS)\nSolo responsibility for architecture decisions, short-term well-quality\ndevelopment & feature delivery, supervision of junior developers.\nAchievement: Created own sip-phone software server to reduce\ncompanys costs by over 20%.\nSwordfish Security Developing & maintaining TPP - Trust Protection Platform (SSL\nc# developer Certificate & SSH Key management):\nMAR 2018 TO MAR 2019  cross-platform desktop app (Win Forms & Xamarin Mac)\n web part (MsSql,.Net 4.6, Rest Api, jQuery, Backbone)\nAchievement: replaced shared files approach with .net standard for\ndesktop app, which allowed to reduce maintenance time by half.\nBrain Systems Ltd Developing & maintaining ERP system for Russian hospitals (.Net\nSenior .Net developer 4.5, WinForms, MSSQL, MVC Razor & jQuery, DevExpress tools).\nNOV 2015 TO MAR 2018 Full responsibility for short-term development & feature delivery,\nsupervision of junior developers.\nSevenTest Developing desktop WPF applications for utility purposes (.Net 4.5,\nMiddle .Net Developer WPF). Creating MSI packages (InstallShield, WIX).\nOCT 2012 TO SEP 2015\nEducation Saint-Petersburg University of Engeneering & Economics 2008 TO 2013 , Specialist\nCertifications MS: Programming in C# Microsoft FEB 2016",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Address: Petah-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tikva",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ", Hadera 1",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Portfolio:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Email:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior .Net developer with 10+ years experience in architecture analysis, software design and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "mentoring. Problem-solver with strong interpersonal and teamwork skills who is excited to work in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "agile and fast-paced team. Fluent proficiency in English and native Russian language.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks Databases DevOps",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ".Net 3.1 - 6.0, Asp Net  Posgres (latest)  Linux (CentOS, Debian)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MVC, Http Web API,  MS SQL  Docker",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "GRPC, Microservices  Mongo DB (latest)  CI/CD (TFS, Azure",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ".Net Classic (4.0-4.8) Pipelines, Jenkins)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Unit testing (NUnit)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EF, Linq2Db",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Multithreading",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "UI Cloud: Other",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web UI (html, js, css,  AWS (S3, EC2)  Asterisk",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "jQuery, MVC Razor)  Azure (Cloud Computing,  Apache Kafka",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Windows Desktop Service Bus)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(WinForms, WPF)  Other (Yandex cloud)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MacOS (Xamarin Cocoa",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "+ Mono)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MTS Developing voice-bot (Asterisk + .Net 6.0, microservices, kafka,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior Software postgres, s3).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developer Achievement: Within 3 month created alpha version from scratch by",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MAR 2022 TO PRESENT implementing rtp voice traffic real-time high frequency low latency",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "transfer between Asterisk & microservices (GRPC, multithreading)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Runcall.ru Developing & maintaining voice-bot (Postgres, .net core 3.1-5.0,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Lead Software Developer Rest Api, MVR Razor & jQuery, Asterisk + .Net microservices, kafka,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MAR 2019 TO MAR 2022 AWS)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Solo responsibility for architecture decisions, short-term well-quality",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development & feature delivery, supervision of junior developers.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Achievement: Created own sip-phone software server to reduce",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "companys costs by over 20%.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Swordfish Security Developing & maintaining TPP - Trust Protection Platform (SSL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "c# developer Certificate & SSH Key management):",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MAR 2018 TO MAR 2019  cross-platform desktop app (Win Forms & Xamarin Mac)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "web part (MsSql,.Net 4.6, Rest Api, jQuery, Backbone)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Achievement: replaced shared files approach with .net standard for",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "desktop app, which allowed to reduce maintenance time by half.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Brain Systems Ltd Developing & maintaining ERP system for Russian hospitals (.Net",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior .Net developer 4.5, WinForms, MSSQL, MVC Razor & jQuery, DevExpress tools).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "NOV 2015 TO MAR 2018 Full responsibility for short-term development & feature delivery,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "supervision of junior developers.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SevenTest Developing desktop WPF applications for utility purposes (.Net 4.5,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Middle .Net Developer WPF). Creating MSI packages (InstallShield, WIX).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OCT 2012 TO SEP 2015",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education Saint-Petersburg University of Engeneering & Economics 2008 TO 2013 , Specialist",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Certifications MS: Programming in C# Microsoft FEB 2016",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

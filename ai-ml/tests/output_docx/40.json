@@ -1,0 +1,258 @@
+{
+  "file_name": "40.docx",
+  "total_blocks": 41,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "FULL STACK JAVA DEVELOPER\n3 years of total experience in development Java backend development web frontend.\nPERSONAL INFORMATION\nTel:  Email:  City of Residence: Ashdod Date of birth: \nSKILLS\nProgramming languages: Java, JavaScript, TypeScript, HTML, CSS, SQL, VBA.\nTechnologies & Frameworks: Spring, Spring Boot, Spring Security, Hibernate, JUnit, Java Persistence API,\nMultithreading, Maven, jQuery, Bootstrap, REST, Kafka, Heroku, Angular, Vue.js, Node.js, Material Design.\nEnvironments & IDE: IntelliJ IDEA, WebStorm, Eclipse, VS Code, Xcode.\nDatabases: SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Firebase).\nVersion control & Project Management: Git (BitBucket, GitHub), Jira, Agile, Scrum.\nSoftware Architecture: OOP, JSON, REST, Design Patterns, CI-CD, Microservices, Dependency Injection\nOperating Systems: Mac OS, Windows.\nAdditional skills: Adobe Creative Suite: Dreamweaver, Acrobat Professional, Photoshop, Illustrator, XD. MS\nOffice: Access, Excel, Word.\nSpoken languages: English, Hebrew, Russian.\nEXPERIENCE\nFULL STACK JAVA DEVELOPER INETEX LTD, REHOVOT, ISRAEL  2017-PRESENT\nP2P CAR SHARING\n RESTful web service based on Spring Boot.\n Database based on PostgreSQL.\n Client on Angular, Bootstrap, Material Design (about 50% of working time).\nDATA ANALYST REGIONS GROUP, MOSCOW, RUSSIA  \nDEVELOPMENT AND COMMERCIAL REAL ESTATE MANAGEMENT\nMaintaining of databases of management accounting and sales (SQL).\nMonitoring and analysis of BI (Excel including Pivot table and VBA).\nPreparation of reporting and presentations (Word, PowerPoint).\nAutomatisation of management accounting and reporting.\nDATA ANALYST GUTA DEVELOPMENT, MOSCOW, RUSSIA  \nDEVELOPMENT AND REAL ESTATE MANAGEMENT\nMaintaining of databases of management accounting and sales (SQL).\nMonitoring and analysis of BI (Excel including Pivot table and VBA).\nPreparation of reporting and presentations (Word, PowerPoint).\nEDUCATION\nMASTER OF MATHEMATICS AND COMPUTER SCIENCE IN FINANCE, 2004\nPlekhanov Russian University of Economics, Moscow, Russia\nHTML, 2006, Moscow, Russia\nWEB-DEVELOPMENT, 2015, Moscow, Russia\nFULL STACK JAVA DEVELOPMENT, 2017, Rehovot, Israel\nREFERENCES AVAILABLE UPON REQUEST",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "FULL STACK JAVA DEVELOPER",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "3 years of total experience in development Java backend development web frontend.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PERSONAL INFORMATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel:  Email:  City of Residence: Ashdod Date of birth:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: Java, JavaScript, TypeScript, HTML, CSS, SQL, VBA.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies & Frameworks: Spring, Spring Boot, Spring Security, Hibernate, JUnit, Java Persistence API,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Multithreading, Maven, jQuery, Bootstrap, REST, Kafka, Heroku, Angular, Vue.js, Node.js, Material Design.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Environments & IDE: IntelliJ IDEA, WebStorm, Eclipse, VS Code, Xcode.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Firebase).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Version control & Project Management: Git (BitBucket, GitHub), Jira, Agile, Scrum.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Architecture: OOP, JSON, REST, Design Patterns, CI-CD, Microservices, Dependency Injection",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Operating Systems: Mac OS, Windows.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Additional skills: Adobe Creative Suite: Dreamweaver, Acrobat Professional, Photoshop, Illustrator, XD. MS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Office: Access, Excel, Word.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Spoken languages: English, Hebrew, Russian.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FULL STACK JAVA DEVELOPER INETEX LTD, REHOVOT, ISRAEL  2017-PRESENT",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "P2P CAR SHARING",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "RESTful web service based on Spring Boot.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Database based on PostgreSQL.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Client on Angular, Bootstrap, Material Design (about 50% of working time).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DATA ANALYST REGIONS GROUP, MOSCOW, RUSSIA",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DEVELOPMENT AND COMMERCIAL REAL ESTATE MANAGEMENT",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Maintaining of databases of management accounting and sales (SQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Monitoring and analysis of BI (Excel including Pivot table and VBA).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Preparation of reporting and presentations (Word, PowerPoint).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Automatisation of management accounting and reporting.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DATA ANALYST GUTA DEVELOPMENT, MOSCOW, RUSSIA",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DEVELOPMENT AND REAL ESTATE MANAGEMENT",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Maintaining of databases of management accounting and sales (SQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Monitoring and analysis of BI (Excel including Pivot table and VBA).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Preparation of reporting and presentations (Word, PowerPoint).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MASTER OF MATHEMATICS AND COMPUTER SCIENCE IN FINANCE, 2004",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Plekhanov Russian University of Economics, Moscow, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HTML, 2006, Moscow, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WEB-DEVELOPMENT, 2015, Moscow, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FULL STACK JAVA DEVELOPMENT, 2017, Rehovot, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "REFERENCES AVAILABLE UPON REQUEST",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

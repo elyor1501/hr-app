@@ -1,0 +1,294 @@
+{
+  "file_name": "42.docx",
+  "total_blocks": 47,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Junior C++ developer\nCitizen of Israel\nwill immigrate in March 2022 and initially reside in Katsrin\n\nt.me/zaltsman\ngithub.com/gbfz\nHard skills Implemented projects\nProgramming languages Design and implementation of data structures in\n C++ 98 && 17\n\n++  Command line shell for MacOS X in C\nHaskell, Scala  3D renderer in C with shading and camera\nGo, Java  movement\nUtilities Multithread programs in C/C++\n Web-server implemented with Docker &&\nGit\n Kubernetes\nLinux/Unix\n\nlldb, valgrind\nWork experience\n\nVim, Qt Creator\nMake  NT Progress: \nDocker  Junior C++ developer\n> Transfer of old data structures to asynchronous\nSoft skills\ntable model\nTeamwork > Implementation of dialog windows in Qt && Boost\nSelf-education\n> Unit-testing\nAdaptability, creativity\n> Development of technical documentation,\nSociability\ntranslation of existing texts from Russian to English\nAutonomy\nLocation Hunters:  - \nLanguages\nLocation manager\n\nEnglish > Search for spaces to film advertisements\n\nRussian\nfor Google, Yandex et al.; on-site assistance\n\nFrench\nGerman  Sakharov Center: \nExhibition space assistant\nEducation\n> Preparation of exhibitions, lectures, discussions\ncole 42 Paris (Moscow campus) > Management of video, audio and illumination\n2020 - ongoing\nNRU HSE, School of history",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Junior C++ developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Citizen of Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "will immigrate in March 2022 and initially reside in Katsrin",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "t.me/zaltsman",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "github.com/gbfz",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hard skills Implemented projects",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages Design and implementation of data structures in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "C++ 98 && 17",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "++  Command line shell for MacOS X in C",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Haskell, Scala  3D renderer in C with shading and camera",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Go, Java  movement",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Utilities Multithread programs in C/C++",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web-server implemented with Docker &&",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Git",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Kubernetes",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linux/Unix",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "lldb, valgrind",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Vim, Qt Creator",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Make  NT Progress:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Docker  Junior C++ developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "> Transfer of old data structures to asynchronous",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Soft skills",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "table model",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Teamwork > Implementation of dialog windows in Qt && Boost",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Self-education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "> Unit-testing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Adaptability, creativity",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "> Development of technical documentation,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sociability",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "translation of existing texts from Russian to English",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Autonomy",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Location Hunters:  -",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Location manager",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English > Search for spaces to film advertisements",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "for Google, Yandex et al.; on-site assistance",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "French",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "German  Sakharov Center:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Exhibition space assistant",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "> Preparation of exhibitions, lectures, discussions",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "cole 42 Paris (Moscow campus) > Management of video, audio and illumination",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020 - ongoing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "NRU HSE, School of history",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

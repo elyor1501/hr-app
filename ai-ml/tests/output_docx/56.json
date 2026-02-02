@@ -1,0 +1,240 @@
+{
+  "file_name": "56.docx",
+  "total_blocks": 38,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Israel, Tel-Aviv\nDependable Game Developer with more than 11 years of experience. nmail.com\nStated developer carrier as AS 3 developer and after 4 years switched to \nUnity3d. Have deep knowledge is C# and Unit as well as a full circle of Game pozdnyakov-\nDevelopment.\nEXPERIENCE SKILLS\nVK,Remote  Developer Unity3D\nAPRIL 2020 - PRESENT C#\nPorted a bunch of games from Macromedia Flash to Unity3d WASM. UniRX\nMade 3 mobile game prototypes.\nZenject\nCurrently working on tactical RPG mobile game.\nOOP/SOLID/MVP\nTech stack: Unity3D, WASM, UniRX, Zenject, Addressables\nShaders/ URP /HDRP\nAdvalange,Moscow Developer Git\nJULY 2019 - APRIL 2020\nDeveloped automated workflow solutions that empower laboratories to achieve\nmore. LANGUAGES\nMake stable real instrument simulation using Unity3d, WPF and MEF.\nRussian - native\nTech stack: Unity3D, C#, WPF, MEF\nArtteam,MoscowDeveloper English -B2\nSEPTEMBER 2017 - JULY 2019\nMade application for interior presentation which helps people to choose the\nstyle of their accommodation using VR and XR tech in Unity.\nThe application runs on iOS, Android and HTC Vive platforms.\nTech stack: Unity3D, Zenject, VR, AR, Blender, Photoshop\nCrazyPanda,MoscowDeveloper\nAPRIL 2017 - OCTOBER 2018\nTook a part in the casual game development team.\nTech stack: Unity3D, Zenject, UniRX, Behaviour Tree\nIronuts,MoscowDeveloper\nMARCH 2015 - AUGUST 2017\nWorked on mobile games and done three RPG and one Casual game as Team\nlead.\nPET PROJECTS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Israel, Tel-Aviv",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Dependable Game Developer with more than 11 years of experience. nmail.com",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stated developer carrier as AS 3 developer and after 4 years switched to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Unity3d. Have deep knowledge is C# and Unit as well as a full circle of Game pozdnyakov-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "VK,Remote  Developer Unity3D",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "APRIL 2020 - PRESENT C#",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ported a bunch of games from Macromedia Flash to Unity3d WASM. UniRX",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Made 3 mobile game prototypes.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Zenject",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Currently working on tactical RPG mobile game.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OOP/SOLID/MVP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tech stack: Unity3D, WASM, UniRX, Zenject, Addressables",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Shaders/ URP /HDRP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Advalange,Moscow Developer Git",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JULY 2019 - APRIL 2020",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed automated workflow solutions that empower laboratories to achieve",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "more. LANGUAGES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Make stable real instrument simulation using Unity3d, WPF and MEF.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian - native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tech stack: Unity3D, C#, WPF, MEF",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Artteam,MoscowDeveloper English -B2",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SEPTEMBER 2017 - JULY 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Made application for interior presentation which helps people to choose the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "style of their accommodation using VR and XR tech in Unity.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The application runs on iOS, Android and HTC Vive platforms.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tech stack: Unity3D, Zenject, VR, AR, Blender, Photoshop",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CrazyPanda,MoscowDeveloper",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "APRIL 2017 - OCTOBER 2018",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Took a part in the casual game development team.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tech stack: Unity3D, Zenject, UniRX, Behaviour Tree",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ironuts,MoscowDeveloper",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MARCH 2015 - AUGUST 2017",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Worked on mobile games and done three RPG and one Casual game as Team",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "lead.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PET PROJECTS",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

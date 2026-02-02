@@ -1,0 +1,276 @@
+{
+  "file_name": "18.docx",
+  "total_blocks": 44,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "- WhatsApp\n - Israel\nGitHub: \nExecutive Summary\n Simultaneously managing multiple projects with minimum direction and maintaining\naccuracy under pressure\n Contributed to product development & product roadmap planning\n Defined architecture of new IOS Apps and developed them broadly from engineering and\ncoding features to polishing user interfaces\n Knowledge of UI design principles, patterns and practices\n Self-starter with a strong work ethic and a passion for problem-solving\n English  Upper Intermediate, Russian  Fluent, Belarusian - Advanced\nProfessional Experience: Independent Developer, 2021  till now\n Performed technical designs and implementations of IOS Apps with user-friendly and\nintuitive interface\n Improved product quality through code reviews, writing effective unit tests and collaborating\nwith QA on implementing automation testing\n Created my own application called \"Mobile Wallet\" to track finances. Therefore, Ive\noperated with Core Data, obtained data from the server and upload it to the TableView\n Experienced in Cocoapods, Alamofire and SwiftGen, three screens are created using\nstoryboard, two screens are written in code\n Gathering functional requirements, developing technical specifications and project test &\nplanning\nIOS-Developer intern at Softteco, Minsk, .2021\n Completed commercial projects\n Managed team working skills by participating in groups to create Apps\n Learnt to read any code in existing code-base and change it\n Collaborated in multi-functional tasks and worked under pressure\nIOS-Developer at 365scores, Tel-Aviv, .2022\n Working withRestful APIs, Core Data and GCD\n Making WatchOS App with SwiftUI\n Testing and debugging mobile application\n Work to expand/improve on an ongoing basis by adding new functionality and resolving\nexisting issues\nEducation:\nProgramming School Teach me skills, Minsk  IOS Developer,  - \nVeterinary university, Minsk  veterinary paramedic,  - \nTechnical Skills:\n Programming Language: Swift\n API/frameworks: Alamofire, SwiftyJSON, SwiftUI\n Databases: CoreData, REALM, Firebase\n Architectures: MVP, MVVM, MVC\n Technologies: Autolayout, REST API, SOLID, GIT",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "- WhatsApp",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "GitHub:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Executive Summary",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Simultaneously managing multiple projects with minimum direction and maintaining",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "accuracy under pressure",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Contributed to product development & product roadmap planning",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Defined architecture of new IOS Apps and developed them broadly from engineering and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "coding features to polishing user interfaces",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Knowledge of UI design principles, patterns and practices",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Self-starter with a strong work ethic and a passion for problem-solving",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English  Upper Intermediate, Russian  Fluent, Belarusian - Advanced",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional Experience: Independent Developer, 2021  till now",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Performed technical designs and implementations of IOS Apps with user-friendly and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "intuitive interface",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Improved product quality through code reviews, writing effective unit tests and collaborating",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "with QA on implementing automation testing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created my own application called \"Mobile Wallet\" to track finances. Therefore, Ive",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "operated with Core Data, obtained data from the server and upload it to the TableView",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experienced in Cocoapods, Alamofire and SwiftGen, three screens are created using",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "storyboard, two screens are written in code",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gathering functional requirements, developing technical specifications and project test &",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "planning",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IOS-Developer intern at Softteco, Minsk, .2021",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Completed commercial projects",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Managed team working skills by participating in groups to create Apps",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Learnt to read any code in existing code-base and change it",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Collaborated in multi-functional tasks and worked under pressure",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IOS-Developer at 365scores, Tel-Aviv, .2022",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Working withRestful APIs, Core Data and GCD",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Making WatchOS App with SwiftUI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Testing and debugging mobile application",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work to expand/improve on an ongoing basis by adding new functionality and resolving",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "existing issues",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming School Teach me skills, Minsk  IOS Developer,  -",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Veterinary university, Minsk  veterinary paramedic,  -",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technical Skills:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming Language: Swift",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "API/frameworks: Alamofire, SwiftyJSON, SwiftUI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: CoreData, REALM, Firebase",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Architectures: MVP, MVVM, MVC",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Autolayout, REST API, SOLID, GIT",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

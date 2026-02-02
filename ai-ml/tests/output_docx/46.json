@@ -1,0 +1,270 @@
+{
+  "file_name": "46.docx",
+  "total_blocks": 43,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "|  |  | 9 march 1984 | Kiryat Bialik\nSkills\nOutstanding leadership skills and well-developed organizational ability. Analytical thinking, learning fast, can make the right\ndecisions in no time. Ability to find and use information effectively.\nCarrier Objective\nTo gain expirience in hi-tech related role, as Java Developer, System Software Developer, and in a few years to reach a\nSeniority level.\nQualifications\nProgramming languages: Java, JavaScript, C(basic knowledge)\nIDE's: Intellij IDEA, Eclipse\nFrameworks: Spring Framework (Spring Security, Spring Data, Spring Web), Hibernate, Maven\nAPIs: JPA, Stream API\nDatabases: MySQL, MongoDB\nFrontEnd: HTML/CSS basics, JavaScript + Angular  on the way.\nProjects\n- online shop (Java, JPA, Spring Security, Swagger, Spring data, Stream API, MySQL) - backend\n- 2048 Game(Java, LWJGL)  backend +little UI\n- SimpleForum application(Java, Spring Security, Spring Data, Hibernate)\nEmployment History\n2018 - Tel-Ran Educational Center\nRole: Java Developer student.\nDesign and development of a different Java/J2EE/JS applications using most popular frameworks and desingn\npatterns. Server side and Frontend development.\n2018  Flexitech AVIA Israel\nRole: Production manager.\nCompany profile: Development and manufacturing of heating elements and PCBs using Thick Film technology, for a wide\nrange of applications.\n2009  2016 Subaru Russia -> IVECO Russia\nRole: Car dealership director.\nAchievements: Significantly increasing sales of new and used equipment, increasing number of returning customers, winning\nlarge government tenders for the supply of automotive equipment.\nEducation:\n2018 - 2019\nTel-Ran Educational center - software engineering.\n- Java/HTML/CSS/Spring Framework/SQL/noSQL\n- Object Oriented Design, Design Patterns, Test Driven Design\n\nVoronezh State University (Russia)\nMA in Radiophysics and electronics\nLanguages:\nEnglish (intermediate), Hebrew (intermediate), Russian(native)\n5ID yEe:a rWs eexbpSetoriremn,c eIn ,t eslelniji oIdr esao,f tEwcalirpes dee .v Aelnogpuelra, rc, +H+T ,M JaLv5a, ,C JSaSva, S Ocrriapctl,e N, ModyeS.JQSL , ,P HySthQoLn D, cB ,, HG2O, FP o, sDtgarteeS sQtrLu,c tMuroensg ,o DDeBsi,g Rne pdaistt einrndso w, Ws, eLbipnaucxk P, HGPul JpU, JNeInTk iSnps,r iGngit lHabib CerIn, aAtem Mazaovne An WKaSf,k Ma MS iAcrzousreer,v Piclievso, ,s Tenwioilri of,u Pllastyapcakl ,d Setvreiploep, eAr ma plolitt uodf eexperience, jmeter, junit",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "|  |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "| 9 march 1984 | Kiryat Bialik",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Skills",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Outstanding leadership skills and well-developed organizational ability. Analytical thinking, learning fast, can make the right",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "decisions in no time. Ability to find and use information effectively.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Carrier Objective",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "To gain expirience in hi-tech related role, as Java Developer, System Software Developer, and in a few years to reach a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Seniority level.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Qualifications",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: Java, JavaScript, C(basic knowledge)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IDE's: Intellij IDEA, Eclipse",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks: Spring Framework (Spring Security, Spring Data, Spring Web), Hibernate, Maven",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "APIs: JPA, Stream API",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: MySQL, MongoDB",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FrontEnd: HTML/CSS basics, JavaScript + Angular  on the way.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Projects",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- online shop (Java, JPA, Spring Security, Swagger, Spring data, Stream API, MySQL) - backend",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- 2048 Game(Java, LWJGL)  backend +little UI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- SimpleForum application(Java, Spring Security, Spring Data, Hibernate)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Employment History",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2018 - Tel-Ran Educational Center",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Role: Java Developer student.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Design and development of a different Java/J2EE/JS applications using most popular frameworks and desingn",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "patterns. Server side and Frontend development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2018  Flexitech AVIA Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Role: Production manager.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Company profile: Development and manufacturing of heating elements and PCBs using Thick Film technology, for a wide",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "range of applications.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2009  2016 Subaru Russia -> IVECO Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Role: Car dealership director.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Achievements: Significantly increasing sales of new and used equipment, increasing number of returning customers, winning",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "large government tenders for the supply of automotive equipment.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2018 - 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel-Ran Educational center - software engineering.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Java/HTML/CSS/Spring Framework/SQL/noSQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Object Oriented Design, Design Patterns, Test Driven Design",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Voronezh State University (Russia)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MA in Radiophysics and electronics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English (intermediate), Hebrew (intermediate), Russian(native)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "5ID yEe:a rWs eexbpSetoriremn,c eIn ,t eslelniji oIdr esao,f tEwcalirpes dee .v Aelnogpuelra, rc, +H+T ,M JaLv5a, ,C JSaSva, S Ocrriapctl,e N, ModyeS.JQSL , ,P HySthQoLn D, cB ,, HG2O, FP o, sDtgarteeS sQtrLu,c tMuroensg ,o DDeBsi,g Rne pdaistt einrndso w, Ws, eLbipnaucxk P, HGPul JpU, JNeInTk iSnps,r iGngit lHabib CerIn, aAtem Mazaovne An WKaSf,k Ma MS iAcrzousreer,v Piclievso, ,s Tenwioilri of,u Pllastyapcakl ,d Setvreiploep, eAr ma plolitt uodf eexperience, jmeter, junit",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

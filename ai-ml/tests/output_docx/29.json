@@ -1,0 +1,312 @@
+{
+  "file_name": "29.docx",
+  "total_blocks": 50,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Israel, Netanya tel: , e-mail: \nFrontend Developer/ Full stack Developer\nAn energetic, motivated and responsible young developer. I enjoy learning new technologies and want to\nimprove my skills that I acquired at university and studied independently and grow as a developer. Now I'm\ndeveloping on React.js/Node.js. I graduated from Art School, like design and my creativity helps me in front-\nend development, and I would like to use it in my work.\nTechnologies: React.js, Redux, Node.js, Express.js, JavaScript, HTML, CSS, SCSS, MongoDB, Java, Spring\nBoot, Spring MVC, OOP, Hibernate, Bootstrap, PostgreSQL, SQL, Git.\nExperience\n   Gold ventures investment Israel, Java software developer\nTechnologies: Java, Spring Boot, Spring Data JPA, Spring Security, Spring MVC, Hibernate, Maven,\nThymeleaf, HTML, CSS, Bootstrap, PostgreSQL, Debian, GitHub.\nResponsibilities:\n Develop database structure, develop backend on Spring Boot/MVC/Security/JPA\n Develop frontend with Thymeleaf, HTML and Bootstrap, Deploy project\n Group management\nKey Achievements:\nI worked as a team leader, developed a working application, and deployed it to a web server.\n   Neolines, Frontend developer\nTechnologies: Drupal, Photoshop, Bootstrap, HTML, CSS.\nResponsibilities:\n Develop frontend elements, using HTML, CSS, Photoshop, Bootstrap\n Content management and copywriting, using Drupal 6/7\nKey Achievements:\nParticipated in the development and support of four projects.\nEducation\n   Udemy course. Development on React.js/Node.js\n Development Internet market Build Ecommerce Website Like Amazon [React & Node &\nMongoDB].\n Technologies: Node.js, Express.js, React.js, Redux, MongoDB, CSS\n   Masa Tlalim Israel education program: Java programming.\nStudied: Java core, Collection API, Android.\n   Bachelor's Degree Software engineering at Moscow Technological\nUniversity\nStudied: Java, C++, JavaScript, Pascal, Programming, Data Structure, Algorithms, OOP, Software,\nengineering, Mathematics, SQL, Databases, Cisco.\nGraduation work: Inventorys program for department of the institute. Technologies: Android, Java, Spring\nBoot, Spring Data JPA, Spring MVC, Hibernate, Maven, PostgreSQL, Mustache.\nCertificates:\n Cisco, CCNA course. Routing and switching. Introduction to network technologies\n IITC College, Certificate. Course: Java and Android Programming\nLinks\nGithub: \nLinkedln: \nArtstation: \nLanguages: English (professional working proficiency), Russian (native), Hebrew(basic)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Israel, Netanya",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "tel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ": ,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "e-mail:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend Developer/ Full stack Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "An energetic, motivated and responsible young developer. I enjoy learning new technologies and want to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "improve my skills that I acquired at university and studied independently and grow as a developer. Now I'm",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "developing on React.js/Node.js. I graduated from Art School, like design and my creativity helps me in front-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "end development, and I would like to use it in my work.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: React.js, Redux, Node.js, Express.js, JavaScript, HTML, CSS, SCSS, MongoDB, Java, Spring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Boot, Spring MVC, OOP, Hibernate, Bootstrap, PostgreSQL, SQL, Git.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gold ventures investment Israel, Java software developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Java, Spring Boot, Spring Data JPA, Spring Security, Spring MVC, Hibernate, Maven,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Thymeleaf, HTML, CSS, Bootstrap, PostgreSQL, Debian, GitHub.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Develop database structure, develop backend on Spring Boot/MVC/Security/JPA",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Develop frontend with Thymeleaf, HTML and Bootstrap, Deploy project",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Group management",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Key Achievements:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I worked as a team leader, developed a working application, and deployed it to a web server.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Neolines, Frontend developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Drupal, Photoshop, Bootstrap, HTML, CSS.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Develop frontend elements, using HTML, CSS, Photoshop, Bootstrap",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Content management and copywriting, using Drupal 6/7",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Key Achievements:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Participated in the development and support of four projects.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Udemy course. Development on React.js/Node.js",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development Internet market Build Ecommerce Website Like Amazon [React & Node &",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MongoDB].",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Node.js, Express.js, React.js, Redux, MongoDB, CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Masa Tlalim Israel education program: Java programming.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Studied: Java core, Collection API, Android.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bachelor's Degree Software engineering at Moscow Technological",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Studied: Java, C++, JavaScript, Pascal, Programming, Data Structure, Algorithms, OOP, Software,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "engineering, Mathematics, SQL, Databases, Cisco.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Graduation work: Inventorys program for department of the institute. Technologies: Android, Java, Spring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Boot, Spring Data JPA, Spring MVC, Hibernate, Maven, PostgreSQL, Mustache.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Certificates:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Cisco, CCNA course. Routing and switching. Introduction to network technologies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IITC College, Certificate. Course: Java and Android Programming",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Links",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Github:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linkedln:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Artstation:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: English (professional working proficiency), Russian (native), Hebrew(basic)",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

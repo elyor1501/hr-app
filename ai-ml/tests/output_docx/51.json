@@ -1,0 +1,216 @@
+{
+  "file_name": "51.docx",
+  "total_blocks": 34,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Java Developer, Backend\nTel Aviv Cell:   LinkedIn\n Have Java developer background with proven experience in optimizing Java code using\nSpring Boot framework.\n Have professional knowledge in implementing data transfer over the TCP/UDP protocol to\nthe server.\n BA in Informatics and Economy, with a passion for a constant professional development\nand self-study.\n Highly motivated to work in the technological environment, a great team-player with good\ncommunicational skills.\nHard Skills:\nJava Core, C#, C++, WPF, Spring Boot, SQL, Git.\nEducation and courses:\n 2021  Ulpan Alef, Beit Borodetsky, Tel Aviv.\n 2016 .\n 2020  Java basic courses, online professional courses Udemy.\n 2012  2015  C # and Delphi professional courses at the Novosibirsk Academy of\nDesign and Programming.\nExperience and participated projects:\n2020  2021  MASA Tlalim, Java and Android programming, educational program, Israel\nIn terms of the educational program I had experience in C# development and WPF framework\nfor Israeli startup in technological robotic sphere.\n2020  Internship, Service Engineer, Center for Financial Technologies, software\ndevelopment company for global financial and credit companies, Russia\n Java + Oracle Development\n Optimizing Java code using Spring Boot\n Implementing Database Queries\n2019  Summer internship as Java Developer at Eltex, a technological company which\ndevelops and manufactures network equipment, Russia\n Optimising Java code with using framework Spring Boot.\n Developing software for a router system.\nLanguages:\nEnglish  Pre-Intermediate, Russian  Native.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Java Developer, Backend",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel Aviv Cell:   LinkedIn",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Have Java developer background with proven experience in optimizing Java code using",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Spring Boot framework.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Have professional knowledge in implementing data transfer over the TCP/UDP protocol to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "the server.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "BA in Informatics and Economy, with a passion for a constant professional development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and self-study.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Highly motivated to work in the technological environment, a great team-player with good",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "communicational skills.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hard Skills:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java Core, C#, C++, WPF, Spring Boot, SQL, Git.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education and courses:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021  Ulpan Alef, Beit Borodetsky, Tel Aviv.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016 .",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020  Java basic courses, online professional courses Udemy.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2012  2015  C # and Delphi professional courses at the Novosibirsk Academy of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Design and Programming.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience and participated projects:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020  2021  MASA Tlalim, Java and Android programming, educational program, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "In terms of the educational program I had experience in C# development and WPF framework",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "for Israeli startup in technological robotic sphere.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020  Internship, Service Engineer, Center for Financial Technologies, software",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development company for global financial and credit companies, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java + Oracle Development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Optimizing Java code using Spring Boot",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implementing Database Queries",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019  Summer internship as Java Developer at Eltex, a technological company which",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "develops and manufactures network equipment, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Optimising Java code with using framework Spring Boot.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developing software for a router system.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English  Pre-Intermediate, Russian  Native.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

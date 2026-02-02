@@ -1,0 +1,29 @@
+{
+  "category": "Accountant",
+  "file_name": "Accountant_multipage.pdf",
+  "total_pages": 2,
+  "confidence": 0.78,
+  "time_taken": 0.79,
+  "memory_mb": 6.04,
+  "pages": [
+    {
+      "page_number": 1,
+      "method": "structured",
+      "confidence": 0.79,
+      "text": {
+        "text": "JOHN DOE\nSenior Accountant\nMumbai, India | john.doe@email.com | +91-9XXXXXXXXX\nPROFESSIONAL SUMMARY\nSenior Accountant with over 12 years of experience in financial accounting, auditing, taxation, and regulatory\ncompliance across manufacturing, IT, and professional services industries. Proven expertise in managing\nend-to-end accounting operations, ensuring statutory compliance, and delivering accurate financial insights to\nsenior leadership. Strong analytical mindset with a track record of improving reporting accuracy, optimizing costs,\nand strengthening internal controls.\nCORE COMPETENCIES\n(cid:127) Financial Accounting & Reporting\n(cid:127) Statutory & Internal Audits\n(cid:127) Taxation (GST, TDS, Income Tax)\n(cid:127) Budgeting & Forecasting\n(cid:127) Cost Control & Variance Analysis\n(cid:127) Internal Controls & Compliance\n(cid:127) ERP Systems: SAP, Oracle, Tally\n(cid:127) Advanced Excel & Financial Modelling\nPROFESSIONAL EXPERIENCE\nSenior Accountant – ABC Finance Ltd (2018 – Present)\n(cid:127) Lead end-to-end accounting operations for a mid-sized organization with annual turnover exceeding INR 250\nCrores.\n(cid:127) Prepare and review monthly, quarterly, and annual financial statements in compliance with IND-AS and statutory\nrequirements.\n(cid:127) Coordinate with external auditors and successfully closed audits with zero major observations for four\nconsecutive years.\n(cid:127) Implemented automated reconciliation processes, reducing month-end close time by 25%.\n(cid:127) Partner with senior management to support strategic decision-making through detailed financial analysis and\nMIS reporting.",
+        "tables": []
+      }
+    },
+    {
+      "page_number": 2,
+      "method": "structured",
+      "confidence": 0.77,
+      "text": {
+        "text": "Accountant – XYZ Professional Services (2012 – 2018)\n(cid:127) Managed day-to-day accounting operations including accounts payable, accounts receivable, and general ledger\nmaintenance.\n(cid:127) Prepared balance sheets, profit & loss statements, and cash flow statements for multiple client accounts.\n(cid:127) Independently handled GST registration, filings, and reconciliations for over 20 clients across different industries.\n(cid:127) Assisted in income tax assessments and successfully resolved departmental queries with supporting\ndocumentation.\n(cid:127) Improved billing accuracy and reduced revenue leakage by 15% through process standardization.\nKEY ACHIEVEMENTS\n(cid:127) Reduced audit observations by 40% through strengthened internal controls.\n(cid:127) Identified cost-saving opportunities resulting in annual savings of INR 18 Lakhs.\n(cid:127) Recognized as “Best Performer – Finance” for two consecutive years.\nEDUCATION\n(cid:127) Chartered Accountant (CA) – Institute of Chartered Accountants of India (ICAI)\n(cid:127) Bachelor of Commerce (B.Com) – University of Mumbai\nCERTIFICATIONS\n(cid:127) Certified GST Practitioner\n(cid:127) Diploma in IFRS\nADDITIONAL INFORMATION\n(cid:127) Strong communication and stakeholder management skills\n(cid:127) Experience working with cross-functional teams\n(cid:127) Willingness to adapt to evolving regulatory environments",
+        "tables": []
+      }
+    }
+  ],
+  "error": null
+}

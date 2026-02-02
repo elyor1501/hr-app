@@ -1,0 +1,312 @@
+{
+  "file_name": "54.docx",
+  "total_blocks": 50,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 2.18,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Pavel Barannikov\nWeb Developer\nProfile Details\nWork experience for almost 10 years. My direct specialty is web developer. Netanya, Israel, \nHowever, if necessary, I can easily learn any programming language. I \nwork on php / mysql, confidently familiar with the jquery and css. I have\nDate / Place of birth\nexperience with such CMS as: 1C-Bitrix, Joomla, WordPress, Drupal\n16/03/1992\nRussia\nEducation\nNationality\nSecond degree, Ulyanovsk State Technical University, Ulyanovsk\nSeptember 2009  June ,\nUlyanovsk\nCss\nSeptember 2010  August 2012\nWas engaged in the development / maintenance of the \"Educational MySql\nProcess\" system. PHP development. Work with databases, MySQL,\njQuery\nPostgreSQL\nAJAX\nWeb-developer at Digital Dream LLC, Ulyanovsk\nAugust 2012  August 2013\nGit\nWebsite development on the 1C-Bitrix platform. During his work in the\ncompany, 17 projects were successfully completed, sites of medium Git Flow\ncomplexity and higher.\nSeo\nWeb-developer at Individual entrepreneur, Ulyanovsk\nHTML5\nAugust 2012  July 2014\nDuring freelance, at least two dozens of sites were developed from corporate Docker\nweb applications to highly loaded online stores.\nEffective Team Leader\nWeb-developer at IntimeFinance, Ulyanovsk\nApril 2014  October 2015 Ability to Work in a Team\nWeb application development for the internal needs of the company,\ncorporate site development. System administration. Languages\nEnglish\nWeb-developer, Teamleader at iBrush , Moscow\nOctober 2015  December 2018 Russian\nWebsite development, management of a development team (3\nprogrammers, 2 layout designers), design, maintenance. Interview new\nstaff.\nWeb-developer, Teamlead at Eapteka Ltd, Moscow\nJanuary 2019  Present\nWork on a highly loaded project - daily the number of visitors is several\nhundred thousand.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Pavel Barannikov",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Profile Details",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work experience for almost 10 years. My direct specialty is web developer. Netanya, Israel,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "However, if necessary, I can easily learn any programming language. I",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "work on php / mysql, confidently familiar with the jquery and css. I have",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Date / Place of birth",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "experience with such CMS as: 1C-Bitrix, Joomla, WordPress, Drupal",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "16/03/1992",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Nationality",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Second degree, Ulyanovsk State Technical University, Ulyanovsk",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September 2009  June ,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ulyanovsk",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Css",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September 2010  August 2012",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Was engaged in the development / maintenance of the \"Educational MySql",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Process\" system. PHP development. Work with databases, MySQL,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "jQuery",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PostgreSQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "AJAX",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web-developer at Digital Dream LLC, Ulyanovsk",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "August 2012  August 2013",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Git",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Website development on the 1C-Bitrix platform. During his work in the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "company, 17 projects were successfully completed, sites of medium Git Flow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "complexity and higher.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Seo",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web-developer at Individual entrepreneur, Ulyanovsk",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HTML5",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "August 2012  July 2014",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "During freelance, at least two dozens of sites were developed from corporate Docker",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "web applications to highly loaded online stores.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Effective Team Leader",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web-developer at IntimeFinance, Ulyanovsk",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "April 2014  October 2015 Ability to Work in a Team",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web application development for the internal needs of the company,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "corporate site development. System administration. Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web-developer, Teamleader at iBrush , Moscow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "October 2015  December 2018 Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Website development, management of a development team (3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "programmers, 2 layout designers), design, maintenance. Interview new",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "staff.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web-developer, Teamlead at Eapteka Ltd, Moscow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "January 2019  Present",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work on a highly loaded project - daily the number of visitors is several",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "hundred thousand.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

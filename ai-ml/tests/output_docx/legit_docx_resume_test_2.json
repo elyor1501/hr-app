@@ -1,0 +1,355 @@
+{
+  "file_name": "legit_docx_resume_test_2.docx",
+  "total_blocks": 45,
+  "confidence": 0.88,
+  "time_taken": 0.08,
+  "memory_mb": 2.18,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Priya Sharma",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 1"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Senior Data Engineer with 9+ years of experience designing scalable ETL pipelines, cloud data platforms, and real‑time analytics systems across BFSI and e‑commerce domains.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "PROFESSIONAL EXPERIENCE",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Principal Data Engineer — CloudMart Pvt Ltd (2018–Present)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Architected Spark pipelines processing 5TB/day of transactional data",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Migrated on‑prem Oracle warehouse to Snowflake on Azure",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Built Airflow DAGs with SLA monitoring and alerting",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Mentored 10+ junior engineers across geographies",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Requirement gathering with stakeholders",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Source system analysis",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Pipeline design and modeling",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Implementation and performance tuning",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Production rollout and monitoring",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "TECHNICAL SKILLS MATRIX",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "PROJECT HIGHLIGHTS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Real‑Time Fraud Detection Platform — Designed Kafka‑Spark streaming architecture with sub‑second latency.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Customer 360 Warehouse — Modeled dimensional schemas serving BI dashboards for 200+ analysts.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EDUCATION & CERTIFICATIONS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "M.Tech in Computer Science — IIT Bombay (2011–2013)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Microsoft Certified: Azure Data Engineer Associate",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Databricks Certified Data Engineer Professional",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "Domain",
+            "Tool / Technology",
+            "Years",
+            "Proficiency"
+          ],
+          [
+            "Big Data",
+            "Apache Spark, Kafka, Flink",
+            "6",
+            "Expert"
+          ],
+          [
+            "Cloud",
+            "Azure Data Factory, ADLS, Synapse",
+            "5",
+            "Advanced"
+          ],
+          [
+            "Databases",
+            "Snowflake, PostgreSQL, Oracle",
+            "7",
+            "Expert"
+          ],
+          [
+            "Orchestration",
+            "Airflow, Dagster",
+            "5",
+            "Advanced"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "header",
+      "text": "Priya Sharma — Data Engineer | priya.sharma@email.com | +91-98765-43210",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "footer",
+      "text": "Priya Sharma Resume — Confidential",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Priya Sharma",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior Data Engineer with 9+ years of experience designing scalable ETL pipelines, cloud data platforms, and real‑time analytics systems across BFSI and e‑commerce domains.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFESSIONAL EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Principal Data Engineer — CloudMart Pvt Ltd (2018–Present)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Architected Spark pipelines processing 5TB/day of transactional data",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Migrated on‑prem Oracle warehouse to Snowflake on Azure",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Built Airflow DAGs with SLA monitoring and alerting",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mentored 10+ junior engineers across geographies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Requirement gathering with stakeholders",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Source system analysis",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Pipeline design and modeling",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implementation and performance tuning",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Production rollout and monitoring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "TECHNICAL SKILLS MATRIX",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROJECT HIGHLIGHTS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Real‑Time Fraud Detection Platform — Designed Kafka‑Spark streaming architecture with sub‑second latency.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Customer 360 Warehouse — Modeled dimensional schemas serving BI dashboards for 200+ analysts.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION & CERTIFICATIONS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "M.Tech in Computer Science — IIT Bombay (2011–2013)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Microsoft Certified: Azure Data Engineer Associate",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databricks Certified Data Engineer Professional",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

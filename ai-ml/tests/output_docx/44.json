@@ -1,0 +1,252 @@
+{
+  "file_name": "44.docx",
+  "total_blocks": 40,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Back-end Developer\nMobile phone: \nEmail: \nLinkedin: \nGit: \nLocation: Petah  Tikva, Israel\nProfessional skills:\n Languages: Php, Python, C++\n Frameworks: Laravel, Symfony, flask\n DB: MySQL\n OS: Linux, Windows\n Other: Git, Composer, REST API, RedMine, Trello, JWT, Apache\nWork experience:\nPHP Developer     (9 month)\nUnique Technologies LLC - Dnipro, Ukraine\n Developed server side of web and mobile applications using PHP, MySQL\n Wrote new applications components and edited old ones using Laravel 5\n Worked with team of developers to resolved Front-End and Back-End issues\n Worked with GitFlow\nWEB Developer     (5 month)\nConcord Bank - Dnipro, Ukraine\n Maintained web application using php, Laravel\n Developer of bank services\n Worked with GitFlow\nPHP Developer     (4 month)\ncheapfortrip.ru - Dnipro, Ukraine\n Developed small projects in PHP (backend, API)\n Used Symfony 4, MySQL.\nEducation:\n 2018 Hillel IT school  php development\n  NTUDP (Dnipro Polytechnic National Technical University). Computer engineering\n  DNURT (Dnipro National University of Rail Transport). Computer engineering\nLanguages knowledge:\n Hebrew Beginner\n English Fluent\n Russian Native, Ukrainian Native\nRecommendations:\nUnique Technologies LLC - Dnipro, Ukraine\nAlex Stepanov",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Back-end Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mobile phone:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Email:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linkedin:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Git:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Location: Petah  Tikva, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional skills:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: Php, Python, C++",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks: Laravel, Symfony, flask",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DB: MySQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "OS: Linux, Windows",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Other: Git, Composer, REST API, RedMine, Trello, JWT, Apache",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Work experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PHP Developer     (9 month)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Unique Technologies LLC - Dnipro, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed server side of web and mobile applications using PHP, MySQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Wrote new applications components and edited old ones using Laravel 5",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Worked with team of developers to resolved Front-End and Back-End issues",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Worked with GitFlow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WEB Developer     (5 month)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Concord Bank - Dnipro, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Maintained web application using php, Laravel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developer of bank services",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Worked with GitFlow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PHP Developer     (4 month)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "cheapfortrip.ru - Dnipro, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed small projects in PHP (backend, API)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used Symfony 4, MySQL.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2018 Hillel IT school  php development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "NTUDP (Dnipro Polytechnic National Technical University). Computer engineering",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DNURT (Dnipro National University of Rail Transport). Computer engineering",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages knowledge:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hebrew Beginner",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English Fluent",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian Native, Ukrainian Native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Unique Technologies LLC - Dnipro, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Alex Stepanov",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

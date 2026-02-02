@@ -1,0 +1,233 @@
+{
+  "file_name": "legit_docx_resume_test.docx",
+  "total_blocks": 29,
+  "confidence": 0.88,
+  "time_taken": 0.08,
+  "memory_mb": 2.18,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Alex Johnson",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Senior Software Engineer with 8+ years of experience in backend systems, distributed architectures, and data pipelines.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EXPERIENCE",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Lead Software Engineer — FinTech Corp (2019–Present)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Designed microservices handling 10M+ transactions/day",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Led a team of 6 engineers across two regions",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Implemented CI/CD pipelines reducing deployment time by 40%",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Gathered business requirements",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Designed system architecture",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Implemented and tested services",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "TECHNICAL SKILLS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EDUCATION",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "B.Tech in Computer Science — National Institute of Technology (2012–2016)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "Category",
+            "Technologies",
+            "Proficiency"
+          ],
+          [
+            "Languages",
+            "Python, Java, SQL",
+            "Expert"
+          ],
+          [
+            "Frameworks",
+            "Spring Boot, FastAPI",
+            "Advanced"
+          ],
+          [
+            "Databases",
+            "PostgreSQL, MongoDB",
+            "Advanced"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "header",
+      "text": "Alex Johnson — Senior Software Engineer | alex.johnson@email.com | +1-555-123-4567",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "footer",
+      "text": "Alex Johnson Resume — Page 1",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Alex Johnson",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior Software Engineer with 8+ years of experience in backend systems, distributed architectures, and data pipelines.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Lead Software Engineer — FinTech Corp (2019–Present)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Designed microservices handling 10M+ transactions/day",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Led a team of 6 engineers across two regions",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implemented CI/CD pipelines reducing deployment time by 40%",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gathered business requirements",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Designed system architecture",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implemented and tested services",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "TECHNICAL SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "B.Tech in Computer Science — National Institute of Technology (2012–2016)",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

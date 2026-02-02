@@ -1,0 +1,29 @@
+{
+  "category": "Architect",
+  "file_name": "Architect_multipage.pdf",
+  "total_pages": 2,
+  "confidence": 0.77,
+  "time_taken": 1.61,
+  "memory_mb": 4.4,
+  "pages": [
+    {
+      "page_number": 1,
+      "method": "structured",
+      "confidence": 0.78,
+      "text": {
+        "text": "AR. AMIT KAPOOR\nSenior Architect / Urban Design Specialist\nBengaluru, India | amit.kapoor@email.com | +91-9XXXXXXXXX\nPROFESSIONAL SUMMARY\nSenior Architect with over 12 years of experience in architectural design, urban planning, and project execution\nacross residential, commercial, and mixed-use developments. Proven expertise in concept design, client\ncoordination, statutory approvals, and on-site execution. Strong focus on sustainable design practices, cost\noptimization, and timely delivery of high-quality architectural solutions.\nCORE SKILLS\n(cid:127) Architectural Design & Planning\n(cid:127) Urban Design & Master Planning\n(cid:127) Sustainable & Green Building Design\n(cid:127) Construction Documentation\n(cid:127) Client & Consultant Coordination\n(cid:127) Project Scheduling & Site Supervision\n(cid:127) AutoCAD, Revit, SketchUp, Lumion\n(cid:127) Building Codes & Regulatory Compliance\nPROFESSIONAL EXPERIENCE\nSenior Architect – Horizon Design Studio (2018 – Present)\n(cid:127) Lead architectural design and execution for residential and commercial projects ranging from 50,000 to 500,000\nsq. ft.\n(cid:127) Developed concept designs, detailed drawings, and 3D visualizations in coordination with clients and\nconsultants.\n(cid:127) Managed statutory approvals with local authorities and ensured compliance with building codes and regulations.\n(cid:127) Supervised on-site execution and resolved design and construction issues to ensure timely project delivery\nwithin budget.",
+        "tables": []
+      }
+    },
+    {
+      "page_number": 2,
+      "method": "structured",
+      "confidence": 0.76,
+      "text": {
+        "text": "Architect – UrbanForm Architects (2012 – 2018)\n(cid:127) Prepared detailed working drawings, BOQs, and construction documents for residential and commercial\nprojects.\n(cid:127) Coordinated with structural, MEP, and landscape consultants for integrated project delivery.\n(cid:127) Conducted regular site visits to monitor quality, progress, and adherence to design intent.\n(cid:127) Assisted in sustainable design strategies including daylight analysis, material optimization, and energy-efficient\nsolutions.\nKEY PROJECTS\n(cid:127) Mixed-use Commercial Complex – 4,00,000 sq. ft.\n(cid:127) Luxury Residential Tower – 32 storeys\n(cid:127) Corporate Office Campus – LEED Gold Certified\nEDUCATION\n(cid:127) Bachelor of Architecture (B.Arch) – School of Planning & Architecture, Delhi\nPROFESSIONAL AFFILIATIONS\n(cid:127) Council of Architecture (COA), India\n(cid:127) Indian Institute of Architects (IIA)\nADDITIONAL INFORMATION\n(cid:127) Strong presentation and visualization skills\n(cid:127) Experience working on fast-track projects\n(cid:127) Passionate about sustainable and context-driven design",
+        "tables": []
+      }
+    }
+  ],
+  "error": null
+}

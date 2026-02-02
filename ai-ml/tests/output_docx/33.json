@@ -1,0 +1,294 @@
+{
+  "file_name": "33.docx",
+  "total_blocks": 47,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Mob  | Telegram  | \nEDUCATION\n2012  , November  TINKOFF BANK (tinkoff.ru), Russia\n2022, February Senior Software Developer (Python)\n Was supporting legacy code and implementing new features. Stack: Python, Fastapi, Postgres,\nKafka\n2020, June  MTS GROUP (mts.ru), Russia\n2021, August Python Developer\n Created an api for ML model. Stack: Python, Flask, Postgres, Numpy, Pandas, Docker\n Developed (in a team of 5) an infrastructure service with microservice architecture. Was involved\nin creation of DAGs for Airflow, tasks for Celery. Was working with DB Postgres and Aerospike,\ndeveloping producers and consumers for Kafka and manifests for Kubernetes.\n2019, August  FIRST LINE SOFTWARE (firstlinesoftware.com), Russia\n2020, June Python Developer\n Integrated a back-end of Django-based online shop with Stripe API\n Developed an algorithm for making a graph acyclic by deleting a minimal number of edges\n Increased by 10 times the speed of classification in ML model by optimizing business logic in\nPython code base\n Proposed additional validation of ML models and improved F-score from 80 to 92%.\n2017, December  KINODANZA (kinodanz.ru), Russia\n2019, August Python Developer\n Created an application for distributed processing of 3-D models in local network (simplified\nanalogue of ftrack). This involved designing network and database architecture, developing a GUI\nand client-server interaction. Stack: Python 2.7, PySide, MongoDB, XML, CSS(QSS),\nQWebSocket\n Enhanced the security of companys internal data by creating a Python module for Windows\n(using Windows AD, win32api)\n2017, July  AISA (aisa.ru), Russia\nDecember Web-Developer\n Improved companys product by finding and fixing logical bugs. Worked with: Java, Spring, JS,\nEXT.js, Node js, SOAP, SVN\n Made project build on Ant\n2016, July  MAPPING, Russia\nSeptember SWE Intern\n Created a web page for the company site using HTML, CSS and Typescript\n Was involved in back-end development. Learned basics of Java Spring, Hibernate, HQL\n2013, September  DANONE, Russia\n2014, May Assistant in Department of Demand Planning\n Was preparing datasets for demand forecasting\n Worked with visualization tools (mostly Deductor) to present forecasting results to the\nmanagement\nADDITIONAL INFORMATION\nLanguages Native Russian, Upper-Intermediate English\nSports&Culture Basketball, chess\nNationality Russian, new repatriant in Israel",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Mob  |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Telegram  |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2012  , November  TINKOFF BANK (tinkoff.ru), Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2022, February Senior Software Developer (Python)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Was supporting legacy code and implementing new features. Stack: Python, Fastapi, Postgres,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Kafka",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020, June  MTS GROUP (mts.ru), Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021, August Python Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created an api for ML model. Stack: Python, Flask, Postgres, Numpy, Pandas, Docker",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed (in a team of 5) an infrastructure service with microservice architecture. Was involved",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "in creation of DAGs for Airflow, tasks for Celery. Was working with DB Postgres and Aerospike,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "developing producers and consumers for Kafka and manifests for Kubernetes.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019, August  FIRST LINE SOFTWARE (firstlinesoftware.com), Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020, June Python Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Integrated a back-end of Django-based online shop with Stripe API",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed an algorithm for making a graph acyclic by deleting a minimal number of edges",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Increased by 10 times the speed of classification in ML model by optimizing business logic in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python code base",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Proposed additional validation of ML models and improved F-score from 80 to 92%.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017, December  KINODANZA (kinodanz.ru), Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019, August Python Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created an application for distributed processing of 3-D models in local network (simplified",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "analogue of ftrack). This involved designing network and database architecture, developing a GUI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and client-server interaction. Stack: Python 2.7, PySide, MongoDB, XML, CSS(QSS),",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "QWebSocket",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Enhanced the security of companys internal data by creating a Python module for Windows",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(using Windows AD, win32api)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017, July  AISA (aisa.ru), Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "December Web-Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Improved companys product by finding and fixing logical bugs. Worked with: Java, Spring, JS,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXT.js, Node js, SOAP, SVN",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Made project build on Ant",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016, July  MAPPING, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September SWE Intern",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created a web page for the company site using HTML, CSS and Typescript",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Was involved in back-end development. Learned basics of Java Spring, Hibernate, HQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2013, September  DANONE, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2014, May Assistant in Department of Demand Planning",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Was preparing datasets for demand forecasting",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Worked with visualization tools (mostly Deductor) to present forecasting results to the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "management",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ADDITIONAL INFORMATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages Native Russian, Upper-Intermediate English",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sports&Culture Basketball, chess",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Nationality Russian, new repatriant in Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

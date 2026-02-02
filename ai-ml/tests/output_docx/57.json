@@ -1,0 +1,240 @@
+{
+  "file_name": "57.docx",
+  "total_blocks": 38,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Embedded Linux Engineer, 23 y.o.  nazaryev.ru\nBeer Sheva, Israel\n4 years as Embedded Linux Developer, 6 years total as a developer.\nLooking for an Embedded Linux-related position.\nWORK EXPERIENCE\n2019  Embedded Linux Platform Engineer @ Cogent Embedded\nEmbedded automotive software / 2018  2019\n Maintained Yocto layers for in-house Linux distro based on Yocto Project;\n Improved deployment speed of OS and applications to new devices;\n Organized reproducible builds for software using Jenkins;\n Documented firmware deployment to new devices.\nYocto Project, Automative Grade Linux, Qt 5, C/C++, POSIX shell, Renesas R-Car, Jenkins\n2016  Embedded Linux Engineer @ Protei\nTelecommunications solutions / 2016  2018\n Participated in R&D of in-house Linux distro based on Buildroot for devices made by company;\n Ported and fixed drivers for Linux and U-boot, sometimes developed small drivers from scratch;\n Helped HW engineers with fixing bugs related to SW/HW interactions;\n Created and supervised building process using Jenkins, GitLab CI and Docker.\nFreescale i.MX6 / x86, Qt 5, Debian GNU/Linux, C, POSIX shell, Python, Buildroot, Jenkins, Docker\n2015  Embedded Linux Developer @ NTC Metrotek\nNetworking hardware / 2015  2016\n Ported application from Nut/OS (AVR) to GNU/Linux (ARM);\n Adapted Debian GNU/Linux for running on devices created by company;\n Helped with packaging software for Debian GNU/Linux.\nAltera Cyclone V, Debian GNU/Linux, C, Python, POSIX Shell, Jenkins\n2014  Junior Android Developer @ Mobium (Android e-commerce apps development)\nSKILLS (MOST IMPORTANT ARE UNDERLINED)\nPrimary languages for me C and POSIX shell\nHave experience with Python, Java (Android)\nVCS Git, Subversion\nBuild tools GNU make, Jenkins, GitLab CI\nLinux distros Debian, Arch Linux, Buildroot, Yocto\nOther Vim, Markdown, LATEX, HTML5/CSS3, Docker\nLanguages English, Hebrew (elementary), Russian\nEDUCATION\nITMO University (Information Technologies, Mechanics and Optics)\nB.Sc., Embedded Systems / 2013  2017",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Embedded Linux Engineer, 23 y.o.  nazaryev.ru",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Beer Sheva, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "4 years as Embedded Linux Developer, 6 years total as a developer.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Looking for an Embedded Linux-related position.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WORK EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019  Embedded Linux Platform Engineer @ Cogent Embedded",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Embedded automotive software / 2018  2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Maintained Yocto layers for in-house Linux distro based on Yocto Project;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Improved deployment speed of OS and applications to new devices;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Organized reproducible builds for software using Jenkins;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Documented firmware deployment to new devices.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Yocto Project, Automative Grade Linux, Qt 5, C/C++, POSIX shell, Renesas R-Car, Jenkins",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016  Embedded Linux Engineer @ Protei",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Telecommunications solutions / 2016  2018",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Participated in R&D of in-house Linux distro based on Buildroot for devices made by company;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ported and fixed drivers for Linux and U-boot, sometimes developed small drivers from scratch;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Helped HW engineers with fixing bugs related to SW/HW interactions;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created and supervised building process using Jenkins, GitLab CI and Docker.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Freescale i.MX6 / x86, Qt 5, Debian GNU/Linux, C, POSIX shell, Python, Buildroot, Jenkins, Docker",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2015  Embedded Linux Developer @ NTC Metrotek",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Networking hardware / 2015  2016",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ported application from Nut/OS (AVR) to GNU/Linux (ARM);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Adapted Debian GNU/Linux for running on devices created by company;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Helped with packaging software for Debian GNU/Linux.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Altera Cyclone V, Debian GNU/Linux, C, Python, POSIX Shell, Jenkins",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2014  Junior Android Developer @ Mobium (Android e-commerce apps development)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS (MOST IMPORTANT ARE UNDERLINED)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Primary languages for me C and POSIX shell",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Have experience with Python, Java (Android)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "VCS Git, Subversion",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Build tools GNU make, Jenkins, GitLab CI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linux distros Debian, Arch Linux, Buildroot, Yocto",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Other Vim, Markdown, LATEX, HTML5/CSS3, Docker",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages English, Hebrew (elementary), Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ITMO University (Information Technologies, Mechanics and Optics)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "B.Sc., Embedded Systems / 2013  2017",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

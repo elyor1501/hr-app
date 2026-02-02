@@ -1,0 +1,216 @@
+{
+  "file_name": "61.docx",
+  "total_blocks": 34,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Software engineer (Frontend developer) Updated: 20/06/2022\n Citizenship: Russia\n Location: TelAviv\n \nWeb Dev Positions\n2022 - EPAM Systems. D2 (Middle) Software Engineer. DuPage Medical Clinic of the Future\nproject. Marionnaud France Digital Factory project.\nTasks performed: Features and UX implementation, Unit testing, Code review, Issues\nidentifying and Bug fixing, SCRUM, Writing code specification, Collaboration with\nother teams.\nTech scope and tools: React, Redux, TypeScript, JavaScript, NodeJs, SCSS,\nBootstrap, Jest, Enzyme, Jira, Azure, Gitlab, MongoDB, Docker, Postman\n2021  2022 UniqTrip. Junior web developer. Five projects in Tourism, Booking and Construction\nfields.\nTasks performed: Features and UX implementation, Responsive UI layout, API\nDevelopment, Structure design, Issues identifying and Bug fixing, Unit testing.\nTech scope: React (Router, Redux), JavaScript, TypeScript, Figma, Trello,\nGitlab, Postman, Material UI, HTML/CSS, NodeJs.\nEducation\n2015 - 2016 Student (no diploma), The Moscow School of Social and Economic Sciences and\nUniversity of Manchester (UK) MSc joint degree program in Public History (Russia).\n2000 - 2005 Specialist (M.Sc. analogue) in Economics and Management. Ryazan State Radio-\nEngineering University (Russia).\n1996 - 2000 B.A (classical music), Ryazan State Musical College (Russia).\nWeb Dev Internships and Courses\n2021 EPAM System. Frontend 40 weeks internship.\n2021 UniqTrip. Frontend 6 weeks internship.\n Codecademy, Thinkster, Pluralsight, Udemy, LinkedinLearn and other courses.\nWeb Dev Skills and Tools\nJavaScript, TypeScript, NodeJS, React, Redux, HTML, (S)CSS, MaterialUI, Bootstrap, Jest,\nEnzyme, React testing library, Figma, Scrum, Jira, Git, Azure, Postman, Docker, MongoDB,\nExpress etc.\nLanguages\nRussian (Native), English (Upper-Intermediate)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Software engineer (Frontend developer) Updated: 20/06/2022",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Citizenship: Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Location: TelAviv",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web Dev Positions",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2022 - EPAM Systems. D2 (Middle) Software Engineer. DuPage Medical Clinic of the Future",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "project. Marionnaud France Digital Factory project.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tasks performed: Features and UX implementation, Unit testing, Code review, Issues",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "identifying and Bug fixing, SCRUM, Writing code specification, Collaboration with",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "other teams.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tech scope and tools: React, Redux, TypeScript, JavaScript, NodeJs, SCSS,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bootstrap, Jest, Enzyme, Jira, Azure, Gitlab, MongoDB, Docker, Postman",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021  2022 UniqTrip. Junior web developer. Five projects in Tourism, Booking and Construction",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "fields.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tasks performed: Features and UX implementation, Responsive UI layout, API",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development, Structure design, Issues identifying and Bug fixing, Unit testing.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tech scope: React (Router, Redux), JavaScript, TypeScript, Figma, Trello,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gitlab, Postman, Material UI, HTML/CSS, NodeJs.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2015 - 2016 Student (no diploma), The Moscow School of Social and Economic Sciences and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "University of Manchester (UK) MSc joint degree program in Public History (Russia).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2000 - 2005 Specialist (M.Sc. analogue) in Economics and Management. Ryazan State Radio-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Engineering University (Russia).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "1996 - 2000 B.A (classical music), Ryazan State Musical College (Russia).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web Dev Internships and Courses",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021 EPAM System. Frontend 40 weeks internship.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021 UniqTrip. Frontend 6 weeks internship.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Codecademy, Thinkster, Pluralsight, Udemy, LinkedinLearn and other courses.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web Dev Skills and Tools",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JavaScript, TypeScript, NodeJS, React, Redux, HTML, (S)CSS, MaterialUI, Bootstrap, Jest,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Enzyme, React testing library, Figma, Scrum, Jira, Git, Azure, Postman, Docker, MongoDB,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Express etc.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian (Native), English (Upper-Intermediate)",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

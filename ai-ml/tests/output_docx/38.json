@@ -1,0 +1,396 @@
+{
+  "file_name": "38.docx",
+  "total_blocks": 64,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Phone: \nEmail: \nLinked In:/\nSUMMARY EDUCATION\nNational Research Nuclear University MEPhI\nI'm a business analyst with 6,5 years of experience in the software industry and 4,5 years\n(Moscow Engineering Physics Institute)\nof experience as business and system analyst. My focus area has been web applications in\n Master's degree, Computer Software\neCommerce. I'm looking for a role of seniorbusinessand system (software) analyst, ready\nEngineering (2015  2017, Graduated with\nto expand the area of responsibility intoproductmanagement role.\nhonors)\nEXPERIENCE\n Bachelors degree - Applied Mathematics\nSenior Business Analyst Team Lead Oct 2018 - Present and Computer Science (2011  2015)\nMvideo-Eldorado,www.mvideo.ru, one of the biggesthardware stores in Russia SKILLS & EXPERTISE\nResponsibilities and Experience:\n requirementelicitation and elaboration\n created new version of the online storewww.mvideo.ru,based on the\n(business, functional, non-functional);\nmicroservices (as business analyst), all main pages of product selection process\n BPMN;\nare in the pilot or production;  UML;\n built the analysis process from the scratch, created the site knowledge base;  REST API;\n led the analyst team, expanded it from 2 to 27 members;  SQL;\n was responsible for  user-story mapping;\n reengineering and creating new business processes;  use case;\n agile (scrum, kanban);\n gathering and elaborations of different requirements: business, functional,\n SEO in web applications.\nnon-functional, requirements for bff-level REST integrations;\n supporting dev and QA teams during the entire feature life cycle;\n estimating workloads and planning analyst tasks for product teams.\nBusiness analyst Oct 2017 - Oct 2018\nLanguages\nGemotest laboratory,www.gemotest.ru,\nResponsibilities and Experience:\nEnglish - fluent\n remodeled registration process;\nRussian - native\n created and deployed to production the new algorithm for delivering\nGerman - basic (A1)\npatients results;\n created and deployed to production new payment process for cash\nAbout me\nregisters and new process of fulfilling field orders day to day;\n was responsible for\nIn my free time I enjoy yacht racing,\n reengineering business process;\nsurfing, reading books and traveling.\n business requirements elicitation, functional and non-functional\nrequirements elaborations;\n relational database design (using UML diagrams, SQL);\n creating the interface (using Axure RP).\nJunior software engineer Jan 2016  Jun 2017\nTS consulting, tsconsulting.ru\nCreated the software, using Siebel eScript and JavaScript, SQL queries.\nJunior QA automation engineer Jun 2013  Aug 2013\nAplana Development Center,\nResponsibilities and Experience:\n developed Unit-tests, based on the acceptance criteria;\n resolved bugs identified as a result of testing.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Email:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linked In:/",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SUMMARY EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "National Research Nuclear University MEPhI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I'm a business analyst with 6,5 years of experience in the software industry and 4,5 years",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(Moscow Engineering Physics Institute)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "of experience as business and system analyst. My focus area has been web applications in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Master's degree, Computer Software",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "eCommerce. I'm looking for a role of seniorbusinessand system (software) analyst, ready",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Engineering (2015  2017, Graduated with",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "to expand the area of responsibility intoproductmanagement role.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "honors)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bachelors degree - Applied Mathematics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Senior Business Analyst Team Lead Oct 2018 - Present and Computer Science (2011  2015)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mvideo-Eldorado,www.mvideo.ru, one of the biggesthardware stores in Russia SKILLS & EXPERTISE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities and Experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "requirementelicitation and elaboration",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "created new version of the online storewww.mvideo.ru,based on the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(business, functional, non-functional);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "microservices (as business analyst), all main pages of product selection process",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "BPMN;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "are in the pilot or production;  UML;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "built the analysis process from the scratch, created the site knowledge base;  REST API;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "led the analyst team, expanded it from 2 to 27 members;  SQL;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "was responsible for  user-story mapping;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "reengineering and creating new business processes;  use case;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "agile (scrum, kanban);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "gathering and elaborations of different requirements: business, functional,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SEO in web applications.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "non-functional, requirements for bff-level REST integrations;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "supporting dev and QA teams during the entire feature life cycle;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "estimating workloads and planning analyst tasks for product teams.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Business analyst Oct 2017 - Oct 2018",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gemotest laboratory,www.gemotest.ru,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities and Experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English - fluent",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "remodeled registration process;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian - native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "created and deployed to production the new algorithm for delivering",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "German - basic (A1)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "patients results;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "created and deployed to production new payment process for cash",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "About me",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "registers and new process of fulfilling field orders day to day;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "was responsible for",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "In my free time I enjoy yacht racing,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "reengineering business process;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "surfing, reading books and traveling.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "business requirements elicitation, functional and non-functional",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "requirements elaborations;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "relational database design (using UML diagrams, SQL);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "creating the interface (using Axure RP).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Junior software engineer Jan 2016  Jun 2017",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "TS consulting, tsconsulting.ru",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created the software, using Siebel eScript and JavaScript, SQL queries.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Junior QA automation engineer Jun 2013  Aug 2013",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Aplana Development Center,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities and Experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "developed Unit-tests, based on the acceptance criteria;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "resolved bugs identified as a result of testing.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

@@ -1,0 +1,510 @@
+{
+  "file_name": "7.docx",
+  "total_blocks": 72,
+  "confidence": 0.87,
+  "time_taken": 0.05,
+  "memory_mb": 0.23,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "***************",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "paragraph"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "FRONTEND DEVELOPER",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "paragraph"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2 years of experience in frontend development (React / Redux)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Phone:********** \t\t\t\t\t\t     Residence: Netanya, Israel",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "E-mail:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "LinkedIn:  \t     Languages: English, Russian",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EXPERIENCE SUMMARY",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Programming language: JavaScript, Python, Java, C#, .NET.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Web: React, Redux, Redux Toolkit, Styled-components, React Hook Form, HTML5, CSS3, SCSS, Bootstrap, jQuery, Google Map API.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Technologies: Node JS, JSX, JSON, XML, NPM, YARN, AJAX, UML.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Environments – IDE/tools: Microsoft Visual Studio Code, WebStorm, IntelliJ IDEA, Eclipse,",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "iRidium Mobile, Extron Global Configurator, Crestron SW-SIMPL, GitHub, Heroku, Firebase, Adobe Photoshop, Adobe Illustrator, Figma, Jira, Slack.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Web-services: REST API.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "QA tools: Postman, React Profiler, Redux DevTools.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "DataBases: MySQL, MongoDB, T-SQL.\t\t\t\t  System: Windows, Linux",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EXPERIENCE",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2021 - present: Frontend Developer,  (Rehovot, Israel)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Main project: platform for finding employees for companies.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Participation in the project development. The following modules were in my area of responsibility: Creating platform visually according to template file. Creating users with the definition of access roles. Code refactoring. Creation forms: to send data to database, authorization forms. Sorting algorithms depending on the option selected by the user. Rendering UI using React router dom. Integrated new technologies and replaced the outdated. Represented team interests in front of company’s supervisors.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Participated in projects in all stages of the product life cycle. Extensively utilized Github for version control in an agile development environment.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Used: HTML, CSS, JavaScript, React, React Router DOM, React Hook Form, Redux.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2019- 2021: \tMES Architect, UI Developer,  (St.Petersburg, Russia)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Main project: MES system for ALROSA mines.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Designed UI for MES Systems, designed data-flow diagrams and all logic for MES System, Support for C# applications. Wonderware System Platform project testing, maintenance and deployment. Arrangement of reservation, stage-by-stage updating of the system at the facility. Communication with technical support, installation of fixes. Participated in the development of the BI service on Vanilla JavaScript.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Used: C#, .NET, JavaScript, Wonderware Quick Script, Adobe Illustrator.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2015- 2019: Control System Programmer,  (St.Petersburg, Russia)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Main project: School of Engineering and Technology. Development of a management system.  Development of control interfaces for smart equipment, Designed UI interface for Desktop App, Designed UI interface for Mobile (Tablet), Writing utilities in C# for integrating various equipment with control systems.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Used: JavaScript, C#, Python, Adobe Illustrator, Extron Global Configurator, iRidium Mobile.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EDUCATION AND COURSES",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2010- 2014: Bachelor in Informatics - Polytechnic University (SPbPU),",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Faculty of Technical Cybernetics, St.Petersburg, Russia",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2019: Online courses «T-SQL for beginners» from Udemy",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2020: Online courses «Web Development for Developers» from Scrimba",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Recommendations are available upon request",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "***************",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FRONTEND DEVELOPER",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2 years of experience in frontend development (React / Redux)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:**********",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Residence: Netanya, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "E-mail:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LinkedIn:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: English, Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE SUMMARY",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming language: JavaScript, Python, Java, C#, .NET.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web: React, Redux, Redux Toolkit, Styled-components, React Hook Form, HTML5, CSS3, SCSS, Bootstrap, jQuery, Google Map API.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Node JS, JSX, JSON, XML, NPM, YARN, AJAX, UML.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Environments – IDE/tools: Microsoft Visual Studio Code, WebStorm, IntelliJ IDEA, Eclipse,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "iRidium Mobile, Extron Global Configurator, Crestron SW-SIMPL, GitHub, Heroku, Firebase, Adobe Photoshop, Adobe Illustrator, Figma, Jira, Slack.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web-services: REST API.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "QA tools: Postman, React Profiler, Redux DevTools.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DataBases: MySQL, MongoDB, T-SQL.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "System: Windows, Linux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021 - present: Frontend Developer,  (Rehovot, Israel)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Main project: platform for finding employees for companies.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Participation in the project development. The following modules were in my area of responsibility: Creating platform visually according to template file. Creating users with the definition of access roles. Code refactoring. Creation forms: to send data to database, authorization forms. Sorting algorithms depending on the option selected by the user. Rendering UI using React router dom. Integrated new technologies and replaced the outdated. Represented team interests in front of company’s supervisors.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Participated in projects in all stages of the product life cycle. Extensively utilized Github for version control in an agile development environment.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used: HTML, CSS, JavaScript, React, React Router DOM, React Hook Form, Redux.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019- 2021:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MES Architect, UI Developer,  (St.Petersburg, Russia)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Main project: MES system for ALROSA mines.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Designed UI for MES Systems, designed data-flow diagrams and all logic for MES System, Support for C# applications. Wonderware System Platform project testing, maintenance and deployment. Arrangement of reservation, stage-by-stage updating of the system at the facility. Communication with technical support, installation of fixes. Participated in the development of the BI service on Vanilla JavaScript.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used: C#, .NET, JavaScript, Wonderware Quick Script, Adobe Illustrator.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2015- 2019: Control System Programmer,  (St.Petersburg, Russia)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Main project: School of Engineering and Technology. Development of a management system.  Development of control interfaces for smart equipment, Designed UI interface for Desktop App, Designed UI interface for Mobile (Tablet), Writing utilities in C# for integrating various equipment with control systems.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used: JavaScript, C#, Python, Adobe Illustrator, Extron Global Configurator, iRidium Mobile.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION AND COURSES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2010- 2014: Bachelor in Informatics - Polytechnic University (SPbPU),",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Faculty of Technical Cybernetics, St.Petersburg, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019: Online courses «T-SQL for beginners» from Udemy",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2020: Online courses «Web Development for Developers» from Scrimba",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations are available upon request",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

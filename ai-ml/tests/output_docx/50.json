@@ -1,0 +1,518 @@
+{
+  "file_name": "50.docx",
+  "total_blocks": 84,
+  "confidence": 0.85,
+  "time_taken": 0.04,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Full-time, on-site, remote or hybrid.\nDOB: 1984. Aliyah: . Residence: Kiryat Ono, Montefiore, 13.\nMy name is Maria, Im a new repatriate from Russia, made an Aliyah in April. I work as a senior system\nanalyst, a senior business analyst, a team leader and a project manager.\nUnderstanding the importance of language in my profession, Im actively studying Hebrew. Now I hope to\nfind a position of junior/middle system and business analyst or QA tester that will give me the opportunity to\napply my skills and develop as I learn Hebrew.\nI really love my job so Im ready to work hard and learn fast to develop rapidly in analytics and leadership in\nnew conditions.\nI started my career as SQL and PL/SQL developer. Then I changed my profile to a system and business\nanalyst, combining these roles and role of QA tester throughout my career. Thanks to communication skills,\nhigh level of emotional intelligence and the ability to see the big picture, took the team leader position. Later,\nbecame the leader of several teams, combining leadership with the role of an analyst. Have also been the\nproject manager of several projects.\nNow I have extensive experience in system analytics, business analytics, QA and management. Many years of\nexperience working for the largest banks in Russia. Research, definition, optimization and automation of\nbusiness processes, development of management and analytical reporting, all types of manual testing, team\nmanagement and project management. Work experience with Jira, Confluence, Visio, TFS, PowerPoint,\nVisual Studio Code, MS Project, Oracle SQL Navigator, MS SQL Management studio etc. Using waterfall,\nscram, kanban.\nSome of my projects:\n Electronic document management for cash deposit and withdrawal (Alfa-Bank). 90% of transactions\ngo through EDM.\n Complete automation of deal making processes for collection and self-collection (Alfa-Bank).\n Integration of electronic document storage system with the main bank's systems. Standardization of the\nintegration process for quick connection of systems (Alfa-Bank).\n Field Staff Management System of the Technical Support Department of Sberbank (AT Consulting).\n System for monitoring and analyzing the activities of internal structural divisions of Sberbank (AT\nConsulting).\nJoint Stock Company ALFA-BANK\nSeptember 2019  Senior Team Manager\ncurrently working\nProcess management of four teams: work planning, communication, risk management, team\nbuilding, human research, requirement review, assessment review, mentoring.\nDecember 2017 Senior System Analyst, Project Lead\n September\nAutomation of the process of concluding a cash collection deal. DBMS MsSql.\n2019\nAll kinds of requirements and documentation, analyst team leader, management of all processes\ndevelopment, testing and communications.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "AT Consulting\nAugust 2012  Senior System Analyst\nDecember 2017\nField Staff Management System of the Technical Support Department of Sberbank.\nSystem for monitoring and analyzing the activities of internal structural divisions of Sberbank\nDBMS Oracle.\nAll kinds of requirements and documentation, Analyst team leader, Management of all processes of\nanalytics, testing and communication with the customer.\nE-school\nApril 2011  Senior System Analyst, Project Lead\nAugust 2012\nSoftware for education system. DBMS MsSql.\nBusiness analysis, System analysis, Project management, Database architecture development,\nTechnical documentation, User documentation, testing.\nPROMOS\nFebruary 2009  PL/SQL, SQL Developer\nAugust 2012\nBuilding sector. DBMS Oracle.\nForm builder, Report builder, Database architecture development, Interviewing customers,\ninstruction manuals for systems.\nBeeline Russia\nOctober 2008  SQL Developer\nJanuary 2009\nTelecommunications.\nBig data reports developer.\nINPRIS\nSeptember 2005  PL/SQL Developer, SQL Developer\nSeptember 2008\nSoftware for publishing houses.\nDBMS Oracle.\nForm builder, Report builder, Database architecture development, Interviewing customers,\ninstruction manuals for systems.\nLanguages:\n English\nProfessional working proficiency\n Russian\nNative\n Hebrew\nElementary proficiency\nEducation:\n2001  2003 Moscow State University, Faculty of Mechanics and Mathematics.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Full-time, on-site, remote or hybrid.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DOB: 1984. Aliyah: . Residence: Kiryat Ono, Montefiore, 13.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "My name is Maria, Im a new repatriate from Russia, made an Aliyah in April. I work as a senior system",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "analyst, a senior business analyst, a team leader and a project manager.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Understanding the importance of language in my profession, Im actively studying Hebrew. Now I hope to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "find a position of junior/middle system and business analyst or QA tester that will give me the opportunity to",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "apply my skills and develop as I learn Hebrew.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I really love my job so Im ready to work hard and learn fast to develop rapidly in analytics and leadership in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "new conditions.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "I started my career as SQL and PL/SQL developer. Then I changed my profile to a system and business",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "analyst, combining these roles and role of QA tester throughout my career. Thanks to communication skills,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "high level of emotional intelligence and the ability to see the big picture, took the team leader position. Later,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "became the leader of several teams, combining leadership with the role of an analyst. Have also been the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "project manager of several projects.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Now I have extensive experience in system analytics, business analytics, QA and management. Many years of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "experience working for the largest banks in Russia. Research, definition, optimization and automation of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "business processes, development of management and analytical reporting, all types of manual testing, team",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "management and project management. Work experience with Jira, Confluence, Visio, TFS, PowerPoint,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Visual Studio Code, MS Project, Oracle SQL Navigator, MS SQL Management studio etc. Using waterfall,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "scram, kanban.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Some of my projects:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Electronic document management for cash deposit and withdrawal (Alfa-Bank). 90% of transactions",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "go through EDM.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Complete automation of deal making processes for collection and self-collection (Alfa-Bank).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Integration of electronic document storage system with the main bank's systems.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Standardization of the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "integration process for quick connection of systems (Alfa-Bank).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Field Staff Management System of the Technical Support Department of Sberbank (AT Consulting).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "System for monitoring and analyzing the activities of internal structural divisions of Sberbank (AT",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Consulting).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Joint Stock Company ALFA-BANK",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September 2019  Senior Team Manager",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "currently working",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Process management of four teams: work planning, communication, risk management, team",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "building, human research, requirement review, assessment review, mentoring.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "December 2017 Senior System Analyst, Project Lead",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Automation of the process of concluding a cash collection deal. DBMS MsSql.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "All kinds of requirements and documentation, analyst team leader, management of all processes",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development, testing and communications.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "AT Consulting",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "August 2012  Senior System Analyst",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "December 2017",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Field Staff Management System of the Technical Support Department of Sberbank.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "System for monitoring and analyzing the activities of internal structural divisions of Sberbank",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DBMS Oracle.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "All kinds of requirements and documentation, Analyst team leader, Management of all processes of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "analytics, testing and communication with the customer.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "E-school",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "April 2011  Senior System Analyst, Project Lead",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "August 2012",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software for education system. DBMS MsSql.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Business analysis, System analysis, Project management, Database architecture development,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technical documentation, User documentation, testing.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROMOS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "February 2009  PL/SQL, SQL Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "August 2012",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Building sector. DBMS Oracle.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Form builder, Report builder, Database architecture development, Interviewing customers,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "instruction manuals for systems.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Beeline Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "October 2008  SQL Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "January 2009",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Telecommunications.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Big data reports developer.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "INPRIS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September 2005  PL/SQL Developer, SQL Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September 2008",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software for publishing houses.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DBMS Oracle.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Form builder, Report builder, Database architecture development, Interviewing customers,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "instruction manuals for systems.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Professional working proficiency",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hebrew",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Elementary proficiency",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2001  2003 Moscow State University, Faculty of Mechanics and Mathematics.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

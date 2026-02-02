@@ -1,0 +1,306 @@
+{
+  "file_name": "34.docx",
+  "total_blocks": 49,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Phone: \nEmail:  m\nSUMMARY EDUCATION\nPHP/NodeJS full-stack developer.  BA in Ariel University in\nTalented, with analytical mind, full of motivation and good work ethic. Economics and Management\nComing with passion to code and develop. Looking for a challenging\ndevelopment job that involves advanced technologies and logical challenges.  Cisco network academy,\nRecommendations are available upon request. PC hardware and software solutions\nEXPERIENCE\nSKILLS & EXPERTISE\n Front-end: HTML, CSS(SASS),\nFull-stack Developer Sep 2019\nJavaScript(ES6+)\nin Actvtec\n Back-end: PHP 7+(Laravel), NodeJS, Bash\n Libraries and Frameworks:\nResponsibilities and Experience:\nReact, Express, Jquery,\n Developing e-commerce website (both back-end and front-end).\nBootstrap 4+, PureCSS\n Maintaining ready-made WordPress projects and legacy code and\n Operating System: Linux, Windows\nActvtec main project  misrot.com.\n Web Tools: Webpack\n Working with product managers and implemented new content by\n CMS: WordPress\nrequest and regulation.\n Databases: MariaDB/MySQL,\n Front-end: HTML, JS, AJAX, JQuery\nMongoDB\n Working with UI/UX designer according to product owner\n Version control: Git (Github, Bitbucket)\nrequirements, pixel perfect implementation of complex UI using\nCSS3(SCSS), Bootstrap\nResources\n Back-end: PHP, MySQL, Linux\n\n\nDeveloper and Coordinator in Israel Dec 2017 - Jul 2019\n\non behalf of the \"Alternative\"\nLanguages\nResponsibilities and Experience:\n Development and maintaining website alternative.help\n Developing client-side logic for applying and submitting a English\nform (JS, AJAX, PHP) Hebrew\n Creating content management portal and implemented admin Russian\ninterface for the MySQL database Azerbaijani\n Project construction, management and representation\n Conducting job interviews for professionals and volunteers in the\nproject.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Email:  m",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SUMMARY EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PHP/NodeJS full-stack developer.  BA in Ariel University in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Talented, with analytical mind, full of motivation and good work ethic. Economics and Management",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Coming with passion to code and develop. Looking for a challenging",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development job that involves advanced technologies and logical challenges.  Cisco network academy,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations are available upon request. PC hardware and software solutions",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS & EXPERTISE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front-end: HTML, CSS(SASS),",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full-stack Developer Sep 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JavaScript(ES6+)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "in Actvtec",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Back-end: PHP 7+(Laravel), NodeJS, Bash",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Libraries and Frameworks:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities and Experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "React, Express, Jquery,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developing e-commerce website (both back-end and front-end).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bootstrap 4+, PureCSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Maintaining ready-made WordPress projects and legacy code and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Operating System: Linux, Windows",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Actvtec main project  misrot.com.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web Tools: Webpack",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Working with product managers and implemented new content by",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CMS: WordPress",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "request and regulation.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: MariaDB/MySQL,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front-end: HTML, JS, AJAX, JQuery",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MongoDB",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Working with UI/UX designer according to product owner",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Version control: Git (Github, Bitbucket)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "requirements, pixel perfect implementation of complex UI using",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CSS3(SCSS), Bootstrap",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Resources",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Back-end: PHP, MySQL, Linux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developer and Coordinator in Israel Dec 2017 - Jul 2019",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "on behalf of the \"Alternative\"",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities and Experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development and maintaining website alternative.help",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developing client-side logic for applying and submitting a English",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "form (JS, AJAX, PHP) Hebrew",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Creating content management portal and implemented admin Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "interface for the MySQL database Azerbaijani",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project construction, management and representation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Conducting job interviews for professionals and volunteers in the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "project.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

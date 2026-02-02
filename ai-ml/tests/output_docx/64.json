@@ -1,0 +1,252 @@
+{
+  "file_name": "64.docx",
+  "total_blocks": 40,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Front-end developer  6 year experience\n |  | Tel Aviv\nSKILLS\nJavaScript, PHP, MongoDB, Vue, React, Node, Yii2, HTML, CSS, Sass , Less, Git, Webpack.\nWORKING EXPERIENCE\nApr 2020Jun 2020 Masa working program at Samson Logic, Israel, Tel-Aviv  Full stack Developer\n Description: Company that provides smart construction materials management.\n Major achievements: Modules development: - System that scans containers barcode with a\nsmartphone camera and adds building supplies in it. - Tracking system that simulates containers\nmovement in 3D.\n Technologies used: JavaScript, React, Node, MongoDB, REST, HTML5, Scss, Ubuntu Server.\nJun 2019Oct  Front-end Developer\n Description: Publicis groupe is a media group.\n Major achievements: Developing new system functionality on vue: chat, notifications, briefing\nsystem, division into roles, expansion of the existing functionality.\n Technologies used: JavaScript, Vue, WebSocket, REST, HTML5, Sass.\nSep 2018Jun  Front-end Developer\n Description: WhenSpeak is a service for interaction with the audience.\n Major achievements: R ewriting the project from angular into vue, introducing new functionality,\nimproving old services: optimizing socket operations, request optimization, improving and\nexpanding chat features, working as a junior developers mentor.\n Technologies used: JavaScript, Vue, Angular 1, HTML5, Less, WebSocket, REST\nMar 2017Aug 2018 BN  Real estate portal, Russia, St. Petersburg  Front-end Developer\n Description: Real estate portal\n Major achievements: W orking on a new version of the real estate portal and introducing new\nfunctionalities: creating interactive maps on mapbox-gl-js, conducting an AB testing, working as a\njunior developers mentor.\n Technologies used: JavaScript, Vue, jQuery, Yii2, AJAX, REST, HTML5, CSS\nOct 2014  Feb  Web Developer\n Description: Web studio\n Major achievements: W ebsites development, installation on a MODX system, development of\nplugins and support.\n Technologies used: P HP, JavaScript, MySQL, jQuery, Modx, HTML5, CSS\nEDUCATION\n2012  2016 Tver State Technical University, Russia, Tver  B.Sc. in computer science Information systems\nand technologies.\n2008  2012 Tver Industrial-Economic College, Russia, Tver - Specialist Computer software and automated\nsystems.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Front-end developer  6 year experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "|  | Tel Aviv",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JavaScript, PHP, MongoDB, Vue, React, Node, Yii2, HTML, CSS, Sass , Less, Git, Webpack.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WORKING EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Apr 2020Jun 2020 Masa working program at Samson Logic, Israel, Tel-Aviv  Full stack Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Company that provides smart construction materials management.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Major achievements: Modules development: - System that scans containers barcode with a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "smartphone camera and adds building supplies in it. - Tracking system that simulates containers",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "movement in 3D.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: JavaScript, React, Node, MongoDB, REST, HTML5, Scss, Ubuntu Server.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Jun 2019Oct  Front-end Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Publicis groupe is a media group.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Major achievements: Developing new system functionality on vue: chat, notifications, briefing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "system, division into roles, expansion of the existing functionality.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: JavaScript, Vue, WebSocket, REST, HTML5, Sass.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sep 2018Jun  Front-end Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: WhenSpeak is a service for interaction with the audience.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Major achievements: R ewriting the project from angular into vue, introducing new functionality,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "improving old services: optimizing socket operations, request optimization, improving and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "expanding chat features, working as a junior developers mentor.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: JavaScript, Vue, Angular 1, HTML5, Less, WebSocket, REST",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mar 2017Aug 2018 BN  Real estate portal, Russia, St. Petersburg  Front-end Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Real estate portal",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Major achievements: W orking on a new version of the real estate portal and introducing new",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "functionalities: creating interactive maps on mapbox-gl-js, conducting an AB testing, working as a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "junior developers mentor.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: JavaScript, Vue, jQuery, Yii2, AJAX, REST, HTML5, CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Oct 2014  Feb  Web Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Web studio",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Major achievements: W ebsites development, installation on a MODX system, development of",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "plugins and support.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: P HP, JavaScript, MySQL, jQuery, Modx, HTML5, CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2012  2016 Tver State Technical University, Russia, Tver  B.Sc. in computer science",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Information systems",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and technologies.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2008  2012 Tver Industrial-Economic College, Russia, Tver - Specialist Computer software and automated",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "systems.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

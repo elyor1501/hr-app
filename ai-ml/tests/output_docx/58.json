@@ -1,0 +1,210 @@
+{
+  "file_name": "58.docx",
+  "total_blocks": 33,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "QA Automation Engineer\n (WhatsApp available)\n\n\ntelegram: \nPROFESSIONAL SUMMARY EDUCATION RELEVANT EXPERIENCE\nA QA Automation Engineer Master degree of Computer Arcadia inc.\nwith 4 years of software and Information Systems QA Automation engineer\ndevelopment and testing Security/Information March 2021 - present day\nexperience, specializing in Assurance\nautomating web and API Ural State University SKB Kontur\nscenarios and developing test 2012 - 2018 QA Automation Engineer\nframeworks using C#. August 2019 - October 2020\nQA specialist\nAugust 2016 - October 2018\nSKILLS\nManual testing: Web, Desktop, API.\nAutomation of web services and API scenarios (#, NUnit,\nSelenium, NSubstitute).\nPerformance and coverage analysis for existing tests.\nSupport and development of test frameworks.\nCreating checklists, test cases, test plans, test reports and\nother test documentation.\nWorking with version control and CI systems: Git, Bitbucket,\nAzure DevOps, TeamCity.\nExperience with bug tracking systems: YouTrack, Azure\nDevOps.\nSQL scripting (mostly MS SQL).\nMentoring and onboarding.\nPresentation of new features to customers and stakeholders.\nLANGUAGES\nEnglish (proficient)\nRussian (native)\nHebrew (basic, currently learning)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "QA Automation Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(WhatsApp available)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "telegram:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFESSIONAL SUMMARY EDUCATION RELEVANT EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "A QA Automation Engineer Master degree of Computer Arcadia inc.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "with 4 years of software and Information Systems QA Automation engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "development and testing Security/Information March 2021 - present day",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "experience, specializing in Assurance",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "automating web and API Ural State University SKB Kontur",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "scenarios and developing test 2012 - 2018 QA Automation Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "frameworks using C#. August 2019 - October 2020",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "QA specialist",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "August 2016 - October 2018",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Manual testing: Web, Desktop, API.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Automation of web services and API scenarios (#, NUnit,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Selenium, NSubstitute).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Performance and coverage analysis for existing tests.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Support and development of test frameworks.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Creating checklists, test cases, test plans, test reports and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "other test documentation.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Working with version control and CI systems: Git, Bitbucket,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Azure DevOps, TeamCity.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience with bug tracking systems: YouTrack, Azure",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DevOps.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SQL scripting (mostly MS SQL).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mentoring and onboarding.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Presentation of new features to customers and stakeholders.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LANGUAGES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English (proficient)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian (native)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Hebrew (basic, currently learning)",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

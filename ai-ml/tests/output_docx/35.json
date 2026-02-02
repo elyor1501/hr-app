@@ -1,0 +1,216 @@
+{
+  "file_name": "35.docx",
+  "total_blocks": 34,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Mobile Developer with 3 years experience\nPhone:  Email:  Residence: Ramat Gan Birthday: \nLinkedIn: /\nRelevant Experience Summary:\nProgramming languages: Java, Kotlin, Swift, C#\n\nPlatforms and tools: Android, iOS, Unity\n\nPatterns and frameworks: MVVM, MVP, Dagger, Architecture components\n\nPrinciples and Technologies: OOP, SOLID, REST, Web Sockets, Git flow\n\nExperience:\n2019 october - now: Mobile Developer (part time) in project KeepIn Ltd., Herzliya\nKeepIn: implement localization, work with contacts synchronization, refactor code.\nStack: Java, Swift, REST API, MVC\n\n2017 july - 2019 october: Mobile Developer in Key-Group, Moscow\nGettransfer: developed app for Android with 1+ million downloads and 4+ rate, was lead of project\n(task management, code review, time estimation, app reliability, build delivery).\nStack: Kotlin, Clean Architecture, MVVM, Google API, Rest API, Socket IO, Kotlin Coroutines, CI\n\nAreal: developed from scratch to release iOS AR app with 3D map of Saint-Petersburg. Was featured\nby App Store.\nStack: C#, Unity Engine, ARKit 1.5, MapBox SDK\n\nSuperSale: in both, Android and iOS, improved code base, integrated SDK for monetization,\nredesigned UI according to Material.\nStack: Java, Swift, MVP/MVC, Google API, REST API, Dagger\n\n2016 september - 2017 june: Student in Tel-Ran, Java and Android developer, Rehovot\nMarketPlace: developed Android app for services at home, designed service architecture\nStack: Java, MVC, RxJava, Google API, REST API\n\nEducation:\n: Moscow University of geo data, Information System engineer.\nLanguages:\nEnglish(fluent), Hebrew(beginner), Russian(native)\nLinks:\nKeepIn (iOS, Android), Gettransfer (Android), Areal(iOS), SuperSale (Android, iOS),\n           \nRewizor (freelance - Android)\n \nRecommendations are available upon request.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Mobile Developer with 3 years experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:  Email:  Residence: Ramat Gan Birthday:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LinkedIn: /",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Relevant Experience Summary:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: Java, Kotlin, Swift, C#",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Platforms and tools: Android, iOS, Unity",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Patterns and frameworks: MVVM, MVP, Dagger, Architecture components",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Principles and Technologies: OOP, SOLID, REST, Web Sockets, Git flow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019 october - now: Mobile Developer (part time) in project KeepIn Ltd., Herzliya",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "KeepIn: implement localization, work with contacts synchronization, refactor code.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stack: Java, Swift, REST API, MVC",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017 july - 2019 october: Mobile Developer in Key-Group, Moscow",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gettransfer: developed app for Android with 1+ million downloads and 4+ rate, was lead of project",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(task management, code review, time estimation, app reliability, build delivery).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stack: Kotlin, Clean Architecture, MVVM, Google API, Rest API, Socket IO, Kotlin Coroutines, CI",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Areal: developed from scratch to release iOS AR app with 3D map of Saint-Petersburg. Was featured",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "by App Store.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stack: C#, Unity Engine, ARKit 1.5, MapBox SDK",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SuperSale: in both, Android and iOS, improved code base, integrated SDK for monetization,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "redesigned UI according to Material.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stack: Java, Swift, MVP/MVC, Google API, REST API, Dagger",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016 september - 2017 june: Student in Tel-Ran, Java and Android developer, Rehovot",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MarketPlace: developed Android app for services at home, designed service architecture",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stack: Java, MVC, RxJava, Google API, REST API",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ": Moscow University of geo data, Information System engineer.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English(fluent), Hebrew(beginner), Russian(native)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Links:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "KeepIn (iOS, Android), Gettransfer (Android), Areal(iOS), SuperSale (Android, iOS),",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Rewizor (freelance - Android)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations are available upon request.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

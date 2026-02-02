@@ -1,0 +1,350 @@
+{
+  "file_name": "docx_test_multipage_1.docx",
+  "total_blocks": 42,
+  "confidence": 0.88,
+  "time_taken": 0.07,
+  "memory_mb": 2.19,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Rohan Patel",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 1"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Principal Platform Engineer with 12+ years of experience designing large-scale distributed systems, cloud-native platforms, and internal developer tooling across fintech and SaaS organizations.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "CORE RESPONSIBILITIES",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Led modernization of monolithic systems into Kubernetes microservices",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Defined platform reliability standards and SLOs",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Oversaw multi-region disaster recovery strategies",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Mentored senior ICs and staff engineers",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "TECH STACK OVERVIEW",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "MAJOR PROJECTS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Payments Gateway Rebuild — Designed idempotent APIs processing 20M+ tx/day.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Internal PaaS Platform — Reduced onboarding time for new teams by 60%.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Zero Trust Network Program — Implemented mTLS and service mesh rollout.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "DELIVERY PROCESS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Architecture proposal and RFC approval",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Prototype and benchmarking",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Security review",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Gradual rollout with canaries",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Post-incident retrospectives",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "INFRASTRUCTURE COST ANALYSIS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "Layer",
+            "Tools",
+            "Notes"
+          ],
+          [
+            "Compute",
+            "Kubernetes, Nomad",
+            "Production clusters across 4 regions"
+          ],
+          [
+            "Messaging",
+            "Kafka, RabbitMQ",
+            "Exactly-once pipelines"
+          ],
+          [
+            "Observability",
+            "Prometheus, Grafana",
+            "Org-wide dashboards"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "Service",
+            "Cloud",
+            "Monthly Cost (USD)",
+            "Optimization Status"
+          ],
+          [
+            "Payments",
+            "Azure",
+            "120,000",
+            "Ongoing"
+          ],
+          [
+            "Analytics",
+            "GCP",
+            "95,000",
+            "Optimized"
+          ],
+          [
+            "Auth Platform",
+            "AWS",
+            "60,000",
+            "Stable"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "header",
+      "text": "Rohan Patel — Principal Platform Engineer | rohan.patel@email.com | +91-90000-11111",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "footer",
+      "text": "Rohan Patel Resume — Page",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Rohan Patel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Principal Platform Engineer with 12+ years of experience designing large-scale distributed systems, cloud-native platforms, and internal developer tooling across fintech and SaaS organizations.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CORE RESPONSIBILITIES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Led modernization of monolithic systems into Kubernetes microservices",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Defined platform reliability standards and SLOs",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Oversaw multi-region disaster recovery strategies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mentored senior ICs and staff engineers",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "TECH STACK OVERVIEW",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MAJOR PROJECTS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Payments Gateway Rebuild — Designed idempotent APIs processing 20M+ tx/day.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Internal PaaS Platform — Reduced onboarding time for new teams by 60%.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Zero Trust Network Program — Implemented mTLS and service mesh rollout.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DELIVERY PROCESS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Architecture proposal and RFC approval",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Prototype and benchmarking",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Security review",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Gradual rollout with canaries",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Post-incident retrospectives",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "INFRASTRUCTURE COST ANALYSIS",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

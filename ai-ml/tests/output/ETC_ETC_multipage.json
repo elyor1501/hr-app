@@ -1,0 +1,38 @@
+{
+  "category": "ETC",
+  "file_name": "ETC_multipage.pdf",
+  "total_pages": 3,
+  "confidence": 0.79,
+  "time_taken": 1.24,
+  "memory_mb": 6.48,
+  "pages": [
+    {
+      "page_number": 1,
+      "method": "structured",
+      "confidence": 0.79,
+      "text": {
+        "text": "VIKRAM SINGH\nSenior Management Consultant\nBengaluru, India | vikram.singh@email.com | +91-9XXXXXXXXX\nPROFESSIONAL SUMMARY\nSenior Consultant with over 15 years of experience delivering strategic, operational, and digital transformation\ninitiatives across banking, technology, manufacturing, and professional services sectors. Proven ability to lead\nlarge-scale consulting engagements, advise C-level stakeholders, and drive measurable business outcomes.\nStrong expertise in business strategy, process optimization, data-driven decision-making, and change\nmanagement.\nCORE CONSULTING EXPERTISE\n(cid:127) Business & Corporate Strategy\n(cid:127) Digital Transformation & Process Reengineering\n(cid:127) Operating Model Design\n(cid:127) Program & Change Management\n(cid:127) Data Analytics & Performance Management\n(cid:127) Stakeholder & Executive Advisory\n(cid:127) Financial Modeling & Business Case Development\nPROFESSIONAL EXPERIENCE\nSenior Consultant – Alpha Consulting Group (2016 – Present)\n(cid:127) Lead multi-disciplinary consulting engagements for Fortune 500 and mid-sized enterprises across India and\nSoutheast Asia.\n(cid:127) Advise CXOs on strategy formulation, operating model redesign, and digital transformation initiatives.\n(cid:127) Delivered transformation programs resulting in cost reductions of up to 22% and productivity improvements\nexceeding 30%.\n(cid:127) Manage project teams, budgets, timelines, and client communication to ensure successful delivery.",
+        "tables": []
+      }
+    },
+    {
+      "page_number": 2,
+      "method": "structured",
+      "confidence": 0.8,
+      "text": {
+        "text": "(cid:127) Designed enterprise-wide KPI frameworks and performance dashboards to enable data-driven decision-making\nfor senior leadership.\n(cid:127) Conducted market assessments, competitor benchmarking, and financial analysis to support strategic\ninvestment decisions.\n(cid:127) Partnered with client leadership to manage change initiatives, including communication planning and capability\nbuilding.\n(cid:127) Mentored junior consultants and analysts, providing guidance on problem-solving, client engagement, and\nprofessional development.\nConsultant – Beta Advisory Services (2010 – 2016)\n(cid:127) Supported large consulting engagements focused on operational excellence, cost optimization, and process\nimprovement.\n(cid:127) Led workstreams involving business process mapping, gap analysis, and solution design across finance,\noperations, and IT functions.\n(cid:127) Developed detailed business cases, implementation roadmaps, and executive presentations for senior\nstakeholders.\n(cid:127) Collaborated closely with client teams to ensure practical and sustainable solutions were implemented.\nKEY ENGAGEMENTS\n(cid:127) Core Banking Transformation Program – Tier-1 Bank\n(cid:127) ERP Implementation & Process Redesign – Manufacturing Client\n(cid:127) Enterprise Cost Optimization – Professional Services Firm\n(cid:127) Data & Analytics Strategy – Retail Organization",
+        "tables": []
+      }
+    },
+    {
+      "page_number": 3,
+      "method": "structured",
+      "confidence": 0.78,
+      "text": {
+        "text": "EDUCATION\n(cid:127) Master of Business Administration (Strategy & Operations) – IIM Bangalore\n(cid:127) Bachelor of Engineering – Computer Science\nCERTIFICATIONS\n(cid:127) PMP – Project Management Professional\n(cid:127) Certified Management Consultant (CMC)\n(cid:127) Lean Six Sigma Black Belt\nPUBLICATIONS & THOUGHT LEADERSHIP\n(cid:127) Published articles on digital transformation and operational excellence in leading business journals.\n(cid:127) Regular speaker at industry conferences and corporate leadership forums.\nKEY ACHIEVEMENTS\n(cid:127) Successfully led consulting programs exceeding INR 100 Crores in value.\n(cid:127) Recognized as “Top Performer – Consulting Excellence” multiple times.\n(cid:127) Built and scaled high-performing consulting teams across regions.\nADDITIONAL INFORMATION\n(cid:127) Strong executive presence and communication skills\n(cid:127) Extensive experience working with global clients\n(cid:127) Passionate about mentoring and capability building",
+        "tables": []
+      }
+    }
+  ],
+  "error": null
+}

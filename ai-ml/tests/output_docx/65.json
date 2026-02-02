@@ -1,0 +1,420 @@
+{
+  "file_name": "65.docx",
+  "total_blocks": 68,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "NETWORK ENGINEER\nDESCRIPTION WORK EXPIRIENCE\nExperienced Network Engineer with 6-year\nNetwork Engineer\nexperience of working in the Sep 2018 - present time\ntelecommunications industry(Service Provider Belintech Ukraine LLC\nand Integration). (System Integrator Company)\nLayer 3 Support Network engineer\nSKILLS As a member of System Integration Departament - Designing,\nimplementing and developing networks of various scales for\nEnterprise and Data Center Environment. I was engaged in\nNetwork Vendors experience:\nmaking needed documentation ( HLDs\\LLDs, Solution Description,\nHPE, Aruba, Juniper, Cisco (including ACI), Huawei, Reasons to Implement exact Solutions etc.)\nDeveloping, monitoring and maintaining an ISP-like network with\nZTE, Mikrotik.\n400+ devices (with MPLS Core). Participating in developing\nnetwork solutions for customer requests.\nSecurity Vendors experience: Automating simple routine management task with Python.\nSystem Administrator\nBIG-IP F(Firewalls, FMG,\nMar 2020  July 2020\nFortiDDoS, Fortianalyzer)\nTelemessage, Petah-Tikva Israel\nNetwork Engineer\nWi-Fi: Configuring analytics on F5, working with Checkpoint rules,\nBuilding Greenfield deployments and improvement configuring WireGuard.\nNetwork Engineer\nof existing Wi-Fi networks (Aruba and Cisco)\nFeb 2017 - Sep 2018 (1 year 8 months)\nUkrtelecom ISP\nNetwork Design:\n(Internet Service Provider)\nAs a part of my work as a Network Integration  Automation of monitoring in ISP network with Python\n Solving customers issues in ticket system\nengineer, I am able to design Network on all stages\n Monitoring and maintaing of network equipment\nof deployment (Designing, HLD\\LLD, Estimates,\nIntern in VAS department\nDeployment Planning, Testing, Deployment and\nMay 2013 - Jul 2013 (3 months)\nManagement) Vodafone Ukraine\nConfiguring PCRF\nExperience with various Commerce Apps of different Counselor (Informal Jewish Education)\nvendors. Jewish Agency for Israel in Ukraine\n2015 - present time\nKnowledge of Networking(Both Enterprise, ISP and\nLANGUAGES\nData Center) - between CCNP and CCIE\nKnowledge of Network Security - CCNA security\nEnglish - advanced\nKnowledge of Wi-Fi - CCNP Hebrew - intermediate\nKnowledge of Linux - advanced user Ukrainian - native\nRussian - native\nKnowledge of Python - simple automation scripts\nCONTACT INFORMATION\nEDUCATION\nState University of Telecommunications (Kiev)\nBirthday: \nGraduated 2019 Region: Kfar-Yona, Israel\nFaculty of Telecommunications Whatsapp, Telegram, Viber: \nE-mail: \nCOURSES\nLinkedIn: www./\nAruba Certified Switching Associate (ACSA) (2022)\nJNCIA-JUNOS (JNO-102) (Kyiv) (2018)\nHP ATA+ Networks (Kyiv) (2015)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "NETWORK ENGINEER",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DESCRIPTION WORK EXPIRIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experienced Network Engineer with 6-year",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Network Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "experience of working in the Sep 2018 - present time",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "telecommunications industry(Service Provider Belintech Ukraine LLC",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and Integration). (System Integrator Company)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Layer 3 Support Network engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS As a member of System Integration Departament - Designing,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "implementing and developing networks of various scales for",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Enterprise and Data Center Environment. I was engaged in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Network Vendors experience:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "making needed documentation ( HLDs\\LLDs, Solution Description,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HPE, Aruba, Juniper, Cisco (including ACI), Huawei, Reasons to Implement exact Solutions etc.)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developing, monitoring and maintaining an ISP-like network with",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ZTE, Mikrotik.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "400+ devices (with MPLS Core). Participating in developing",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "network solutions for customer requests.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Security Vendors experience: Automating simple routine management task with Python.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "System Administrator",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "BIG-IP F(Firewalls, FMG,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mar 2020  July 2020",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "FortiDDoS, Fortianalyzer)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Telemessage, Petah-Tikva Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Network Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Wi-Fi: Configuring analytics on F5, working with Checkpoint rules,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Building Greenfield deployments and improvement configuring WireGuard.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Network Engineer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "of existing Wi-Fi networks (Aruba and Cisco)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Feb 2017 - Sep 2018 (1 year 8 months)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ukrtelecom ISP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Network Design:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(Internet Service Provider)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "As a part of my work as a Network Integration  Automation of monitoring in ISP network with Python",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Solving customers issues in ticket system",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "engineer, I am able to design Network on all stages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Monitoring and maintaing of network equipment",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "of deployment (Designing, HLD\\LLD, Estimates,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Intern in VAS department",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Deployment Planning, Testing, Deployment and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "May 2013 - Jul 2013 (3 months)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Management) Vodafone Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Configuring PCRF",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience with various Commerce Apps of different Counselor (Informal Jewish Education)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "vendors. Jewish Agency for Israel in Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2015 - present time",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Knowledge of Networking(Both Enterprise, ISP and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LANGUAGES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Data Center) - between CCNP and CCIE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Knowledge of Network Security - CCNA security",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "English - advanced",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Knowledge of Wi-Fi - CCNP Hebrew - intermediate",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Knowledge of Linux - advanced user Ukrainian - native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Russian - native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Knowledge of Python - simple automation scripts",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CONTACT INFORMATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "State University of Telecommunications (Kiev)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Birthday:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Graduated 2019 Region: Kfar-Yona, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Faculty of Telecommunications Whatsapp, Telegram, Viber:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "E-mail:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "COURSES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LinkedIn: www./",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Aruba Certified Switching Associate (ACSA) (2022)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "JNCIA-JUNOS (JNO-102) (Kyiv) (2018)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HP ATA+ Networks (Kyiv) (2015)",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

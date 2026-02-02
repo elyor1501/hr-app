@@ -1,0 +1,578 @@
+{
+  "file_name": "39.docx",
+  "total_blocks": 94,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Phone: \nEmail: \nExperienced Python Developer LinkedIn: fedor-ezeev\nSUMMARY\nSKILLS & EXPERTISE\n Looking for a job as a Server Side Python Developer or Backend Python Programming languages:\nDeveloper. Python, Python3\n :Enterprise\nmanagement experience in different profit and nonprofit organizations. Bash\nPerl, Java, C++\n Able to effectively self-manage during independent projects, as well as\ncollaborate in a team setting.\nWeb frameworks and CRM:\n Experience in developing projects from scratch, as well as dealing with a\nFlask\nlegacy codebase.\nDjango\nMojolicious\nEXPERIENCE Wordpress\nAutomated testing frameworks:\nFreelance Software Development Feb. 2012  Present\nSelenium\nProjects shortlist: pytest\n Developed a custom python tool for administering large amount servers unittest\nfleet running on several providers.\n Developed Yandex Alice (voice assistant) integration with smart home SQL Servers:\nMySQL\nhardware provider Teplomonitor with Flask.\npostgresql\n Developed Selenium automation tests for Zharov Attorney's internal ERP\nMSSQL\nsystem with python. Made some improvements to this perl Mojolicious\nsqlite3\nbased ERP system. Project management and system administration as\nwell.\nNoSQL:\n Developed and supported a custom python program to transfer data Redis\nfrom most popular Russian business software suite 1C:Enterprise into\nMSSQL database for OLAP cube reporting. Code Version Systems:\ngit, cvs\ngithub, bitbucket\nProduct Manager Jun. 2011  Nov. 2013\nIssue Tracking Systems\nAnti-Corruption Foundation NGO\nBugzilla\nJira\nManaged RosYama project development.\nTrello\n Managed communication between RosYama users, lawyers, Megaplan\nprogrammers, system administrators and project donors to achieve\nstable user base growth. Operational Systems:\n Communicated with Moscow city authorities to make integration Linux\nWindows\nbetween RosYama and Moscow city government site mos.ru.\n Created a solid forum-based self-moderated community.\nWiki Engines:\nMediaWiki\nWaka Wiki\nQA Team Leader Jan. 2010  Mar. 2012\nYandex ltd\nLanguages\n Developed brand new automated testing framework for 1C:Enterprise\n8.0 business software suite from scratch on its internal programming Russian  Native\nlanguage as Yandex needs it for upcoming IPO. English  Fluent\n Developed about 1000 automated test, based on this system. Hebrew  Beginner",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Head of IT department Jul. 2001  Dec. 2009 EDUCATION\nAlterplast ltd\n1984  1994\nSupervised every IT aspect of Alterlplast from the very beginning of the\nHigh School #218 Moscow, Russia,\ncompany. Created strong IT department with best industry practices involved: graduated as Laboratory assistant-\n Bugzilla as bug tracker. Programmer\n CVS as code version system.\n waka wiki as internal wiki for specs. 1994  1997\n Developed from scratch brand new automated testing framework for Studied chemistry at Moscow State\nUniversity\n1C:Enterprise 7.7 business software suite (written on an internal\nprogramming language).\n Developed a C++ program to integrate 1C:Enterprise internal code\nstorage with any Version Control Systems.\n Developed CVS and git commits integration with Bugzilla bug tracker.\n Tuned and supported companys accounting program as 1C\nprogrammer.\n Supported and managed the 1C++ community (MediaWiki, Yabb forum,\nCVS repo, Bugzilla bugtracker).\nSoftware Developer Nov. 1998  Jun. C: Automatisation\n Developed new features for 1C:Enterprise on its own internal\nprogramming languages for different clients with very different needs\nvaries from single user local database up to 30 user distributed networks\nsystems based on MSSQL server.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Email:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experienced Python Developer LinkedIn: fedor-ezeev",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SUMMARY",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS & EXPERTISE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Looking for a job as a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Server Side",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Python Developer or Backend Python Programming languages:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developer. Python, Python3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ":Enterprise",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "management experience in different profit and nonprofit organizations. Bash",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Perl, Java, C++",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Able to effectively self-manage during independent projects, as well as",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "collaborate in a team setting.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web frameworks and CRM:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience in developing projects from scratch, as well as dealing with a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Flask",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "legacy codebase.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Django",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mojolicious",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE Wordpress",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Automated testing frameworks:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Freelance Software Development Feb. 2012  Present",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Selenium",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Projects shortlist: pytest",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed a custom python tool for administering large amount servers unittest",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "fleet running on several providers.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed Yandex Alice (voice assistant) integration with smart home SQL Servers:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MySQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "hardware provider Teplomonitor with Flask.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "postgresql",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed Selenium automation tests for Zharov Attorney's internal ERP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MSSQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "system with python. Made some improvements to this perl Mojolicious",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "sqlite3",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "based ERP system. Project management and system administration as",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "well.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "NoSQL:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed and supported a custom python program to transfer data Redis",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "from most popular Russian business software suite 1C:Enterprise into",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MSSQL database for OLAP cube reporting. Code Version Systems:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "git, cvs",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "github, bitbucket",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Product Manager Jun. 2011  Nov. 2013",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Issue Tracking Systems",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Anti-Corruption Foundation NGO",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bugzilla",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Jira",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Managed RosYama project development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Trello",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Managed communication between RosYama users, lawyers, Megaplan",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "programmers, system administrators and project donors to achieve",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "stable user base growth. Operational Systems:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Communicated with Moscow city authorities to make integration Linux",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Windows",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "between RosYama and Moscow city government site mos.ru.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Created a solid forum-based self-moderated community.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Wiki Engines:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "MediaWiki",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Waka Wiki",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "QA Team Leader Jan. 2010  Mar. 2012",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Yandex ltd",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed brand new automated testing framework for 1C:Enterprise",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "8.0 business software suite from scratch on its internal programming Russian  Native",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "language as Yandex needs it for upcoming IPO. English  Fluent",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed about 1000 automated test, based on this system. Hebrew  Beginner",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Head of IT department Jul. 2001  Dec. 2009 EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Alterplast ltd",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "1984  1994",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Supervised every IT aspect of Alterlplast from the very beginning of the",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "High School #218 Moscow, Russia,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "company. Created strong IT department with best industry practices involved: graduated as Laboratory assistant-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Bugzilla as bug tracker. Programmer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CVS as code version system.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "waka wiki as internal wiki for specs. 1994  1997",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed from scratch brand new automated testing framework for Studied chemistry at Moscow State",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "1C:Enterprise 7.7 business software suite (written on an internal",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "programming language).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed a C++ program to integrate 1C:Enterprise internal code",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "storage with any Version Control Systems.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed CVS and git commits integration with Bugzilla bug tracker.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tuned and supported companys accounting program as 1C",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "programmer.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Supported and managed the 1C++ community (MediaWiki, Yabb forum,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CVS repo, Bugzilla bugtracker).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Software Developer Nov. 1998  Jun. C: Automatisation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developed new features for 1C:Enterprise on its own internal",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "programming languages for different clients with very different needs",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "varies from single user local database up to 30 user distributed networks",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "systems based on MSSQL server.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

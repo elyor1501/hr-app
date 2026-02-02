@@ -1,0 +1,306 @@
+{
+  "file_name": "31.docx",
+  "total_blocks": 49,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Full-Stack Developer with 3+ years of experience looking for a full time position\n80% - backend Java development, 20% - frontend React development\nPhone:  Birth year: 1991\nE-mail:  Residence: Rehovot.\nLinkedin: Nikita Doroshenko Languages: English, Hebrew, Russian.\nTECHNICAL SKILLS\nProgramming languages: Java, JavaScript, TypeScript. Web: HTML 5, CSS 3, Bootstrap 5.\nTechnologies: OOP, AOP, Java Collection, Java Stream API, Rest, Maven, Project Lombok, Spring MVC,\nSpring Framework(Spring Boot, Spring Web, Data MongoDB, Spring Cloud Stream, Spring Security, Spring\nStarter Mail, Spring Validation), Awaitility, Mockito, MongoEmbedded, Hibernate, Apache Tomcat, Kafka,\nMultithreading, Docker, Heroku, JPA, ORM, MongoDB Atlas, Junit, React, Redux.\nEnvironments-IDE/Tools: Eclipse, Intellij IDEA, Visual Studio Code, GitHub, Postman, DBeaver.\nDatabases: MySQL, PostgreSQL, No SQL(MongoDB), H2 OS: Windows, Linux.\nPROFESSIONAL HISTORY\n2021  now Full-Stack Developer, Inetex (Rehovot , Israel)\nMain project: Developing a service network for CV with microservices architecture.\nResponsibilities:\n Participating in development of several services: employer service, cv service, security\nservice, schedule;\n Implementation of new functionality, work with MongoDB (geo search, aggregation\nquery);\n Integrating developed services into application (notification service);\n Implementation of frontend functionality (register, change password, update\nemployee data, routes);\n Writing and running Junit tests, refactoring code and fixing bugs;\nTechnologies: Java, JavaScript, TypeScript, Java Stream API, Spring boot, Spring Web, Spring\nData MongoDb, Spring Security, React, Redux, MongoDB, Junit, Rest.\n2019  2021 Java Backend Developer, Miratorg (Belgorod, Russia)\nMain project: Production reporting automation\nResponsibilities:\n Installing and maintaining database;\n Populating a database with new information or transfer existing data into it;\n Creation and implementation of methods for working with data for the planning department;\nTechnologies: Java, Java Stream API, Spring web, Spring Data MongoDB, Junit, MongoDb, Docker.\n2014  2019 Data Analyst, Miratorg (Belgorod, Russia)\nResponsibilities:\n Developing and implementing reports;\n Collecting and adding data from various sources;\n Database support. (Adding, deleting data);\nTechnologies: Microsoft Excel, Visual Basic for Applications, Power BI, SQL, CSB, NAV, SAP.\nEDUCATION\n2008  2013 Applied Information Science in Economics\nThe Federal State Budget Educational Institution of Higher Education Baikal State University\n2021 Special program for software developers' adaptation in accordance with Israel IT\ntechnologies by Ministry of Absorption and Jewish Agency of Israel.\nTel Ran Educational Center",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Full-Stack Developer with 3+ years of experience looking for a",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "full time",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "position",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "80% - backend Java development, 20% - frontend React development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:  Birth year: 1991",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "E-mail:  Residence: Rehovot.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Linkedin: Nikita Doroshenko Languages: English, Hebrew, Russian.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "TECHNICAL SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: Java, JavaScript, TypeScript. Web: HTML 5, CSS 3, Bootstrap 5.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: OOP, AOP, Java Collection, Java Stream API, Rest, Maven, Project Lombok, Spring MVC,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Spring Framework(Spring Boot, Spring Web, Data MongoDB, Spring Cloud Stream, Spring Security, Spring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Starter Mail, Spring Validation), Awaitility, Mockito, MongoEmbedded, Hibernate, Apache Tomcat, Kafka,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Multithreading, Docker, Heroku, JPA, ORM, MongoDB Atlas, Junit, React, Redux.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Environments-IDE/Tools: Eclipse, Intellij IDEA, Visual Studio Code, GitHub, Postman, DBeaver.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: MySQL, PostgreSQL, No SQL(MongoDB), H2 OS: Windows, Linux.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFESSIONAL HISTORY",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021  now Full-Stack Developer, Inetex (Rehovot , Israel)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Main project: Developing a service network for CV with microservices architecture.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Participating in development of several services: employer service, cv service, security",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "service, schedule;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implementation of new functionality, work with MongoDB (geo search, aggregation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "query);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Integrating developed services into application (notification service);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Implementation of frontend functionality (register, change password, update",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "employee data, routes);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Writing and running Junit tests, refactoring code and fixing bugs;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Java, JavaScript, TypeScript, Java Stream API, Spring boot, Spring Web, Spring",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Data MongoDb, Spring Security, React, Redux, MongoDB, Junit, Rest.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019  2021 Java Backend Developer, Miratorg (Belgorod, Russia)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Main project: Production reporting automation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Installing and maintaining database;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Populating a database with new information or transfer existing data into it;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Creation and implementation of methods for working with data for the planning department;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Java, Java Stream API, Spring web, Spring Data MongoDB, Junit, MongoDb, Docker.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2014  2019 Data Analyst, Miratorg (Belgorod, Russia)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Developing and implementing reports;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Collecting and adding data from various sources;",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Database support. (Adding, deleting data);",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Microsoft Excel, Visual Basic for Applications, Power BI, SQL, CSB, NAV, SAP.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2008  2013 Applied Information Science in Economics",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "The Federal State Budget Educational Institution of Higher Education Baikal State University",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021 Special program for software developers' adaptation in accordance with Israel IT",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "technologies by Ministry of Absorption and Jewish Agency of Israel.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel Ran Educational Center",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

@@ -1,0 +1,246 @@
+{
+  "file_name": "15.docx",
+  "total_blocks": 39,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Frontend Developer - 8 years experience\nPhone:  Email: \nResidence: Holon Languages: Hebrew, English, Russian\nExperience Summary\n WEB technologies: Angular, Webpack, REST, Ajax, JQuery, HTML, CSS, BootStrap\n Programming languages: JavaScript, NodeJS, Typescript, Python, Perl\n DataBases: SQLite, MySQL, MongoDB, neo4j, tinyDB\n Methodology : Agile, Waterfall, SCRUM\nExperience\n -  Britannica (Tel Aviv, Israel) Web Front End Developer\n Description: Knowledgebase project with time and resource management for educational processes in\ncommercial specialized educational institutions.\n Responsibilities: renewed and optimized UI and UX, renewed REST API, migrated from legacy solution\n(ASPX) to newest solutions and technologies(Angular 7+), refactored code.\n Technologies used: HTML5, CSS3 , Angular(7+), Typescript, NodeJS, WebSocket\n2017/04 - 2018/10 Athena (Holon, Israel) Web Front End Developer\n Description: Documentation accounting system. Search engine for seeking information in open sources\nand building structured knowledge base with internal search.\n Responsibilities: renewed and optimized UI and UX. renewed API. Migrated legacy code to newest\nsolutions and technologies\n Technologies used: HTML5, CSS3 , AngularJS(1.5), Angular(2+), NodeJS, WebSocket\n2016/03 - 2017/04 Freelance Web Front End Developer\n \"Neighbro\"\n Description: project designed as mini social network for tenants and landlords.\n Responsibilities: projected and implemented API and UX. written documentation\n Technologies used: HTML5, Jquery, JavaScript, AngularJS(1.3), NodeJS\n Panels Dashboard\n Description: Web application/dashboard for analysis survey data, visualization statistical data.\n Responsibilities: projected and implemented API and UX\n Technologies used: HTML5, AJAX, JavaScript, ReactJS, Bootstrap, CSS\n2012/02 - 2016/03 WOXAPP (Dnipro, Ukraine) Web Front End Developer\n \n Description: Cloud storage for photos, with social networking, forum and chat.\n Responsibilities: projected and implemented UX and client-server logic\n Technologies used: HTML5, AJAX, JavaScript\nEducation\n2002/08  2007/06 National Mining University Dnepropetrovsk Ukraine\n Degree: Software Developer Master Degree\nRecommendations available upon request.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Frontend Developer - 8 years experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:  Email:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Residence: Holon Languages: Hebrew, English, Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience Summary",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WEB technologies: Angular, Webpack, REST, Ajax, JQuery, HTML, CSS, BootStrap",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: JavaScript, NodeJS, Typescript, Python, Perl",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "DataBases: SQLite, MySQL, MongoDB, neo4j, tinyDB",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Methodology : Agile, Waterfall, SCRUM",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-  Britannica (Tel Aviv, Israel) Web Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Knowledgebase project with time and resource management for educational processes in",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "commercial specialized educational institutions.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: renewed and optimized UI and UX, renewed REST API, migrated from legacy solution",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(ASPX) to newest solutions and technologies(Angular 7+), refactored code.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, CSS3 , Angular(7+), Typescript, NodeJS, WebSocket",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017/04 - 2018/10 Athena (Holon, Israel) Web Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Documentation accounting system. Search engine for seeking information in open sources",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "and building structured knowledge base with internal search.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: renewed and optimized UI and UX. renewed API. Migrated legacy code to newest",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "solutions and technologies",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, CSS3 , AngularJS(1.5), Angular(2+), NodeJS, WebSocket",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016/03 - 2017/04 Freelance Web Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "\"Neighbro\"",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: project designed as mini social network for tenants and landlords.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: projected and implemented API and UX. written documentation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, Jquery, JavaScript, AngularJS(1.3), NodeJS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Panels Dashboard",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Web application/dashboard for analysis survey data, visualization statistical data.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: projected and implemented API and UX",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, AJAX, JavaScript, ReactJS, Bootstrap, CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2012/02 - 2016/03 WOXAPP (Dnipro, Ukraine) Web Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Description: Cloud storage for photos, with social networking, forum and chat.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Responsibilities: projected and implemented UX and client-server logic",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies used: HTML5, AJAX, JavaScript",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Education",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2002/08  2007/06 National Mining University Dnepropetrovsk Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Degree: Software Developer Master Degree",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations available upon request.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

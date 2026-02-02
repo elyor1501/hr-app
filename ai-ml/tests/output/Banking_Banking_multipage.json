@@ -1,0 +1,29 @@
+{
+  "category": "Banking",
+  "file_name": "Banking_multipage.pdf",
+  "total_pages": 2,
+  "confidence": 0.77,
+  "time_taken": 0.8,
+  "memory_mb": 4.36,
+  "pages": [
+    {
+      "page_number": 1,
+      "method": "structured",
+      "confidence": 0.78,
+      "text": {
+        "text": "RAJIV MALHOTRA\nSenior Banking Professional / Relationship Manager\nMumbai, India | rajiv.malhotra@email.com | +91-9XXXXXXXXX\nPROFESSIONAL SUMMARY\nSenior Banking professional with over 13 years of experience in retail, corporate, and commercial banking\noperations. Proven expertise in credit analysis, risk assessment, portfolio management, and client relationship\nmanagement. Strong track record of driving revenue growth, ensuring regulatory compliance, and delivering\ncustomer-centric financial solutions.\nCORE BANKING SKILLS\n(cid:127) Retail & Corporate Banking Operations\n(cid:127) Credit Appraisal & Risk Analysis\n(cid:127) Loan Processing & Portfolio Management\n(cid:127) Relationship & Key Account Management\n(cid:127) Regulatory Compliance (RBI Guidelines)\n(cid:127) Financial Analysis & MIS Reporting\n(cid:127) KYC, AML & Documentation Standards\n(cid:127) Core Banking Systems & Advanced Excel\nPROFESSIONAL EXPERIENCE\nSenior Relationship Manager – ABC Bank Ltd (2017 – Present)\n(cid:127) Manage a portfolio of high-value retail and corporate clients with assets under management exceeding INR 500\nCrores.\n(cid:127) Conduct credit appraisal, financial analysis, and risk assessment for loan proposals and working capital facilities.\n(cid:127) Drive cross-selling of banking products including loans, deposits, and investment solutions.\n(cid:127) Ensure strict adherence to RBI regulations, KYC norms, and internal banking policies.",
+        "tables": []
+      }
+    },
+    {
+      "page_number": 2,
+      "method": "structured",
+      "confidence": 0.76,
+      "text": {
+        "text": "Relationship Officer – XYZ National Bank (2011 – 2017)\n(cid:127) Supported senior managers in handling retail and SME banking clients.\n(cid:127) Processed loan applications including documentation, verification, and disbursement coordination.\n(cid:127) Monitored loan portfolios and proactively addressed early warning signals to minimize NPAs.\n(cid:127) Prepared MIS reports and performance dashboards for branch management.\nKEY ACHIEVEMENTS\n(cid:127) Increased branch loan portfolio by 28% year-on-year.\n(cid:127) Maintained NPA levels below 1.5% through proactive monitoring.\n(cid:127) Awarded “Top Performer – Retail Banking” for three consecutive years.\nEDUCATION\n(cid:127) Master of Business Administration (Finance) – NMIMS, Mumbai\n(cid:127) Bachelor of Commerce (B.Com) – University of Mumbai\nCERTIFICATIONS\n(cid:127) Certified Credit Professional (IIBF)\n(cid:127) AML & Compliance Certification\nADDITIONAL INFORMATION\n(cid:127) Strong customer engagement and negotiation skills\n(cid:127) Experience handling audits and regulatory inspections\n(cid:127) Comfortable working in high-pressure, target-driven environments",
+        "tables": []
+      }
+    }
+  ],
+  "error": null
+}

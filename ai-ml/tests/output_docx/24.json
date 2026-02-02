@@ -1,0 +1,228 @@
+{
+  "file_name": "24.docx",
+  "total_blocks": 36,
+  "confidence": 0.85,
+  "time_taken": 0.02,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "iOS developer\nAshdod, Israel\n\n\nEXPERIENCE\nSuperUp, Ashdod, Israel\n iOS developer\nFebruary 2017  Present\nDevelopment of applications for iOS 10,11,12 in S wift according to G itFlow and J ira\nScrum. C I experience. Using of C ocoaTouch, Foundation, Alamofire, XIBs,\nStoryboards, CoreData, Realm etc. Publishing to App Store.\nIntegration with back-end R EST API, Firebase and other Google services.\n Full stack developer\nMarch 2016  February 2017\nDevelopment of high loaded Back-end software on PHP (Symphony, Laravel) and\nJava (Spring) with PostgreSQL database.\nFront-end development on A ngular JS, Backbone JS, Bootstrap.\nData analytics in BigQuery by G oogle Data Studio. System monitoring by Zabbix, ELK.\nMobile Web on F ramework 7, JQuery Mobile. Mobile bots for WhatsApp, Telegram,\nFacebook.\nInfosoft, Barnaul, Russia\n B ack-end developer\nJune 2014  September 2015\nBack-end development on C# (.NET) with M ySQL database.\nSystem administration and monitoring.\nSKILLS\nSwift, Java, PHP, C, C++, C#, Lua, JS,CSS, HTML, SQL, Xcode, Intellij Idea, Eclipse, Visual\nStudio, Realm, PostgreSQL, BigQuery, MySQL, MongoDB.\nEDUCATION\nApp Brewery school, London, UK  course\nNovember 2016  February 2017 / IOS and Swift - The complete IOS App development.\nTel Ran College, Rehovot, Israel  c ourse\nSeptember 2015  March 2016 / Web and mobile applications development.\nAltai Technical State University, B arnaul, Russia  Bachelor degree\nSeptember 2010  May 2015 / S oftware engineering.\nLANGUAGES Hebrew, English, Russian.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "iOS developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Ashdod, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SuperUp, Ashdod, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "iOS developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "February",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017  Present",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of applications for iOS 10,11,12 in S wift according to G itFlow and J ira",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Scrum. C I experience. Using of C ocoaTouch, Foundation, Alamofire, XIBs,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Storyboards, CoreData, Realm etc. Publishing to App Store.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Integration with back-end R EST API, Firebase and other Google services.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Full stack developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "March 2016  February 2017",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of high loaded Back-end software on PHP (Symphony, Laravel) and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Java (Spring) with PostgreSQL database.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front-end development on A ngular JS, Backbone JS, Bootstrap.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Data analytics in BigQuery by G oogle Data Studio. System monitoring by Zabbix, ELK.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Mobile Web on F ramework 7, JQuery Mobile. Mobile bots for WhatsApp, Telegram,",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Facebook.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Infosoft, Barnaul, Russia",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "B ack-end developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "June 2014  September 2015",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Back-end development on C# (.NET) with M ySQL database.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "System administration and monitoring.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Swift, Java, PHP, C, C++, C#, Lua, JS,CSS, HTML, SQL, Xcode, Intellij Idea, Eclipse, Visual",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Studio, Realm, PostgreSQL, BigQuery, MySQL, MongoDB.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "App Brewery school, London, UK  course",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "November 2016  February 2017 / IOS and Swift - The complete IOS App development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Tel Ran College, Rehovot, Israel  c ourse",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September 2015  March 2016 / Web and mobile applications development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Altai Technical State University, B arnaul, Russia  Bachelor degree",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "September 2010  May 2015 / S oftware engineering.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LANGUAGES Hebrew, English, Russian.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

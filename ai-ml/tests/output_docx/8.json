@@ -1,0 +1,442 @@
+{
+  "file_name": "8.docx",
+  "total_blocks": 62,
+  "confidence": 0.87,
+  "time_taken": 0.03,
+  "memory_mb": 0.16,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "*******************",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Android developer with 3 years experience",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "E-mail:",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "LinkedIn: \tPhone:**********",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Languages: English, Hebrew, Russian\tResidence: Tel Aviv, Israel",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "SKILLS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Programming languages: Kotlin, Java, C++, Dart",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Technologies: Android SDK, Android NDK, Android Architecture Components, Embedded programming, Kotlin Coroutines, RxJava2, Dagger2, Koin, Retrofit2, OkHttp, Google Maps API, Picasso, Material Design, REST API, Joda-Time, Gson, Flutter, JSON, HTML5, CSS3, XML, QT, DOORS, MKS.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "IDE: Android Studio, , IntelliJ IDEA, Eclipse, WebStorm",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Used principles: Clean architecture, MVVM Pattern, MVP Pattern",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Version control system: Git, Mercurial",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Agile: JIRA",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Databases: SQLite",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "PROFESSIONAL EXPERIENCE",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2019 – present | Inetex LTD (Israel, Rehovot) |",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Android Developer",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Project: Android application for multiplatform car rental portal ilCarro. It allows people all over Israel share their private cars to others for a limited period or time with an affordable price for clients. Mobile client offers full functionality of the portal, making the searching and booking processes easier and available from anywhere.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Area of responsibility – developing application from scratch, fixing problems, adding and testing new features, code deployment.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Technologies:  RxJava2, LiveData, MVVM pattern, Clean Architecture, Dagger2, Retrofit2, OkHttp, Google Maps, Cloudinary API, Picasso, Gson.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2017 – 2019 | NTC Astrosoft MIR (Saint Petersburg, Russia) |",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Android Developer",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Project: Mobile platform for AUDI E-Tron. It is based on Android OS and provides all needed information about car state to the driver and gives him control of several systems. (remote control, car alarm system etc.)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Area of responsibility – refactoring existing code base, participating in embedded controlling system development, implementing and testing new functionalities, requirements checking, code deployment.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Technologies: Android NDK, RxJaxa2, Dagger2, Retrofit2, JSON, MVP pattern, CMake, DOORS, MKS.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Project: Mobile system for malfunction detection module of gas turbine engine of military ship.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "System is based on Android OS and allows operators to observe and control all parameters of working gas turbine engine anywhere in the ship accelerating malfunction detection process.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Area of responsibility – participating in developing and refactoring code base, fixing problems, code deployment.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Technologies: Android NDK, C++, RxJaxa2, Dagger2, Retrofit2, JSON, MVP pattern, MVVM pattern, QNX, NPS, QT, CMake, DOORS, MKS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EDUCATION 2017 – 2019 | Saint Petersburg Electrotechnical University, Master’s degree of Computer Engineering Technology",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Recommendations are available upon request.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "*******************",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android developer with 3 years experience",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "E-mail:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "LinkedIn:",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Phone:**********",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Languages: English, Hebrew, Russian",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Residence: Tel Aviv, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: Kotlin, Java, C++, Dart",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Android SDK, Android NDK, Android Architecture Components, Embedded programming, Kotlin Coroutines, RxJava2, Dagger2, Koin, Retrofit2, OkHttp, Google Maps API, Picasso, Material Design, REST API, Joda-Time, Gson, Flutter, JSON, HTML5, CSS3, XML, QT, DOORS, MKS.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IDE: Android Studio, , IntelliJ IDEA, Eclipse, WebStorm",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Used principles: Clean architecture, MVVM Pattern, MVP Pattern",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Version control system: Git, Mercurial",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Agile: JIRA",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: SQLite",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFESSIONAL EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2019 – present | Inetex LTD (Israel, Rehovot) |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project: Android application for multiplatform car rental portal ilCarro. It allows people all over Israel share their private cars to others for a limited period or time with an affordable price for clients. Mobile client offers full functionality of the portal, making the searching and booking processes easier and available from anywhere.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Area of responsibility – developing application from scratch, fixing problems, adding and testing new features, code deployment.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies:  RxJava2, LiveData, MVVM pattern, Clean Architecture, Dagger2, Retrofit2, OkHttp, Google Maps, Cloudinary API, Picasso, Gson.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017 – 2019 | NTC Astrosoft MIR (Saint Petersburg, Russia) |",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Android Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project: Mobile platform for AUDI E-Tron. It is based on Android OS and provides all needed information about car state to the driver and gives him control of several systems. (remote control, car alarm system etc.)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Area of responsibility – refactoring existing code base, participating in embedded controlling system development, implementing and testing new functionalities, requirements checking, code deployment.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Android NDK, RxJaxa2, Dagger2, Retrofit2, JSON, MVP pattern, CMake, DOORS, MKS.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Project: Mobile system for malfunction detection module of gas turbine engine of military ship.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "System is based on Android OS and allows operators to observe and control all parameters of working gas turbine engine anywhere in the ship accelerating malfunction detection process.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Area of responsibility – participating in developing and refactoring code base, fixing problems, code deployment.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Technologies: Android NDK, C++, RxJaxa2, Dagger2, Retrofit2, JSON, MVP pattern, MVVM pattern, QNX, NPS, QT, CMake, DOORS, MKS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION 2017 – 2019 | Saint Petersburg Electrotechnical University, Master’s degree of Computer Engineering Technology",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Recommendations are available upon request.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

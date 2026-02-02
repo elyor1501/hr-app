@@ -1,0 +1,465 @@
+{
+  "file_name": "10.docx",
+  "total_blocks": 63,
+  "confidence": 0.88,
+  "time_taken": 0.06,
+  "memory_mb": 1.05,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "******************",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "WEB FRONTEND DEVELOPER",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "5 years of experience in frontend development",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EXPERIENCE SUMMARY",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Programming languages: JavaScript, TypeScript, PHP",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Web: HTML, CSS, SASS, JavaScript, TypeScript, Pug/Jade, Haml, NodeJS, Gulp, Webpack",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Frameworks: React, React Native, Angular",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Libraries: jQuery, Redux, RxJS, Chart.js, Anime.js, TinyMCE, Material UI, Bootstrap, Tilwind and more..",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Environments – IDE/tools: PhpStorm, VS Code, GitHub, Adobe Photoshop, Figma.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Databases: MySQL",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "System: Windows, Linux, MacOS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EXPERIENCE",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2021-present:  Frontend developer (remote, part-time)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "-- WPG (Nitzana, Israel)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Support and development of game sites for cryptocurrencies casino.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Development of a constructor and panel of social polls \"Lemur\". Improvement of functionality for entering other markets.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2017-2021:  Frontend developer",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "-- WPG (Kharkiv , Ukraine)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Support and development of the functionality of a large network of auto parts stores.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Support and development of game sites for cryptocurrencies casino. Development of new games with CSS and JavaScript animations. For one of the games, I developed an additional server part on NodeJS using WebSocket.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Development of a constructor and panel of social polls \"Lemur\". Direct participation in the creation of a product, concept, implementation in terms of interaction of online panels (web, iOS, Android), constructors, offline applications for taking surveys without the Internet. Development of a online panel application for surveys of respondents for iOS / Android using React Native.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Sometimes outsourcing of small projects.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2016-2017: HTML markup",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "-- WPG (Kharkiv, Ukraine)",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Website layout (with pixel perfect, responsive, CSS and JS animations).",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2016: Freelance",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "-- Kharkiv, Ukraine",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "HTML markup. PSD to HTML. WordPress plugins development.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EDUCATION",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2012- 2017: O.M. Beketov National University of Urban Economy in Kharkiv.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Diploma in Engineering, Heat supply, gas supply and ventilation.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "normal"
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "",
+            "Residence: Herzliya"
+          ],
+          [
+            "",
+            ""
+          ],
+          [
+            "LinkedIn:",
+            "Languages: English, Hebrew,                                                  Ukrainian, Russian"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "******************",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WEB FRONTEND DEVELOPER",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "5 years of experience in frontend development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE SUMMARY",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Programming languages: JavaScript, TypeScript, PHP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Web: HTML, CSS, SASS, JavaScript, TypeScript, Pug/Jade, Haml, NodeJS, Gulp, Webpack",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Frameworks: React, React Native, Angular",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Libraries: jQuery, Redux, RxJS, Chart.js, Anime.js, TinyMCE, Material UI, Bootstrap, Tilwind and more..",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Environments – IDE/tools: PhpStorm, VS Code, GitHub, Adobe Photoshop, Figma.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Databases: MySQL",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "System: Windows, Linux, MacOS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2021-present:  Frontend developer (remote, part-time)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-- WPG (Nitzana, Israel)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Support and development of game sites for cryptocurrencies casino.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of a constructor and panel of social polls \"Lemur\". Improvement of functionality for entering other markets.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2017-2021:  Frontend developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-- WPG (Kharkiv , Ukraine)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Support and development of the functionality of a large network of auto parts stores.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Support and development of game sites for cryptocurrencies casino. Development of new games with CSS and JavaScript animations. For one of the games, I developed an additional server part on NodeJS using WebSocket.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Development of a constructor and panel of social polls \"Lemur\". Direct participation in the creation of a product, concept, implementation in terms of interaction of online panels (web, iOS, Android), constructors, offline applications for taking surveys without the Internet. Development of a online panel application for surveys of respondents for iOS / Android using React Native.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Sometimes outsourcing of small projects.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016-2017: HTML markup",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-- WPG (Kharkiv, Ukraine)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Website layout (with pixel perfect, responsive, CSS and JS animations).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2016: Freelance",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "-- Kharkiv, Ukraine",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "HTML markup. PSD to HTML. WordPress plugins development.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "2012- 2017: O.M. Beketov National University of Urban Economy in Kharkiv.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Diploma in Engineering, Heat supply, gas supply and ventilation.",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

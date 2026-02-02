@@ -1,0 +1,276 @@
+{
+  "file_name": "37.docx",
+  "total_blocks": 44,
+  "confidence": 0.85,
+  "time_taken": 0.03,
+  "memory_mb": 0.76,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Front End Developer \n(+972) \nExperienced Front End Developer (2+ years of total expirience) who is\nNetanya, Israel\ncomfortable working with JavaScript, HTML/CSS,React.\nSpoken languages: Hebrew(fluent), English(advanced), Russian(native) . LinkedIn\nGithub\nWORK EXPERIENCE\nSKILLS\nFreelancer\n- JavaScript (es6)\nFront End Developer\n- CSS\nIsrael/Chelyabinsk\n- Experienced as a Freelancer in a couple of projects. - HTML\n- React\n- Took a part in development of \"  \" and\n  .\n- Development of responsive web application for education using React\non the FrontEnd side.\nBSX\nEDUCATION\nFront End Developer\nCertificate in Front End\nIsrael\n- Development of websites, landing pages. Cooperated with art directors, Development\nproject managers and designers. Performing bug fixes and code reviews. Front End Developer\n- Studied industry trends of websites to create high quality designs. SV College\n- Performing bug fixes and code reviews. Oct 2019 - Jun 2020\n- Develop and support web applications built with up-to-date tools like Israel,Tel-Aviv\nReact,Figma.\nSV College\nMatriculation\nFront End Developer\nCertificate(Computer-\nIsrael,Tel-Aviv\nOct 2019 - Jun 2020 aided design and\n- Main Project: Web application as online education platform. manufacturing).\n- Built Web-sites and Landing Pages based on JS and React. Shevah Mofet High School\n- Designing and implementing HTML email templates and newsletters. 2009 - 2015\n- Meetings and knowledge exchange. Israel,Tel-Aviv",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "textbox",
+      "text": "Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "(+972)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Experienced Front End Developer (2+ years of total expirience) who is",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Netanya, Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "comfortable working with JavaScript, HTML/",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CSS,React",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ".",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Spoken languages: Hebrew(fluent), English(advanced), Russian(native) . LinkedIn",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Github",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "WORK EXPERIENCE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SKILLS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Freelancer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- JavaScript (es6)",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- CSS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Israel/Chelyabinsk",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Experienced as a Freelancer in a couple of projects. - HTML",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- React",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Took a part in development of \"  \" and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": ".",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Development of responsive web application for education using React",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "on the FrontEnd side.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "BSX",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Certificate in Front End",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Israel",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Development of websites, landing pages. Cooperated with art directors, Development",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "project managers and designers. Performing bug fixes and code reviews. Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Studied industry trends of websites to create high quality designs. SV College",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Performing bug fixes and code reviews. Oct 2019 - Jun 2020",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Develop and support web applications built with up-to-date tools like Israel,Tel-Aviv",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "React,Figma.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "SV College",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Matriculation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Front End Developer",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Certificate(Computer-",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Israel,Tel-Aviv",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Oct 2019 - Jun 2020 aided design and",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Main Project: Web application as online education platform. manufacturing).",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Built Web-sites and Landing Pages based on JS and React. Shevah Mofet High School",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Designing and implementing HTML email templates and newsletters. 2009 - 2015",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "- Meetings and knowledge exchange. Israel,Tel-Aviv",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}

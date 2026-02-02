@@ -1,0 +1,350 @@
+{
+  "file_name": "docx_test_three_pages_2.docx",
+  "total_blocks": 42,
+  "confidence": 0.88,
+  "time_taken": 0.07,
+  "memory_mb": 2.19,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "PROFILE SUMMARY",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 1"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Enterprise Data Architect with 14+ years leading data platform modernization programs, regulatory reporting systems, and large-scale lakehouse migrations in banking and insurance sectors.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "PROGRAM LEADERSHIP",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Directed enterprise-wide cloud migration initiatives",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Standardized metadata governance frameworks",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Established FinOps controls for analytics platforms",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Bullet"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "ARCHITECTURE MATRIX",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "CASE STUDIES",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Regulatory Reporting Revamp — Reduced audit turnaround time by 45%.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "Claims Analytics Platform — Enabled fraud detection models in production.",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "IMPLEMENTATION STEPS",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Stakeholder workshops",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Source system profiling",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Canonical modeling",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Pipeline automation",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "list",
+      "text": "Security compliance validation",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "List Number"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "COST GOVERNANCE TABLE",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "EDUCATION",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Heading 2"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "M.S. Data Systems — University of Texas at Austin",
+      "confidence": 0.9,
+      "metadata": {
+        "style": "Normal"
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "Domain",
+            "Stack",
+            "Cloud",
+            "Criticality"
+          ],
+          [
+            "Streaming",
+            "Kafka, Spark",
+            "Azure",
+            "High"
+          ],
+          [
+            "Warehouse",
+            "Snowflake",
+            "Azure",
+            "High"
+          ],
+          [
+            "BI",
+            "PowerBI, Looker",
+            "Multi",
+            "Medium"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "text": "",
+      "confidence": 0.95,
+      "metadata": {
+        "rows": [
+          [
+            "Department",
+            "Spend (USD)",
+            "Savings %"
+          ],
+          [
+            "Retail Banking",
+            "400,000",
+            "18"
+          ],
+          [
+            "Insurance",
+            "275,000",
+            "22"
+          ],
+          [
+            "Risk",
+            "190,000",
+            "15"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "header",
+      "text": "Neha Kulkarni — Enterprise Data Architect | neha.k@email.com | +91-98888-22222",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "footer",
+      "text": "Neha Kulkarni CV — Confidential",
+      "confidence": 0.9,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROFILE SUMMARY",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Enterprise Data Architect with 14+ years leading data platform modernization programs, regulatory reporting systems, and large-scale lakehouse migrations in banking and insurance sectors.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "PROGRAM LEADERSHIP",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Directed enterprise-wide cloud migration initiatives",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Standardized metadata governance frameworks",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Established FinOps controls for analytics platforms",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "ARCHITECTURE MATRIX",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "CASE STUDIES",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Regulatory Reporting Revamp — Reduced audit turnaround time by 45%.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Claims Analytics Platform — Enabled fraud detection models in production.",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "IMPLEMENTATION STEPS",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Stakeholder workshops",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Source system profiling",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Canonical modeling",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Pipeline automation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "Security compliance validation",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "COST GOVERNANCE TABLE",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "EDUCATION",
+      "confidence": 0.85,
+      "metadata": {}
+    },
+    {
+      "type": "textbox",
+      "text": "M.S. Data Systems — University of Texas at Austin",
+      "confidence": 0.85,
+      "metadata": {}
+    }
+  ],
+  "error": null
+}
