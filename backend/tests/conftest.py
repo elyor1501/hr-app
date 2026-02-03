@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from src.core.config import Settings
 from src.db.base import Base
+from src.db.session import get_db_session
 from src.main import create_app
 
 
@@ -60,12 +61,27 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest_asyncio.fixture(scope="function")
-async def client() -> AsyncGenerator[AsyncClient, None]:
-    """Create a test client for the FastAPI app."""
+async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+    """
+    Create a test client for the FastAPI app.
+    
+    IMPORTANT: This fixture now depends on db_session and overrides
+    the get_db_session dependency to use our test database session.
+    This ensures all API calls use the test database.
+    """
     app = create_app()
+
+    # Override the database session dependency to use our test session
+    async def override_get_db_session() -> AsyncGenerator[AsyncSession, None]:
+        yield db_session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
 
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://test",
     ) as ac:
         yield ac
+
+    # Clean up dependency overrides
+    app.dependency_overrides.clear()

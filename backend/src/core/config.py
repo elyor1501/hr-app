@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=list)
 
     log_level: str = Field(default="INFO")
+    # AI/ML Service Settings
+    ai_service_url: str = Field(default="http://ai-service:8080")
+    ai_service_timeout: int = Field(default=30)
+    ai_service_max_retries: int = Field(default=3)
+    ai_service_circuit_breaker_threshold: int = Field(default=5)
 
     # Database settings
     database_host: str = Field(default="localhost")
