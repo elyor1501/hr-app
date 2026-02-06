@@ -1,3 +1,5 @@
+# D:\hr-app\services\backend\src\main.py
+
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -10,6 +12,9 @@ from sqlalchemy import text
 from src.api.health import router as health_router
 from src.api.v1.candidates import router as candidates_router
 from src.api.v1.jobs import router as jobs_router
+from src.api.v1.search import router as search_router
+from src.api.v1.matching import router as matching_router
+from src.api.v1.auth import router as auth_router # NEW
 
 # Config & Core
 from src.core.config import settings
@@ -25,10 +30,7 @@ logger = structlog.get_logger()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """
-    Manage application lifespan events.
-    """
-    # Startup
+    """Manage application lifespan events."""
     logger.info("Starting up application...")
     try:
         await init_db_connection()
@@ -36,7 +38,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             async with engine.begin() as conn:
                 await conn.run_sync(Base.metadata.create_all)
                 logger.info("Database tables created/verified (Dev mode)")
-        
         logger.info("Application startup complete")
     except Exception as e:
         logger.error("Failed to start application", error=str(e))
@@ -44,7 +45,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     yield
 
-    # Shutdown
     logger.info("Shutting down application...")
     try:
         await close_db_connection()
@@ -55,9 +55,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 def create_app() -> FastAPI:
-    """
-    Create and configure FastAPI application.
-    """
+    """Create and configure FastAPI application."""
     configure_logging()
 
     app = FastAPI(
@@ -76,16 +74,11 @@ def create_app() -> FastAPI:
 
     # Register Routers
     app.include_router(health_router)
-    app.include_router(
-        candidates_router, 
-        prefix="/api/v1/candidates", 
-        tags=["candidates"]
-    )
-    app.include_router(
-        jobs_router, 
-        prefix="/api/v1/jobs", 
-        tags=["jobs"]
-    )
+    app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"]) # NEW
+    app.include_router(candidates_router, prefix="/api/v1/candidates", tags=["candidates"])
+    app.include_router(jobs_router, prefix="/api/v1/jobs", tags=["jobs"])
+    app.include_router(search_router, prefix="/api/v1/search", tags=["search"])
+    app.include_router(matching_router, prefix="/api/v1/match", tags=["matching"])
 
     @app.get("/")
     async def root() -> dict:

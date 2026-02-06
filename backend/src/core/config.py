@@ -36,6 +36,12 @@ class Settings(BaseSettings):
     database_max_overflow: int = Field(default=10)
     database_pool_timeout: int = Field(default=30)
 
+    # Auth Settings
+    jwt_secret_key: str = Field(default="super-secret-key-change-in-production")
+    jwt_algorithm: str = Field(default="HS256")
+    access_token_expire_minutes: int = Field(default=30)
+    refresh_token_expire_days: int = Field(default=7)
+
     # Vector dimension (768 for Gemini, 1536 for OpenAI)
     vector_dimension: int = Field(default=768)
 

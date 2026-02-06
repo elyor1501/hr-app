@@ -8,7 +8,9 @@ from src.db.session import get_db_session
 from src.models.job import JobCreate, JobResponse, JobUpdate
 from src.models.enums import JobStatus
 from src.repositories.job import JobRepository
-
+from typing import List, Optional
+from src.models.enums import JobStatus
+from src.api.deps import get_current_user
 router = APIRouter()
 
 
@@ -36,6 +38,7 @@ async def list_jobs(
     search: Optional[str] = Query(None, description="Search in title or description"),
     status: Optional[JobStatus] = Query(None, description="Filter by job status"),
     repo: JobRepository = Depends(get_repository),
+    current_user = Depends(get_current_user)
 ):
     """List jobs with pagination, full-text search, and status filtering."""
     return await repo.get_all(skip=skip, limit=limit, search=search, status=status)

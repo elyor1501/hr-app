@@ -42,3 +42,7 @@ class ExperienceLevel(str, Enum):
     SENIOR = "senior"
     LEAD = "lead"
     EXECUTIVE = "executive"
+
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    RECRUITER = "recruiter"

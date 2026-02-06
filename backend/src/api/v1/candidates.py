@@ -1,10 +1,12 @@
+import random
 from typing import List, Optional
 from uuid import UUID
-
+from src.api.deps import get_current_user
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.config import settings
 from src.db.session import get_db_session
 from src.models.candidate import (
     CandidateCreate,
@@ -13,6 +15,7 @@ from src.models.candidate import (
 )
 from src.repositories.candidate import CandidateRepository
 from src.services.files import FileService
+
 
 router = APIRouter()
 file_service = FileService()
@@ -40,12 +43,6 @@ async def create_candidate(
     resume: Optional[UploadFile] = File(None),
     repo: CandidateRepository = Depends(get_repository),
 ):
-    """
-    Create a new candidate. 
-    Checks database for existing email before saving any files.
-    """
-    
-    # 1. Database Check First (Prevent orphaned files)
     existing = await repo.get_by_email(email)
     if existing:
         raise HTTPException(
@@ -53,7 +50,6 @@ async def create_candidate(
             detail="Candidate with this email already exists"
         )
 
-    # 2. Validate Text Data with Pydantic
     try:
         candidate_in = CandidateCreate(
             first_name=first_name,
@@ -68,13 +64,17 @@ async def create_candidate(
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=e.errors())
 
-    # 3. Handle File Upload (Only after validation and DB check pass)
     candidate_data = candidate_in.model_dump()
+    
+    # Generate mock embedding for development search functionality
+    candidate_data["embedding"] = [
+        random.uniform(-1, 1) for _ in range(settings.vector_dimension)
+    ]
+
     if resume:
         resume_path = await file_service.save_cv(resume)
         candidate_data["resume_url"] = resume_path
 
-    # 4. Save to Database
     return await repo.create(**candidate_data)
 
 
@@ -83,8 +83,8 @@ async def list_candidates(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     repo: CandidateRepository = Depends(get_repository),
+    current_user = Depends(get_current_user) 
 ):
-    """List candidates with pagination."""
     return await repo.get_all(skip=skip, limit=limit)
 
 
@@ -93,7 +93,6 @@ async def get_candidate(
     id: UUID,
     repo: CandidateRepository = Depends(get_repository),
 ):
-    """Get a candidate by ID."""
     candidate = await repo.get_by_id(id)
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
@@ -106,7 +105,6 @@ async def update_candidate(
     update_data: CandidateUpdate,
     repo: CandidateRepository = Depends(get_repository),
 ):
-    """Update a candidate."""
     if not await repo.exists(id):
         raise HTTPException(status_code=404, detail="Candidate not found")
     
@@ -119,7 +117,6 @@ async def delete_candidate(
     id: UUID,
     repo: CandidateRepository = Depends(get_repository),
 ):
-    """Delete a candidate."""
     deleted = await repo.delete(id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Candidate not found")

@@ -1,3 +1,5 @@
+
+
 from src.db.base import Base, BaseModel, TimestampMixin
 from src.db.session import (
     async_session_maker,
@@ -7,8 +9,8 @@ from src.db.session import (
     get_db_session,
     init_db_connection,
 )
-# IMPORTS REQUIRED for Table Creation
-from src.db.models import Candidate, Job
+
+from src.db.models import Candidate, Job, User 
 
 __all__ = [
     "Base",
@@ -22,4 +24,5 @@ __all__ = [
     "check_db_connection",
     "Candidate",
     "Job",
+    "User", 
 ]
