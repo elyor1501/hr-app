@@ -1,18 +1,14 @@
 services:
-  postgres:
-    image: pgvector/pgvector:pg16
-    container_name: hr-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: hr_app
+  redis:
+    image: redis:7-alpine
+    container_name: hr-redis
     ports:
-      - "5432:5432"
+      - "6379:6379"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - redis_data:/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
       timeout: 5s
       retries: 5
 
@@ -21,23 +17,85 @@ services:
       context: ./services/backend
       dockerfile: Dockerfile
     container_name: hr-backend
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     depends_on:
-      postgres:
+      redis:
         condition: service_healthy
+    # Load env vars from the root .env file
+    env_file:
+      - .env
     environment:
-      HR_APP_DATABASE_HOST: postgres
-      HR_APP_DATABASE_PORT: 5432
-      HR_APP_DATABASE_USER: postgres
-      HR_APP_DATABASE_PASSWORD: postgres
-      HR_APP_DATABASE_NAME: hr_app
+      # SUPABASE POOLER CONNECTION
+      HR_APP_DATABASE_HOST: aws-1-ap-southeast-2.pooler.supabase.com
+      HR_APP_DATABASE_PORT: "5432"
+      HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
+      HR_APP_DATABASE_PASSWORD: "Hr_app@vaspp.com"
+      HR_APP_DATABASE_NAME: postgres
+
+      HR_APP_ENVIRONMENT: development
       HR_APP_LOG_LEVEL: INFO
+      HR_APP_REDIS_HOST: redis
+      HR_APP_REDIS_PORT: "6379"
+      HR_APP_JWT_SECRET_KEY: super-secret-key-change-in-production
+      HR_APP_JWT_ALGORITHM: HS256
+      HR_APP_ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+      HR_APP_REFRESH_TOKEN_EXPIRE_DAYS: "7"
+      HR_APP_AI_SERVICE_URL: http://ai-service:8080
+      HR_APP_AI_SERVICE_TIMEOUT: "30"
+      HR_APP_VECTOR_DIMENSION: "768"
+      PYTHONPATH: /app
+      
+      # Pass these explicitly to ensure they are available
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+      
     ports:
       - "8000:8000"
     volumes:
       - ./services/backend/src:/app/src
-      - ./services/backend/tests:/app/tests
-      - ./services/backend/pyproject.toml:/app/pyproject.toml
+      - upload_data:/app/uploads
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+    container_name: hr-worker
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    depends_on:
+      redis:
+        condition: service_healthy
+    # Load env vars from the root .env file
+    env_file:
+      - .env
+    environment:
+      HR_APP_DATABASE_HOST: aws-1-ap-southeast-2.pooler.supabase.com
+      HR_APP_DATABASE_PORT: "5432"
+      HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
+      HR_APP_DATABASE_PASSWORD: "Hr_app@vaspp.com"
+      HR_APP_DATABASE_NAME: postgres
+
+      HR_APP_ENVIRONMENT: development
+      HR_APP_LOG_LEVEL: INFO
+      HR_APP_REDIS_HOST: redis
+      HR_APP_REDIS_PORT: "6379"
+      HR_APP_VECTOR_DIMENSION: "768"
+      PYTHONPATH: /app
+      
+      # Pass these explicitly
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+      
+    volumes:
+      - ./services/backend/src:/app/src
+      - upload_data:/app/uploads
+    command: python -m arq src.worker.WorkerSettings
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  redis_data:
+  upload_data:
