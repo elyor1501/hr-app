@@ -1,17 +1,16 @@
-import AddResumeButton from "@/components/resumes/AddResumeButton";
+import { AddJobButton } from "@/components/jobs/AddJobButton";
+import JobTable from "@/components/jobs/JobTable";
 import { Suspense } from "react";
-import ResumeTable from "@/components/resumes/ResumeTable";
 
 export default async function Page() {
   return (
     <div>
       <div className="flex items-center justify-between border p-4 rounded-lg mt-2">
-        <h1 className="font-semibold">Resume List</h1>
-        <AddResumeButton />
+        <h1 className="font-semibold">List</h1>
+        <AddJobButton/>
       </div>
-
       <Suspense fallback={<div className="p-4">Loading table...</div>}>
-        <ResumeTable />
+      <JobTable/>
       </Suspense>
     </div>
   );
