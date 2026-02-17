@@ -2,6 +2,8 @@ import { AddCandidateButton } from "@/components/candidate/AddCandidateButton";
 import CandidatesTable from "@/components/candidate/CandidateTable";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   return (
     <div>
