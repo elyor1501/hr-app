@@ -2,6 +2,8 @@ import { AddJobButton } from "@/components/jobs/AddJobButton";
 import JobTable from "@/components/jobs/JobTable";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   return (
     <div>
