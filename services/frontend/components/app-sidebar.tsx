@@ -1,60 +1,60 @@
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import { Home, Inbox } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Briefcase, FileText, Home, LucideIcon, Search, Users } from "lucide-react";
 
 type SidebarItem = {
   title: string;
   url: string;
   icon: LucideIcon;
+}
+
+type Props = {
+  isOpen: boolean;
 };
 
 const items: SidebarItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Resume List", url: "/resumeList", icon: Inbox },
+  { title: "Resumes List", url: "/resumeList", icon: FileText },
+  { title: "Employees", url: "/candidates", icon: Users },
+  { title: "Jobs", url: "/jobs", icon: Briefcase },
+  { title: "Search", url: "/search", icon: Search },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ isOpen }: Props) {
   const pathname = usePathname();
   return (
-    <Sidebar className="fixed inset-y-0 left-0 w-[var(--sidebar-width)] border-r shadow-md">
+    <Sidebar className="relative">
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="flex justify-center">
-            <h1 className="text-base font-semibold">HR Application</h1>
-          </SidebarGroupLabel>
+       
+        <div className="flex items-center justify-center h-14">
+          <span className="font-semibold">
+            {isOpen ? "HR Application" : "HR"}
+          </span>
+        </div>
 
-          <SidebarGroupContent>
-            <nav aria-label="Main navigation">
-            <SidebarMenu className="mt-4">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a
-                      href={item.url}
-                      data-active={pathname === item.url}
-                      className="flex w-full items-center gap-6 rounded-md px-3 py-2 transition-colors
-                      hover:bg-muted focus:bg-muted data-[active=true]:bg-muted"
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-            </nav>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarMenu className="px-2">
+          {items.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild>
+                <a
+                  href={item.url}
+                  data-active={pathname === item.url}
+                  className="flex items-center gap-3 rounded-md px-3 py-2
+                  hover:bg-muted data-[active=true]:bg-muted"
+                >
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  {isOpen && <span>{item.title}</span>}
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarContent>
     </Sidebar>
   );

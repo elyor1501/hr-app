@@ -1,31 +1,54 @@
-"use client"
+"use client";
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { ThemeSwitcher } from "@/components/theme-switcher"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { usePathname } from "next/navigation";
+import { BackButton } from "@/components/ui/backbutton";
+import { SidebarToggle } from "@/components/ui/sidebar-toggle";
+import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const { isOpen, setIsOpen } = useSidebarToggle();
+
+  const getPageTitle = () => {
+    if (pathname.startsWith("/dashboard")) return "Dashboard";
+    if (pathname.startsWith("/resumeList")) return "Resumes";
+    if (pathname === "/candidates") return "Employees";
+    if (pathname.startsWith("/candidates/")) return "Employee Details";
+    if (pathname === "/jobs") return "Jobs";
+    if (pathname.startsWith("/jobs/")) return "Job Details";
+    return "HR App";
+  };
+
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full">
-        <AppSidebar />
-        <div className="flex min-h-screen flex-col md:pl-[var(--sidebar-width)]">
-          <header className="h-14 border-b shadow-sm bg-white dark:bg-gray-800">
+      <div className="flex min-h-screen w-full">
+        <div
+          className={`hidden md:block relative border-r bg-white dark:bg-gray-900
+          transition-all duration-300 ${isOpen ? "w-60" : "w-16"}`}
+        >
+          <AppSidebar isOpen={isOpen} />
+          <div className="absolute -right-0 top-0 z-50">
+            <SidebarToggle isOpen={isOpen} setIsOpen={setIsOpen} />
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col">
+          <header className="h-14 border-b bg-white shadow-sm dark:bg-gray-800">
             <div className="flex h-full items-center justify-between px-4">
+              <SidebarTrigger className="md:hidden" />
               <div className="flex items-center gap-2">
-                <SidebarTrigger className="md:hidden" />
-                <h1 className="text-base font-semibold">
-                  Welcome to HR Application
-                </h1>
+                <BackButton />
+                <h1 className="font-semibold">{getPageTitle()}</h1>
               </div>
               <ThemeSwitcher />
             </div>
           </header>
-          <main className="flex-1 bg-gray-100 p-4 md:p-6 dark:bg-gray-900">
-            {children}
-          </main>
+          <main className="flex-1 p-6">{children}</main>
         </div>
       </div>
     </SidebarProvider>
-  )
+  );
 }
