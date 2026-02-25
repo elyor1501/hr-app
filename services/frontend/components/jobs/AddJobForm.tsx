@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 type JobForm = {
   id:string;
   title: string;
+  status:string;
   department: string;
   employment_type: string;
   work_mode: string;
@@ -55,6 +56,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
   const form = useForm<JobForm>({
     defaultValues: {
       title: "",
+      status:"open",
       department: "",
       employment_type: "",
       work_mode: "",

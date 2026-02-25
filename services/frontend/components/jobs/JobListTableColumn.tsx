@@ -16,6 +16,11 @@ export const columns_job_list: ColumnDef<JobList>[] = [
     ),
   },
   {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => <span>{row.getValue("status") || "NA"}</span>,
+  },
+  {
     accessorKey: "department",
     header: "Department",
     cell: ({ row }) => <span>{row.getValue("department") || "NA"}</span>,

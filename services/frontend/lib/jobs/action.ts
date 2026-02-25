@@ -34,6 +34,7 @@ export async function updateJob(formData: FormData): Promise<void> {
 
   const payload = {
     title: formData.get("title") as string,
+    status:formData.get("status") as string,
     department: formData.get("department") as string,
     employment_type: formData.get("employment_type") as string,
     work_mode: formData.get("work_mode") as string,

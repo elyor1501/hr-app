@@ -21,9 +21,9 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     cell: ({ row }) => <span>{row.getValue("email") || "NA"}</span>,
   },
   {
-    accessorKey: "current_company",
-    header: "Company",
-    cell: ({ row }) => <span>{row.getValue("current_company") || "NA"}</span>,
+    accessorKey: "current_title",
+    header: "Role",
+    cell: ({ row }) => <span>{row.getValue("current_title") || "NA"}</span>,
   },
   {
     accessorKey: "years_of_experience",

@@ -66,14 +66,30 @@ export default function JobDetails({ id }: Props) {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Job Title</label>
-            <input
-              name="title"
-              defaultValue={job.title}
-              disabled={!isEditing}
-              className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
-            />
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Job Title
+              </label>
+              <input
+                name="title"
+                defaultValue={job.title}
+                disabled={!isEditing}
+                className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Status</label>
+              <select
+                name="status"
+                defaultValue={job.status ?? "Open"}
+                disabled={!isEditing}
+                className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+              >
+                <option value="Open">Open</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">

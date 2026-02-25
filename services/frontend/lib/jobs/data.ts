@@ -16,6 +16,7 @@ export type JobList = {
   openings?: number;
   hiring_manager?: string;
   application_deadline?: string;
+  status:string;
 };
 
 export async function getJob(): Promise<JobList[]> {
