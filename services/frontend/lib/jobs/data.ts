@@ -21,9 +21,18 @@ export type JobList = {
 
 export async function getJob(): Promise<JobList[]> {
   try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    const headers: HeadersInit = {
+      "ngrok-skip-browser-warning": "true",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs?skip=0&limit=100`,
-      { cache: "no-store" }
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/?skip=0&limit=100`,
+      { 
+        headers,
+        cache: "no-store" 
+      }
     );
 
     if (!res.ok) {
@@ -42,10 +51,17 @@ export async function getJob(): Promise<JobList[]> {
 
 export async function getJobById(id: string) {
   try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    const headers: HeadersInit = {
+      "ngrok-skip-browser-warning": "true",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${id}`,
       {
         method: "GET",
+        headers,
         cache: "no-store", 
       }
     );
@@ -62,4 +78,37 @@ export async function getJobById(id: string) {
     console.error("getJobById error:", error);
     throw error;
   }
+}
+
+export async function matchCandidates(jobId: string, candidateIds: string[]) {
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("access_token")
+      : null;
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/match/bulk`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        job_id: jobId,
+        candidate_ids: candidateIds,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Match error:", text);
+    throw new Error("Failed to match candidates");
+  }
+
+  const data = await res.json();
+
+  return data;
 }

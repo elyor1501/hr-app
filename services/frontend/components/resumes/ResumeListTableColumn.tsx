@@ -50,20 +50,56 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
     cell: ({ row }) => {
       const resume = row.original;
 
-      const handleDownload = () => {
+      const handleDownload = async () => {
         if (!resume.id) {
           console.error("No resume ID available");
           return;
         }
 
-        const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/${resume.id}/download`;
+        const token = localStorage.getItem("access_token");
+        
+        let downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/${resume.id}/download`;
+        
+        console.log("Attempting download from:", downloadUrl);
 
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.download = resume.file_name || "resume.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        try {
+          let response = await fetch(downloadUrl, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "ngrok-skip-browser-warning": "true",
+            },
+          });
+
+          if (!response.ok && resume.file_url) {
+            console.warn("Constructed download URL failed, trying file_url:", resume.file_url);
+            const fallbackUrl = resume.file_url.startsWith("http") 
+              ? resume.file_url 
+              : `${process.env.NEXT_PUBLIC_API_URL}${resume.file_url}`;
+            
+            response = await fetch(fallbackUrl, {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "ngrok-skip-browser-warning": "true",
+              },
+            });
+          }
+
+          if (!response.ok) throw new Error(`Download failed with status: ${response.status}`);
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", resume.file_name || "resume.pdf");
+          document.body.appendChild(link);
+          link.click();
+          if (link.parentNode) {
+            link.parentNode.removeChild(link);
+          }
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error("Error downloading file:", error);
+        }
       };
 
       return (

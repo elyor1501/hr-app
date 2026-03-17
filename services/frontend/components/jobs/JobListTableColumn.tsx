@@ -11,8 +11,9 @@ export const columns_job_list: ColumnDef<JobList>[] = [
   {
     accessorKey: "title",
     header: "Job Title",
+    size: 100,
     cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("title") || "NA"}</span>
+      <span className="font-medium whitespace-normal break-words">{row.getValue("title") || "NA"}</span>
     ),
   },
   {
@@ -35,7 +36,7 @@ export const columns_job_list: ColumnDef<JobList>[] = [
     header: () => <div className="text-center w-full">Required Experience</div>,
     cell: ({ row }) => (
       <div className="text-center w-full">
-        {row.getValue("experience_required") || "NA"}
+        {row.getValue("experience_required") || "0"}
       </div>
     ),
     size: 120,
@@ -50,27 +51,25 @@ export const columns_job_list: ColumnDef<JobList>[] = [
     ),
     size: 120,
   },
+  {
+    header: "Actions",
+    cell: ({ row }) => {
+      const router = useRouter();
+      const job = row.original;
 
- {
-  header: "Actions",
-  cell: ({ row }) => {
-    const router = useRouter();
-    const job = row.original;
-
-    return (
-      <div className="flex items-center justify-center gap-2">
-        <DeleteJobButton jobId={job.id} />
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.push(`/jobs/${job.id}`)}
-        >
-          <Eye className="w-4 h-4" />
-        </Button>
-      </div>
-    );
+      return (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push(`/jobs/${job.id}`)}
+            className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
+          >
+            <Eye className="w-4 h-4" />
+          </Button>
+          <DeleteJobButton jobId={job.id} />
+        </div>
+      );
+    },
   },
-}
-
 ];

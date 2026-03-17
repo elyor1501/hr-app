@@ -4,10 +4,15 @@ import { revalidatePath } from "next/cache";
 
 export async function deleteCandidate(candidateId: string) {
   try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/candidates/${candidateId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/${candidateId}`,
       {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
+        },
         cache: "no-store",
       }
     );
@@ -29,6 +34,7 @@ export async function deleteCandidate(candidateId: string) {
 
 export async function updateCandidate(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
+  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
 
   const skillsInput = (formData.get("skills") as string) || "";
   const skillsArray = skillsInput
@@ -52,11 +58,13 @@ export async function updateCandidate(formData: FormData): Promise<void> {
   };
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/candidates/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/${id}`,
     {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify(payload),
       cache: "no-store",

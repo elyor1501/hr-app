@@ -17,6 +17,7 @@ import { Avatar,AvatarImage, AvatarFallback } from "./ui/avatar";
 type UserNavProps = {
   user: {
     email: string;
+    full_name?: string;
     user_metadata?: {
       full_name?: string;
     };
@@ -25,7 +26,7 @@ type UserNavProps = {
 
 export function UserNav({ user }: UserNavProps) {
   const email = user?.email ?? "";
-  const name = email.split("@")[0] || "User";
+  const name = user?.full_name || user?.user_metadata?.full_name || email.split("@")[0] || "User";
   const initials = name.substring(0, 2).toUpperCase();
 
   return (

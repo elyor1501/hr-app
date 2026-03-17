@@ -53,7 +53,7 @@ export const ChatInterface: React.FC = () => {
             className="flex-grow mr-2"
             disabled={isLoading}
           />
-          <Button type="submit" disabled={isLoading || !input.trim()}>
+          <Button type="submit" disabled={isLoading || !input.trim()} className="bg-blue-600 hover:bg-blue-700 text-white">
             Send
           </Button>
         </form>        

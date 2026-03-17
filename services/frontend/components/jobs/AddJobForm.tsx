@@ -14,9 +14,9 @@ import {
 import { useRouter } from "next/navigation";
 
 type JobForm = {
-  id:string;
+  id: string;
   title: string;
-  status:string;
+  status: string;
   department: string;
   employment_type: string;
   work_mode: string;
@@ -53,10 +53,12 @@ export default function CreateJobForm({ setOpenAction }: Props) {
   const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
+  const today = new Date().toISOString().split("T")[0];
+
   const form = useForm<JobForm>({
     defaultValues: {
       title: "",
-      status:"open",
+      status: "open",
       department: "",
       employment_type: "",
       work_mode: "",
@@ -71,7 +73,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
       openings: 1,
       hiring_manager: "",
       application_deadline: "",
-      application_posted: "",
+      application_posted: today,
     },
   });
 
@@ -79,16 +81,26 @@ export default function CreateJobForm({ setOpenAction }: Props) {
     try {
       setLoading(true);
 
+      const token = localStorage.getItem("access_token");
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
+          },
           body: JSON.stringify(values),
         },
       );
 
-      if (!res.ok) throw new Error("Failed to create job");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error("Failed to create job");
+      }
 
       form.reset();
       setOpenAction(false);
@@ -100,6 +112,9 @@ export default function CreateJobForm({ setOpenAction }: Props) {
     }
   };
 
+  const renderError = (error?: any) =>
+    error && <p className="text-red-500 text-sm">{error.message}</p>;
+
   return (
     <Form {...form}>
       <form
@@ -109,12 +124,14 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="title"
-          render={({ field }) => (
+          rules={{ required: "Job title is required" }}
+          render={({ field, fieldState }) => (
             <FormItem className="col-span-2">
               <FormLabel>Job Title</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -122,7 +139,14 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="description"
-          render={({ field }) => (
+          rules={{
+            required: "Description is required",
+            minLength: {
+              value: 10,
+              message: "Description must be at least 10 characters",
+            },
+          }}
+          render={({ field, fieldState }) => (
             <FormItem className="col-span-2">
               <FormLabel>Job Description</FormLabel>
               <FormControl>
@@ -131,6 +155,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
                   {...field}
                 />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -138,7 +163,14 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="responsibilities"
-          render={({ field }) => (
+          rules={{
+            required: "Responsibilities are required",
+            minLength: {
+              value: 10,
+              message: "Responsibilities must be at least 10 characters",
+            },
+          }}
+          render={({ field, fieldState }) => (
             <FormItem className="col-span-2">
               <FormLabel>Responsibilities</FormLabel>
               <FormControl>
@@ -147,6 +179,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
                   {...field}
                 />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -154,12 +187,14 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="department"
-          render={({ field }) => (
+          rules={{ required: "Department is required" }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Department</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -167,12 +202,14 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="location"
-          render={({ field }) => (
+          rules={{ required: "Location is required" }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Location</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -180,7 +217,8 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="employment_type"
-          render={({ field }) => (
+          rules={{ required: "Employment type is required" }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Employment Type</FormLabel>
               <FormControl>
@@ -195,6 +233,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
                   <option value="Internship">Internship</option>
                 </select>
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -202,7 +241,8 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="work_mode"
-          render={({ field }) => (
+          rules={{ required: "Work mode is required" }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Work Mode</FormLabel>
               <FormControl>
@@ -216,6 +256,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
                   <option value="Remote">Remote</option>
                 </select>
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -223,9 +264,13 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="experience_required"
-          render={({ field }) => (
+          rules={{
+            required: "Experience is required",
+            min: { value: 0, message: "Experience cannot be negative" },
+          }}
+          render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Experience Required (Years)</FormLabel>
+              <FormLabel>Experience Required</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -233,6 +278,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -240,12 +286,14 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="salary_range"
-          render={({ field }) => (
+          rules={{ required: "Salary range is required" }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Salary Range</FormLabel>
               <FormControl>
                 <Input placeholder="5LPA - 10LPA" {...field} />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -253,7 +301,11 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="openings"
-          render={({ field }) => (
+          rules={{
+            required: "Openings required",
+            min: { value: 1, message: "At least 1 opening required" },
+          }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>No. of Openings</FormLabel>
               <FormControl>
@@ -263,6 +315,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -270,37 +323,14 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="hiring_manager"
-          render={({ field }) => (
+          rules={{ required: "Hiring manager required" }}
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>Hiring Manager</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="application_posted"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Posted Date</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="application_deadline"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Application Deadline</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -308,47 +338,69 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="education"
-          render={() => (
+          rules={{ required: "Education is required" }}
+          render={({ field, fieldState }) => (
             <FormItem className="col-span-2">
               <FormLabel>Educational Qualification</FormLabel>
 
               <div className="grid grid-cols-3 gap-2">
                 {EDUCATION_OPTIONS.map((item) => (
-                  <FormField
-                    key={item}
-                    control={form.control}
-                    name="education"
-                    render={({ field }) => {
-                      return (
-                        <FormItem
-                          key={item}
-                          className="flex flex-row items-center space-x-2"
-                        >
-                          <FormControl>
-                            <input
-                              type="checkbox"
-                              checked={field.value?.includes(item)}
-                              onChange={(e) => {
-                                const checked = e.target.checked;
-                                return checked
-                                  ? field.onChange([
-                                      ...(field.value || []),
-                                      item,
-                                    ])
-                                  : field.onChange(
-                                      field.value?.filter((v) => v !== item),
-                                    );
-                              }}
-                            />
-                          </FormControl>
+                  <label key={item} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={field.value?.includes(item)}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
 
-                          <FormLabel className="font-normal">{item}</FormLabel>
-                        </FormItem>
-                      );
-                    }}
-                  />
+                        if (checked) {
+                          field.onChange([...(field.value || []), item]);
+                        } else {
+                          field.onChange(
+                            field.value?.filter((value) => value !== item),
+                          );
+                        }
+                      }}
+                    />
+                    {item}
+                  </label>
                 ))}
               </div>
+
+              {renderError(fieldState.error)}
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="application_posted"
+          rules={{ required: "Posted date required" }}
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>Posted Date</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} min={today} />
+              </FormControl>
+              {renderError(fieldState.error)}
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="application_deadline"
+          rules={{
+            required: "Deadline required",
+            validate: (value) =>
+              value >= today || "Deadline cannot be before today",
+          }}
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>Application Deadline</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} min={today} />
+              </FormControl>
+              {renderError(fieldState.error)}
             </FormItem>
           )}
         />
@@ -356,12 +408,24 @@ export default function CreateJobForm({ setOpenAction }: Props) {
         <FormField
           control={form.control}
           name="required_skills"
-          render={({ field }) => (
+          rules={{
+            required: "Required skills are mandatory",
+            minLength: {
+              value: 10,
+              message: "Required skills must be at least 10 characters",
+            },
+          }}
+          render={({ field, fieldState }) => (
             <FormItem className="col-span-2">
               <FormLabel>Required Skills</FormLabel>
               <FormControl>
                 <Input placeholder="React, Next.js, SQL..." {...field} />
               </FormControl>
+              {fieldState.error && (
+                <p className="text-red-500 text-sm">
+                  {fieldState.error.message}
+                </p>
+              )}
             </FormItem>
           )}
         />

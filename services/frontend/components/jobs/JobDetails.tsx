@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { updateJob } from "@/lib/jobs/action";
-import { getJobById } from "@/lib/jobs/data";
+import { getJobById, matchCandidates } from "@/lib/jobs/data";
 import { useRouter } from "next/navigation";
+import { getCandidates } from "@/lib/candidates/data";
 
 type Props = {
   id: string;
@@ -11,36 +12,57 @@ type Props = {
 
 export default function JobDetails({ id }: Props) {
   const [job, setJob] = useState<any>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [candidates, setCandidates] = useState<any[]>([]);
+  const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchJob() {
+    async function fetchData() {
       setLoading(true);
-      const data = await getJobById(id);
-      setJob(data);
+
+      const jobData = await getJobById(id);
+      setJob(jobData);
+
+      const candidateData = await getCandidates();
+      setCandidates(candidateData);
+
+      if (candidateData?.length > 0) {
+        const candidateIds = candidateData.map((c: any) => c.resume_id);
+
+        const matchData = await matchCandidates(id, candidateIds);
+
+        const topMatches = matchData.results
+          .sort((a: any, b: any) => b.match_score - a.match_score)
+          .slice(0, 10);
+
+        setMatches(topMatches);
+      }
+
       setLoading(false);
     }
 
-    if (id) fetchJob();
+    if (id) fetchData();
   }, [id]);
 
   async function handleSubmit(formData: FormData) {
-    setLoading(true);
+    setSaving(true);
 
     await updateJob(formData);
+
     const updatedJob = await getJobById(id);
     setJob(updatedJob);
 
     setIsEditing(false);
-    setLoading(false);
+    setSaving(false);
 
     router.refresh();
   }
 
-  if (!job) return <p>Loading jobs...</p>;
+  if (!job) return <p>Loading jobs details...</p>;
 
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
@@ -86,8 +108,8 @@ export default function JobDetails({ id }: Props) {
                 disabled={!isEditing}
                 className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
               >
-                <option value="Open">Open</option>
-                <option value="Closed">Closed</option>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
               </select>
             </div>
           </div>
@@ -308,13 +330,73 @@ export default function JobDetails({ id }: Props) {
           <button
             form="job-form"
             type="submit"
-            disabled={loading}
-            className={`px-4 py-2 rounded-lg text-sm ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+            disabled={saving}
+            className={`px-4 py-2 rounded-lg text-sm ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
           >
-            {loading ? "Saving..." : "Save Changes"}
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       )}
+
+      <div className="mt-4">
+        <h2 className="text-lg font-semibold mb-4">
+          Matching Candidates ({matches.length})
+        </h2>
+
+        {loading ? (
+          <p>Finding matches...</p>
+        ) : matches.length === 0 ? (
+          <p className="text-gray-500">No matching candidates found.</p>
+        ) : (
+          <div className="grid gap-4">
+            {matches.map((candidate) => (
+              <div
+                key={candidate.candidate_id}
+                className="border rounded-lg p-4 shadow-sm hover:shadow-md transition"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-semibold">
+                    {candidate.candidate_name || "Candidate"}
+                  </h3>
+
+                  <span className="text-sm font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    {Number(candidate.match_score).toFixed(2)}%
+                  </span>
+                </div>
+
+                <p className="text-sm text-gray-600 mb-2">
+                  {candidate.reasoning}
+                </p>
+
+                {candidate.strengths?.length > 0 && (
+                  <div className="text-sm mb-2">
+                    <span className="font-medium text-green-600">
+                      Strengths:
+                    </span>{" "}
+                    {candidate.strengths.join(", ")}
+                  </div>
+                )}
+
+                {candidate.gaps?.length > 0 && (
+                  <div className="text-sm mb-2">
+                    <span className="font-medium text-red-600">Gaps:</span>{" "}
+                    {candidate.gaps.join(", ")}
+                  </div>
+                )}
+
+                {candidate.recommendations?.length > 0 && (
+                  <div className="text-sm">
+                    <span className="font-medium text-blue-600">
+                      Recommendations:
+                    </span>{" "}
+                    {candidate.recommendations.join(", ")}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

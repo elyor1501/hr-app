@@ -12,7 +12,13 @@ export default function AddResumeButton() {
 
     const fetchExistingFiles = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes`);
+        const token = localStorage.getItem("access_token");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
+          }
+        });
         if (!res.ok) throw new Error("Failed to fetch resumes");
         const data = await res.json();
         const fileNames = data.map((r: any) => r.file_name);

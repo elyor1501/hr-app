@@ -2,17 +2,34 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Eye, Pen, Trash, ZoomIn } from "lucide-react";
+import { Eye } from "lucide-react";
 import { CandidateList } from "@/lib/candidates/data";
 import { useRouter } from "next/navigation";
+import { CompareCheckbox } from "./CompareCheckbox";
 import { DeleteCandidateButton } from "./DeleteCandidateButton";
 
 export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <div className="flex justify-center w-full">
+        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"></span>
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="flex justify-center w-full">
+        <CompareCheckbox candidate={row.original} />
+      </div>
+    ),
+    size: 40,
+  },
+  {
     accessorKey: "first_name",
     header: "Name",
     cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("first_name") || "NA"}</span>
+      <span className="font-medium">
+        {row.getValue("first_name") || "NA"}
+      </span>
     ),
   },
   {
@@ -23,17 +40,19 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   {
     accessorKey: "current_title",
     header: "Role",
-    cell: ({ row }) => <span>{row.getValue("current_title") || "NA"}</span>,
+    cell: ({ row }) => <span className="whitespace-normal break-words">
+      {row.getValue("current_title") || "NA"}
+    </span>,
   },
   {
     accessorKey: "years_of_experience",
     header: () => <div className="text-center w-full">Year of experience</div>,
     cell: ({ row }) => (
       <div className="text-center w-full">
-        {row.getValue("years_of_experience") || "NA"}
+        {row.getValue("years_of_experience") || "NA"} yrs
       </div>
     ),
-    size: 120,
+    size: 80,
   },
   {
     header: "Actions",
@@ -42,15 +61,15 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
       const candidate = row.original;
       return (
         <div className="flex items-center justify-center w-full gap-2">
-          <DeleteCandidateButton candidateId={candidate.id} />
-
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push(`/candidates/${candidate.id}`)}
+           onClick={() => router.push(`/candidates/${candidate.resume_id}`)}
+            className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
           >
             <Eye className="w-4 h-4" />
           </Button>
+          <DeleteCandidateButton candidateId={candidate.id} />
         </div>
       );
     },

@@ -1,6 +1,5 @@
 "use client";
 
-import { uploadBulkResumes } from "@/lib/resumeList/action";
 import { EyeIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -26,6 +25,7 @@ export default function ResumeUpload({
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [uploadStatus, setUploadStatus] = useState<string>("");
 
   const router = useRouter();
 
@@ -71,7 +71,9 @@ export default function ResumeUpload({
           return;
         }
 
-        const isDuplicateInUploads = uploads.some((f) => f.file.name === file.name);
+        const isDuplicateInUploads = uploads.some(
+          (f) => f.file.name === file.name,
+        );
         const isDuplicateOnBackend = existingFiles.includes(file.name);
 
         if (isDuplicateInUploads || isDuplicateOnBackend) {
@@ -83,23 +85,23 @@ export default function ResumeUpload({
 
         validFiles.push({
           file,
-          progress: 100,
+          progress: 0, 
           previewUrl,
         });
       });
 
-      if (duplicateFound) setError("File already exist.");
+      if (duplicateFound) setError("Some files were skipped (duplicates).");
 
       if (validFiles.length > 0) {
         setUploads((prev) => [...prev, ...validFiles]);
       }
     },
-    [uploads, existingFiles]
+    [uploads, existingFiles],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: true,
+    multiple: true, 
     accept: {
       "application/pdf": [],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
@@ -140,17 +142,50 @@ export default function ResumeUpload({
 
     try {
       setIsUploading(true);
+      setError(null);
+      setUploadStatus(`Uploading ${uploads.length} files...`);
 
-      const files = uploads.map((u) => u.file);
+      const formData = new FormData();
+      for (const upload of uploads) {
+        formData.append("files", upload.file);
+      }
 
-      await uploadBulkResumes(files);
+      console.log(`Submitting ${uploads.length} files to backend...`);
 
-      onClose();
-      router.refresh();
-      setUploads([]);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/bulk`,
+        {
+          method: "POST",
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+          body: formData,
+        },
+      );
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Backend Error:", errorText);
+        throw new Error("Failed to upload resumes");
+      }
+
+      const result = await res.json();
+      console.log("Upload Success:", result);
+
+      if (Array.isArray(result)) {
+        setUploadStatus(`${result.length} files uploaded! Processing started.`);
+      }
+
+      setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
+
+      setTimeout(() => {
+        onClose();
+        router.refresh();
+        setUploads([]);
+      }, 1500);
     } catch (error: any) {
       console.error("Upload failed:", error);
-      setError(error?.message || "Upload failed");
+      setError(error?.message || "Upload failed. Check console.");
     } finally {
       setIsUploading(false);
     }
@@ -175,6 +210,9 @@ export default function ResumeUpload({
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
+      {uploadStatus && !error && (
+        <p className="text-green-600 text-sm">{uploadStatus}</p>
+      )}
 
       {paginatedUploads.map((upload, i) => {
         const actualIndex = (currentPage - 1) * ITEMS_PER_PAGE + i;
@@ -248,7 +286,7 @@ export default function ResumeUpload({
             disabled={isUploading}
             className="bg-blue-600 text-white px-2 py-1 rounded disabled:opacity-50"
           >
-            {isUploading ? "Uploading..." : `Upload`}
+            {isUploading ? "Uploading..." : `Upload ${uploads.length} Files`}
           </button>
         </div>
       )}
