@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 from pydantic import EmailStr, Field, field_validator, model_validator
 
@@ -13,7 +13,6 @@ from src.models.base import (
     validate_phone_number,
 )
 from src.models.enums import CandidateStatus
-
 
 class CandidateBase(BaseSchema):
     first_name: str = Field(..., min_length=1, max_length=100)
@@ -27,9 +26,8 @@ class CandidateBase(BaseSchema):
     resume_text: Optional[str] = Field(default=None, max_length=50000)
     location: Optional[str] = Field(default=None, max_length=200)
     linkedin_url: Optional[str] = Field(default=None, max_length=500)
-    
-    # URL string for resume
     resume: Optional[str] = Field(default=None, description="URL to resume file")
+    json_data: Optional[Dict[str, Any]] = Field(default=None)
 
     @field_validator("phone")
     @classmethod
@@ -45,7 +43,7 @@ class CandidateBase(BaseSchema):
     @field_validator("linkedin_url")
     @classmethod
     def validate_linkedin_url(cls, v: Optional[str]) -> Optional[str]:
-        if v and not re.match(r"^https?://(www\.)?linkedin\.com/.*$", v):
+        if v and not re.match(r"^https?://(www\.)?linkedin\.com(/.*)?$", v):
             raise ValueError("Invalid LinkedIn URL format")
         return v
 
@@ -55,10 +53,8 @@ class CandidateBase(BaseSchema):
         self.last_name = self.last_name.strip().title()
         return self
 
-
 class CandidateCreate(CandidateBase):
     status: CandidateStatus = Field(default=CandidateStatus.ACTIVE)
-
 
 class CandidateUpdate(BaseSchema):
     first_name: Optional[str] = None
@@ -74,20 +70,18 @@ class CandidateUpdate(BaseSchema):
     linkedin_url: Optional[str] = None
     status: Optional[CandidateStatus] = None
     resume: Optional[str] = None
+    json_data: Optional[Dict[str, Any]] = None
 
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: Optional[str]) -> Optional[str]:
         return validate_phone_number(v)
 
-
 class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     status: CandidateStatus = Field(...)
 
-
 class CandidateInDB(CandidateResponse, EmbeddingMixin):
     pass
-
 
 class CandidateList(BaseSchema):
     items: List[CandidateResponse]

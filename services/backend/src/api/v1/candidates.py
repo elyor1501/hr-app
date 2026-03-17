@@ -1,3 +1,5 @@
+# src/api/v1/candidates.py
+
 import random
 from typing import List, Optional
 from uuid import UUID
@@ -6,6 +8,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
+from src.core.cache import cache, CacheKeyBuilder
 from src.db.session import get_db_session
 from src.models.candidate import (
     CandidateCreate,
@@ -15,7 +18,7 @@ from src.models.candidate import (
 from src.models.enums import CandidateStatus
 from src.repositories.candidate import CandidateRepository
 from src.services import upload_file
-
+from src.services.background_jobs import job_service
 
 router = APIRouter()
 
@@ -74,11 +77,13 @@ async def create_candidate(
     if skills:
         candidate_data["skills"] = [s.strip().lower() for s in skills.split(",") if s.strip()]
 
+    # Generate initial embedding
     candidate_data["embedding"] = [
         random.uniform(-1, 1) for _ in range(settings.vector_dimension)
     ]
 
-    # --- UPLOAD RESUME TO SUPABASE STORAGE ---
+    # Upload resume to Supabase Storage
+    resume_url = None
     if resume:
         if resume.content_type not in ALLOWED_CONTENT_TYPES:
             raise HTTPException(
@@ -86,17 +91,28 @@ async def create_candidate(
                 detail="Invalid file type. Only PDF and Word documents are allowed."
             )
         
-        # Upload using service
         try:
             resume_url = await upload_file(resume)
             if resume_url:
                 candidate_data["resume"] = resume_url
         except Exception as e:
             print(f"Resume upload failed: {e}")
-            # Continue without resume if upload fails, or raise error
-            # raise HTTPException(500, detail="Resume upload failed")
 
-    return await repo.create(**candidate_data)
+    candidate = await repo.create(**candidate_data)
+
+    if resume_url:
+        try:
+            job_id = await job_service.submit_process_resume(
+                candidate_id=candidate.id,
+                file_path=resume_url,
+            )
+        except Exception as e:
+            print(f"Failed to submit resume processing job: {e}")
+
+    # Invalidate cache
+    await cache.invalidate_search()
+
+    return candidate
 
 
 @router.get("/", response_model=List[CandidateResponse])
@@ -113,9 +129,17 @@ async def get_candidate(
     id: UUID,
     repo: CandidateRepository = Depends(get_repository),
 ):
+    cached = await cache.get_candidate(str(id))
+    if cached:
+        return CandidateResponse(**cached)
+    
     candidate = await repo.get_by_id(id)
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
+    
+    # Cache the result
+    await cache.set_candidate(str(id), candidate.to_dict())
+    
     return candidate
 
 
@@ -129,6 +153,10 @@ async def update_candidate(
         raise HTTPException(status_code=404, detail="Candidate not found")
 
     updated = await repo.update(id, **update_data.model_dump(exclude_unset=True))
+    
+    # Invalidate cache
+    await cache.invalidate_candidate(str(id))
+    
     return updated
 
 
@@ -140,3 +168,6 @@ async def delete_candidate(
     deleted = await repo.delete(id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Candidate not found")
+    
+    # Invalidate cache
+    await cache.invalidate_candidate(str(id))

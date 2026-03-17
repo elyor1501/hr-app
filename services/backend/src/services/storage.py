@@ -22,6 +22,7 @@ async def upload_file(file: UploadFile) -> str:
     try:
         file_content = await file.read()
         file_ext = file.filename.split(".")[-1] if "." in file.filename else "pdf"
+        # We keep the UUID for unique storage path, but track filename in DB
         file_path = f"{uuid.uuid4()}.{file_ext}"
 
         supabase.storage.from_(BUCKET_NAME).upload(
@@ -35,3 +36,19 @@ async def upload_file(file: UploadFile) -> str:
     except Exception as e:
         print(f"Upload failed: {e}")
         return None
+
+async def delete_file_from_storage(file_url: str) -> bool:
+    """Deletes file from Supabase storage using its URL."""
+    if not supabase or not file_url:
+        return False
+    
+    try:
+        # Extract file path from URL
+        # URL format: .../resumes/uuid.pdf
+        file_path = file_url.split(f"/{BUCKET_NAME}/")[-1]
+        
+        supabase.storage.from_(BUCKET_NAME).remove([file_path])
+        return True
+    except Exception as e:
+        print(f"Delete failed: {e}")
+        return False

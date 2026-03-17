@@ -25,4 +25,4 @@ __all__ = [
     "Candidate",
     "Job",
     "User", 
-]
+] 

@@ -17,84 +17,87 @@ services:
       context: ./services/backend
       dockerfile: Dockerfile
     container_name: hr-backend
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     depends_on:
       redis:
         condition: service_healthy
-    # Load env vars from the root .env file
+      ai-ml-service:
+        condition: service_started
     env_file:
-      - .env
+      - ./services/backend/.env
     environment:
-      # SUPABASE POOLER CONNECTION
-      HR_APP_DATABASE_HOST: aws-1-ap-southeast-2.pooler.supabase.com
-      HR_APP_DATABASE_PORT: "5432"
+      HR_APP_DATABASE_HOST: 52.62.122.103
+      HR_APP_DATABASE_PORT: "6543"
       HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
-      HR_APP_DATABASE_PASSWORD: "Hr_app@vaspp.com"
+      HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
       HR_APP_DATABASE_NAME: postgres
-
       HR_APP_ENVIRONMENT: development
-      HR_APP_LOG_LEVEL: INFO
-      HR_APP_REDIS_HOST: redis
+      HR_APP_REDIS_HOST: hr-redis
       HR_APP_REDIS_PORT: "6379"
-      HR_APP_JWT_SECRET_KEY: super-secret-key-change-in-production
-      HR_APP_JWT_ALGORITHM: HS256
-      HR_APP_ACCESS_TOKEN_EXPIRE_MINUTES: "30"
-      HR_APP_REFRESH_TOKEN_EXPIRE_DAYS: "7"
-      HR_APP_AI_SERVICE_URL: http://ai-service:8080
-      HR_APP_AI_SERVICE_TIMEOUT: "30"
-      HR_APP_VECTOR_DIMENSION: "768"
+      HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
+      HR_APP_VECTOR_DIMENSION: "3072"
+      HR_APP_CACHE_PREFIX: hr_app
       PYTHONPATH: /app
-      
-      # Pass these explicitly to ensure they are available
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
-      
     ports:
       - "8000:8000"
     volumes:
       - ./services/backend/src:/app/src
       - upload_data:/app/uploads
-    restart: unless-stopped
+    restart: always
 
   worker:
     build:
       context: ./services/backend
       dockerfile: Dockerfile
     container_name: hr-worker
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     depends_on:
       redis:
         condition: service_healthy
-    # Load env vars from the root .env file
     env_file:
-      - .env
+      - ./services/backend/.env
     environment:
-      HR_APP_DATABASE_HOST: aws-1-ap-southeast-2.pooler.supabase.com
-      HR_APP_DATABASE_PORT: "5432"
+      HR_APP_DATABASE_HOST: 52.62.122.103
+      HR_APP_DATABASE_PORT: "6543"
       HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
-      HR_APP_DATABASE_PASSWORD: "Hr_app@vaspp.com"
+      HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
       HR_APP_DATABASE_NAME: postgres
-
-      HR_APP_ENVIRONMENT: development
-      HR_APP_LOG_LEVEL: INFO
-      HR_APP_REDIS_HOST: redis
+      HR_APP_REDIS_HOST: hr-redis
       HR_APP_REDIS_PORT: "6379"
-      HR_APP_VECTOR_DIMENSION: "768"
+      HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
+      HR_APP_VECTOR_DIMENSION: "3072"
+      HR_APP_CACHE_PREFIX: hr_app
       PYTHONPATH: /app
-      
-      # Pass these explicitly
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
-      
     volumes:
       - ./services/backend/src:/app/src
       - upload_data:/app/uploads
-    command: python -m arq src.worker.WorkerSettings
-    restart: unless-stopped
+    command: python3 -m arq src.worker.WorkerSettings
+    restart: always
+
+  ai-ml-service:
+    build:
+      context: ./services/ai-ml
+    container_name: ai-ml-service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./services/ai-ml/.env
+    environment:
+      REDIS_HOST: ai-ml-redis
+      REDIS_PORT: 6379
+      DATABASE_URL: "postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@52.62.122.103:6543/postgres"
+      PYTHONPATH: /app/src
+    depends_on:
+      - ai-ml-redis
+    volumes:
+      - ./services/ai-ml/src:/app/src
+    working_dir: /app/src
+    command: python3 -m uvicorn main:app --host 0.0.0.0 --port 8001
+    restart: always
+
+  ai-ml-redis:
+    image: redis:7
+    container_name: ai-ml-redis
+    ports:
+      - "6380:6379"
 
 volumes:
   redis_data:

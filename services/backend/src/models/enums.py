@@ -2,8 +2,14 @@ from enum import Enum
 
 
 class CandidateStatus(str, Enum):
+    NEW = "new"
     ACTIVE = "active"
     INACTIVE = "inactive"
+    SCREENING = "screening"
+    INTERVIEW = "interview"
+    OFFER = "offer"
+    HIRED = "hired"
+    REJECTED = "rejected"
 
 
 class JobStatus(str, Enum):
