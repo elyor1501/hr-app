@@ -392,7 +392,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
           rules={{
             required: "Deadline required",
             validate: (value) =>
-              value >= today || "Deadline cannot be before today",
+              (value as string) >= today || "Deadline cannot be before today",
           }}
           render={({ field, fieldState }) => (
             <FormItem>

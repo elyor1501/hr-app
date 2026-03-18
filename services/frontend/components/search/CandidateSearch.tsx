@@ -97,7 +97,10 @@ export default function CandidateSearch() {
         
 
         setResults(
-          mappedResults.sort((a, b) => b.similarity_score - a.similarity_score),
+          mappedResults.sort(
+            (a: Candidate, b: Candidate) =>
+              b.similarity_score - a.similarity_score,
+          ),
         );
         console.log("match",mappedResults)
       } catch (err) {
