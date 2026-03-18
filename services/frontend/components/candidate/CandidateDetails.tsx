@@ -204,6 +204,54 @@ export default function CandidateDetails({ id }: Props) {
                 />
               </div>
             </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-4">
+                Matching Jobs ({matches.length})
+              </h2>
+
+              {matches.length === 0 ? (
+                <p className="text-gray-500">No matching jobs found.</p>
+              ) : (
+                <div className="grid gap-4">
+                  {matches.map((job) => (
+                    <div
+                      key={job.job_id}
+                      className="border rounded-lg p-4 shadow-sm"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-semibold">
+                          {job.job_title || "Job"}
+                        </h3>
+
+                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
+                          {Number(job.match_score).toFixed(2)}%
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-gray-600 mb-2">
+                        <span className="font-bold">Reasoning:</span>{" "}
+                        {job.reasoning}
+                      </p>
+
+                      {job.strengths?.length > 0 && (
+                        <div className="text-sm text-gray-600 mb-2">
+                          <span className="font-bold">Strengths:</span>{" "}
+                          {job.strengths.join(", ")}
+                        </div>
+                      )}
+
+                      {job.gaps?.length > 0 && (
+                        <div className="text-sm text-gray-600 mb-2">
+                          <span className="font-bold">Gaps:</span>
+                          {job.gaps.join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </TabsContent>
           
           <TabsContent value="education" className="space-y-6">
@@ -212,27 +260,23 @@ export default function CandidateDetails({ id }: Props) {
                 key={index}
                 className="border rounded-lg p-5 bg-gray-50 space-y-2"
               >
-                {/* Degree */}
                 <div className="font-semibold flex justify-between items-center">
                   {edu.degree}
                   {edu.field_of_study ? ` in ${edu.field_of_study}` : ""}
 
                   {(edu.start_date || edu.end_date) && (
                     <span>
-                      {edu.start_date ?? ""} - 
-                      {edu.end_date ?? ""}
+                      {edu.start_date ?? "NA"} - {edu.end_date ?? "NA"}
                     </span>
                   )}
                 </div>
 
-                {/* Institution + Years */}
                 <div>
                   <span className="text-sm text-gray-700">
                     {edu.institution}
                   </span>
                 </div>
 
-                {/* Grade */}
                 {edu.grade && (
                   <div className="text-sm text-gray-700">{edu.grade}</div>
                 )}
@@ -246,17 +290,14 @@ export default function CandidateDetails({ id }: Props) {
                 key={index}
                 className="border rounded-lg p-5 bg-gray-50 space-y-2"
               >
-                {/* Job Title + Dates */}
                 <div className="text-lg font-semibold">
                   {exp.job_title} ({exp.start_date} - {exp.end_date})
                 </div>
 
-                {/* Company + Location */}
                 <div className="text-sm text-gray-600">
                   {exp.company} {exp.location ? `- ${exp.location}` : ""}
                 </div>
 
-                {/* Responsibilities */}
                 {exp.responsibilities && exp.responsibilities.length > 0 && (
                   <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
                     {exp.responsibilities.map((resp: string, i: number) => (
@@ -290,51 +331,6 @@ export default function CandidateDetails({ id }: Props) {
           </button>
         </div>
       )}
-
-      <div className="mt-4">
-        <h2 className="text-lg font-semibold mb-4">
-          Matching Jobs ({matches.length})
-        </h2>
-
-        {matches.length === 0 ? (
-          <p className="text-gray-500">No matching jobs found.</p>
-        ) : (
-          <div className="grid gap-4">
-            {matches.map((job) => (
-              <div
-                key={job.job_id}
-                className="border rounded-lg p-4 shadow-sm"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold">
-                    {job.job_title || "Job"}
-                  </h3>
-
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
-                    {Number(job.match_score).toFixed(2)}%
-                  </span>
-                </div>
-
-                <p className="text-sm text-gray-600 mb-2">
-                  Reasoning: {job.reasoning}
-                </p>
-
-                {job.strengths?.length > 0 && (
-                  <div className="text-sm text-green-600 mb-2">
-                    Strengths: {job.strengths.join(", ")}
-                  </div>
-                )}
-
-                {job.gaps?.length > 0 && (
-                  <div className="text-sm text-red-600">
-                    Gaps: {job.gaps.join(", ")}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
