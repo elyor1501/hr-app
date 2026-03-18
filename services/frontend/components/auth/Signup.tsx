@@ -87,7 +87,7 @@ export function SignUpForm() {
 
       toast.success("Account created successfully!");
       form.reset();
-      router.push("/dashboard");
+      router.replace("/login");
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
