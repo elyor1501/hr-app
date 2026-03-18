@@ -24,6 +24,7 @@ class SearchRequest(BaseModel):
 
 class CandidateResult(BaseModel):
     id: str
+    resume_id: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     email: Optional[str] = None
@@ -189,8 +190,11 @@ async def search_candidates(request: SearchRequest):
                     if yoe is None:
                         yoe = _calc_years(experience if isinstance(experience, list) else [])
 
+                    resume_id = str(pr.resume_id) if pr.resume_id else None
+
                     results_map[rid] = {
                         "id": rid,
+                        "resume_id": resume_id,
                         "first_name": pr.first_name,
                         "last_name": pr.last_name,
                         "email": pr.email or jd.get("email"),
@@ -212,6 +216,7 @@ async def search_candidates(request: SearchRequest):
             results.append(
                 CandidateResult(
                     id=data["id"],
+                    resume_id=data["resume_id"],
                     first_name=data["first_name"],
                     last_name=data["last_name"],
                     email=data["email"],
