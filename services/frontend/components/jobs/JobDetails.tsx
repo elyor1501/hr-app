@@ -365,12 +365,12 @@ export default function JobDetails({ id }: Props) {
                 </div>
 
                 <p className="text-sm text-gray-600 mb-2">
-                  {candidate.reasoning}
+                  <span className="font-bold">Reasoning: </span>{candidate.reasoning}
                 </p>
 
                 {candidate.strengths?.length > 0 && (
-                  <div className="text-sm mb-2">
-                    <span className="font-medium text-green-600">
+                  <div className="text-sm text-gray-600 mb-2">
+                    <span className="font-bold">
                       Strengths:
                     </span>{" "}
                     {candidate.strengths.join(", ")}
@@ -378,15 +378,15 @@ export default function JobDetails({ id }: Props) {
                 )}
 
                 {candidate.gaps?.length > 0 && (
-                  <div className="text-sm mb-2">
-                    <span className="font-medium text-red-600">Gaps:</span>{" "}
+                  <div className="text-sm text-gray-600 mb-2">
+                    <span className="font-bold">Gaps:</span>{" "}
                     {candidate.gaps.join(", ")}
                   </div>
                 )}
 
                 {candidate.recommendations?.length > 0 && (
-                  <div className="text-sm">
-                    <span className="font-medium text-blue-600">
+                  <div className="text-sm text-gray-600">
+                    <span className="font-bold">
                       Recommendations:
                     </span>{" "}
                     {candidate.recommendations.join(", ")}
