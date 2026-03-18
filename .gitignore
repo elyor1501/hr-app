@@ -102,3 +102,14 @@ docker-compose.override.yml
 uploads/
 *.pdf
 *.docx
+
+
+# =========================
+# Frontend
+# =========================
+services/frontend/.env
+services/frontend/.env.local
+services/frontend/.env.*
+!services/frontend/.env.example
+services/frontend/node_modules/
+services/frontend/.next/

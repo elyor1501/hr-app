@@ -11,6 +11,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - hr-network
 
   backend:
     build:
@@ -43,6 +45,8 @@ services:
       - ./services/backend/src:/app/src
       - upload_data:/app/uploads
     restart: always
+    networks:
+      - hr-network
 
   worker:
     build:
@@ -71,6 +75,8 @@ services:
       - upload_data:/app/uploads
     command: python3 -m arq src.worker.WorkerSettings
     restart: always
+    networks:
+      - hr-network
 
   ai-ml-service:
     build:
@@ -92,13 +98,36 @@ services:
     working_dir: /app/src
     command: python3 -m uvicorn main:app --host 0.0.0.0 --port 8001
     restart: always
+    networks:
+      - hr-network
 
   ai-ml-redis:
     image: redis:7
     container_name: ai-ml-redis
     ports:
       - "6380:6379"
+    networks:
+      - hr-network
+
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+    container_name: hr-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - hr-network
 
 volumes:
   redis_data:
   upload_data:
+
+networks:
+  hr-network:
+    driver: bridge

@@ -1,0 +1,340 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { getCandidateById, matchJobs } from "@/lib/candidates/data";
+import { updateCandidate } from "@/lib/candidates/action";
+import { useRouter } from "next/navigation";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+type Props = {
+  id: string;
+};
+
+export default function CandidateDetails({ id }: Props) {
+  const [candidate, setCandidate] = useState<any>(null); 
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [matching, setMatching] = useState(false);
+  const [matches, setMatches] = useState<any[]>([]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchCandidate() {
+      setLoading(true);
+
+      const data = await getCandidateById(id);
+
+      if (data?.status === "processing") {
+        setCandidate(null);
+      } else {
+        setCandidate(data);
+        await runJobMatching(data); 
+      }
+
+      setLoading(false);
+    }
+
+    if (id) fetchCandidate();
+  }, [id]);
+
+  async function runJobMatching(candidateData: any) {
+    setMatching(true);
+
+    try {
+      const matchData = await matchJobs(candidateData.resume_id);
+
+      const topMatches = (matchData.results || [])
+        .map((item: any) => ({
+          ...item,
+          match_score: Number(item.match_score) || 0,
+        }))
+        .sort((a: any, b: any) => b.match_score - a.match_score)
+        .slice(0, 5);
+
+      setMatches(topMatches);
+    } catch (error) {
+      console.error("Matching error:", error);
+    }
+
+    setMatching(false);
+  }
+
+  async function handleSubmit(formData: FormData) {
+    setLoading(true);
+
+    await updateCandidate(formData);
+
+    const updatedCandidate = await getCandidateById(id);
+    setCandidate(updatedCandidate);
+
+    setIsEditing(false);
+    setLoading(false);
+
+    router.refresh();
+  }
+
+  if (loading) return <p>Loading candidate details...</p>;
+
+  return (
+    <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
+      <Tabs defaultValue="basic" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="basic">Basic</TabsTrigger>
+          <TabsTrigger value="education">Education</TabsTrigger>
+          <TabsTrigger value="experience">Experience</TabsTrigger>
+        </TabsList>
+
+        <form
+          key={isEditing ? "edit" : "view"}
+          id="candidate-form"
+          action={handleSubmit}
+          className="mt-6"
+        >
+          <input type="hidden" name="resume_id" value={candidate.resume_id} />
+
+          <TabsContent value="basic" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  First Name
+                </label>
+                <input
+                  name="first_name"
+                  defaultValue={candidate.first_name}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Last Name
+                </label>
+                <input
+                  name="last_name"
+                  defaultValue={candidate.last_name}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <input
+                  name="email"
+                  defaultValue={candidate.email ?? ""}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Phone</label>
+                <input
+                  name="phone"
+                  defaultValue={candidate.phone ?? ""}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Location
+                </label>
+                <input
+                  name="location"
+                  defaultValue={candidate.location ?? "NA"}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Github Link
+                </label>
+                <input
+                  name="github"
+                  defaultValue={candidate.github ?? "NA"}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Linkdin Url
+                </label>
+                <input
+                  name="linkedin_url"
+                  defaultValue={candidate.linkedin_url ?? "NA"}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Portfolio link
+                </label>
+                <input
+                  name="portfolio"
+                  defaultValue={candidate.portfolio ?? "NA"}
+                  disabled={!isEditing}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Skills</label>
+                <textarea
+                  name="skills"
+                  defaultValue={(candidate.skills || []).join(", ")}
+                  disabled={!isEditing}
+                  rows={10}
+                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="education" className="space-y-6">
+            {(candidate.education || []).map((edu: any, index: number) => (
+              <div
+                key={index}
+                className="border rounded-lg p-5 bg-gray-50 space-y-2"
+              >
+                {/* Degree */}
+                <div className="font-semibold flex justify-between items-center">
+                  {edu.degree}
+                  {edu.field_of_study ? ` in ${edu.field_of_study}` : ""}
+
+                  {(edu.start_date || edu.end_date) && (
+                    <span>
+                      {edu.start_date ?? ""} - 
+                      {edu.end_date ?? ""}
+                    </span>
+                  )}
+                </div>
+
+                {/* Institution + Years */}
+                <div>
+                  <span className="text-sm text-gray-700">
+                    {edu.institution}
+                  </span>
+                </div>
+
+                {/* Grade */}
+                {edu.grade && (
+                  <div className="text-sm text-gray-700">{edu.grade}</div>
+                )}
+              </div>
+            ))}
+          </TabsContent>
+
+          <TabsContent value="experience" className="space-y-6">
+            {(candidate.experience || []).map((exp: any, index: number) => (
+              <div
+                key={index}
+                className="border rounded-lg p-5 bg-gray-50 space-y-2"
+              >
+                {/* Job Title + Dates */}
+                <div className="text-lg font-semibold">
+                  {exp.job_title} ({exp.start_date} - {exp.end_date})
+                </div>
+
+                {/* Company + Location */}
+                <div className="text-sm text-gray-600">
+                  {exp.company} {exp.location ? `- ${exp.location}` : ""}
+                </div>
+
+                {/* Responsibilities */}
+                {exp.responsibilities && exp.responsibilities.length > 0 && (
+                  <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                    {exp.responsibilities.map((resp: string, i: number) => (
+                      <li key={i}>{resp}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </TabsContent>
+        </form>
+      </Tabs>
+
+      {isEditing && (
+        <div className="flex justify-end mt-8 gap-3">
+          <button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            className="px-4 py-2 border rounded-lg text-sm"
+          >
+            Cancel
+          </button>
+
+          <button
+            form="candidate-form"
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white"
+          >
+            {loading ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+      )}
+
+      <div className="mt-4">
+        <h2 className="text-lg font-semibold mb-4">
+          Matching Jobs ({matches.length})
+        </h2>
+
+        {matches.length === 0 ? (
+          <p className="text-gray-500">No matching jobs found.</p>
+        ) : (
+          <div className="grid gap-4">
+            {matches.map((job) => (
+              <div
+                key={job.job_id}
+                className="border rounded-lg p-4 shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-semibold">
+                    {job.job_title || "Job"}
+                  </h3>
+
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
+                    {Number(job.match_score).toFixed(2)}%
+                  </span>
+                </div>
+
+                <p className="text-sm text-gray-600 mb-2">
+                  Reasoning: {job.reasoning}
+                </p>
+
+                {job.strengths?.length > 0 && (
+                  <div className="text-sm text-green-600 mb-2">
+                    Strengths: {job.strengths.join(", ")}
+                  </div>
+                )}
+
+                {job.gaps?.length > 0 && (
+                  <div className="text-sm text-red-600">
+                    Gaps: {job.gaps.join(", ")}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

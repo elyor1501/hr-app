@@ -47,6 +47,7 @@ class JobToCandidatesRequest(BaseModel):
 
 class MatchResultResponse(BaseModel):
     job_id: str
+    job_title: Optional[str] = None
     candidate_id: str
     candidate_name: Optional[str] = None
     match_score: int = 0
@@ -167,6 +168,13 @@ async def _get_job_description(session, job_id: str) -> str:
     if not job.description:
         raise HTTPException(status_code=422, detail="Job has no description")
     return job.description
+
+
+async def _get_job_title(session, job_id: str) -> Optional[str]:
+    job = await session.get(Job, UUID(job_id))
+    if job:
+        return job.title
+    return None
 
 
 async def _find_best_parsed_resume(session, candidate) -> Optional[dict]:
@@ -402,6 +410,9 @@ async def match_candidate_to_job(request: MatchByIdRequest):
             job_description = await _get_job_description(
                 session, request.job_id
             )
+            job_title = await _get_job_title(
+                session, request.job_id
+            )
             structured_cv = await _get_structured_cv_by_id(
                 session, request.candidate_id
             )
@@ -421,6 +432,7 @@ async def match_candidate_to_job(request: MatchByIdRequest):
 
         return MatchResultResponse(
             job_id=request.job_id,
+            job_title=job_title,
             candidate_id=request.candidate_id,
             candidate_name=candidate_name,
             match_score=ai_result.get("match_score", 0),
@@ -466,6 +478,9 @@ async def match_bulk(request: BulkMatchRequest):
             job_description = await _get_job_description(
                 session, request.job_id
             )
+            job_title = await _get_job_title(
+                session, request.job_id
+            )
 
             results: List[MatchResultResponse] = []
 
@@ -486,6 +501,7 @@ async def match_bulk(request: BulkMatchRequest):
                     results.append(
                         MatchResultResponse(
                             job_id=request.job_id,
+                            job_title=job_title,
                             candidate_id=cid,
                             candidate_name=candidate_name,
                             match_score=ai_result.get("match_score", 0),
@@ -499,6 +515,7 @@ async def match_bulk(request: BulkMatchRequest):
                     results.append(
                         MatchResultResponse(
                             job_id=request.job_id,
+                            job_title=job_title,
                             candidate_id=cid,
                             match_score=0,
                             reasoning="Failed to process this candidate",
@@ -509,6 +526,7 @@ async def match_bulk(request: BulkMatchRequest):
                     results.append(
                         MatchResultResponse(
                             job_id=request.job_id,
+                            job_title=job_title,
                             candidate_id=cid,
                             match_score=0,
                             reasoning=f"Error: {str(exc)}",
@@ -581,6 +599,7 @@ async def match_job_to_candidates(request: JobToCandidatesRequest):
                     results.append(
                         MatchResultResponse(
                             job_id=request.job_id,
+                            job_title=job.title,
                             candidate_id=str(pr.id),
                             candidate_name=candidate_name,
                             match_score=match_score,
@@ -601,6 +620,7 @@ async def match_job_to_candidates(request: JobToCandidatesRequest):
                     results.append(
                         MatchResultResponse(
                             job_id=request.job_id,
+                            job_title=job.title,
                             candidate_id=str(pr.id),
                             candidate_name=candidate_name,
                             match_score=0,
@@ -690,6 +710,7 @@ async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
                     results.append(
                         MatchResultResponse(
                             job_id=str(job.id),
+                            job_title=job.title,
                             candidate_id=request.candidate_id,
                             candidate_name=candidate_name,
                             match_score=match_score,
@@ -710,6 +731,7 @@ async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
                     results.append(
                         MatchResultResponse(
                             job_id=str(job.id),
+                            job_title=job.title,
                             candidate_id=request.candidate_id,
                             candidate_name=candidate_name,
                             match_score=0,
