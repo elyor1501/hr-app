@@ -1,5 +1,5 @@
 import AddResumeButton from "@/components/resumes/AddResumeButton";
-import { Suspense } from "react";
+
 import ResumeTable from "@/components/resumes/ResumeTable";
 
 export default async function Page() {
@@ -10,9 +10,7 @@ export default async function Page() {
         <AddResumeButton />
       </div>
 
-      <Suspense fallback={<div className="p-4">Loading table...</div>}>
         <ResumeTable />
-      </Suspense>
     </div>
   );
 }
