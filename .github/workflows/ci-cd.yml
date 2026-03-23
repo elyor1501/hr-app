@@ -171,8 +171,8 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
 
             # Deploy with docker-compose
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose up -d
 
       # Optional: Health check
       # - name: Health Check
