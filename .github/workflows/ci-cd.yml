@@ -162,7 +162,7 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             # Navigate to app directory
-            cd /path/to/your/app
+            cd /home/deployer/hr-app
 
             # Pull latest images from Docker Hub
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
