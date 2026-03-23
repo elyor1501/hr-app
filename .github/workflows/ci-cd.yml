@@ -142,7 +142,7 @@ jobs:
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
           # Pull and run containers
-          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             # Stop and remove old containers
             docker stop backend ai-ml frontend worker 2>/dev/null || true
             docker rm backend ai-ml frontend worker 2>/dev/null || true
@@ -153,12 +153,15 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
-            # Run new containers
-            docker run -d --name backend --restart unless-stopped -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
-            docker run -d --name ai-ml --restart unless-stopped -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
+            # Run new containers 
+            docker run -d --name backend --restart unless-stopped -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
+            docker run -d --name ai-ml --restart unless-stopped -p 8001:8001 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             docker run -d --name frontend --restart unless-stopped -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker run -d --name worker --restart unless-stopped ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
             # Show running containers
+            echo '=== Running Containers ==='
             docker ps
-          EOF
+            echo '=== Frontend Logs (first 20 lines) ==='
+            docker logs frontend --tail 20
+          "
