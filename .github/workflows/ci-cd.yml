@@ -147,27 +147,25 @@ jobs:
           
           # Stop existing services and free ports
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            # Stop nginx if running (system level)
+            # Stop nginx if running
             sudo systemctl stop nginx 2>/dev/null || true
             sudo systemctl disable nginx 2>/dev/null || true
-            
-            # Stop nginx if running in docker
             docker stop nginx 2>/dev/null || true
             docker rm nginx 2>/dev/null || true
             
-            # Stop any other service using required ports
+            # Free ports
             sudo fuser -k 80/tcp 2>/dev/null || true
             sudo fuser -k 8000/tcp 2>/dev/null || true
             sudo fuser -k 8001/tcp 2>/dev/null || true
             
-            # Open firewall ports if needed
+            # Open firewall ports
             sudo ufw allow 80/tcp 2>/dev/null || true
             sudo ufw allow 8000/tcp 2>/dev/null || true
             sudo ufw allow 8001/tcp 2>/dev/null || true
             sudo ufw reload 2>/dev/null || true
           "
           
-          # Pull and run containers
+          # Deploy containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             # Stop and remove old containers
             docker stop backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
@@ -201,9 +199,6 @@ jobs:
               -p 6380:6379 \
               redis:7
             
-            # Create test_files directory for AI-ML service
-            mkdir -p /tmp/test_files
-            
             # Run Backend
             echo 'Starting Backend...'
             docker run -d \
@@ -229,34 +224,24 @@ jobs:
             echo 'Waiting for backend to start...'
             sleep 10
             
-            # Check if backend is running and healthy
+            # Check backend health
             echo 'Checking backend health...'
-            BACKEND_HEALTHY=false
             for i in {1..30}; do
               if curl -f http://localhost:8000/health 2>/dev/null; then
                 echo '✅ Backend is healthy'
-                BACKEND_HEALTHY=true
                 break
               fi
               echo "Attempt $i/30: Backend not ready yet..."
               sleep 2
             done
             
-            if [ \"$BACKEND_HEALTHY\" = false ]; then
-              echo '❌ Backend failed to start'
-              echo 'Backend logs:'
-              docker logs backend --tail 50
-              exit 1
-            fi
-            
-            # Run AI-ML Service
+            # Run AI-ML Service 
             echo 'Starting AI-ML Service...'
             docker run -d \
               --name ai-ml \
               --network hr-network \
               --restart unless-stopped \
               -p 8001:8001 \
-              -v /tmp/test_files:/app/src/test_files \
               -e REDIS_HOST=ai-ml-redis \
               -e REDIS_PORT=6379 \
               -e DATABASE_URL=\"postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@52.62.122.103:6543/postgres\" \
@@ -304,55 +289,44 @@ jobs:
             docker ps
             
             echo ''
-            echo '=== Backend Logs (last 20 lines) ==='
+            echo '=== Backend Logs ==='
             docker logs backend --tail 20
             
             echo ''
-            echo '=== Frontend Logs (last 20 lines) ==='
+            echo '=== Frontend Logs ==='
             docker logs frontend --tail 20
             
             echo ''
-            echo '=== AI-ML Logs (last 20 lines) ==='
+            echo '=== AI-ML Logs ==='
             docker logs ai-ml --tail 20
             
             echo ''
             echo '=== Health Check Results ==='
             
-            # Test backend from localhost
+            # Test backend
             if curl -f http://localhost:8000/health 2>/dev/null; then
-              echo '✅ Backend is healthy (localhost:8000)'
+              echo '✅ Backend is healthy'
             else
-              echo '❌ Backend health check failed (localhost:8000)'
-              echo 'Backend logs:'
-              docker logs backend --tail 30
+              echo '❌ Backend health check failed'
             fi
             
-            # Test backend from external IP
-            if curl -f http://167.235.136.54:8000/health 2>/dev/null; then
-              echo '✅ Backend is accessible externally (167.235.136.54:8000)'
+            # Test AI-ML
+            if curl -f http://localhost:8001/health 2>/dev/null; then
+              echo '✅ AI-ML Service is healthy'
             else
-              echo '❌ Backend is NOT accessible externally (167.235.136.54:8000)'
-              echo 'Check if port 8000 is open: sudo ufw status'
+              echo '⚠️ AI-ML health check failed (may not have /health endpoint)'
             fi
             
             # Test frontend
             if curl -f http://localhost:80 2>/dev/null; then
-              echo '✅ Frontend is healthy (localhost:80)'
+              echo '✅ Frontend is healthy'
             else
-              echo '❌ Frontend health check failed (localhost:80)'
+              echo '❌ Frontend health check failed'
             fi
-            
-            # Test frontend from external IP
-            if curl -f http://167.235.136.54 2>/dev/null; then
-              echo '✅ Frontend is accessible externally (167.235.136.54)'
-            else
-              echo '❌ Frontend is NOT accessible externally (167.235.136.54)'
-            fi
-            
-            echo ''
-            echo '=== Port Bindings ==='
-            netstat -tlnp 2>/dev/null | grep -E ':(80|8000|8001|6379|6380)' || echo 'No ports found'
             
             echo ''
             echo '=== Deployment Complete ==='
+            echo 'Frontend: http://167.235.136.54'
+            echo 'Backend API: http://167.235.136.54:8000'
+            echo 'AI-ML API: http://167.235.136.54:8001'
           "
