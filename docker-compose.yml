@@ -1,7 +1,7 @@
 services:
   redis:
     image: redis:7-alpine
-    container_name: hr-redis
+    container_name: redis  
     ports:
       - "6379:6379"
     volumes:
@@ -33,7 +33,7 @@ services:
       HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
       HR_APP_DATABASE_NAME: postgres
       HR_APP_ENVIRONMENT: development
-      HR_APP_REDIS_HOST: hr-redis
+      HR_APP_REDIS_HOST: redis  
       HR_APP_REDIS_PORT: "6379"
       HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
       HR_APP_VECTOR_DIMENSION: "3072"
@@ -64,7 +64,7 @@ services:
       HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
       HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
       HR_APP_DATABASE_NAME: postgres
-      HR_APP_REDIS_HOST: hr-redis
+      HR_APP_REDIS_HOST: redis  
       HR_APP_REDIS_PORT: "6379"
       HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
       HR_APP_VECTOR_DIMENSION: "3072"
