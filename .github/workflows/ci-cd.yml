@@ -141,6 +141,20 @@ jobs:
           # Add server to known_hosts
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
+          # Stop existing services and free port 80
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
+            # Stop nginx if running (system level)
+            sudo systemctl stop nginx 2>/dev/null || true
+            sudo systemctl disable nginx 2>/dev/null || true
+            
+            # Stop nginx if running in docker
+            docker stop nginx 2>/dev/null || true
+            docker rm nginx 2>/dev/null || true
+            
+            # Stop any other service using port 80
+            sudo fuser -k 80/tcp 2>/dev/null || true
+          "
+          
           # Pull and run containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             # Stop and remove old containers
@@ -187,6 +201,7 @@ jobs:
               -e REDIS_PORT=6379 \
               -e DATABASE_URL=\"postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@52.62.122.103:6543/postgres\" \
               -e PYTHONPATH=/app/src \
+              -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             
             # Run Worker 
