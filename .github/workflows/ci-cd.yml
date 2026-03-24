@@ -145,7 +145,7 @@ jobs:
           # Add server to known_hosts
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
-          # Stop existing services and free port 80
+          # Stop existing services and free ports
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             # Stop nginx if running (system level)
             sudo systemctl stop nginx 2>/dev/null || true
@@ -155,8 +155,16 @@ jobs:
             docker stop nginx 2>/dev/null || true
             docker rm nginx 2>/dev/null || true
             
-            # Stop any other service using port 80
+            # Stop any other service using required ports
             sudo fuser -k 80/tcp 2>/dev/null || true
+            sudo fuser -k 8000/tcp 2>/dev/null || true
+            sudo fuser -k 8001/tcp 2>/dev/null || true
+            
+            # Open firewall ports if needed
+            sudo ufw allow 80/tcp 2>/dev/null || true
+            sudo ufw allow 8000/tcp 2>/dev/null || true
+            sudo ufw allow 8001/tcp 2>/dev/null || true
+            sudo ufw reload 2>/dev/null || true
           "
           
           # Pull and run containers
@@ -166,18 +174,22 @@ jobs:
             docker rm backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
             
             # Pull latest images
+            echo 'Pulling latest images...'
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
             # Run Redis container
+            echo 'Starting Redis...'
             docker run -d --name redis --restart unless-stopped -p 6379:6379 redis:7-alpine
             
             # Run AI-ML Redis container
+            echo 'Starting AI-ML Redis...'
             docker run -d --name ai-ml-redis --restart unless-stopped -p 6380:6379 redis:7
             
-            # Run Backend 
+            # Run Backend
+            echo 'Starting Backend...'
             docker run -d \
               --name backend \
               --restart unless-stopped \
@@ -196,7 +208,32 @@ jobs:
               -e PYTHONPATH=/app \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
-            # Run AI-ML Service 
+            # Wait for backend to initialize
+            echo 'Waiting for backend to start...'
+            sleep 10
+            
+            # Check if backend is running and healthy
+            echo 'Checking backend health...'
+            BACKEND_HEALTHY=false
+            for i in {1..30}; do
+              if curl -f http://localhost:8000/health 2>/dev/null; then
+                echo '✅ Backend is healthy'
+                BACKEND_HEALTHY=true
+                break
+              fi
+              echo "Attempt $i/30: Backend not ready yet..."
+              sleep 2
+            done
+            
+            if [ "$BACKEND_HEALTHY" = false ]; then
+              echo '❌ Backend failed to start'
+              echo 'Backend logs:'
+              docker logs backend --tail 50
+              exit 1
+            fi
+            
+            # Run AI-ML Service
+            echo 'Starting AI-ML Service...'
             docker run -d \
               --name ai-ml \
               --restart unless-stopped \
@@ -208,7 +245,8 @@ jobs:
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             
-            # Run Worker 
+            # Run Worker
+            echo 'Starting Worker...'
             docker run -d \
               --name worker \
               --restart unless-stopped \
@@ -226,7 +264,8 @@ jobs:
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
             
-            # Run Frontend on port 80 (main website)
+            # Run Frontend on port 80
+            echo 'Starting Frontend...'
             docker run -d \
               --name frontend \
               --restart unless-stopped \
@@ -236,23 +275,62 @@ jobs:
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
-            # Wait for services to start
+            # Wait for all services
             sleep 10
             
             # Show running containers
+            echo ''
             echo '=== Running Containers ==='
             docker ps
             
-            echo '=== Frontend Logs (first 20 lines) ==='
-            docker logs frontend --tail 20
-            
-            echo '=== Backend Logs (first 20 lines) ==='
+            echo ''
+            echo '=== Backend Logs (last 20 lines) ==='
             docker logs backend --tail 20
             
-            echo '=== AI-ML Logs (first 20 lines) ==='
+            echo ''
+            echo '=== Frontend Logs (last 20 lines) ==='
+            docker logs frontend --tail 20
+            
+            echo ''
+            echo '=== AI-ML Logs (last 20 lines) ==='
             docker logs ai-ml --tail 20
             
-            echo '=== Health Check ==='
-            curl -f http://localhost:8000/health 2>/dev/null && echo ' Backend is healthy' || echo ' Backend health check failed'
-            curl -f http://localhost:80 2>/dev/null && echo 'Frontend is healthy' || echo 'Frontend health check failed'
+            echo ''
+            echo '=== Health Check Results ==='
+            
+            # Test backend from localhost
+            if curl -f http://localhost:8000/health 2>/dev/null; then
+              echo ' Backend is healthy (localhost:8000)'
+            else
+              echo ' Backend health check failed (localhost:8000)'
+            fi
+            
+            # Test backend from external IP
+            if curl -f http://167.235.136.54:8000/health 2>/dev/null; then
+              echo ' Backend is accessible externally (167.235.136.54:8000)'
+            else
+              echo ' Backend is NOT accessible externally (167.235.136.54:8000)'
+              echo 'Check if port 8000 is open: sudo ufw status'
+            fi
+            
+            # Test frontend
+            if curl -f http://localhost:80 2>/dev/null; then
+              echo ' Frontend is healthy (localhost:80)'
+            else
+              echo ' Frontend health check failed (localhost:80)'
+            fi
+            
+            # Test frontend from external IP
+            if curl -f http://167.235.136.54 2>/dev/null; then
+              echo ' Frontend is accessible externally (167.235.136.54)'
+            else
+              echo ' Frontend is NOT accessible externally (167.235.136.54)'
+            fi
+            
+            echo ''
+            echo '=== Port Bindings ==='
+            netstat -tlnp 2>/dev/null | grep -E ':(80|8000|8001|6379|6380)' || echo 'No ports found'
+            
+            echo ''
+            echo '=== Deployment Complete ==='
           "
