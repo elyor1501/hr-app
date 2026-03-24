@@ -144,8 +144,8 @@ jobs:
           # Pull and run containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             # Stop and remove old containers
-            docker stop backend ai-ml frontend worker 2>/dev/null || true
-            docker rm backend ai-ml frontend worker 2>/dev/null || true
+            docker stop backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
+            docker rm backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
             
             # Pull latest images
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
@@ -153,15 +153,85 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
-            # Run new containers 
-            docker run -d --name backend --restart unless-stopped -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
-            docker run -d --name ai-ml --restart unless-stopped -p 8001:8001 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
-            docker run -d --name frontend --restart unless-stopped -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
-            docker run -d --name worker --restart unless-stopped ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
+            # Run Redis container
+            docker run -d --name redis --restart unless-stopped -p 6379:6379 redis:7-alpine
+            
+            # Run AI-ML Redis container
+            docker run -d --name ai-ml-redis --restart unless-stopped -p 6380:6379 redis:7
+            
+            # Run Backend 
+            docker run -d \
+              --name backend \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              -e HR_APP_DATABASE_HOST=52.62.122.103 \
+              -e HR_APP_DATABASE_PORT=6543 \
+              -e HR_APP_DATABASE_USER=postgres.ectxlkkilezsebodryhd \
+              -e HR_APP_DATABASE_PASSWORD=Hr_app@vaspp.com \
+              -e HR_APP_DATABASE_NAME=postgres \
+              -e HR_APP_ENVIRONMENT=production \
+              -e HR_APP_REDIS_HOST=redis \
+              -e HR_APP_REDIS_PORT=6379 \
+              -e HR_APP_AI_SERVICE_URL=http://ai-ml:8001 \
+              -e HR_APP_VECTOR_DIMENSION=3072 \
+              -e HR_APP_CACHE_PREFIX=hr_app \
+              -e PYTHONPATH=/app \
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
+            
+            # Run AI-ML Service 
+            docker run -d \
+              --name ai-ml \
+              --restart unless-stopped \
+              -p 8001:8001 \
+              -e REDIS_HOST=ai-ml-redis \
+              -e REDIS_PORT=6379 \
+              -e DATABASE_URL=\"postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@52.62.122.103:6543/postgres\" \
+              -e PYTHONPATH=/app/src \
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
+            
+            # Run Worker 
+            docker run -d \
+              --name worker \
+              --restart unless-stopped \
+              -e HR_APP_DATABASE_HOST=52.62.122.103 \
+              -e HR_APP_DATABASE_PORT=6543 \
+              -e HR_APP_DATABASE_USER=postgres.ectxlkkilezsebodryhd \
+              -e HR_APP_DATABASE_PASSWORD=Hr_app@vaspp.com \
+              -e HR_APP_DATABASE_NAME=postgres \
+              -e HR_APP_REDIS_HOST=redis \
+              -e HR_APP_REDIS_PORT=6379 \
+              -e HR_APP_AI_SERVICE_URL=http://ai-ml:8001 \
+              -e HR_APP_VECTOR_DIMENSION=3072 \
+              -e HR_APP_CACHE_PREFIX=hr_app \
+              -e PYTHONPATH=/app \
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
+              python3 -m arq src.worker.WorkerSettings
+            
+            # Run Frontend on port 80 (main website)
+            docker run -d \
+              --name frontend \
+              --restart unless-stopped \
+              -p 80:3000 \
+              -e NEXT_PUBLIC_API_URL=http://backend:8000 \
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
+            
+            # Wait for services to start
+            sleep 10
             
             # Show running containers
             echo '=== Running Containers ==='
             docker ps
+            
             echo '=== Frontend Logs (first 20 lines) ==='
             docker logs frontend --tail 20
+            
+            echo '=== Backend Logs (first 20 lines) ==='
+            docker logs backend --tail 20
+            
+            echo '=== AI-ML Logs (first 20 lines) ==='
+            docker logs ai-ml --tail 20
+            
+            echo '=== Health Check ==='
+            curl -f http://localhost:8000/health 2>/dev/null && echo ' Backend is healthy' || echo ' Backend health check failed'
+            curl -f http://localhost:80 2>/dev/null && echo 'Frontend is healthy' || echo 'Frontend health check failed'
           "
