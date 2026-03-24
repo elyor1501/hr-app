@@ -156,7 +156,7 @@ jobs:
             # Run new containers 
             docker run -d --name backend --restart unless-stopped -p 8000:8000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             docker run -d --name ai-ml --restart unless-stopped -p 8001:8001 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
-            docker run -d --name frontend --restart unless-stopped -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
+            docker run -d --name frontend --restart unless-stopped -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker run -d --name worker --restart unless-stopped ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
             # Show running containers
