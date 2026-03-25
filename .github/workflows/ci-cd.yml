@@ -9,62 +9,11 @@ on:
       - main
 
 jobs:
-  check-and-build:
+  build-and-push:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/backend
-          file: ./services/backend/Dockerfile
-          push: false
-          load: true
-          tags: hr-app-backend:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build AI-ML Service
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/ai-ml
-          file: ./services/ai-ml/Dockerfile
-          push: false
-          load: true
-          tags: hr-app-ai-ml:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/frontend
-          file: ./services/frontend/Dockerfile
-          push: false
-          load: true
-          tags: hr-app-frontend:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build Worker
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/backend
-          file: ./services/backend/Dockerfile
-          push: false
-          load: true
-          tags: hr-app-worker:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  push-to-dockerhub:
-    runs-on: ubuntu-latest
-    needs: check-and-build
+    strategy:
+      matrix:
+        service: [backend, ai-ml, frontend, worker]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -73,117 +22,68 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
+        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Backend
+      - name: Build and Push ${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
-          context: ./services/backend
-          file: ./services/backend/Dockerfile
-          push: true
+          context: ${{ matrix.service == 'worker' && './services/backend' || format('./services/{0}', matrix.service) }}
+          file: ${{ matrix.service == 'worker' && './services/backend/Dockerfile' || format('./services/{0}/Dockerfile', matrix.service) }}
+          push: ${{ github.event_name == 'push' }}
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Push AI-ML Service
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/ai-ml
-          file: ./services/ai-ml/Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Push Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/frontend
-          file: ./services/frontend/Dockerfile
-          push: true
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-latest
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-${{ github.sha }}
           build-args: |
-            NEXT_PUBLIC_API_URL=http://167.235.136.54:8000
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Push Worker
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/backend
-          file: ./services/backend/Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-${{ github.sha }}
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL=http://167.235.136.54:8000
+            NEXT_PUBLIC_SUPABASE_URL={0}
+            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={1}', secrets.NEXT_PUBLIC_SUPABASE_URL, secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   deploy-to-server:
     runs-on: ubuntu-latest
-    needs: push-to-dockerhub
+    needs: build-and-push
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Deploy via SSH
         run: |
-          # Create SSH key file
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           
-          # Add server to known_hosts
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
-          # Stop existing services and free ports
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            # Stop nginx if running
             sudo systemctl stop nginx 2>/dev/null || true
             sudo systemctl disable nginx 2>/dev/null || true
             docker stop nginx 2>/dev/null || true
             docker rm nginx 2>/dev/null || true
             
-            # Free ports
             sudo fuser -k 80/tcp 2>/dev/null || true
             sudo fuser -k 8000/tcp 2>/dev/null || true
             sudo fuser -k 8001/tcp 2>/dev/null || true
             
-            # Open only frontend port in firewall
             sudo ufw allow 80/tcp 2>/dev/null || true
-            # Remove backend ports from firewall if they were added before
             sudo ufw delete allow 8000/tcp 2>/dev/null || true
             sudo ufw delete allow 8001/tcp 2>/dev/null || true
             sudo ufw reload 2>/dev/null || true
           "
           
-          # Deploy containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            # Stop and remove old containers
             docker stop backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
             docker rm backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
             
-            # Create network for container communication
             docker network create hr-network 2>/dev/null || true
             
-            # Pull latest images
-            echo 'Pulling latest images...'
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
-            # Run Redis container (localhost only)
-            echo 'Starting Redis...'
             docker run -d \
               --name redis \
               --network hr-network \
@@ -191,8 +91,6 @@ jobs:
               -p 127.0.0.1:6379:6379 \
               redis:7-alpine
             
-            # Run AI-ML Redis container (localhost only)
-            echo 'Starting AI-ML Redis...'
             docker run -d \
               --name ai-ml-redis \
               --network hr-network \
@@ -200,8 +98,6 @@ jobs:
               -p 127.0.0.1:6380:6379 \
               redis:7
             
-            # Run Backend (localhost only)
-            echo 'Starting Backend...'
             docker run -d \
               --name backend \
               --network hr-network \
@@ -221,23 +117,15 @@ jobs:
               -e PYTHONPATH=/app \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
-            # Wait for backend to initialize
-            echo 'Waiting for backend to start...'
             sleep 10
             
-            # Check backend health
-            echo 'Checking backend health...'
             for i in {1..30}; do
               if curl -f http://127.0.0.1:8000/health 2>/dev/null; then
-                echo '✅ Backend is healthy'
                 break
               fi
-              echo "Attempt $i/30: Backend not ready yet..."
               sleep 2
             done
             
-            # Run AI-ML Service (localhost only)
-            echo 'Starting AI-ML Service...'
             docker run -d \
               --name ai-ml \
               --network hr-network \
@@ -250,8 +138,6 @@ jobs:
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             
-            # Run Worker (no port exposure needed)
-            echo 'Starting Worker...'
             docker run -d \
               --name worker \
               --network hr-network \
@@ -270,8 +156,6 @@ jobs:
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
             
-            # Run Frontend on port 80 (exposed to outside)
-            echo 'Starting Frontend...'
             docker run -d \
               --name frontend \
               --network hr-network \
@@ -282,86 +166,21 @@ jobs:
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
-            # Wait for all services
             sleep 10
             
-            # Show running containers
+            echo '=== Deployment Status ==='
+            docker ps --format 'table {{.Names}}\t{{.Status}}'
             echo ''
-            echo '=== Running Containers ==='
-            docker ps
             
+            curl -f http://127.0.0.1:8000/health > /dev/null 2>&1 && echo ' Backend: OK' || echo ' Backend: FAILED'
+            curl -f http://127.0.0.1:8001/health > /dev/null 2>&1 && echo ' AI-ML: OK' || echo ' AI-ML: No health endpoint'
+            curl -f http://localhost:80 > /dev/null 2>&1 && echo ' Frontend: OK' || echo ' Frontend: FAILED'
             echo ''
-            echo '=== Backend Logs ==='
-            docker logs backend --tail 20
             
-            echo ''
-            echo '=== Frontend Logs ==='
-            docker logs frontend --tail 20
-            
-            echo ''
-            echo '=== AI-ML Logs ==='
-            docker logs ai-ml --tail 20
+            curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1 && echo ' Backend exposed!' || echo ' Backend: Localhost only'
+            curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1 && echo ' AI-ML exposed!' || echo ' AI-ML: Localhost only'
+            curl -f --connect-timeout 5 http://167.235.136.54:80 > /dev/null 2>&1 && echo ' Frontend: Public' || echo ' Frontend: Not accessible'
             
             echo ''
-            echo '=== Health Check Results ==='
-            
-            # Test backend (localhost only)
-            if curl -f http://127.0.0.1:8000/health 2>/dev/null; then
-              echo '✅ Backend is healthy (localhost only)'
-            else
-              echo '❌ Backend health check failed'
-            fi
-            
-            # Test AI-ML (localhost only)
-            if curl -f http://127.0.0.1:8001/health 2>/dev/null; then
-              echo '✅ AI-ML Service is healthy (localhost only)'
-            else
-              echo '⚠️ AI-ML health check failed (may not have /health endpoint)'
-            fi
-            
-            # Test frontend (exposed)
-            if curl -f http://localhost:80 2>/dev/null; then
-              echo '✅ Frontend is healthy (exposed on port 80)'
-            else
-              echo '❌ Frontend health check failed'
-            fi
-            
-            # Verify ports are properly restricted
-            echo ''
-            echo '=== Port Security Verification ==='
-            echo 'Checking if internal ports are accessible from outside...'
-            
-            # Check if backend is accessible from external IP (should fail)
-            if curl -f --connect-timeout 5 http://167.235.136.54:8000/health 2>/dev/null; then
-              echo '⚠️ WARNING: Backend is exposed to outside!'
-            else
-              echo '✅ Backend is properly restricted to localhost'
-            fi
-            
-            # Check if AI-ML is accessible from external IP (should fail)
-            if curl -f --connect-timeout 5 http://167.235.136.54:8001/health 2>/dev/null; then
-              echo '⚠️ WARNING: AI-ML Service is exposed to outside!'
-            else
-              echo '✅ AI-ML Service is properly restricted to localhost'
-            fi
-            
-            # Check if frontend is accessible (should succeed)
-            if curl -f --connect-timeout 5 http://167.235.136.54:80 2>/dev/null; then
-              echo '✅ Frontend is accessible from outside'
-            else
-              echo '❌ Frontend is not accessible from outside'
-            fi
-            
-            echo ''
-            echo '=== Deployment Complete ==='
-            echo 'Frontend: http://167.235.136.54'
-            echo 'Backend API: http://127.0.0.1:8000 (localhost only)'
-            echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
-            echo ''
-            echo 'Security Summary:'
-            echo '- Port 80 (Frontend): Open to outside ✅'
-            echo '- Port 8000 (Backend): Restricted to localhost ✅'
-            echo '- Port 8001 (AI-ML): Restricted to localhost ✅'
-            echo '- Port 6379 (Redis): Restricted to localhost ✅'
-            echo '- Port 6380 (AI-ML Redis): Restricted to localhost ✅'
+            echo 'Deployment Complete: http://167.235.136.54'
           "
