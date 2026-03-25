@@ -23,7 +23,7 @@ class GeminiLLMClient:
 
         self.client = genai.Client(api_key=self.api_key)
 
-        self.model_name = "gemini-2.0-flash"
+        self.model_name = "gemini-2.5-flash"
 
     def generate_json(self, prompt: str) -> Dict[str, Any]:
 
@@ -33,7 +33,8 @@ class GeminiLLMClient:
                 contents=prompt,
                 config={
                     "temperature": 0,
-                    "max_output_tokens": 1024
+                    "max_output_tokens": 8192,
+                    "response_mime_type": "application/json"
                 }
             )
 

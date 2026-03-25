@@ -32,11 +32,11 @@ app.add_middleware(RequestContextMiddleware)
 # http://localhost:8001/files/Xander_Rohit_Khandelwal_VP.pdf
 # ---------------------------------------------------------
 
-app.mount(
-    "/files",
-    StaticFiles(directory="test_files"),
-    name="files",
-)
+# app.mount(
+#     "/files",
+#     StaticFiles(directory="test_files"),
+#     name="files",
+# )
 
 # Register API routes
 app.include_router(api_router)
