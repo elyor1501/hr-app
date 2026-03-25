@@ -1,0 +1,115 @@
+# =========================
+# Environment Variables (IMPORTANT)
+# =========================
+.env
+.env.*
+*.env
+**/.env
+services/ai-ml/.env
+services/backend/.env
+!.env.example
+
+# =========================
+# Python
+# =========================
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# =========================
+# Virtual Environments
+# =========================
+venv/
+.venv/
+env/
+ENV/
+
+# =========================
+# Ruff / Linting
+# =========================
+.ruff_cache/
+
+# =========================
+# Testing / Coverage
+# =========================
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# OS / Editor Files
+# =========================
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# =========================
+# Build / Distribution
+# =========================
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+pip-wheel-metadata/
+MANIFEST
+
+# =========================
+# MyPy / Type Checking
+# =========================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# =========================
+# Jupyter Notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Docker
+# =========================
+*.log
+docker-compose.override.yml
+
+# =========================
+# Uploads / Data
+# =========================
+uploads/
+*.pdf
+*.docx
+
+
+# =========================
+# Frontend
+# =========================
+services/frontend/.env
+services/frontend/.env.local
+services/frontend/.env.*
+!services/frontend/.env.example
+services/frontend/node_modules/
+services/frontend/.next/

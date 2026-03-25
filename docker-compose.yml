@@ -1,0 +1,133 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis  
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hr-network
+
+  backend:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+    container_name: hr-backend
+    depends_on:
+      redis:
+        condition: service_healthy
+      ai-ml-service:
+        condition: service_started
+    env_file:
+      - ./services/backend/.env
+    environment:
+      HR_APP_DATABASE_HOST: 52.62.122.103
+      HR_APP_DATABASE_PORT: "6543"
+      HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
+      HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
+      HR_APP_DATABASE_NAME: postgres
+      HR_APP_ENVIRONMENT: development
+      HR_APP_REDIS_HOST: redis  
+      HR_APP_REDIS_PORT: "6379"
+      HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
+      HR_APP_VECTOR_DIMENSION: "3072"
+      HR_APP_CACHE_PREFIX: hr_app
+      PYTHONPATH: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services/backend/src:/app/src
+      - upload_data:/app/uploads
+    restart: always
+    networks:
+      - hr-network
+
+  worker:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+    container_name: hr-worker
+    depends_on:
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./services/backend/.env
+    environment:
+      HR_APP_DATABASE_HOST: 52.62.122.103
+      HR_APP_DATABASE_PORT: "6543"
+      HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
+      HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
+      HR_APP_DATABASE_NAME: postgres
+      HR_APP_REDIS_HOST: redis  
+      HR_APP_REDIS_PORT: "6379"
+      HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
+      HR_APP_VECTOR_DIMENSION: "3072"
+      HR_APP_CACHE_PREFIX: hr_app
+      PYTHONPATH: /app
+    volumes:
+      - ./services/backend/src:/app/src
+      - upload_data:/app/uploads
+    command: python3 -m arq src.worker.WorkerSettings
+    restart: always
+    networks:
+      - hr-network
+
+  ai-ml-service:
+    build:
+      context: ./services/ai-ml
+    container_name: ai-ml-service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./services/ai-ml/.env
+    environment:
+      REDIS_HOST: ai-ml-redis
+      REDIS_PORT: 6379
+      DATABASE_URL: "postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@52.62.122.103:6543/postgres"
+      PYTHONPATH: /app/src
+    depends_on:
+      - ai-ml-redis
+    volumes:
+      - ./services/ai-ml/src:/app/src
+    working_dir: /app/src
+    command: python3 -m uvicorn main:app --host 0.0.0.0 --port 8001
+    restart: always
+    networks:
+      - hr-network
+
+  ai-ml-redis:
+    image: redis:7
+    container_name: ai-ml-redis
+    ports:
+      - "6380:6379"
+    networks:
+      - hr-network
+
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+    container_name: hr-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - hr-network
+
+volumes:
+  redis_data:
+  upload_data:
+
+networks:
+  hr-network:
+    driver: bridge
