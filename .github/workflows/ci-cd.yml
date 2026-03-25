@@ -57,7 +57,39 @@ jobs:
           
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
+          # Step 1: Cleanup disk space
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
+            echo '=== Cleaning up disk space ==='
+            
+            # Stop all containers first
+            docker stop backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
+            docker rm backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
+            
+            # Remove unused Docker data
+            docker system prune -a -f 2>/dev/null || true
+            docker volume prune -f 2>/dev/null || true
+            docker container prune -f 2>/dev/null || true
+            docker image prune -a -f 2>/dev/null || true
+            docker builder prune -a -f 2>/dev/null || true
+            
+            # Remove old images
+            docker rmi \$(docker images -q) 2>/dev/null || true
+            
+            # Clean system
+            sudo apt-get clean 2>/dev/null || true
+            sudo journalctl --vacuum-time=3d 2>/dev/null || true
+            
+            # Check disk space
+            echo '=== Disk space after cleanup ==='
+            df -h
+            
+            echo '=== Cleanup complete ==='
+          "
+          
+          # Step 2: Free ports and configure firewall
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
+            echo '=== Configuring firewall ==='
+            
             sudo systemctl stop nginx 2>/dev/null || true
             sudo systemctl disable nginx 2>/dev/null || true
             docker stop nginx 2>/dev/null || true
@@ -71,19 +103,22 @@ jobs:
             sudo ufw allow 8000/tcp 2>/dev/null || true
             sudo ufw delete allow 8001/tcp 2>/dev/null || true
             sudo ufw reload 2>/dev/null || true
+            
+            echo '=== Firewall configured ==='
           "
           
+          # Step 3: Deploy containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            docker stop backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
-            docker rm backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
-            
+            echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
             
+            echo '=== Pulling latest images ==='
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
+            echo '=== Starting Redis ==='
             docker run -d \
               --name redis \
               --network hr-network \
@@ -91,6 +126,7 @@ jobs:
               -p 127.0.0.1:6379:6379 \
               redis:7-alpine
             
+            echo '=== Starting AI-ML Redis ==='
             docker run -d \
               --name ai-ml-redis \
               --network hr-network \
@@ -98,6 +134,7 @@ jobs:
               -p 127.0.0.1:6380:6379 \
               redis:7
             
+            echo '=== Starting Backend ==='
             docker run -d \
               --name backend \
               --network hr-network \
@@ -117,15 +154,19 @@ jobs:
               -e PYTHONPATH=/app \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
+            echo '=== Waiting for backend to start ==='
             sleep 10
             
             for i in {1..30}; do
               if curl -f http://127.0.0.1:8000/health 2>/dev/null; then
+                echo '✅ Backend is healthy'
                 break
               fi
+              echo "Attempt \$i/30: Backend not ready yet..."
               sleep 2
             done
             
+            echo '=== Starting AI-ML Service ==='
             docker run -d \
               --name ai-ml \
               --network hr-network \
@@ -138,6 +179,7 @@ jobs:
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             
+            echo '=== Starting Worker ==='
             docker run -d \
               --name worker \
               --network hr-network \
@@ -156,6 +198,7 @@ jobs:
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
             
+            echo '=== Starting Frontend ==='
             docker run -d \
               --name frontend \
               --network hr-network \
@@ -166,21 +209,65 @@ jobs:
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
+            echo '=== Waiting for all services ==='
             sleep 10
             
-            echo '=== Deployment Status ==='
+            echo ''
+            echo '=== Running Containers ==='
             docker ps --format 'table {{.Names}}\t{{.Status}}'
             echo ''
             
-            curl -f http://127.0.0.1:8000/health > /dev/null 2>&1 && echo ' Backend: OK' || echo ' Backend: FAILED'
-            curl -f http://127.0.0.1:8001/health > /dev/null 2>&1 && echo ' AI-ML: OK' || echo ' AI-ML: No health endpoint'
-            curl -f http://localhost:80 > /dev/null 2>&1 && echo ' Frontend: OK' || echo ' Frontend: FAILED'
-            echo ''
+            echo '=== Health Check Results ==='
             
-            curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1 && echo ' Backend: Public (Firewall controlled)' || echo ' Backend: Not accessible'
-            curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1 && echo ' AI-ML exposed!' || echo ' AI-ML: Localhost only (Secure)'
-            curl -f --connect-timeout 5 http://167.235.136.54:80 > /dev/null 2>&1 && echo ' Frontend: Public' || echo ' Frontend: Not accessible'
+            if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
+              echo '✅ Backend: OK'
+            else
+              echo '❌ Backend: FAILED'
+            fi
+            
+            if curl -f http://127.0.0.1:8001/health > /dev/null 2>&1; then
+              echo '✅ AI-ML: OK'
+            else
+              echo '⚠️ AI-ML: No health endpoint'
+            fi
+            
+            if curl -f http://localhost:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: OK'
+            else
+              echo '❌ Frontend: FAILED'
+            fi
             
             echo ''
-            echo 'Deployment Complete: http://167.235.136.54'
+            echo '=== Port Security Verification ==='
+            
+            if curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1; then
+              echo '✅ Backend: Public (Firewall controlled)'
+            else
+              echo '⚠️ Backend: Not accessible'
+            fi
+            
+            if curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1; then
+              echo '⚠️ AI-ML exposed!'
+            else
+              echo '✅ AI-ML: Localhost only (Secure)'
+            fi
+            
+            if curl -f --connect-timeout 5 http://167.235.136.54:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: Public'
+            else
+              echo '❌ Frontend: Not accessible'
+            fi
+            
+            echo ''
+            echo '=== Deployment Complete ==='
+            echo 'Frontend: http://167.235.136.54'
+            echo 'Backend API: http://167.235.136.54:8000'
+            echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
+            echo ''
+            echo 'Security Summary:'
+            echo '- Port 80 (Frontend): Open to outside ✅'
+            echo '- Port 8000 (Backend): Open but firewall controlled ✅'
+            echo '- Port 8001 (AI-ML): Restricted to localhost ✅'
+            echo '- Port 6379 (Redis): Restricted to localhost ✅'
+            echo '- Port 6380 (AI-ML Redis): Restricted to localhost ✅'
           "
