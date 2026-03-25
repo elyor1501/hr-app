@@ -38,7 +38,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-${{ github.sha }}
           build-args: |
-            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL=
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL=http://167.235.136.54:8000
             NEXT_PUBLIC_SUPABASE_URL={0}
             NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={1}', secrets.NEXT_PUBLIC_SUPABASE_URL, secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
           cache-from: type=gha
@@ -68,7 +68,7 @@ jobs:
             sudo fuser -k 8001/tcp 2>/dev/null || true
             
             sudo ufw allow 80/tcp 2>/dev/null || true
-            sudo ufw delete allow 8000/tcp 2>/dev/null || true
+            sudo ufw allow 8000/tcp 2>/dev/null || true
             sudo ufw delete allow 8001/tcp 2>/dev/null || true
             sudo ufw reload 2>/dev/null || true
           "
@@ -102,7 +102,7 @@ jobs:
               --name backend \
               --network hr-network \
               --restart unless-stopped \
-              -p 127.0.0.1:8000:8000 \
+              -p 8000:8000 \
               -e HR_APP_DATABASE_HOST=52.62.122.103 \
               -e HR_APP_DATABASE_PORT=6543 \
               -e HR_APP_DATABASE_USER=postgres.ectxlkkilezsebodryhd \
@@ -161,7 +161,7 @@ jobs:
               --network hr-network \
               --restart unless-stopped \
               -p 80:3000 \
-              -e NEXT_PUBLIC_API_URL="" \
+              -e NEXT_PUBLIC_API_URL=http://167.235.136.54:8000 \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
@@ -177,8 +177,8 @@ jobs:
             curl -f http://localhost:80 > /dev/null 2>&1 && echo ' Frontend: OK' || echo ' Frontend: FAILED'
             echo ''
             
-            curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1 && echo ' Backend exposed!' || echo ' Backend: Localhost only'
-            curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1 && echo ' AI-ML exposed!' || echo ' AI-ML: Localhost only'
+            curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1 && echo ' Backend: Public (Firewall controlled)' || echo ' Backend: Not accessible'
+            curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1 && echo ' AI-ML exposed!' || echo ' AI-ML: Localhost only (Secure)'
             curl -f --connect-timeout 5 http://167.235.136.54:80 > /dev/null 2>&1 && echo ' Frontend: Public' || echo ' Frontend: Not accessible'
             
             echo ''
