@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - feature/aiml-backend-integration
+      - main
   pull_request:
     branches:
-      - feature/aiml-backend-integration
+      - main
 
 jobs:
   check-and-build:
@@ -133,7 +133,7 @@ jobs:
   deploy-to-server:
     runs-on: ubuntu-latest
     needs: push-to-dockerhub
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/aiml-backend-integration'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Deploy via SSH
         run: |
