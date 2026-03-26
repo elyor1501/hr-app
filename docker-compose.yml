@@ -13,7 +13,7 @@ services:
       retries: 5
     networks:
       - hr-network
-
+ 
   backend:
     build:
       context: ./services/backend
@@ -36,14 +36,14 @@ services:
       HR_APP_CACHE_PREFIX: "hr_backend:"
       PYTHONPATH: /app
     ports:
-      - "8000:8000"  
+      - "8000:8000"
     volumes:
       - ./services/backend/src:/app/src
       - upload_data:/app/uploads
     restart: always
     networks:
       - hr-network
-
+ 
   worker:
     build:
       context: ./services/backend
@@ -69,7 +69,7 @@ services:
     restart: always
     networks:
       - hr-network
-
+ 
   ai-ml-service:
     build:
       context: ./services/ai-ml
@@ -83,7 +83,7 @@ services:
       REDIS_PORT: 6379
       REDIS_DB: 1
       REDIS_PREFIX: "aiml:"
-      DATABASE_URL: "postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
+      DATABASE_URL: ${DATABASE_URL}
       PYTHONPATH: /app/src
     depends_on:
       redis:
@@ -95,7 +95,7 @@ services:
     restart: always
     networks:
       - hr-network
-
+ 
   frontend:
     build:
       context: ./services/frontend
@@ -112,11 +112,11 @@ services:
     restart: always
     networks:
       - hr-network
-
+ 
 volumes:
   redis_data:
   upload_data:
-
+ 
 networks:
   hr-network:
     driver: bridge
