@@ -100,32 +100,25 @@ services:
     build:
       context: ./services/frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "http://167.235.136.54"
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
     container_name: hr-frontend
     expose:
       - "3000"
-    environment:
-      NEXT_PUBLIC_API_URL: "http://167.235.136.54"  # Keep as is, no port
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:-}
-    depends_on:
-      - backend
     restart: always
     networks:
       - hr-network
  
-  # Simple proxy using socat (ultra lightweight)
+  # Reverse proxy that handles routing internally
   proxy:
-    image: alpine/socat
+    image: nginx:alpine
     container_name: hr-proxy
-    command: >
-      sh -c "
-        socat TCP-LISTEN:80,fork,reuseaddr TCP:frontend:3000 &
-        socat TCP-LISTEN:8000,fork,reuseaddr TCP:backend:8000 &
-        wait
-      "
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "80:80"
-      - "8000:8000"
     depends_on:
       - frontend
       - backend
