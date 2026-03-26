@@ -38,9 +38,9 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-${{ github.sha }}
           build-args: |
-            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL=http://167.235.136.54:8000
-            NEXT_PUBLIC_SUPABASE_URL={0}
-            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={1}', secrets.NEXT_PUBLIC_SUPABASE_URL, secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', secrets.NEXT_PUBLIC_API_URL) || '' }}
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_URL={0}', secrets.NEXT_PUBLIC_SUPABASE_URL) || '' }}
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={0}', secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -62,8 +62,8 @@ jobs:
             echo '=== Cleaning up disk space ==='
             
             # Stop all containers first
-            docker stop backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
-            docker rm backend ai-ml frontend worker redis ai-ml-redis 2>/dev/null || true
+            docker stop backend ai-ml-service frontend worker redis 2>/dev/null || true
+            docker rm backend ai-ml-service frontend worker redis 2>/dev/null || true
             
             # Remove unused Docker data
             docker system prune -a -f 2>/dev/null || true
@@ -126,31 +126,24 @@ jobs:
               -p 127.0.0.1:6379:6379 \
               redis:7-alpine
             
-            echo '=== Starting AI-ML Redis ==='
-            docker run -d \
-              --name ai-ml-redis \
-              --network hr-network \
-              --restart unless-stopped \
-              -p 127.0.0.1:6380:6379 \
-              redis:7
-            
             echo '=== Starting Backend ==='
             docker run -d \
               --name backend \
               --network hr-network \
               --restart unless-stopped \
               -p 8000:8000 \
-              -e HR_APP_DATABASE_HOST=52.62.122.103 \
-              -e HR_APP_DATABASE_PORT=6543 \
-              -e HR_APP_DATABASE_USER=postgres.ectxlkkilezsebodryhd \
-              -e HR_APP_DATABASE_PASSWORD=Hr_app@vaspp.com \
-              -e HR_APP_DATABASE_NAME=postgres \
+              -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
+              -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
+              -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
+              -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
               -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
-              -e HR_APP_AI_SERVICE_URL=http://ai-ml:8001 \
-              -e HR_APP_VECTOR_DIMENSION=3072 \
-              -e HR_APP_CACHE_PREFIX=hr_app \
+              -e HR_APP_REDIS_DB=0 \
+              -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
+              -e HR_APP_VECTOR_DIMENSION=768 \
+              -e HR_APP_CACHE_PREFIX=hr_backend \
               -e PYTHONPATH=/app \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
@@ -162,19 +155,21 @@ jobs:
                 echo '✅ Backend is healthy'
                 break
               fi
-              echo "Attempt \$i/30: Backend not ready yet..."
+              echo \"Attempt \$i/30: Backend not ready yet...\"
               sleep 2
             done
             
             echo '=== Starting AI-ML Service ==='
             docker run -d \
-              --name ai-ml \
+              --name ai-ml-service \
               --network hr-network \
               --restart unless-stopped \
               -p 127.0.0.1:8001:8001 \
-              -e REDIS_HOST=ai-ml-redis \
+              -e REDIS_HOST=redis \
               -e REDIS_PORT=6379 \
-              -e DATABASE_URL=\"postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@52.62.122.103:6543/postgres\" \
+              -e REDIS_DB=1 \
+              -e REDIS_PREFIX=aiml \
+              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
               -e PYTHONPATH=/app/src \
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
@@ -184,16 +179,17 @@ jobs:
               --name worker \
               --network hr-network \
               --restart unless-stopped \
-              -e HR_APP_DATABASE_HOST=52.62.122.103 \
-              -e HR_APP_DATABASE_PORT=6543 \
-              -e HR_APP_DATABASE_USER=postgres.ectxlkkilezsebodryhd \
-              -e HR_APP_DATABASE_PASSWORD=Hr_app@vaspp.com \
-              -e HR_APP_DATABASE_NAME=postgres \
+              -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
+              -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
+              -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
+              -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
               -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
-              -e HR_APP_AI_SERVICE_URL=http://ai-ml:8001 \
-              -e HR_APP_VECTOR_DIMENSION=3072 \
-              -e HR_APP_CACHE_PREFIX=hr_app \
+              -e HR_APP_REDIS_DB=0 \
+              -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
+              -e HR_APP_VECTOR_DIMENSION=768 \
+              -e HR_APP_CACHE_PREFIX=hr_worker \
               -e PYTHONPATH=/app \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
@@ -204,7 +200,7 @@ jobs:
               --network hr-network \
               --restart unless-stopped \
               -p 80:3000 \
-              -e NEXT_PUBLIC_API_URL=http://167.235.136.54:8000 \
+              -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
@@ -269,5 +265,4 @@ jobs:
             echo '- Port 8000 (Backend): Open but firewall controlled ✅'
             echo '- Port 8001 (AI-ML): Restricted to localhost ✅'
             echo '- Port 6379 (Redis): Restricted to localhost ✅'
-            echo '- Port 6380 (AI-ML Redis): Restricted to localhost ✅'
           "
