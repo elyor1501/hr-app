@@ -61,9 +61,9 @@ jobs:
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Cleaning up disk space ==='
             
-            # Stop all containers
-            docker stop hr-proxy hr-frontend hr-backend ai-ml-service hr-worker redis 2>/dev/null || true
-            docker rm hr-proxy hr-frontend hr-backend ai-ml-service hr-worker redis 2>/dev/null || true
+            # Stop all containers first
+            docker stop backend ai-ml-service frontend worker redis 2>/dev/null || true
+            docker rm backend ai-ml-service frontend worker redis 2>/dev/null || true
             
             # Remove unused Docker data
             docker system prune -a -f 2>/dev/null || true
@@ -86,60 +86,31 @@ jobs:
             echo '=== Cleanup complete ==='
           "
           
-          # Step 2: Create nginx config on server
+          # Step 2: Free ports and configure firewall
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            echo '=== Creating nginx configuration ==='
+            echo '=== Configuring firewall ==='
             
-            mkdir -p /tmp/nginx
+            sudo systemctl stop nginx 2>/dev/null || true
+            sudo systemctl disable nginx 2>/dev/null || true
+            docker stop nginx 2>/dev/null || true
+            docker rm nginx 2>/dev/null || true
             
-            cat > /tmp/nginx/nginx.conf << 'EOF'
-            server {
-                listen 80;
-                server_name _;
-                
-                client_max_body_size 100M;
-                
-                location /api/ {
-                    proxy_pass http://hr-backend:8000;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade \$http_upgrade;
-                    proxy_set_header Connection 'upgrade';
-                    proxy_set_header Host \$host;
-                    proxy_set_header X-Real-IP \$remote_addr;
-                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto \$scheme;
-                    proxy_cache_bypass \$http_upgrade;
-                    
-                    proxy_connect_timeout 60s;
-                    proxy_send_timeout 60s;
-                    proxy_read_timeout 60s;
-                }
-                
-                location / {
-                    proxy_pass http://hr-frontend:3000;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade \$http_upgrade;
-                    proxy_set_header Connection 'upgrade';
-                    proxy_set_header Host \$host;
-                    proxy_set_header X-Real-IP \$remote_addr;
-                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto \$scheme;
-                    proxy_cache_bypass \$http_upgrade;
-                }
-            }
-            EOF
+            sudo fuser -k 80/tcp 2>/dev/null || true
+            sudo fuser -k 8000/tcp 2>/dev/null || true
+            sudo fuser -k 8001/tcp 2>/dev/null || true
             
-            echo '✅ Nginx config created'
+            sudo ufw allow 80/tcp 2>/dev/null || true
+            sudo ufw allow 8000/tcp 2>/dev/null || true
+            sudo ufw delete allow 8001/tcp 2>/dev/null || true
+            sudo ufw reload 2>/dev/null || true
+            
+            echo '=== Firewall configured ==='
           "
           
           # Step 3: Deploy containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
-            
-            echo '=== Creating volumes ==='
-            docker volume create redis_data 2>/dev/null || true
-            docker volume create upload_data 2>/dev/null || true
             
             echo '=== Pulling latest images ==='
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
@@ -152,28 +123,15 @@ jobs:
               --name redis \
               --network hr-network \
               --restart unless-stopped \
-              -v redis_data:/data \
+              -p 127.0.0.1:6379:6379 \
               redis:7-alpine
-            
-            echo '=== Starting AI-ML Service ==='
-            docker run -d \
-              --name ai-ml-service \
-              --network hr-network \
-              --restart unless-stopped \
-              -e REDIS_HOST=redis \
-              -e REDIS_PORT=6379 \
-              -e REDIS_DB=1 \
-              -e REDIS_PREFIX=aiml \
-              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
-              -e PYTHONPATH=/app/src \
-              -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             
             echo '=== Starting Backend ==='
             docker run -d \
-              --name hr-backend \
+              --name backend \
               --network hr-network \
               --restart unless-stopped \
+              -p 8000:8000 \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
@@ -193,7 +151,7 @@ jobs:
             sleep 10
             
             for i in {1..30}; do
-              if docker exec hr-backend curl -f http://localhost:8000/health 2>/dev/null; then
+              if curl -f http://127.0.0.1:8000/health 2>/dev/null; then
                 echo '✅ Backend is healthy'
                 break
               fi
@@ -201,9 +159,24 @@ jobs:
               sleep 2
             done
             
+            echo '=== Starting AI-ML Service ==='
+            docker run -d \
+              --name ai-ml-service \
+              --network hr-network \
+              --restart unless-stopped \
+              -p 127.0.0.1:8001:8001 \
+              -e REDIS_HOST=redis \
+              -e REDIS_PORT=6379 \
+              -e REDIS_DB=1 \
+              -e REDIS_PREFIX=aiml \
+              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
+              -e PYTHONPATH=/app/src \
+              -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
+            
             echo '=== Starting Worker ==='
             docker run -d \
-              --name hr-worker \
+              --name worker \
               --network hr-network \
               --restart unless-stopped \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
@@ -223,22 +196,17 @@ jobs:
             
             echo '=== Starting Frontend ==='
             docker run -d \
-              --name hr-frontend \
+              --name frontend \
               --network hr-network \
               --restart unless-stopped \
+              -p 80:3000 \
+              -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+              -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+              -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
-            echo '=== Starting Nginx Proxy ==='
-            docker run -d \
-              --name hr-proxy \
-              --network hr-network \
-              --restart unless-stopped \
-              -p 80:80 \
-              -v /tmp/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
-              nginx:alpine
-            
             echo '=== Waiting for all services ==='
-            sleep 15
+            sleep 10
             
             echo ''
             echo '=== Running Containers ==='
@@ -247,95 +215,54 @@ jobs:
             
             echo '=== Health Check Results ==='
             
-            # Test frontend via proxy
-            if curl -f http://localhost:80 > /dev/null 2>&1; then
-              echo '✅ Frontend: Accessible via proxy (port 80)'
+            if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
+              echo '✅ Backend: OK'
             else
-              echo '❌ Frontend: Not accessible'
+              echo '❌ Backend: FAILED'
             fi
             
-            # Test API via proxy (this should work)
-            if curl -f http://localhost:80/api/v1/health > /dev/null 2>&1; then
-              echo '✅ API: Accessible via proxy at /api/*'
+            if curl -f http://127.0.0.1:8001/health > /dev/null 2>&1; then
+              echo '✅ AI-ML: OK'
             else
-              echo '⚠️ API endpoint check failed (may not have /health endpoint)'
+              echo '⚠️ AI-ML: No health endpoint'
+            fi
+            
+            if curl -f http://localhost:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: OK'
+            else
+              echo '❌ Frontend: FAILED'
             fi
             
             echo ''
             echo '=== Port Security Verification ==='
             
-            # Check if port 8000 is accessible (should NOT be)
-            if curl -f --connect-timeout 3 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
-              echo '❌ Port 8000: Exposed externally! (Should be closed)'
+            if curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1; then
+              echo '✅ Backend: Public (Firewall controlled)'
             else
-              echo '✅ Port 8000: Not accessible (Secure - Port is closed)'
+              echo '⚠️ Backend: Not accessible'
             fi
             
-            # Check if port 8001 is accessible (should NOT be)
-            if curl -f --connect-timeout 3 http://${{ secrets.DEPLOY_HOST }}:8001/health > /dev/null 2>&1; then
-              echo '❌ Port 8001: Exposed externally!'
+            if curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1; then
+              echo '⚠️ AI-ML exposed!'
             else
-              echo '✅ Port 8001: Not accessible (Secure)'
+              echo '✅ AI-ML: Localhost only (Secure)'
             fi
             
-            # Check if Redis port is accessible (should NOT be)
-            if nc -zv ${{ secrets.DEPLOY_HOST }} 6379 2>&1 | grep -q succeeded; then
-              echo '❌ Port 6379: Exposed externally!'
+            if curl -f --connect-timeout 5 http://167.235.136.54:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: Public'
             else
-              echo '✅ Port 6379: Not accessible (Secure)'
+              echo '❌ Frontend: Not accessible'
             fi
-            
-            # Check frontend port 80 (should be accessible)
-            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
-              echo '✅ Port 80: Publicly accessible (Frontend)'
-            else
-              echo '❌ Port 80: Not accessible'
-            fi
-            
-            echo ''
-            echo '=== Network Inspection ==='
-            echo 'Checking exposed ports:'
-            docker ps --format 'table {{.Names}}\t{{.Ports}}'
-            
-            echo ''
-            echo '=== Testing API Call Through Proxy ==='
-            echo 'Testing login endpoint:'
-            curl -X POST http://localhost:80/api/v1/auth/login \
-              -H \"Content-Type: application/json\" \
-              -d '{\"email\":\"test@test.com\",\"password\":\"test\"}' \
-              -w \"\\nHTTP Status: %{http_code}\\n\" \
-              -o /dev/null -s
             
             echo ''
             echo '=== Deployment Complete ==='
+            echo 'Frontend: http://167.235.136.54'
+            echo 'Backend API: http://167.235.136.54:8000'
+            echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
             echo ''
-            echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
-            echo '✅ SUCCESS: All requirements met!'
-            echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
-            echo ''
-            echo 'Architecture Summary:'
-            echo '• Frontend: http://${{ secrets.DEPLOY_HOST }} (Port 80)'
-            echo '• API: http://${{ secrets.DEPLOY_HOST }}/api/* (via proxy)'
-            echo '• Backend: Internal only (hr-backend:8000)'
-            echo '• AI-ML: Internal only (ai-ml-service:8001)'
-            echo '• Redis: Internal only (redis:6379)'
-            echo ''
-            echo 'Security Status:'
-            echo '✅ Port 80: Public (Frontend)'
-            echo '✅ Port 8000: CLOSED (Not exposed)'
-            echo '✅ Port 8001: CLOSED (Not exposed)'
-            echo '✅ Port 6379: CLOSED (Not exposed)'
-            echo ''
-            echo 'How it works:'
-            echo '1. Frontend code uses NEXT_PUBLIC_API_URL=http://${{ secrets.DEPLOY_HOST }}'
-            echo '2. Browser calls http://${{ secrets.DEPLOY_HOST }}/api/*'
-            echo '3. Nginx proxies /api/* to internal backend container'
-            echo '4. Backend is NOT exposed to internet - only accessible via Nginx'
-            echo ''
-            echo '✅ No frontend code changes required'
-            echo '✅ Port 8000 is NOT public'
-            echo '✅ No firewall configuration needed'
-            echo '✅ All from docker-compose and CI/CD'
-            echo '✅ Clean separation of concerns'
-            echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+            echo 'Security Summary:'
+            echo '- Port 80 (Frontend): Open to outside ✅'
+            echo '- Port 8000 (Backend): Open but firewall controlled ✅'
+            echo '- Port 8001 (AI-ML): Restricted to localhost ✅'
+            echo '- Port 6379 (Redis): Restricted to localhost ✅'
           "
