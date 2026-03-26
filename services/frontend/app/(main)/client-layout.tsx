@@ -34,7 +34,7 @@ export default function ClientLayout({ children, user }: Props) {
   return (
     <ChatProvider>
       <SidebarProvider>
-        <div className="flex min-h-screen w-full">
+        <div className="flex h-screen w-full overflow-hidden">
           <div
             className={`hidden md:block relative border-r bg-white dark:bg-gray-900
           transition-all duration-300 ${isOpen ? "w-60" : "w-16"}`}
@@ -63,7 +63,7 @@ export default function ClientLayout({ children, user }: Props) {
               </div>
             </header>
 
-            <main className="flex-1 p-6">{children}</main>
+            <main className="flex-1 overflow-y-auto p-6">{children}</main>
           </div>
         </div>
       </SidebarProvider>

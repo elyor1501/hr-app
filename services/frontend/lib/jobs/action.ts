@@ -76,8 +76,6 @@ export async function updateJob(formData: FormData): Promise<void> {
     application_deadline: formData.get("application_deadline"),
   };
 
-  console.log("Update payload:", payload);
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${id}`,
     {

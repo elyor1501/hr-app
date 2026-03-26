@@ -36,29 +36,12 @@ export async function updateCandidate(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
   const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
 
-  const skillsInput = (formData.get("skills") as string) || "";
-  const skillsArray = skillsInput
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
   const payload = {
-    first_name: formData.get("first_name") as string,
-    last_name: formData.get("last_name") as string,
-    email: formData.get("email") as string,
-    phone: formData.get("phone") as string,
-    current_company: formData.get("current_company") as string,
-    current_title: formData.get("current_title") as string,
-    location: formData.get("location") as string,
-    years_of_experience: Number(formData.get("years_of_experience")),
-    status: (formData.get("status") as string).toLowerCase(),
-    skills: skillsArray,
-    linkedin_url: formData.get("linkedin_url") as string,
-    resume:formData.get("resume") as string
+    candidate_status: formData.get("candidate_status") as string,
   };
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/${id}/status`,
     {
       method: "PATCH",
       headers: {
@@ -79,6 +62,5 @@ export async function updateCandidate(formData: FormData): Promise<void> {
 
   revalidatePath("/candidates");
 }
-
 
 

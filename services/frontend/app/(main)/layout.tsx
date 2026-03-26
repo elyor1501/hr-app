@@ -14,7 +14,6 @@ export default function Layout({
   useEffect(() => {
     async function fetchUser() {
       const data = await getLoggedInUser();
-      console.log("user",data)
       setUser(data);
     }
     fetchUser();

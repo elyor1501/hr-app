@@ -59,8 +59,6 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
         const token = localStorage.getItem("access_token");
         
         let downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/${resume.id}/download`;
-        
-        console.log("Attempting download from:", downloadUrl);
 
         try {
           let response = await fetch(downloadUrl, {

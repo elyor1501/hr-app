@@ -24,6 +24,7 @@ export type CandidateList = {
   projects?: any[];
   certifications?: any[];
 
+  candidate_status?: "active" | "inactive";
   status?: "processing" | "completed" | "error";
 };
 
