@@ -28,7 +28,7 @@ export async function getJob(): Promise<JobList[]> {
     };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/?skip=0&limit=100`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/?page=1&page_size=100`,
       { 
         headers,
         cache: "no-store" 
@@ -37,11 +37,18 @@ export async function getJob(): Promise<JobList[]> {
 
     if (!res.ok) {
       const text = await res.text().catch(() => "Unable to read response");
-      console.error("Failed to fetch candidates:", res.status, text);
+      console.error("Failed to fetch jobs:", res.status, text);
       return [];
     }
 
     const data = await res.json();
+    
+    // Handle paginated response
+    if (data && data.items && Array.isArray(data.items)) {
+      return data.items;
+    }
+    
+    // Fallback for non-paginated response
     return Array.isArray(data) ? data : [];
   } catch (err) {
     console.error("Fetch error:", err);

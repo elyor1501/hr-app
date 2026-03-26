@@ -41,7 +41,7 @@ export async function getCandidates(): Promise<CandidateList[]> {
     };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/?skip=0&limit=100`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/?page=1&page_size=100`,
       {
         headers,
         cache: "no-store",
@@ -55,6 +55,11 @@ export async function getCandidates(): Promise<CandidateList[]> {
     }
 
     const data = await res.json();
+    
+    if (data && data.items && Array.isArray(data.items)) {
+      return data.items;
+    }
+    
     return Array.isArray(data) ? data : [];
   } catch (err) {
     console.error("Fetch error:", err);

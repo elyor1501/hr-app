@@ -21,32 +21,41 @@ type Employee = {
 }
 
 type EmployeeStatusChartProps = {
-  employees: Employee[]
+  employees?: Employee[];
+  stats?: {
+    active: number;
+    inactive: number;
+  };
 }
 
-export function EmployeeStatusChart({ employees }: EmployeeStatusChartProps) {
+export function EmployeeStatusChart({ employees, stats }: EmployeeStatusChartProps) {
+  let chartData;
 
-  const activeCount = employees.filter(
-    emp => emp.candidate_status?.toLowerCase() === "active"
-  ).length
+  if (stats) {
+    chartData = [
+      { status: "Active", total: stats.active },
+      { status: "Inactive", total: stats.inactive },
+    ];
+  } else if (employees) {
+    const activeCount = employees.filter(
+      emp => emp.candidate_status?.toLowerCase() === "active"
+    ).length;
+    const inactiveCount = employees.length - activeCount;
 
-  const inactiveCount = employees.length - activeCount
-
-  const totalEmployees = employees.length
-
-  const chartData = [
-    { status: "Active", total: activeCount },
-    { status: "Inactive", total: inactiveCount },
-  ]
+    chartData = [
+      { status: "Active", total: activeCount },
+      { status: "Inactive", total: inactiveCount },
+    ];
+  } else {
+    return <div>Loading chart...</div>;
+  }
 
   const chartConfig = {
     total: {
       label: "Employees",
       color: "var(--chart-1)",
     },
-  } satisfies ChartConfig
-
-  if (!employees) return <div>Loading chart...</div>
+  } satisfies ChartConfig;
 
   return (
     <Card>

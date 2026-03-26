@@ -14,28 +14,19 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 
-type Job = {
-  status: string
-}
-
 type JobStatusChartProps = {
-  jobs: Job[]
+  stats: {
+    open_jobs: number;
+    closed_jobs: number;
+  };
+  totalJobs: number;
 }
 
-export function JobStatusChart({ jobs }: JobStatusChartProps) {
-  const total = jobs.length
-  const open = jobs.filter(job => {
-    const s = job.status?.toLowerCase() || "";
-    return s === "open" || s === "active" || s === "live" || s === "entry";
-  }).length
-  const closed = total - open;
-
+export function JobStatusChart({ stats, totalJobs }: JobStatusChartProps) {
   const chartData = [
-    { name: "Open", value: open, fill: "#4285F4" },
-    { name: "Closed", value: closed, fill: "#2c7397" },
+    { name: "Open", value: stats.open_jobs, fill: "#4285F4" },
+    { name: "Closed", value: stats.closed_jobs, fill: "#2c7397" },
   ]
-
-  if (!jobs) return <div>Loading chart...</div>
 
   return (
     <Card className="flex flex-col">
@@ -45,7 +36,6 @@ export function JobStatusChart({ jobs }: JobStatusChartProps) {
       </CardHeader>
 
       <CardContent className="flex items-center justify-between">
-
         <RadialBarChart
           width={250}
           height={250}
@@ -65,7 +55,7 @@ export function JobStatusChart({ jobs }: JobStatusChartProps) {
                         y={(viewBox.cy || 0) - 10}
                         className="fill-foreground text-2xl font-bold"
                       >
-                        {total}
+                        {totalJobs}
                       </tspan>
                       <tspan
                         x={viewBox.cx}
@@ -80,26 +70,20 @@ export function JobStatusChart({ jobs }: JobStatusChartProps) {
               }}
             />
           </PolarRadiusAxis>
-
-          <RadialBar
-            dataKey="value"
-            background
-            cornerRadius={6}
-          />
+          <RadialBar dataKey="value" background cornerRadius={6} />
         </RadialBarChart>
 
         <div className="flex flex-col gap-4 ml-6 w-40">
-
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium">Open Jobs</span>
-              <span>{open}</span>
+              <span>{stats.open_jobs}</span>
             </div>
             <div className="w-full bg-gray-200 h-2 rounded">
               <div
                 className="bg-[#4285F4] h-2 rounded"
                 style={{
-                  width: total ? `${(open / total) * 100}%` : "0%",
+                  width: totalJobs ? `${(stats.open_jobs / totalJobs) * 100}%` : "0%",
                 }}
               />
             </div>
@@ -108,13 +92,13 @@ export function JobStatusChart({ jobs }: JobStatusChartProps) {
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium">Closed Jobs</span>
-              <span>{closed}</span>
+              <span>{stats.closed_jobs}</span>
             </div>
             <div className="w-full bg-gray-200 h-2 rounded">
               <div
                 className="bg-[#2c7397] h-2 rounded"
                 style={{
-                  width: total ? `${(closed / total) * 100}%` : "0%",
+                  width: totalJobs ? `${(stats.closed_jobs / totalJobs) * 100}%` : "0%",
                 }}
               />
             </div>
