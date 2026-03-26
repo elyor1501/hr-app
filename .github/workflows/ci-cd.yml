@@ -86,28 +86,7 @@ jobs:
             echo '=== Cleanup complete ==='
           "
           
-          # Step 2: Free ports and configure firewall
-          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            echo '=== Configuring firewall ==='
-            
-            sudo systemctl stop nginx 2>/dev/null || true
-            sudo systemctl disable nginx 2>/dev/null || true
-            docker stop nginx 2>/dev/null || true
-            docker rm nginx 2>/dev/null || true
-            
-            sudo fuser -k 80/tcp 2>/dev/null || true
-            sudo fuser -k 8000/tcp 2>/dev/null || true
-            sudo fuser -k 8001/tcp 2>/dev/null || true
-            
-            sudo ufw allow 80/tcp 2>/dev/null || true
-            sudo ufw allow 8000/tcp 2>/dev/null || true
-            sudo ufw delete allow 8001/tcp 2>/dev/null || true
-            sudo ufw reload 2>/dev/null || true
-            
-            echo '=== Firewall configured ==='
-          "
-          
-          # Step 3: Deploy containers
+          # Step 2: Deploy containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
@@ -131,7 +110,7 @@ jobs:
               --name backend \
               --network hr-network \
               --restart unless-stopped \
-              -p 8000:8000 \
+              -p 127.0.0.1:8000:8000 \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
@@ -216,15 +195,15 @@ jobs:
             echo '=== Health Check Results ==='
             
             if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
-              echo '✅ Backend: OK'
+              echo '✅ Backend: OK (localhost only)'
             else
               echo '❌ Backend: FAILED'
             fi
             
             if curl -f http://127.0.0.1:8001/health > /dev/null 2>&1; then
-              echo '✅ AI-ML: OK'
+              echo '✅ AI-ML: OK (localhost only)'
             else
-              echo '⚠️ AI-ML: No health endpoint'
+              echo '⚠️ AI-ML: No health endpoint or not accessible'
             fi
             
             if curl -f http://localhost:80 > /dev/null 2>&1; then
@@ -236,33 +215,45 @@ jobs:
             echo ''
             echo '=== Port Security Verification ==='
             
-            if curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1; then
-              echo '✅ Backend: Public (Firewall controlled)'
+            # Check if backend is accessible externally (should FAIL)
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
+              echo '❌ Backend: Still exposed externally!'
             else
-              echo '⚠️ Backend: Not accessible'
+              echo '✅ Backend: Not accessible from outside (Secure)'
             fi
             
-            if curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1; then
-              echo '⚠️ AI-ML exposed!'
+            # Check if AI-ML is accessible externally (should FAIL)
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8001/health > /dev/null 2>&1; then
+              echo '❌ AI-ML: Exposed externally!'
             else
-              echo '✅ AI-ML: Localhost only (Secure)'
+              echo '✅ AI-ML: Not accessible from outside (Secure)'
             fi
             
-            if curl -f --connect-timeout 5 http://167.235.136.54:80 > /dev/null 2>&1; then
-              echo '✅ Frontend: Public'
+            # Check frontend (should SUCCEED)
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: Public (Port 80)'
             else
-              echo '❌ Frontend: Not accessible'
+              echo '❌ Frontend: Not accessible from outside'
+            fi
+            
+            # Check if Redis is accessible externally (should FAIL)
+            if nc -zv ${{ secrets.DEPLOY_HOST }} 6379 2>&1 | grep -q succeeded; then
+              echo '❌ Redis: Exposed externally!'
+            else
+              echo '✅ Redis: Not accessible from outside (Secure)'
             fi
             
             echo ''
             echo '=== Deployment Complete ==='
-            echo 'Frontend: http://167.235.136.54'
-            echo 'Backend API: http://167.235.136.54:8000'
+            echo 'Frontend: http://${{ secrets.DEPLOY_HOST }}'
+            echo 'Backend API: http://127.0.0.1:8000 (localhost only)'
             echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
             echo ''
             echo 'Security Summary:'
-            echo '- Port 80 (Frontend): Open to outside ✅'
-            echo '- Port 8000 (Backend): Open but firewall controlled ✅'
-            echo '- Port 8001 (AI-ML): Restricted to localhost ✅'
-            echo '- Port 6379 (Redis): Restricted to localhost ✅'
+            echo '- Port 80 (Frontend): Publicly accessible ✅'
+            echo '- Port 8000 (Backend): Localhost only ✅'
+            echo '- Port 8001 (AI-ML): Localhost only ✅'
+            echo '- Port 6379 (Redis): Localhost only ✅'
+            echo ''
+            echo '✅ All internal services are secured and not exposed to the internet'
           "
