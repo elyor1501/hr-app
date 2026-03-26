@@ -1,8 +1,9 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 import structlog
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from src.api.health import router as health_router
 from src.api.metrics import router as metrics_router
 from src.api.v1.candidates import router as candidates_router
@@ -12,7 +13,6 @@ from src.api.v1.matching import router as matching_router
 from src.api.v1.auth import router as auth_router
 from src.api.v1.resumes import router as resumes_router
 from src.api.v1.tasks import router as tasks_router
-# ⬇️ ADD THIS NEW IMPORT ⬇️
 from src.api.v1.parsed_resumes import router as parsed_resumes_router
 
 from src.core.config import settings
@@ -38,10 +38,39 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await close_redis_pool()
     await close_task_queue()
 
+
+async def ngrok_middleware(request: Request, call_next):
+    """Handle ngrok's browser warning page"""
+    response = await call_next(request)
+    
+    if "ngrok" in str(request.url):
+        response.headers["ngrok-skip-browser-warning"] = "true"
+    
+    return response
+
+
 def create_app() -> FastAPI:
     configure_logging()
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
-    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:8000",
+            "https://*.ngrok-free.app", 
+            "https://*.ngrok.io",
+            "*",  
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
+    
+    app.middleware("http")(ngrok_middleware)
+    
     app.include_router(health_router)
     app.include_router(metrics_router)
     app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
@@ -51,8 +80,8 @@ def create_app() -> FastAPI:
     app.include_router(matching_router, prefix="/api/v1/match", tags=["matching"])
     app.include_router(resumes_router, prefix="/api/v1/resumes", tags=["resumes"])
     app.include_router(tasks_router, prefix="/api/v1/tasks", tags=["tasks"])
-    # ⬇️ ADD THIS NEW ROUTER ⬇️
     app.include_router(parsed_resumes_router, prefix="/api/v1/parsed-resumes", tags=["parsed-resumes"])
+    
     return app
 
 app = create_app()

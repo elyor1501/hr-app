@@ -1,10 +1,11 @@
 from typing import Any, Dict, List, Optional
 from uuid import UUID
+import asyncio
 
 import structlog
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import select, or_, cast, Text, func
+from sqlalchemy import select, or_, func
 
 from src.db.session import async_session_maker
 from src.db.models import Candidate, ParsedResume, Job
@@ -348,52 +349,46 @@ async def _get_all_parsed_resumes(session, limit: int = 50):
 
 
 async def _find_parsed_resumes_for_job(session, job, limit: int = 20):
+    """Find parsed resumes matching job requirements using array overlap and exact matches."""
     search_terms = []
     if job.required_skills:
-        search_terms.extend(job.required_skills)
+        search_terms.extend([s.lower().strip() for s in job.required_skills])
     if job.preferred_skills:
-        search_terms.extend(job.preferred_skills)
+        search_terms.extend([s.lower().strip() for s in job.preferred_skills])
     if job.title:
-        search_terms.extend([w for w in job.title.split() if len(w) >= 3])
+        search_terms.extend([w.lower() for w in job.title.split() if len(w) >= 3])
 
     if search_terms:
         conditions = []
-        for term in search_terms:
-            pattern = f"%{term.strip()}%"
-            conditions.append(
-                func.coalesce(
-                    func.array_to_string(ParsedResume.skills, ',', ''), ''
-                ).ilike(pattern)
-            )
-            conditions.append(
-                func.coalesce(ParsedResume.current_title, '').ilike(pattern)
-            )
-            conditions.append(
-                func.coalesce(ParsedResume.current_company, '').ilike(pattern)
-            )
-            conditions.append(
-                func.coalesce(ParsedResume.summary, '').ilike(pattern)
-            )
-            conditions.append(
-                func.coalesce(cast(ParsedResume.json_data, Text), '').ilike(pattern)
-            )
-            conditions.append(
-                func.coalesce(cast(ParsedResume.experience, Text), '').ilike(pattern)
-            )
-            conditions.append(
-                func.coalesce(cast(ParsedResume.education, Text), '').ilike(pattern)
-            )
+        
+        if job.required_skills or job.preferred_skills:
+            skills_to_match = (job.required_skills or []) + (job.preferred_skills or [])
+            skills_lower = [s.lower().strip() for s in skills_to_match if s]
+            if skills_lower:
+                conditions.append(
+                    func.lower(func.array_to_string(ParsedResume.skills, ',', '')).op('~*')(
+                        '|'.join(skills_lower)
+                    )
+                )
 
-        query = (
-            select(ParsedResume)
-            .where(or_(*conditions))
-            .limit(limit)
-        )
-        result = await session.execute(query)
-        parsed_resumes = list(result.scalars().all())
+        if job.title:
+            title_words = [w.lower() for w in job.title.split() if len(w) >= 3]
+            for word in title_words:
+                conditions.append(
+                    func.lower(ParsedResume.current_title).contains(word)
+                )
 
-        if parsed_resumes:
-            return parsed_resumes
+        if conditions:
+            query = (
+                select(ParsedResume)
+                .where(or_(*conditions))
+                .limit(limit)
+            )
+            result = await session.execute(query)
+            parsed_resumes = list(result.scalars().all())
+
+            if parsed_resumes:
+                return parsed_resumes
 
     fallback_query = (
         select(ParsedResume)
@@ -401,6 +396,149 @@ async def _find_parsed_resumes_for_job(session, job, limit: int = 20):
     )
     fallback_result = await session.execute(fallback_query)
     return list(fallback_result.scalars().all())
+
+
+
+async def _process_single_candidate_match(
+    session,
+    cid: str,
+    job_description: str,
+    job_id: str,
+    job_title: Optional[str]
+) -> MatchResultResponse:
+    """Process a single candidate match - used for parallel execution."""
+    try:
+        structured_cv = await _get_structured_cv_by_id(session, cid)
+        candidate_name = await _get_name_by_id(session, cid)
+        if not candidate_name:
+            candidate_name = (structured_cv.get("full_name") or "").strip() or None
+
+        ai_result = await ai_client.rag_match(
+            job_description=job_description,
+            structured_cv=structured_cv,
+        )
+
+        return MatchResultResponse(
+            job_id=job_id,
+            job_title=job_title,
+            candidate_id=cid,
+            candidate_name=candidate_name,
+            match_score=ai_result.get("match_score", 0),
+            reasoning=ai_result.get("reasoning", ""),
+            strengths=ai_result.get("strengths", []),
+            gaps=ai_result.get("gaps", []),
+            recommendations=ai_result.get("recommendations", []),
+        )
+    except HTTPException:
+        return MatchResultResponse(
+            job_id=job_id,
+            job_title=job_title,
+            candidate_id=cid,
+            match_score=0,
+            reasoning="Failed to process this candidate",
+        )
+    except Exception as exc:
+        logger.error("bulk_match_item_failed", candidate_id=cid, error=str(exc))
+        return MatchResultResponse(
+            job_id=job_id,
+            job_title=job_title,
+            candidate_id=cid,
+            match_score=0,
+            reasoning=f"Error: {str(exc)}",
+        )
+
+
+async def _process_single_job_match(
+    job,
+    structured_cv: dict,
+    candidate_id: str,
+    candidate_name: Optional[str]
+) -> MatchResultResponse:
+    """Process a single job match - used for parallel execution."""
+    try:
+        ai_result = await ai_client.rag_match(
+            job_description=job.description,
+            structured_cv=structured_cv,
+        )
+
+        return MatchResultResponse(
+            job_id=str(job.id),
+            job_title=job.title,
+            candidate_id=candidate_id,
+            candidate_name=candidate_name,
+            match_score=ai_result.get("match_score", 0),
+            reasoning=ai_result.get("reasoning", ""),
+            strengths=ai_result.get("strengths", []),
+            gaps=ai_result.get("gaps", []),
+            recommendations=ai_result.get("recommendations", []),
+        )
+    except Exception as exc:
+        logger.error(
+            "candidate_to_jobs_item_failed",
+            candidate_id=candidate_id,
+            job_id=str(job.id),
+            error=str(exc),
+        )
+        return MatchResultResponse(
+            job_id=str(job.id),
+            job_title=job.title,
+            candidate_id=candidate_id,
+            candidate_name=candidate_name,
+            match_score=0,
+            reasoning=f"Match failed: {str(exc)}",
+        )
+
+
+async def _process_single_resume_match(
+    pr,
+    job,
+    job_id: str,
+) -> Optional[MatchResultResponse]:
+    """Process a single resume match - used for parallel execution."""
+    try:
+        structured_cv = await _get_structured_cv_for_parsed_resume(pr)
+
+        if not structured_cv or not _cv_has_good_data(structured_cv):
+            return None
+
+        ai_result = await ai_client.rag_match(
+            job_description=job.description,
+            structured_cv=structured_cv,
+        )
+
+        match_score = ai_result.get("match_score", 0)
+        candidate_name = f"{pr.first_name or ''} {pr.last_name or ''}".strip()
+        if not candidate_name:
+            candidate_name = (structured_cv.get("full_name") or "").strip() or "Unknown"
+
+        return MatchResultResponse(
+            job_id=job_id,
+            job_title=job.title,
+            candidate_id=str(pr.id),
+            candidate_name=candidate_name,
+            match_score=match_score,
+            reasoning=ai_result.get("reasoning", ""),
+            strengths=ai_result.get("strengths", []),
+            gaps=ai_result.get("gaps", []),
+            recommendations=ai_result.get("recommendations", []),
+        )
+
+    except Exception as exc:
+        logger.error(
+            "job_to_candidates_item_failed",
+            parsed_resume_id=str(pr.id),
+            error=str(exc),
+        )
+        candidate_name = f"{pr.first_name or ''} {pr.last_name or ''}".strip() or "Unknown"
+        return MatchResultResponse(
+            job_id=job_id,
+            job_title=job.title,
+            candidate_id=str(pr.id),
+            candidate_name=candidate_name,
+            match_score=0,
+            reasoning=f"Match processing failed: {str(exc)}",
+        )
+
 
 
 @router.post("", response_model=MatchResultResponse)
@@ -470,73 +608,35 @@ async def match_raw(request: RawMatchRequest):
             status_code=500, detail=f"Match failed: {str(e)}"
         )
 
-
 @router.post("/bulk", response_model=BulkMatchResponse)
 async def match_bulk(request: BulkMatchRequest):
+    """Bulk match candidates to a job using parallel processing with asyncio.gather()."""
     try:
         async with async_session_maker() as session:
-            job_description = await _get_job_description(
-                session, request.job_id
-            )
-            job_title = await _get_job_title(
-                session, request.job_id
-            )
+            job_description = await _get_job_description(session, request.job_id)
+            job_title = await _get_job_title(session, request.job_id)
 
-            results: List[MatchResultResponse] = []
-
-            for cid in request.candidate_ids:
-                try:
-                    structured_cv = await _get_structured_cv_by_id(session, cid)
-                    candidate_name = await _get_name_by_id(session, cid)
-                    if not candidate_name:
-                        candidate_name = (
-                            (structured_cv.get("full_name") or "").strip() or None
-                        )
-
-                    ai_result = await ai_client.rag_match(
-                        job_description=job_description,
-                        structured_cv=structured_cv,
-                    )
-
-                    results.append(
-                        MatchResultResponse(
-                            job_id=request.job_id,
-                            job_title=job_title,
-                            candidate_id=cid,
-                            candidate_name=candidate_name,
-                            match_score=ai_result.get("match_score", 0),
-                            reasoning=ai_result.get("reasoning", ""),
-                            strengths=ai_result.get("strengths", []),
-                            gaps=ai_result.get("gaps", []),
-                            recommendations=ai_result.get("recommendations", []),
-                        )
-                    )
-                except HTTPException:
-                    results.append(
-                        MatchResultResponse(
-                            job_id=request.job_id,
-                            job_title=job_title,
-                            candidate_id=cid,
-                            match_score=0,
-                            reasoning="Failed to process this candidate",
-                        )
-                    )
-                except Exception as exc:
-                    logger.error("bulk_match_item_failed", candidate_id=cid, error=str(exc))
-                    results.append(
-                        MatchResultResponse(
-                            job_id=request.job_id,
-                            job_title=job_title,
-                            candidate_id=cid,
-                            match_score=0,
-                            reasoning=f"Error: {str(exc)}",
-                        )
-                    )
+        async def process_candidate_with_own_session(cid: str) -> MatchResultResponse:
+            async with async_session_maker() as session:
+                return await _process_single_candidate_match(
+                    session=session,
+                    cid=cid,
+                    job_description=job_description,
+                    job_id=request.job_id,
+                    job_title=job_title
+                )
+        
+        tasks = [
+            process_candidate_with_own_session(cid)
+            for cid in request.candidate_ids
+        ]
+        
+        results = await asyncio.gather(*tasks, return_exceptions=False)
 
         return BulkMatchResponse(
             job_id=request.job_id,
             total=len(results),
-            results=results,
+            results=list(results),
         )
 
     except HTTPException:
@@ -550,6 +650,7 @@ async def match_bulk(request: BulkMatchRequest):
 
 @router.post("/job-to-candidates", response_model=JobToCandidatesResponse)
 async def match_job_to_candidates(request: JobToCandidatesRequest):
+    """Match a job to multiple candidates using parallel processing."""
     try:
         async with async_session_maker() as session:
             job = await session.get(Job, UUID(request.job_id))
@@ -576,57 +677,88 @@ async def match_job_to_candidates(request: JobToCandidatesRequest):
                     results=[],
                 )
 
-            results: List[MatchResultResponse] = []
+        async def process_resume_with_own_session(pr):
+            async with async_session_maker() as session:
+                return await _process_single_resume_match(
+                    pr=pr,
+                    job=job,
+                    job_id=request.job_id
+                )
 
-            for pr in parsed_resumes:
-                try:
-                    structured_cv = await _get_structured_cv_for_parsed_resume(pr)
+        tasks = [process_resume_with_own_session(pr) for pr in parsed_resumes]
+        all_results = await asyncio.gather(*tasks, return_exceptions=False)
+        
+        results = [r for r in all_results if r is not None]
 
-                    if not structured_cv or not _cv_has_good_data(structured_cv):
-                        continue
+        results.sort(key=lambda r: r.match_score, reverse=True)
 
-                    ai_result = await ai_client.rag_match(
-                        job_description=job.description,
-                        structured_cv=structured_cv,
-                    )
+        if request.min_score and request.min_score > 0:
+            results = [r for r in results if r.match_score >= request.min_score]
 
-                    match_score = ai_result.get("match_score", 0)
+        results = results[: (request.top_k or 10)]
 
-                    candidate_name = f"{pr.first_name or ''} {pr.last_name or ''}".strip()
-                    if not candidate_name:
-                        candidate_name = (structured_cv.get("full_name") or "").strip() or "Unknown"
+        return JobToCandidatesResponse(
+            job_id=request.job_id,
+            job_title=job.title,
+            total_candidates_evaluated=len(parsed_resumes),
+            total_matches=len(results),
+            results=results,
+        )
 
-                    results.append(
-                        MatchResultResponse(
-                            job_id=request.job_id,
-                            job_title=job.title,
-                            candidate_id=str(pr.id),
-                            candidate_name=candidate_name,
-                            match_score=match_score,
-                            reasoning=ai_result.get("reasoning", ""),
-                            strengths=ai_result.get("strengths", []),
-                            gaps=ai_result.get("gaps", []),
-                            recommendations=ai_result.get("recommendations", []),
-                        )
-                    )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "job_to_candidates_failed",
+            error=str(e),
+            job_id=request.job_id,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=f"Job-to-candidates matching failed: {str(e)}",
+        )
 
-                except Exception as exc:
-                    logger.error(
-                        "job_to_candidates_item_failed",
-                        parsed_resume_id=str(pr.id),
-                        error=str(exc),
-                    )
-                    candidate_name = f"{pr.first_name or ''} {pr.last_name or ''}".strip() or "Unknown"
-                    results.append(
-                        MatchResultResponse(
-                            job_id=request.job_id,
-                            job_title=job.title,
-                            candidate_id=str(pr.id),
-                            candidate_name=candidate_name,
-                            match_score=0,
-                            reasoning=f"Match processing failed: {str(exc)}",
-                        )
-                    )
+@router.post("/job-to-candidates", response_model=JobToCandidatesResponse)
+async def match_job_to_candidates(request: JobToCandidatesRequest):
+    """Match a job to multiple candidates using parallel processing."""
+    try:
+        async with async_session_maker() as session:
+            job = await session.get(Job, UUID(request.job_id))
+            if not job:
+                raise HTTPException(status_code=404, detail=f"Job {request.job_id} not found")
+            if not job.description:
+                raise HTTPException(status_code=422, detail="Job has no description")
+
+            if request.match_all_candidates:
+                parsed_resumes = await _get_all_parsed_resumes(
+                    session, limit=(request.top_k or 10) * 5
+                )
+            else:
+                parsed_resumes = await _find_parsed_resumes_for_job(
+                    session, job, limit=(request.top_k or 10) * 3
+                )
+
+            if not parsed_resumes:
+                return JobToCandidatesResponse(
+                    job_id=request.job_id,
+                    job_title=job.title,
+                    total_candidates_evaluated=0,
+                    total_matches=0,
+                    results=[],
+                )
+
+            tasks = [
+                _process_single_resume_match(
+                    pr=pr,
+                    job=job,
+                    job_id=request.job_id
+                )
+                for pr in parsed_resumes
+            ]
+            
+            all_results = await asyncio.gather(*tasks, return_exceptions=False)
+            
+            results = [r for r in all_results if r is not None]
 
             results.sort(key=lambda r: r.match_score, reverse=True)
 
@@ -659,6 +791,7 @@ async def match_job_to_candidates(request: JobToCandidatesRequest):
 
 @router.post("/candidate-to-jobs", response_model=CandidateToJobsResponse)
 async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
+    """Match a candidate to multiple jobs using parallel processing."""
     try:
         async with async_session_maker() as session:
             structured_cv = await _get_structured_cv_by_id(
@@ -696,48 +829,18 @@ async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
                     results=[],
                 )
 
-            results: List[MatchResultResponse] = []
-
-            for job in jobs:
-                try:
-                    ai_result = await ai_client.rag_match(
-                        job_description=job.description,
-                        structured_cv=structured_cv,
-                    )
-
-                    match_score = ai_result.get("match_score", 0)
-
-                    results.append(
-                        MatchResultResponse(
-                            job_id=str(job.id),
-                            job_title=job.title,
-                            candidate_id=request.candidate_id,
-                            candidate_name=candidate_name,
-                            match_score=match_score,
-                            reasoning=ai_result.get("reasoning", ""),
-                            strengths=ai_result.get("strengths", []),
-                            gaps=ai_result.get("gaps", []),
-                            recommendations=ai_result.get("recommendations", []),
-                        )
-                    )
-
-                except Exception as exc:
-                    logger.error(
-                        "candidate_to_jobs_item_failed",
-                        candidate_id=request.candidate_id,
-                        job_id=str(job.id),
-                        error=str(exc),
-                    )
-                    results.append(
-                        MatchResultResponse(
-                            job_id=str(job.id),
-                            job_title=job.title,
-                            candidate_id=request.candidate_id,
-                            candidate_name=candidate_name,
-                            match_score=0,
-                            reasoning=f"Match failed: {str(exc)}",
-                        )
-                    )
+            tasks = [
+                _process_single_job_match(
+                    job=job,
+                    structured_cv=structured_cv,
+                    candidate_id=request.candidate_id,
+                    candidate_name=candidate_name
+                )
+                for job in jobs
+            ]
+            
+            results = await asyncio.gather(*tasks, return_exceptions=False)
+            results = list(results)
 
             results.sort(key=lambda r: r.match_score, reverse=True)
 

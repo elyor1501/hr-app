@@ -1,21 +1,21 @@
-# src/api/v1/candidates.py
-
 import random
 from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from pydantic import BaseModel
 
 from src.core.config import settings
-from src.core.cache import cache, CacheKeyBuilder
+from src.core.cache import cache
 from src.db.session import get_db_session
+from src.db.models import Candidate
 from src.models.candidate import (
     CandidateCreate,
     CandidateResponse,
     CandidateUpdate,
 )
-from src.models.enums import CandidateStatus
 from src.repositories.candidate import CandidateRepository
 from src.services import upload_file
 from src.services.background_jobs import job_service
@@ -31,6 +31,16 @@ ALLOWED_CONTENT_TYPES = [
 
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> CandidateRepository:
     return CandidateRepository(session)
+
+
+class PaginatedCandidatesResponse(BaseModel):
+    items: List[CandidateResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    has_next: bool
+    has_previous: bool
 
 
 @router.post(
@@ -77,12 +87,10 @@ async def create_candidate(
     if skills:
         candidate_data["skills"] = [s.strip().lower() for s in skills.split(",") if s.strip()]
 
-    # Generate initial embedding
     candidate_data["embedding"] = [
         random.uniform(-1, 1) for _ in range(settings.vector_dimension)
     ]
 
-    # Upload resume to Supabase Storage
     resume_url = None
     if resume:
         if resume.content_type not in ALLOWED_CONTENT_TYPES:
@@ -109,19 +117,41 @@ async def create_candidate(
         except Exception as e:
             print(f"Failed to submit resume processing job: {e}")
 
-    # Invalidate cache
     await cache.invalidate_search()
 
     return candidate
 
 
-@router.get("/", response_model=List[CandidateResponse])
+@router.get("/", response_model=PaginatedCandidatesResponse)
 async def list_candidates(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
-    repo: CandidateRepository = Depends(get_repository),
+    page: int = Query(1, ge=1, description="Page number (starts from 1)"),
+    page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
+    session: AsyncSession = Depends(get_db_session),
 ):
-    return await repo.get_all(skip=skip, limit=limit)
+    count_result = await session.execute(select(func.count(Candidate.id)))
+    total = count_result.scalar()
+    
+    offset = (page - 1) * page_size
+    query = (
+        select(Candidate)
+        .order_by(Candidate.created_at.desc())
+        .offset(offset)
+        .limit(page_size)
+    )
+    result = await session.execute(query)
+    items = result.scalars().all()
+    
+    total_pages = (total + page_size - 1) // page_size
+    
+    return PaginatedCandidatesResponse(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+        has_next=page < total_pages,
+        has_previous=page > 1
+    )
 
 
 @router.get("/{id}", response_model=CandidateResponse)
@@ -137,7 +167,6 @@ async def get_candidate(
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
     
-    # Cache the result
     await cache.set_candidate(str(id), candidate.to_dict())
     
     return candidate
@@ -154,7 +183,6 @@ async def update_candidate(
 
     updated = await repo.update(id, **update_data.model_dump(exclude_unset=True))
     
-    # Invalidate cache
     await cache.invalidate_candidate(str(id))
     
     return updated
@@ -169,5 +197,4 @@ async def delete_candidate(
     if not deleted:
         raise HTTPException(status_code=404, detail="Candidate not found")
     
-    # Invalidate cache
     await cache.invalidate_candidate(str(id))

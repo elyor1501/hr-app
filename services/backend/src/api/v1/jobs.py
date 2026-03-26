@@ -1,8 +1,9 @@
 from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from pydantic import BaseModel
 from src.core.cache import cache
 from src.db.session import get_db_session
 from src.models.job import JobCreate, JobResponse, JobUpdate
@@ -16,6 +17,16 @@ def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepos
     return BaseRepository(Job, session)
 
 
+class PaginatedJobsResponse(BaseModel):
+    items: List[JobResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    has_next: bool
+    has_previous: bool
+
+
 @router.post("/", response_model=JobResponse, status_code=status.HTTP_201_CREATED, summary="Create a new job posting")
 async def create_job(job_in: JobCreate, repo: BaseRepository[Job] = Depends(get_repository)):
     job_data = job_in.to_db_dict()
@@ -25,20 +36,36 @@ async def create_job(job_in: JobCreate, repo: BaseRepository[Job] = Depends(get_
     return job
 
 
-@router.get("/", response_model=List[JobResponse])
+@router.get("/", response_model=PaginatedJobsResponse)
 async def list_jobs(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    page: int = Query(1, ge=1, description="Page number (starts from 1)"),
+    page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
     session: AsyncSession = Depends(get_db_session),
 ):
+    count_result = await session.execute(select(func.count(Job.id)))
+    total = count_result.scalar()
+    
+    offset = (page - 1) * page_size
     query = (
         select(Job)
         .order_by(Job.created_at.desc())
-        .offset(skip)
-        .limit(limit)
+        .offset(offset)
+        .limit(page_size)
     )
     result = await session.execute(query)
-    return result.scalars().all()
+    items = result.scalars().all()
+    
+    total_pages = (total + page_size - 1) // page_size
+    
+    return PaginatedJobsResponse(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+        has_next=page < total_pages,
+        has_previous=page > 1
+    )
 
 
 @router.get("/{id}", response_model=JobResponse)

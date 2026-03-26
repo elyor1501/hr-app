@@ -1,9 +1,9 @@
 services:
   redis:
     image: redis:7-alpine
-    container_name: redis  
+    container_name: redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -27,17 +27,13 @@ services:
     env_file:
       - ./services/backend/.env
     environment:
-      HR_APP_DATABASE_HOST: 52.62.122.103
-      HR_APP_DATABASE_PORT: "6543"
-      HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
-      HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
-      HR_APP_DATABASE_NAME: postgres
       HR_APP_ENVIRONMENT: development
-      HR_APP_REDIS_HOST: redis  
+      HR_APP_REDIS_HOST: redis
       HR_APP_REDIS_PORT: "6379"
+      HR_APP_REDIS_DB: "0"
       HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
-      HR_APP_VECTOR_DIMENSION: "3072"
-      HR_APP_CACHE_PREFIX: hr_app
+      HR_APP_VECTOR_DIMENSION: "768"
+      HR_APP_CACHE_PREFIX: "hr_backend:"
       PYTHONPATH: /app
     ports:
       - "8000:8000"
@@ -59,16 +55,12 @@ services:
     env_file:
       - ./services/backend/.env
     environment:
-      HR_APP_DATABASE_HOST: 52.62.122.103
-      HR_APP_DATABASE_PORT: "6543"
-      HR_APP_DATABASE_USER: postgres.ectxlkkilezsebodryhd
-      HR_APP_DATABASE_PASSWORD: Hr_app@vaspp.com
-      HR_APP_DATABASE_NAME: postgres
-      HR_APP_REDIS_HOST: redis  
+      HR_APP_REDIS_HOST: redis
       HR_APP_REDIS_PORT: "6379"
+      HR_APP_REDIS_DB: "0"
       HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
-      HR_APP_VECTOR_DIMENSION: "3072"
-      HR_APP_CACHE_PREFIX: hr_app
+      HR_APP_VECTOR_DIMENSION: "768"
+      HR_APP_CACHE_PREFIX: "hr_worker:"
       PYTHONPATH: /app
     volumes:
       - ./services/backend/src:/app/src
@@ -83,29 +75,24 @@ services:
       context: ./services/ai-ml
     container_name: ai-ml-service
     ports:
-      - "8001:8001"
+      - "127.0.0.1:8001:8001"
     env_file:
       - ./services/ai-ml/.env
     environment:
-      REDIS_HOST: ai-ml-redis
+      REDIS_HOST: redis
       REDIS_PORT: 6379
-      DATABASE_URL: "postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@52.62.122.103:6543/postgres"
+      REDIS_DB: 1
+      REDIS_PREFIX: "aiml:"
+      DATABASE_URL: "postgresql://postgres.ectxlkkilezsebodryhd:Hr_app@vaspp.com@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
       PYTHONPATH: /app/src
     depends_on:
-      - ai-ml-redis
+      redis:
+        condition: service_healthy
     volumes:
       - ./services/ai-ml/src:/app/src
     working_dir: /app/src
     command: python3 -m uvicorn main:app --host 0.0.0.0 --port 8001
     restart: always
-    networks:
-      - hr-network
-
-  ai-ml-redis:
-    image: redis:7
-    container_name: ai-ml-redis
-    ports:
-      - "6380:6379"
     networks:
       - hr-network
 
@@ -115,9 +102,11 @@ services:
       dockerfile: Dockerfile
     container_name: hr-frontend
     ports:
-      - "3000:3000"
+      - "80:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:8000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:-}
     depends_on:
       - backend
     restart: always

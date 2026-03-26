@@ -5,7 +5,7 @@ from uuid import UUID
 import structlog
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import text, select, or_, cast, Text, func
+from sqlalchemy import select, or_, func, text, cast, String
 
 from src.db.session import async_session_maker
 from src.db.models import ParsedResume
@@ -20,6 +20,7 @@ class SearchRequest(BaseModel):
     query_text: str = Field(..., min_length=1)
     top_k: int = Field(default=10, ge=1, le=50)
     min_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    status: Optional[str] = Field(default=None, pattern="^(active|inactive)$")
 
 
 class CandidateResult(BaseModel):
@@ -35,6 +36,7 @@ class CandidateResult(BaseModel):
     location: Optional[str] = None
     years_of_experience: Optional[int] = None
     summary: Optional[str] = None
+    candidate_status: str = "active"
     score: float
 
 
@@ -118,95 +120,105 @@ def _score_text_match(pr, query_words):
 async def search_candidates(request: SearchRequest):
     try:
         results_map = {}
-        query_words = [w.strip() for w in request.query_text.split() if len(w.strip()) >= 2]
+        query_words = [w.strip().lower() for w in request.query_text.split() if len(w.strip()) >= 2]
         if not query_words:
-            query_words = [request.query_text.strip()]
+            query_words = [request.query_text.strip().lower()]
 
         async with async_session_maker() as session:
+            ts_query = " | ".join(query_words)
+            
+            try:
+                fts_query = select(ParsedResume).where(
+                    text("search_vector @@ to_tsquery('english', :query)")
+                ).params(query=ts_query)
+                
+                if request.status:
+                    fts_query = fts_query.where(ParsedResume.candidate_status == request.status)
+                
+                fts_query = fts_query.limit(request.top_k * 3)
+                fts_result = await session.execute(fts_query)
+                parsed_resumes = list(fts_result.scalars().all())
+            except Exception:
+                parsed_resumes = []
 
-            conditions = []
-            for word in query_words:
-                pattern = f"%{word}%"
-                conditions.append(
-                    func.coalesce(
-                        func.array_to_string(ParsedResume.skills, ',', ''), ''
-                    ).ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(ParsedResume.current_title, '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(ParsedResume.current_company, '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(ParsedResume.summary, '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(ParsedResume.first_name, '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(ParsedResume.last_name, '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(ParsedResume.location, '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(cast(ParsedResume.json_data, Text), '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(cast(ParsedResume.experience, Text), '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(cast(ParsedResume.education, Text), '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(cast(ParsedResume.certifications, Text), '').ilike(pattern)
-                )
-                conditions.append(
-                    func.coalesce(cast(ParsedResume.projects, Text), '').ilike(pattern)
-                )
+            if not parsed_resumes:
+                search_conditions = []
+                for word in query_words:
+                    word_lower = word.lower()
+                    search_conditions.append(
+                        func.lower(func.coalesce(ParsedResume.current_title, '')).contains(word_lower)
+                    )
+                    search_conditions.append(
+                        func.lower(func.coalesce(ParsedResume.current_company, '')).contains(word_lower)
+                    )
+                    search_conditions.append(
+                        func.lower(func.coalesce(ParsedResume.summary, '')).contains(word_lower)
+                    )
+                    search_conditions.append(
+                        func.lower(func.coalesce(ParsedResume.first_name, '')).contains(word_lower)
+                    )
+                    search_conditions.append(
+                        func.lower(func.coalesce(ParsedResume.last_name, '')).contains(word_lower)
+                    )
+                    search_conditions.append(
+                        func.lower(func.coalesce(ParsedResume.location, '')).contains(word_lower)
+                    )
+                    search_conditions.append(
+                        func.lower(
+                            func.coalesce(func.array_to_string(ParsedResume.skills, ' '), '')
+                        ).contains(word_lower)
+                    )
 
-            if conditions:
-                text_query = (
-                    select(ParsedResume)
-                    .where(or_(*conditions))
-                    .limit(request.top_k * 3)
-                )
-                text_result = await session.execute(text_query)
-                parsed_resumes = text_result.scalars().all()
+                if search_conditions:
+                    if request.status:
+                        fallback_query = (
+                            select(ParsedResume)
+                            .where(ParsedResume.candidate_status == request.status)
+                            .where(or_(*search_conditions))
+                            .limit(request.top_k * 3)
+                        )
+                    else:
+                        fallback_query = (
+                            select(ParsedResume)
+                            .where(or_(*search_conditions))
+                            .limit(request.top_k * 3)
+                        )
+                    fallback_result = await session.execute(fallback_query)
+                    parsed_resumes = list(fallback_result.scalars().all())
 
-                for pr in parsed_resumes:
-                    rid = str(pr.id)
-                    t_score = _score_text_match(pr, query_words)
+            for pr in parsed_resumes:
+                rid = str(pr.id)
+                t_score = _score_text_match(pr, query_words)
 
-                    jd = pr.json_data or {}
-                    if not isinstance(jd, dict):
-                        jd = {}
+                jd = pr.json_data or {}
+                if not isinstance(jd, dict):
+                    jd = {}
 
-                    skills = _parse_skills(pr.skills) or _parse_skills(jd.get("skills"))
+                skills = _parse_skills(pr.skills) or _parse_skills(jd.get("skills"))
 
-                    experience = pr.experience or jd.get("experience", [])
-                    yoe = pr.years_of_experience
-                    if yoe is None:
-                        yoe = _calc_years(experience if isinstance(experience, list) else [])
+                experience = pr.experience or jd.get("experience", [])
+                yoe = pr.years_of_experience
+                if yoe is None:
+                    yoe = _calc_years(experience if isinstance(experience, list) else [])
 
-                    resume_id = str(pr.resume_id) if pr.resume_id else None
+                resume_id = str(pr.resume_id) if pr.resume_id else None
 
-                    results_map[rid] = {
-                        "id": rid,
-                        "resume_id": resume_id,
-                        "first_name": pr.first_name,
-                        "last_name": pr.last_name,
-                        "email": pr.email or jd.get("email"),
-                        "phone": pr.phone or jd.get("phone"),
-                        "skills": skills,
-                        "current_title": pr.current_title or jd.get("current_title"),
-                        "current_company": pr.current_company or jd.get("current_company"),
-                        "location": pr.location or jd.get("location"),
-                        "years_of_experience": yoe,
-                        "summary": pr.summary or jd.get("summary"),
-                        "score": t_score,
-                    }
+                results_map[rid] = {
+                    "id": rid,
+                    "resume_id": resume_id,
+                    "first_name": pr.first_name,
+                    "last_name": pr.last_name,
+                    "email": pr.email or jd.get("email"),
+                    "phone": pr.phone or jd.get("phone"),
+                    "skills": skills,
+                    "current_title": pr.current_title or jd.get("current_title"),
+                    "current_company": pr.current_company or jd.get("current_company"),
+                    "location": pr.location or jd.get("location"),
+                    "years_of_experience": yoe,
+                    "summary": pr.summary or jd.get("summary"),
+                    "candidate_status": pr.candidate_status,
+                    "score": t_score,
+                }
 
         results = []
         for rid, data in results_map.items():
@@ -227,6 +239,7 @@ async def search_candidates(request: SearchRequest):
                     location=data["location"],
                     years_of_experience=data["years_of_experience"],
                     summary=data["summary"],
+                    candidate_status=data["candidate_status"],
                     score=round(data["score"], 4),
                 )
             )

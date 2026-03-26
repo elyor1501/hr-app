@@ -31,3 +31,4 @@ class ParsedResumeResponse(BaseSchema):
     confidence_score: Optional[float] = None
     extraction_latency: Optional[float] = None
     json_data: Optional[Dict[str, Any]] = None
+    candidate_status: str = "active"

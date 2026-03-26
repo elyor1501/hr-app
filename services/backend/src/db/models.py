@@ -98,5 +98,6 @@ class ParsedResume(BaseModel):
     confidence_score: Mapped[Optional[float]] = mapped_column(Numeric(5, 4))
     extraction_latency: Mapped[Optional[float]] = mapped_column(Numeric(10, 4))
     json_data: Mapped[Optional[dict]] = mapped_column(JSONB)
+    candidate_status: Mapped[str] = mapped_column(String(20), nullable=False, default="active", server_default="active", index=True)
     
     resume: Mapped["Resume"] = relationship("Resume", back_populates="parsed_data")
