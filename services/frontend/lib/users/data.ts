@@ -4,7 +4,6 @@ export async function getLoggedInUser() {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
-    console.log("No access token found");
     return null;
   }
 

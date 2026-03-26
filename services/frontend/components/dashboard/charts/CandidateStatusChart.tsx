@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/chart"
 
 type Employee = {
-  status?: string
+  candidate_status?: string
 }
 
 type EmployeeStatusChartProps = {
@@ -27,7 +27,7 @@ type EmployeeStatusChartProps = {
 export function EmployeeStatusChart({ employees }: EmployeeStatusChartProps) {
 
   const activeCount = employees.filter(
-    emp => emp.status?.toLowerCase() === "active"
+    emp => emp.candidate_status?.toLowerCase() === "active"
   ).length
 
   const inactiveCount = employees.length - activeCount

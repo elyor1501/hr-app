@@ -1,5 +1,6 @@
 import { getCandidateById, CandidateList } from "@/lib/candidates/data";
 import CompareView from "@/components/candidate/CompareView";
+import RouteProtection from "@/components/routeProtection";
 
 export const dynamic = "force-dynamic";
 
@@ -26,5 +27,10 @@ export default async function ComparePage({ searchParams }: PageProps) {
     .filter((r): r is PromiseFulfilledResult<CandidateList> => r.status === "fulfilled")
     .map((r) => r.value);
 
-  return <CompareView candidates={candidates} />;
+ return (
+  <div>
+    <RouteProtection/>
+    <CompareView candidates={candidates} />
+  </div>
+);
 }

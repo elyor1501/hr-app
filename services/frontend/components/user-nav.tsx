@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { LogOut} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Avatar,AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 type UserNavProps = {
   user: {
@@ -25,9 +25,23 @@ type UserNavProps = {
 };
 
 export function UserNav({ user }: UserNavProps) {
+  const router = useRouter();
+
   const email = user?.email ?? "";
-  const name = user?.full_name || user?.user_metadata?.full_name || email.split("@")[0] || "User";
+  const name =
+    user?.full_name ||
+    user?.user_metadata?.full_name ||
+    email.split("@")[0] ||
+    "User";
+
   const initials = name.substring(0, 2).toUpperCase();
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <DropdownMenu>
@@ -58,11 +72,12 @@ export function UserNav({ user }: UserNavProps) {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link href="/login" className="flex items-center text-red-600">
-            <LogOut className="w-4 h-4 mr-3" />
-            Sign out
-          </Link>
+        <DropdownMenuItem
+          onClick={handleLogout}
+          className="flex items-center text-red-600 cursor-pointer"
+        >
+          <LogOut className="w-4 h-4 mr-3" />
+          Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

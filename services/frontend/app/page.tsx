@@ -6,7 +6,7 @@ export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50">
       <div className="flex justify-between p-6">
         <h1 className="text-2xl font-bold ">HR App</h1>
         <button

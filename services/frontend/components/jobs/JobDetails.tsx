@@ -8,45 +8,39 @@ import { getCandidates } from "@/lib/candidates/data";
 
 type Props = {
   id: string;
+  jobData: any;
+  candidateData: any[];
 };
 
-export default function JobDetails({ id }: Props) {
-  const [job, setJob] = useState<any>(null);
-  const [candidates, setCandidates] = useState<any[]>([]);
+export default function JobDetails({ id, jobData, candidateData }: Props) {
+  const [job, setJob] = useState<any>(jobData);
+  const [candidates, setCandidates] = useState<any[]>(candidateData);
   const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [matching, setMatching] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const router = useRouter();
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
+  async function runCandidateMatching() {
+    if (!candidates || candidates.length === 0) return;
+    
+    setMatching(true);
+    try {
+      const candidateIds = candidates.map((c: any) => c.resume_id);
+      const matchData = await matchCandidates(id, candidateIds);
 
-      const jobData = await getJobById(id);
-      setJob(jobData);
+      const topMatches = matchData.results
+        .sort((a: any, b: any) => b.match_score - a.match_score)
+        .slice(0, 10);
 
-      const candidateData = await getCandidates();
-      setCandidates(candidateData);
-
-      if (candidateData?.length > 0) {
-        const candidateIds = candidateData.map((c: any) => c.resume_id);
-
-        const matchData = await matchCandidates(id, candidateIds);
-
-        const topMatches = matchData.results
-          .sort((a: any, b: any) => b.match_score - a.match_score)
-          .slice(0, 10);
-
-        setMatches(topMatches);
-      }
-
-      setLoading(false);
+      setMatches(topMatches);
+    } catch (error) {
+      console.error("Matching error:", error);
     }
-
-    if (id) fetchData();
-  }, [id]);
+    setMatching(false);
+  }
 
   async function handleSubmit(formData: FormData) {
     setSaving(true);
@@ -339,14 +333,27 @@ export default function JobDetails({ id }: Props) {
       )}
 
       <div className="mt-4">
-        <h2 className="text-lg font-semibold mb-4">
-          Matching Candidates ({matches.length})
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">
+            Matching Candidates ({matches.length})
+          </h2>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              runCandidateMatching();
+            }}
+            disabled={matching}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50"
+          >
+            {matching ? "Matching..." : "Find Matching Candidates"}
+          </button>
+        </div>
 
-        {loading ? (
-          <p>Finding matches...</p>
+        {matching ? (
+          <p className="text-gray-500">Finding matching candidates...</p>
         ) : matches.length === 0 ? (
-          <p className="text-gray-500">No matching candidates found.</p>
+          <p className="text-gray-500">No matching candidates found. Click the button above to run the matching process.</p>
         ) : (
           <div className="grid gap-4">
             {matches.map((candidate) => (

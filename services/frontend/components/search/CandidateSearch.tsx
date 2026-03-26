@@ -76,8 +76,6 @@ export default function CandidateSearch() {
 
         const data = await response.json();
 
-        console.log('can',data)
-
         const mappedResults = (data.candidates || []).map((c: any) => ({
           id: c.id,
           resume_id :c.resume_id,
@@ -102,7 +100,6 @@ export default function CandidateSearch() {
                       b.similarity_score - a.similarity_score,
                   ),
                 );
-        console.log("match",mappedResults)
       } catch (err) {
         console.error("Semantic Search Error:", err);
         setResults([]);

@@ -27,9 +27,7 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     accessorKey: "first_name",
     header: "Name",
     cell: ({ row }) => (
-      <span className="font-medium">
-        {row.getValue("first_name") || "NA"}
-      </span>
+      <span className="font-medium">{row.getValue("first_name") || "NA"}</span>
     ),
   },
   {
@@ -40,9 +38,11 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   {
     accessorKey: "current_title",
     header: "Role",
-    cell: ({ row }) => <span className="whitespace-normal break-words">
-      {row.getValue("current_title") || "NA"}
-    </span>,
+    cell: ({ row }) => (
+      <span className="whitespace-normal break-words">
+        {row.getValue("current_title") || "NA"}
+      </span>
+    ),
   },
   {
     accessorKey: "years_of_experience",
@@ -55,6 +55,13 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     size: 80,
   },
   {
+    accessorKey: "created_at",
+    header: () => <div className="text-center w-full">Created At</div>,
+    cell: ({ row }) => {
+      row.getValue("created_at");
+    },
+  },
+  {
     header: "Actions",
     cell: ({ row }) => {
       const router = useRouter();
@@ -64,7 +71,7 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
           <Button
             variant="ghost"
             size="icon"
-           onClick={() => router.push(`/candidates/${candidate.resume_id}`)}
+            onClick={() => router.push(`/candidates/${candidate.resume_id}`)}
             className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
           >
             <Eye className="w-4 h-4" />

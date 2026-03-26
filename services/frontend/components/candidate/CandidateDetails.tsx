@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getCandidateById, matchJobs } from "@/lib/candidates/data";
 import { updateCandidate } from "@/lib/candidates/action";
 import { useRouter } from "next/navigation";
@@ -8,35 +8,19 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 type Props = {
   id: string;
+  empData: any;
 };
 
-export default function CandidateDetails({ id }: Props) {
-  const [candidate, setCandidate] = useState<any>(null); 
+export default function CandidateDetails({ id, empData }: Props) {
+  const [candidate, setCandidate] = useState<any>(
+    empData?.status === "processing" ? null : empData,
+  );
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [matching, setMatching] = useState(false);
   const [matches, setMatches] = useState<any[]>([]);
 
   const router = useRouter();
-
-  useEffect(() => {
-    async function fetchCandidate() {
-      setLoading(true);
-
-      const data = await getCandidateById(id);
-
-      if (data?.status === "processing") {
-        setCandidate(null);
-      } else {
-        setCandidate(data);
-        await runJobMatching(data); 
-      }
-
-      setLoading(false);
-    }
-
-    if (id) fetchCandidate();
-  }, [id]);
 
   async function runJobMatching(candidateData: any) {
     setMatching(true);
@@ -78,6 +62,18 @@ export default function CandidateDetails({ id }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold">Employee Details</h2>
+        {!isEditing && (
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+          >
+            Edit
+          </button>
+        )}
+      </div>
       <Tabs defaultValue="basic" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="basic">Basic</TabsTrigger>
@@ -91,32 +87,30 @@ export default function CandidateDetails({ id }: Props) {
           action={handleSubmit}
           className="mt-6"
         >
-          <input type="hidden" name="resume_id" value={candidate.resume_id} />
+          <input type="hidden" name="id" value={candidate.id} />
 
           <TabsContent value="basic" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  First Name
-                </label>
+                <label className="block text-sm font-medium mb-1">Name</label>
                 <input
-                  name="first_name"
-                  defaultValue={candidate.first_name}
-                  disabled={!isEditing}
+                  name="full_name"
+                  defaultValue={`${candidate.first_name} ${candidate.last_name}`}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
-
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Last Name
-                </label>
-                <input
-                  name="last_name"
-                  defaultValue={candidate.last_name}
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <select
+                  name="candidate_status"
+                  defaultValue={candidate.candidate_status ?? "active"}
                   disabled={!isEditing}
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
-                />
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
               </div>
             </div>
 
@@ -125,8 +119,8 @@ export default function CandidateDetails({ id }: Props) {
                 <label className="block text-sm font-medium mb-1">Email</label>
                 <input
                   name="email"
-                  defaultValue={candidate.email ?? ""}
-                  disabled={!isEditing}
+                  defaultValue={candidate.email ?? "NA"}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -135,8 +129,8 @@ export default function CandidateDetails({ id }: Props) {
                 <label className="block text-sm font-medium mb-1">Phone</label>
                 <input
                   name="phone"
-                  defaultValue={candidate.phone ?? ""}
-                  disabled={!isEditing}
+                  defaultValue={candidate.phone ?? "NA"}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -150,7 +144,7 @@ export default function CandidateDetails({ id }: Props) {
                 <input
                   name="location"
                   defaultValue={candidate.location ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -161,7 +155,7 @@ export default function CandidateDetails({ id }: Props) {
                 <input
                   name="github"
                   defaultValue={candidate.github ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -175,7 +169,7 @@ export default function CandidateDetails({ id }: Props) {
                 <input
                   name="linkedin_url"
                   defaultValue={candidate.linkedin_url ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -186,7 +180,7 @@ export default function CandidateDetails({ id }: Props) {
                 <input
                   name="portfolio"
                   defaultValue={candidate.portfolio ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -198,20 +192,58 @@ export default function CandidateDetails({ id }: Props) {
                 <textarea
                   name="skills"
                   defaultValue={(candidate.skills || []).join(", ")}
-                  disabled={!isEditing}
+                  disabled
                   rows={10}
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
             </div>
 
-            <div>
-              <h2 className="text-lg font-semibold mb-4">
-                Matching Jobs ({matches.length})
-              </h2>
+            {isEditing && (
+              <div className="flex justify-end mt-8 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2 border rounded-lg text-sm"
+                >
+                  Cancel
+                </button>
 
-              {matches.length === 0 ? (
-                <p className="text-gray-500">No matching jobs found.</p>
+                <button
+                  form="candidate-form"
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white"
+                >
+                  {loading ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            )}
+
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">
+                  Matching Jobs ({matches.length})
+                </h2>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    runJobMatching(candidate);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50"
+                >
+                  {matching ? "Matching..." : "Find Matching Jobs"}
+                </button>
+              </div>
+
+              {matching ? (
+                <p className="text-gray-500">Finding matching jobs...</p>
+              ) : matches.length === 0 ? (
+                <p className="text-gray-500">
+                  No matching jobs found. Click the button above to run the
+                  matching process.
+                </p>
               ) : (
                 <div className="grid gap-4">
                   {matches.map((job) => (
@@ -253,7 +285,7 @@ export default function CandidateDetails({ id }: Props) {
               )}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="education" className="space-y-6">
             {(candidate.education || []).map((edu: any, index: number) => (
               <div
@@ -266,7 +298,11 @@ export default function CandidateDetails({ id }: Props) {
 
                   {(edu.start_date || edu.end_date) && (
                     <span>
-                      {edu.start_date ?? "NA"} - {edu.end_date ?? "NA"}
+                      {edu.start_date && edu.end_date
+                        ? `${edu.start_date} - ${edu.end_date}`
+                        : edu.start_date
+                          ? edu.start_date
+                          : edu.end_date}
                     </span>
                   )}
                 </div>
@@ -310,27 +346,6 @@ export default function CandidateDetails({ id }: Props) {
           </TabsContent>
         </form>
       </Tabs>
-
-      {isEditing && (
-        <div className="flex justify-end mt-8 gap-3">
-          <button
-            type="button"
-            onClick={() => setIsEditing(false)}
-            className="px-4 py-2 border rounded-lg text-sm"
-          >
-            Cancel
-          </button>
-
-          <button
-            form="candidate-form"
-            type="submit"
-            disabled={loading}
-            className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white"
-          >
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

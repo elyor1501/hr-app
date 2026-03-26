@@ -13,7 +13,9 @@ export const columns_job_list: ColumnDef<JobList>[] = [
     header: "Job Title",
     size: 100,
     cell: ({ row }) => (
-      <span className="font-medium whitespace-normal break-words">{row.getValue("title") || "NA"}</span>
+      <span className="font-medium whitespace-normal break-words">
+        {row.getValue("title") || "NA"}
+      </span>
     ),
   },
   {
@@ -50,6 +52,13 @@ export const columns_job_list: ColumnDef<JobList>[] = [
       </div>
     ),
     size: 120,
+  },
+  {
+    accessorKey: "created_at",
+    header: () => <div className="text-center w-full">Created At</div>,
+    cell: ({ row }) => {
+      row.getValue("created_at");
+    },
   },
   {
     header: "Actions",

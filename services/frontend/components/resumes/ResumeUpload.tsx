@@ -150,8 +150,6 @@ export default function ResumeUpload({
         formData.append("files", upload.file);
       }
 
-      console.log(`Submitting ${uploads.length} files to backend...`);
-
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/bulk`,
         {
@@ -170,7 +168,6 @@ export default function ResumeUpload({
       }
 
       const result = await res.json();
-      console.log("Upload Success:", result);
 
       if (Array.isArray(result)) {
         setUploadStatus(`${result.length} files uploaded! Processing started.`);
