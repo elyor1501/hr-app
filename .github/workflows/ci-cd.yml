@@ -61,9 +61,9 @@ jobs:
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Cleaning up disk space ==='
             
-            # Stop all containers first
-            docker stop hr-backend hr-ai-ml-service hr-frontend hr-worker redis 2>/dev/null || true
-            docker rm hr-backend hr-ai-ml-service hr-frontend hr-worker redis 2>/dev/null || true
+            # Stop all containers
+            docker stop hr-proxy hr-frontend hr-backend ai-ml-service hr-worker redis 2>/dev/null || true
+            docker rm hr-proxy hr-frontend hr-backend ai-ml-service hr-worker redis 2>/dev/null || true
             
             # Remove unused Docker data
             docker system prune -a -f 2>/dev/null || true
@@ -86,8 +86,15 @@ jobs:
             echo '=== Cleanup complete ==='
           "
           
-          # Step 2: Deploy containers with host network mode
+          # Step 2: Deploy containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
+            echo '=== Creating network ==='
+            docker network create hr-network 2>/dev/null || true
+            
+            echo '=== Creating volumes ==='
+            docker volume create redis_data 2>/dev/null || true
+            docker volume create upload_data 2>/dev/null || true
+            
             echo '=== Pulling latest images ==='
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
@@ -97,17 +104,17 @@ jobs:
             echo '=== Starting Redis ==='
             docker run -d \
               --name redis \
-              --network host \
+              --network hr-network \
               --restart unless-stopped \
               -v redis_data:/data \
               redis:7-alpine
             
             echo '=== Starting AI-ML Service ==='
             docker run -d \
-              --name hr-ai-ml-service \
-              --network host \
+              --name ai-ml-service \
+              --network hr-network \
               --restart unless-stopped \
-              -e REDIS_HOST=localhost \
+              -e REDIS_HOST=redis \
               -e REDIS_PORT=6379 \
               -e REDIS_DB=1 \
               -e REDIS_PREFIX=aiml \
@@ -119,7 +126,7 @@ jobs:
             echo '=== Starting Backend ==='
             docker run -d \
               --name hr-backend \
-              --network host \
+              --network hr-network \
               --restart unless-stopped \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
@@ -127,10 +134,10 @@ jobs:
               -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
               -e HR_APP_ENVIRONMENT=production \
-              -e HR_APP_REDIS_HOST=localhost \
+              -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
-              -e HR_APP_AI_SERVICE_URL=http://localhost:8001 \
+              -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
               -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_backend \
               -e PYTHONPATH=/app \
@@ -140,7 +147,7 @@ jobs:
             sleep 10
             
             for i in {1..30}; do
-              if curl -f http://localhost:8000/health 2>/dev/null; then
+              if docker exec hr-backend curl -f http://localhost:8000/health 2>/dev/null; then
                 echo '✅ Backend is healthy'
                 break
               fi
@@ -151,17 +158,17 @@ jobs:
             echo '=== Starting Worker ==='
             docker run -d \
               --name hr-worker \
-              --network host \
+              --network hr-network \
               --restart unless-stopped \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
               -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
-              -e HR_APP_REDIS_HOST=localhost \
+              -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
-              -e HR_APP_AI_SERVICE_URL=http://localhost:8001 \
+              -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
               -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_worker \
               -e PYTHONPATH=/app \
@@ -171,109 +178,96 @@ jobs:
             echo '=== Starting Frontend ==='
             docker run -d \
               --name hr-frontend \
-              --network host \
+              --network hr-network \
               --restart unless-stopped \
-              -e NEXT_PUBLIC_API_URL=\"http://${{ secrets.DEPLOY_HOST }}:8000\" \
+              -e NEXT_PUBLIC_API_URL=\"http://${{ secrets.DEPLOY_HOST }}\" \
               -e NEXT_PUBLIC_SUPABASE_URL=\"${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}\" \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=\"${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}\" \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
+            echo '=== Starting Proxy Container ==='
+            docker run -d \
+              --name hr-proxy \
+              --network hr-network \
+              --restart unless-stopped \
+              -p 80:80 \
+              -p 8000:8000 \
+              alpine/socat \
+              sh -c \"socat TCP-LISTEN:80,fork,reuseaddr TCP:hr-frontend:3000 & socat TCP-LISTEN:8000,fork,reuseaddr TCP:hr-backend:8000 & wait\"
+            
             echo '=== Waiting for all services ==='
-            sleep 10
+            sleep 15
             
             echo ''
             echo '=== Running Containers ==='
-            docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+            docker ps --format 'table {{.Names}}\t{{.Status}}'
             echo ''
             
             echo '=== Health Check Results ==='
             
-            # Check backend
-            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
-              echo '✅ Backend: OK'
-            else
-              echo '❌ Backend: FAILED'
-            fi
+            # Test proxy routing
+            echo 'Testing proxy routes:'
             
-            # Check AI-ML
-            if curl -f http://localhost:8001/health > /dev/null 2>&1; then
-              echo '✅ AI-ML: OK'
-            else
-              echo '⚠️ AI-ML: No health endpoint'
-            fi
-            
-            # Check frontend
-            if curl -f http://localhost:3000 > /dev/null 2>&1; then
-              echo '✅ Frontend: OK (Internal)'
-            else
-              echo '❌ Frontend: FAILED'
-            fi
-            
-            # Check frontend via port 80 (should be accessible)
+            # Test frontend via proxy
             if curl -f http://localhost:80 > /dev/null 2>&1; then
-              echo '✅ Frontend: OK (Port 80)'
+              echo '✅ Frontend: Accessible via proxy (port 80)'
             else
-              echo '⚠️ Frontend: Not on port 80'
+              echo '❌ Frontend: Not accessible'
             fi
             
+            # Test backend via proxy
+            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+              echo '✅ Backend: Accessible via proxy (port 8000)'
+            else
+              echo '❌ Backend: Not accessible via proxy'
+            fi
+            
+            # Test backend directly (should not be accessible from outside)
             echo ''
-            echo '=== Port Accessibility Verification ==='
+            echo '=== Port Security Verification ==='
             
-            # Check if ports are accessible externally
-            echo 'Checking external accessibility:'
-            
-            # Port 80 (Frontend) - Should be accessible
-            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
-              echo '✅ Port 80 (Frontend): Publicly accessible'
-            else
-              echo '❌ Port 80 (Frontend): Not accessible'
-            fi
-            
-            # Port 8000 (Backend) - Should be accessible (host network mode)
+            # Check if backend is accessible externally via proxy port
             if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
-              echo '✅ Port 8000 (Backend): Publicly accessible'
+              echo '⚠️ Port 8000 (Backend): Publicly accessible via proxy'
             else
               echo '❌ Port 8000 (Backend): Not accessible'
             fi
             
-            # Port 8001 (AI-ML) - Should be accessible (host network mode)
+            # Check if AI-ML is exposed (should not be)
             if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8001/health > /dev/null 2>&1; then
-              echo '⚠️ Port 8001 (AI-ML): Publicly accessible'
+              echo '❌ AI-ML: Exposed externally!'
             else
-              echo '✅ Port 8001 (AI-ML): Not accessible'
+              echo '✅ AI-ML: Not accessible (Secure)'
             fi
             
-            # Port 6379 (Redis) - Should NOT be accessible
+            # Check if Redis is exposed (should not be)
             if nc -zv ${{ secrets.DEPLOY_HOST }} 6379 2>&1 | grep -q succeeded; then
-              echo '⚠️ Port 6379 (Redis): Publicly accessible'
+              echo '❌ Redis: Exposed externally!'
             else
-              echo '✅ Port 6379 (Redis): Not accessible'
+              echo '✅ Redis: Not accessible (Secure)'
+            fi
+            
+            # Check frontend
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: Public (Port 80)'
+            else
+              echo '❌ Frontend: Not accessible'
             fi
             
             echo ''
-            echo '=== Container Logs (Last 5 lines) ==='
-            echo '--- Backend ---'
-            docker logs hr-backend --tail 5 2>/dev/null || echo 'No logs'
-            echo ''
-            echo '--- Frontend ---'
-            docker logs hr-frontend --tail 5 2>/dev/null || echo 'No logs'
-            echo ''
-            echo '--- AI-ML ---'
-            docker logs hr-ai-ml-service --tail 5 2>/dev/null || echo 'No logs'
-            echo ''
-            
             echo '=== Deployment Complete ==='
             echo 'Frontend: http://${{ secrets.DEPLOY_HOST }}'
-            echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
-            echo 'AI-ML API: http://${{ secrets.DEPLOY_HOST }}:8001'
+            echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000 (via proxy)'
+            echo 'AI-ML API: Not exposed (internal only)'
             echo ''
-            echo '⚠️  IMPORTANT SECURITY NOTE:'
-            echo 'With host network mode, all ports are exposed directly to the host.'
-            echo 'Ports 8000 and 8001 are publicly accessible!'
+            echo 'Architecture:'
+            echo '- Proxy container handles routing on ports 80 and 8000'
+            echo '- Frontend runs internally on port 3000'
+            echo '- Backend runs internally on port 8000'
+            echo '- All internal services communicate via Docker network'
+            echo '- Only ports 80 and 8000 are exposed to the internet'
             echo ''
-            echo 'If you want to restrict access, you have two options:'
-            echo '1. Use a firewall (UFW) to block external access to specific ports'
-            echo '2. Switch back to bridge network with Nginx reverse proxy'
-            echo ''
-            echo 'Current exposed ports: 80, 3000, 6379, 8000, 8001'
+            echo '✅ Your frontend code still uses NEXT_PUBLIC_API_URL=http://${{ secrets.DEPLOY_HOST }}'
+            echo '✅ Proxy forwards requests to the correct internal containers'
+            echo '✅ No frontend code changes required!'
           "

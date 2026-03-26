@@ -2,7 +2,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    network_mode: host
+    ports:
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -10,13 +11,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - hr-network
  
   backend:
     build:
       context: ./services/backend
       dockerfile: Dockerfile
     container_name: hr-backend
-    network_mode: host
     depends_on:
       redis:
         condition: service_healthy
@@ -26,34 +28,37 @@ services:
       - ./services/backend/.env
     environment:
       HR_APP_ENVIRONMENT: development
-      HR_APP_REDIS_HOST: localhost
+      HR_APP_REDIS_HOST: redis
       HR_APP_REDIS_PORT: "6379"
       HR_APP_REDIS_DB: "0"
-      HR_APP_AI_SERVICE_URL: http://localhost:8001
+      HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
       HR_APP_VECTOR_DIMENSION: "768"
       HR_APP_CACHE_PREFIX: "hr_backend:"
       PYTHONPATH: /app
+    expose:
+      - "8000"
     volumes:
       - ./services/backend/src:/app/src
       - upload_data:/app/uploads
     restart: always
+    networks:
+      - hr-network
  
   worker:
     build:
       context: ./services/backend
       dockerfile: Dockerfile
     container_name: hr-worker
-    network_mode: host
     depends_on:
       redis:
         condition: service_healthy
     env_file:
       - ./services/backend/.env
     environment:
-      HR_APP_REDIS_HOST: localhost
+      HR_APP_REDIS_HOST: redis
       HR_APP_REDIS_PORT: "6379"
       HR_APP_REDIS_DB: "0"
-      HR_APP_AI_SERVICE_URL: http://localhost:8001
+      HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
       HR_APP_VECTOR_DIMENSION: "768"
       HR_APP_CACHE_PREFIX: "hr_worker:"
       PYTHONPATH: /app
@@ -62,16 +67,19 @@ services:
       - upload_data:/app/uploads
     command: python3 -m arq src.worker.WorkerSettings
     restart: always
+    networks:
+      - hr-network
  
   ai-ml-service:
     build:
       context: ./services/ai-ml
     container_name: ai-ml-service
-    network_mode: host
+    expose:
+      - "8001"
     env_file:
       - ./services/ai-ml/.env
     environment:
-      REDIS_HOST: localhost
+      REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_DB: 1
       REDIS_PREFIX: "aiml:"
@@ -85,21 +93,50 @@ services:
     working_dir: /app/src
     command: python3 -m uvicorn main:app --host 0.0.0.0 --port 8001
     restart: always
+    networks:
+      - hr-network
  
   frontend:
     build:
       context: ./services/frontend
       dockerfile: Dockerfile
     container_name: hr-frontend
-    network_mode: host
+    expose:
+      - "3000"
     environment:
-      NEXT_PUBLIC_API_URL: "http://167.235.136.54:8000"
+      NEXT_PUBLIC_API_URL: "http://167.235.136.54"  # Keep as is, no port
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:-}
     depends_on:
       - backend
     restart: always
+    networks:
+      - hr-network
+ 
+  # Simple proxy using socat (ultra lightweight)
+  proxy:
+    image: alpine/socat
+    container_name: hr-proxy
+    command: >
+      sh -c "
+        socat TCP-LISTEN:80,fork,reuseaddr TCP:frontend:3000 &
+        socat TCP-LISTEN:8000,fork,reuseaddr TCP:backend:8000 &
+        wait
+      "
+    ports:
+      - "80:80"
+      - "8000:8000"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - hr-network
+    restart: always
  
 volumes:
   redis_data:
   upload_data:
+ 
+networks:
+  hr-network:
+    driver: bridge
