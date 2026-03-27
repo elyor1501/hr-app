@@ -85,7 +85,7 @@ export default function ResumeUpload({
 
         validFiles.push({
           file,
-          progress: 0, 
+          progress: 0,
           previewUrl,
         });
       });
@@ -101,7 +101,7 @@ export default function ResumeUpload({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: true, 
+    multiple: true,
     accept: {
       "application/pdf": [],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
@@ -145,6 +145,8 @@ export default function ResumeUpload({
       setError(null);
       setUploadStatus(`Uploading ${uploads.length} files...`);
 
+      const token = localStorage.getItem("access_token");
+
       const formData = new FormData();
       for (const upload of uploads) {
         formData.append("files", upload.file);
@@ -155,6 +157,7 @@ export default function ResumeUpload({
         {
           method: "POST",
           headers: {
+            "Authorization": `Bearer ${token}`,
             "ngrok-skip-browser-warning": "true",
           },
           body: formData,
