@@ -35,6 +35,9 @@ services:
       HR_APP_VECTOR_DIMENSION: "768"
       HR_APP_CACHE_PREFIX: "hr_backend:"
       PYTHONPATH: /app
+      # ADD THESE 2 LINES - Storage configuration
+      SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
     ports:
       - "8000:8000"
     volumes:
@@ -62,6 +65,9 @@ services:
       HR_APP_VECTOR_DIMENSION: "768"
       HR_APP_CACHE_PREFIX: "hr_worker:"
       PYTHONPATH: /app
+      # ADD THESE 2 LINES - Storage configuration
+      SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
     volumes:
       - ./services/backend/src:/app/src
       - upload_data:/app/uploads

@@ -156,6 +156,9 @@ jobs:
               -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_backend \
               -e PYTHONPATH=/app \
+              # ADD THESE 2 LINES - Storage configuration
+              -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+              -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
             echo '=== Waiting for backend to start ==='
@@ -202,6 +205,9 @@ jobs:
               -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_worker \
               -e PYTHONPATH=/app \
+              # ADD THESE 2 LINES - Storage configuration
+              -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+              -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
             
