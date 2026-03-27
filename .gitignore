@@ -118,3 +118,4 @@ services/frontend/.env.*
 !services/frontend/.env.example
 services/frontend/node_modules/
 services/frontend/.next/
+services/frontend/.env.production
