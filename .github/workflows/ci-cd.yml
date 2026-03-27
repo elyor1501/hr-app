@@ -57,68 +57,39 @@ jobs:
           
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
-          # Step 1: Cleanup disk space and remove ALL old containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Cleaning up disk space ==='
-            
-            # Stop ALL containers (both with and without hr- prefix)
-            echo 'Stopping all containers...'
             docker stop \$(docker ps -aq) 2>/dev/null || true
-            
-            # Remove ALL containers
-            echo 'Removing all containers...'
             docker rm \$(docker ps -aq) 2>/dev/null || true
-            
-            # Remove unused Docker data
-            echo 'Pruning Docker system...'
             docker system prune -a -f 2>/dev/null || true
             docker volume prune -f 2>/dev/null || true
             docker container prune -f 2>/dev/null || true
             docker image prune -a -f 2>/dev/null || true
             docker builder prune -a -f 2>/dev/null || true
-            
-            # Remove all images
-            echo 'Removing all images...'
             docker rmi \$(docker images -q) 2>/dev/null || true
-            
-            # Clean system
             sudo apt-get clean 2>/dev/null || true
             sudo journalctl --vacuum-time=3d 2>/dev/null || true
-            
-            # Check disk space
-            echo '=== Disk space after cleanup ==='
             df -h
-            
             echo '=== Cleanup complete ==='
           "
           
-          # Step 2: Free ports and configure firewall
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Configuring firewall ==='
-            
-            # Stop any nginx that might be running
             sudo systemctl stop nginx 2>/dev/null || true
             sudo systemctl disable nginx 2>/dev/null || true
             docker stop nginx 2>/dev/null || true
             docker rm nginx 2>/dev/null || true
-            
-            # Kill any processes using required ports
-            echo 'Freeing up ports...'
             sudo fuser -k 80/tcp 2>/dev/null || true
             sudo fuser -k 8000/tcp 2>/dev/null || true
             sudo fuser -k 8001/tcp 2>/dev/null || true
             sudo fuser -k 6379/tcp 2>/dev/null || true
-            
-            # Configure UFW
             sudo ufw allow 80/tcp 2>/dev/null || true
             sudo ufw allow 8000/tcp 2>/dev/null || true
             sudo ufw delete allow 8001/tcp 2>/dev/null || true
             sudo ufw reload 2>/dev/null || true
-            
             echo '=== Firewall configured ==='
           "
           
-          # Step 3: Deploy containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
@@ -156,7 +127,6 @@ jobs:
               -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_backend \
               -e PYTHONPATH=/app \
-              # ADD THESE 2 LINES - Storage configuration
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
@@ -205,7 +175,6 @@ jobs:
               -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_worker \
               -e PYTHONPATH=/app \
-              # ADD THESE 2 LINES - Storage configuration
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
@@ -231,7 +200,6 @@ jobs:
             echo ''
             
             echo '=== Health Check Results ==='
-            
             if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
               echo '✅ Backend: OK'
             else
@@ -252,7 +220,6 @@ jobs:
             
             echo ''
             echo '=== Port Security Verification ==='
-            
             if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
               echo '✅ Backend: Public (Firewall controlled)'
             else
@@ -276,10 +243,4 @@ jobs:
             echo 'Frontend: http://${{ secrets.DEPLOY_HOST }}'
             echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
             echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
-            echo ''
-            echo 'Security Summary:'
-            echo '- Port 80 (Frontend): Open to outside ✅'
-            echo '- Port 8000 (Backend): Open but firewall controlled ✅'
-            echo '- Port 8001 (AI-ML): Restricted to localhost ✅'
-            echo '- Port 6379 (Redis): Restricted to localhost ✅'
           "
