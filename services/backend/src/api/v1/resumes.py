@@ -10,10 +10,9 @@ from sqlalchemy import select
 from src.db.session import get_db_session
 from src.repositories.base import BaseRepository
 from src.db.models import Resume, ParsedResume
-from src.services.storage import delete_file_from_storage
+from src.services.storage import upload_file, delete_file_from_storage
 from src.services.task_queue import get_task_queue
 from src.models.base import IDSchema, TimestampSchema
-from src.services.storage import upload_file_bytes
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -52,26 +51,6 @@ class ParsedDataResponse(BaseModel):
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepository[Resume]:
     return BaseRepository(Resume, session)
 
-async def upload_bytes_to_storage(file_data: dict):
-    try:
-        public_url = await upload_file_bytes(
-            file_data["content"],
-            file_data["filename"],
-            file_data["content_type"]
-        )
-
-        if not public_url:
-            return None
-
-        return {
-            "file_name": file_data["filename"],
-            "file_url": public_url,
-            "file_type": file_data["file_ext"],
-        }
-
-    except Exception:
-        return None
-
 @router.post("/bulk", response_model=List[ResumeResponse], status_code=status.HTTP_201_CREATED)
 async def bulk_upload_resumes(
     files: List[UploadFile] = File(...),
@@ -80,7 +59,8 @@ async def bulk_upload_resumes(
     if len(files) > 50:
         raise HTTPException(400, "Maximum 50 files allowed")
 
-    file_data_list = []
+    uploaded_files = []
+    
     for file in files:
         filename = file.filename or "unknown.pdf"
         file_ext = filename.split(".")[-1].lower()
@@ -88,22 +68,17 @@ async def bulk_upload_resumes(
         if file_ext not in ["pdf", "doc", "docx"]:
             continue
 
-        content = await file.read()
-        if content:
-            file_data_list.append({
-                "content": content,
-                "filename": filename,
-                "content_type": file.content_type or "application/pdf",
-                "file_ext": file_ext,
-            })
-
-    if not file_data_list:
-        raise HTTPException(400, "No valid files uploaded")
-
-    upload_tasks = [upload_bytes_to_storage(fd) for fd in file_data_list]
-    storage_results = await asyncio.gather(*upload_tasks)
-
-    uploaded_files = [r for r in storage_results if r is not None]
+        try:
+            public_url = await upload_file(file)
+            
+            if public_url:
+                uploaded_files.append({
+                    "file_name": filename,
+                    "file_url": public_url,
+                    "file_type": file_ext,
+                })
+        except Exception:
+            continue
 
     if not uploaded_files:
         raise HTTPException(400, "No valid files uploaded")
