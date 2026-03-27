@@ -59,7 +59,6 @@ async def upload_to_storage(file: UploadFile):
         return None
 
     try:
-        await file.seek(0)
         public_url = await upload_file(file)
 
         if not public_url:
@@ -82,10 +81,11 @@ async def bulk_upload_resumes(
     if len(files) > 50:
         raise HTTPException(400, "Maximum 50 files allowed")
 
-    upload_tasks = [upload_to_storage(file) for file in files]
-    storage_results = await asyncio.gather(*upload_tasks)
-
-    uploaded_files = [r for r in storage_results if r is not None]
+    uploaded_files = []
+    for file in files:
+        result = await upload_to_storage(file)
+        if result:
+            uploaded_files.append(result)
 
     if not uploaded_files:
         raise HTTPException(400, "No valid files uploaded")
