@@ -57,22 +57,28 @@ jobs:
           
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
-          # Step 1: Cleanup disk space
+          # Step 1: Cleanup disk space and remove ALL old containers
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Cleaning up disk space ==='
             
-            # Stop all containers first
-            docker stop backend ai-ml-service frontend worker redis 2>/dev/null || true
-            docker rm backend ai-ml-service frontend worker redis 2>/dev/null || true
+            # Stop ALL containers (both with and without hr- prefix)
+            echo 'Stopping all containers...'
+            docker stop \$(docker ps -aq) 2>/dev/null || true
+            
+            # Remove ALL containers
+            echo 'Removing all containers...'
+            docker rm \$(docker ps -aq) 2>/dev/null || true
             
             # Remove unused Docker data
+            echo 'Pruning Docker system...'
             docker system prune -a -f 2>/dev/null || true
             docker volume prune -f 2>/dev/null || true
             docker container prune -f 2>/dev/null || true
             docker image prune -a -f 2>/dev/null || true
             docker builder prune -a -f 2>/dev/null || true
             
-            # Remove old images
+            # Remove all images
+            echo 'Removing all images...'
             docker rmi \$(docker images -q) 2>/dev/null || true
             
             # Clean system
@@ -90,15 +96,20 @@ jobs:
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Configuring firewall ==='
             
+            # Stop any nginx that might be running
             sudo systemctl stop nginx 2>/dev/null || true
             sudo systemctl disable nginx 2>/dev/null || true
             docker stop nginx 2>/dev/null || true
             docker rm nginx 2>/dev/null || true
             
+            # Kill any processes using required ports
+            echo 'Freeing up ports...'
             sudo fuser -k 80/tcp 2>/dev/null || true
             sudo fuser -k 8000/tcp 2>/dev/null || true
             sudo fuser -k 8001/tcp 2>/dev/null || true
+            sudo fuser -k 6379/tcp 2>/dev/null || true
             
+            # Configure UFW
             sudo ufw allow 80/tcp 2>/dev/null || true
             sudo ufw allow 8000/tcp 2>/dev/null || true
             sudo ufw delete allow 8001/tcp 2>/dev/null || true
@@ -236,19 +247,19 @@ jobs:
             echo ''
             echo '=== Port Security Verification ==='
             
-            if curl -f --connect-timeout 5 http://167.235.136.54:8000/health > /dev/null 2>&1; then
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
               echo '✅ Backend: Public (Firewall controlled)'
             else
               echo '⚠️ Backend: Not accessible'
             fi
             
-            if curl -f --connect-timeout 5 http://167.235.136.54:8001/health > /dev/null 2>&1; then
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8001/health > /dev/null 2>&1; then
               echo '⚠️ AI-ML exposed!'
             else
               echo '✅ AI-ML: Localhost only (Secure)'
             fi
             
-            if curl -f --connect-timeout 5 http://167.235.136.54:80 > /dev/null 2>&1; then
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
               echo '✅ Frontend: Public'
             else
               echo '❌ Frontend: Not accessible'
@@ -256,8 +267,8 @@ jobs:
             
             echo ''
             echo '=== Deployment Complete ==='
-            echo 'Frontend: http://167.235.136.54'
-            echo 'Backend API: http://167.235.136.54:8000'
+            echo 'Frontend: http://${{ secrets.DEPLOY_HOST }}'
+            echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
             echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
             echo ''
             echo 'Security Summary:'
