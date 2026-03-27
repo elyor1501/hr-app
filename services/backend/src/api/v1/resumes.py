@@ -5,6 +5,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from sqlalchemy import select
 
 from src.db.session import get_db_session
@@ -186,4 +187,4 @@ async def delete_resume(id: UUID, repo: BaseRepository[Resume] = Depends(get_rep
         await delete_file_from_storage(resume.file_url)
     except Exception:
         pass
-    await repo.delete(id)
+    await repo.delete(id) 
