@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import { uploadBulkResumes } from "@/lib/resumeList/action";
 
 type UploadFile = {
   file: File;
@@ -148,32 +149,8 @@ export default function ResumeUpload({
       setError(null);
       setUploadStatus(`Uploading ${uploads.length} files...`);
       
-      const token = localStorage.getItem("access_token");
-
-      const formData = new FormData();
-      for (const upload of uploads) {
-        formData.append("files", upload.file);
-      }
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/bulk`,
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "true",
-          },
-          body: formData,
-        },
-      );
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Backend Error:", errorText);
-        throw new Error("Failed to upload resumes");
-      }
-
-      const result = await res.json();
+      const filesToUpload = uploads.map(u => u.file);
+      const result = await uploadBulkResumes(filesToUpload);
 
       if (Array.isArray(result)) {
         setUploadStatus(`${result.length} files uploaded! Processing started.`);
