@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { deleteResume } from "@/lib/resumeList/action";
+import { toast } from "sonner";
 
 export function DeleteResumeButton({ id }: { id: string }) {
   const [open, setOpen] = useState(false);
@@ -23,10 +24,12 @@ export function DeleteResumeButton({ id }: { id: string }) {
     try {
       setLoading(true);
       await deleteResume(id);
+      toast.success("Deleted successfully");
       setOpen(false);
       router.refresh();
     } catch (error) {
       console.error("Delete failed:", error);
+      toast.error("Failed to delete");
     } finally {
       setLoading(false);
     }

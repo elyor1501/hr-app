@@ -2,22 +2,32 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Download } from "lucide-react";
+import { ArrowUpDown, Download, EyeIcon } from "lucide-react";
 import { DeleteResumeButton } from "./DeleteResumeButton";
+import { downloadResume, viewResume } from "@/lib/resumeList/action";
+import { toast } from "sonner";
 
 export type ResumeList = {
   id: string;
   file_name: string;
   file_url: string;
   created_at: string;
+  updated_at: string;
 };
 
 export const columns_resume_list: ColumnDef<ResumeList>[] = [
   {
+    accessorKey: "id",
+    header: "Id",
+    cell: ({ row }) => (
+      <span className="font-medium">{row.getValue("id") || "NA"}</span>
+    ),
+  },
+  {
     accessorKey: "file_name",
     header: "File Name",
     cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("file_name") || "NA"}</span>
+      <span className="whitespace-normal break-words">{row.getValue("file_name") || "NA"}</span>
     ),
   },
   {
@@ -27,7 +37,7 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Uploaded At
+        Created At
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -43,6 +53,29 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
       </span>
     ),
   },
+  {
+    accessorKey: "updated_at",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Uploaded At
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <span>
+        {new Date(row.getValue("updated_at"))
+          .toLocaleDateString("en-GB")
+          .replace(/\//g, ".")}
+        &nbsp;
+        {new Date(row.getValue("updated_at")).toLocaleTimeString("en-GB", {
+          hour12: false,
+        })}
+      </span>
+    ),
+  },
 
   {
     id: "actions",
@@ -50,62 +83,32 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
     cell: ({ row }) => {
       const resume = row.original;
 
-      const handleDownload = async () => {
-        if (!resume.id) {
-          console.error("No resume ID available");
-          return;
-        }
-
-        const token = localStorage.getItem("access_token");
-        
-        let downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/${resume.id}/download`;
-
+      const onDownload = async () => {
         try {
-          let response = await fetch(downloadUrl, {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "ngrok-skip-browser-warning": "true",
-            },
-          });
-
-          if (!response.ok && resume.file_url) {
-            console.warn("Constructed download URL failed, trying file_url:", resume.file_url);
-            const fallbackUrl = resume.file_url.startsWith("http") 
-              ? resume.file_url 
-              : `${process.env.NEXT_PUBLIC_API_URL}${resume.file_url}`;
-            
-            response = await fetch(fallbackUrl, {
-              headers: {
-                "Authorization": `Bearer ${token}`,
-                "ngrok-skip-browser-warning": "true",
-              },
-            });
-          }
-
-          if (!response.ok) throw new Error(`Download failed with status: ${response.status}`);
-
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", resume.file_name || "resume.pdf");
-          document.body.appendChild(link);
-          link.click();
-          if (link.parentNode) {
-            link.parentNode.removeChild(link);
-          }
-          window.URL.revokeObjectURL(url);
+          await downloadResume(resume.id, resume.file_name, resume.file_url);
+          toast.success("Downloaded successfully");
         } catch (error) {
-          console.error("Error downloading file:", error);
+          toast.error("Failed to download");
+        }
+      };
+
+      const onView = async () => {
+        try {
+          await viewResume(resume.id, resume.file_name, resume.file_url);
+        } catch (error) {
+          toast.error("Failed to view");
         }
       };
 
       return (
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={handleDownload}>
+          <Button variant="ghost" size="icon" onClick={onView}>
+            <EyeIcon className="w-4 h-4" />
+          </Button>       
+          <DeleteResumeButton id={resume.id} />
+          <Button variant="ghost" size="icon" onClick={onDownload}>
             <Download className="w-4 h-4" />
           </Button>
-          <DeleteResumeButton id={resume.id} />
         </div>
       );
     },

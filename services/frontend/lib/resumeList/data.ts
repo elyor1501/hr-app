@@ -3,6 +3,7 @@ export type Resume = {
   file_name: string;
   file_url: string;
   created_at: string;
+  updated_at:string;
 };
 
 export async function getResumes(): Promise<Resume[]> {

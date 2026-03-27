@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { deleteJob} from "@/lib/jobs/action";
+import { toast } from "sonner";
 
 export function DeleteJobButton({ jobId }: { jobId: string }) {
   const [open, setOpen] = useState(false);
@@ -21,8 +22,13 @@ export function DeleteJobButton({ jobId }: { jobId: string }) {
 
   const handleDelete = () => {
     startTransition(async () => {
-      await deleteJob(jobId);
-      setOpen(false);
+      try {
+        await deleteJob(jobId);
+        toast.success("Job deleted successfully");
+        setOpen(false);
+      } catch (error) {
+        toast.error("Failed to delete job");
+      }
     });
   };
 

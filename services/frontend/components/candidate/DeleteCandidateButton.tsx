@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { deleteCandidate } from "@/lib/candidates/action";
+import { toast } from "sonner";
 
 export function DeleteCandidateButton({ candidateId }: { candidateId: string }) {
   const [open, setOpen] = useState(false);
@@ -20,8 +21,13 @@ export function DeleteCandidateButton({ candidateId }: { candidateId: string }) 
 
   const handleDelete = () => {
     startTransition(async () => {
-      await deleteCandidate(candidateId);
-      setOpen(false);
+      try {
+        await deleteCandidate(candidateId);
+        toast.success("Candidate deleted successfully");
+        setOpen(false);
+      } catch (error) {
+        toast.error("Failed to delete candidate");
+      }
     });
   };
 

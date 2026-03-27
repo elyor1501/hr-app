@@ -4,6 +4,7 @@ import { EyeIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 
 type UploadFile = {
   file: File;
@@ -57,7 +58,7 @@ export default function ResumeUpload({
     (acceptedFiles: File[]) => {
       setError(null);
       const validFiles: UploadFile[] = [];
-      let duplicateFound = false;
+      let duplicateFileName: string | null = null;
 
       acceptedFiles.forEach((file) => {
         const validationError = validateFile(file);
@@ -77,7 +78,7 @@ export default function ResumeUpload({
         const isDuplicateOnBackend = existingFiles.includes(file.name);
 
         if (isDuplicateInUploads || isDuplicateOnBackend) {
-          duplicateFound = true;
+          duplicateFileName = file.name;
           return;
         }
 
@@ -85,12 +86,14 @@ export default function ResumeUpload({
 
         validFiles.push({
           file,
-          progress: 0,
+          progress: 100,
           previewUrl,
         });
       });
 
-      if (duplicateFound) setError("Some files were skipped (duplicates).");
+      if (duplicateFileName) {
+        setError(`${duplicateFileName} Resume already exists`);
+      }
 
       if (validFiles.length > 0) {
         setUploads((prev) => [...prev, ...validFiles]);
@@ -144,7 +147,7 @@ export default function ResumeUpload({
       setIsUploading(true);
       setError(null);
       setUploadStatus(`Uploading ${uploads.length} files...`);
-
+      
       const token = localStorage.getItem("access_token");
 
       const formData = new FormData();
@@ -174,6 +177,7 @@ export default function ResumeUpload({
 
       if (Array.isArray(result)) {
         setUploadStatus(`${result.length} files uploaded! Processing started.`);
+        toast.success(`${result.length} resumes uploaded successfully`);
       }
 
       setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
@@ -186,6 +190,7 @@ export default function ResumeUpload({
     } catch (error: any) {
       console.error("Upload failed:", error);
       setError(error?.message || "Upload failed. Check console.");
+      toast.error(error?.message || "Upload failed");
     } finally {
       setIsUploading(false);
     }
