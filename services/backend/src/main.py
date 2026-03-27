@@ -41,37 +41,39 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 async def ngrok_middleware(request: Request, call_next):
-    """Handle ngrok's browser warning page"""
     response = await call_next(request)
-    
+
     if "ngrok" in str(request.url):
         response.headers["ngrok-skip-browser-warning"] = "true"
-    
+
     return response
 
 
 def create_app() -> FastAPI:
     configure_logging()
-    app = FastAPI(title=settings.app_name, lifespan=lifespan)
-    
+    app = FastAPI(
+        title=settings.app_name,
+        lifespan=lifespan,
+    )
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
             "http://localhost:3000",
             "http://127.0.0.1:3000",
             "http://localhost:8000",
-            "https://*.ngrok-free.app", 
+            "https://*.ngrok-free.app",
             "https://*.ngrok.io",
-            "*",  
+            "*",
         ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["*"],
     )
-    
+
     app.middleware("http")(ngrok_middleware)
-    
+
     app.include_router(health_router)
     app.include_router(metrics_router)
     app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
@@ -83,7 +85,7 @@ def create_app() -> FastAPI:
     app.include_router(tasks_router, prefix="/api/v1/tasks", tags=["tasks"])
     app.include_router(parsed_resumes_router, prefix="/api/v1/parsed-resumes", tags=["parsed-resumes"])
     app.include_router(stats_router, prefix="/api/v1/stats", tags=["stats"])
-    
+
     return app
 
 app = create_app()
