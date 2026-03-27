@@ -12,6 +12,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type JobForm = {
   id: string;
@@ -105,8 +106,10 @@ export default function CreateJobForm({ setOpenAction }: Props) {
       form.reset();
       setOpenAction(false);
       router.refresh();
-    } catch (err) {
+      toast.success("Job created successfully");
+    } catch (err: any) {
       console.error(err);
+      toast.error(err?.message || "Failed to create job");
     } finally {
       setLoading(false);
     }

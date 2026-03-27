@@ -5,6 +5,7 @@ import { updateJob } from "@/lib/jobs/action";
 import { getJobById, matchCandidates } from "@/lib/jobs/data";
 import { useRouter } from "next/navigation";
 import { getCandidates } from "@/lib/candidates/data";
+import { toast } from "sonner";
 
 type Props = {
   id: string;
@@ -25,7 +26,7 @@ export default function JobDetails({ id, jobData, candidateData }: Props) {
 
   async function runCandidateMatching() {
     if (!candidates || candidates.length === 0) return;
-    
+
     setMatching(true);
     try {
       const candidateIds = candidates.map((c: any) => c.resume_id);
@@ -45,15 +46,22 @@ export default function JobDetails({ id, jobData, candidateData }: Props) {
   async function handleSubmit(formData: FormData) {
     setSaving(true);
 
-    await updateJob(formData);
+    try {
+      await updateJob(formData);
 
-    const updatedJob = await getJobById(id);
-    setJob(updatedJob);
+      const updatedJob = await getJobById(id);
+      setJob(updatedJob);
 
-    setIsEditing(false);
-    setSaving(false);
+      setIsEditing(false);
 
-    router.refresh();
+      toast.success("Job updated successfully"); 
+    } catch (error: any) {
+      console.error("Update error:", error);
+      toast.error(error?.message || "Failed to update job");
+    } finally {
+      setSaving(false);
+      router.refresh();
+    }
   }
 
   if (!job) return <p>Loading jobs details...</p>;
@@ -327,7 +335,7 @@ export default function JobDetails({ id, jobData, candidateData }: Props) {
             disabled={saving}
             className={`px-4 py-2 rounded-lg text-sm ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
           >
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "Updating..." : "Update"}
           </button>
         </div>
       )}

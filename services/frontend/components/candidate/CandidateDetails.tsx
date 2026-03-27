@@ -5,6 +5,7 @@ import { getCandidateById, matchJobs } from "@/lib/candidates/data";
 import { updateCandidate } from "@/lib/candidates/action";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 type Props = {
   id: string;
@@ -47,15 +48,22 @@ export default function CandidateDetails({ id, empData }: Props) {
   async function handleSubmit(formData: FormData) {
     setLoading(true);
 
-    await updateCandidate(formData);
+    try {
+      await updateCandidate(formData);
 
-    const updatedCandidate = await getCandidateById(id);
-    setCandidate(updatedCandidate);
+      const updatedCandidate = await getCandidateById(id);
+      setCandidate(updatedCandidate);
 
-    setIsEditing(false);
-    setLoading(false);
+      setIsEditing(false);
 
-    router.refresh();
+      toast.success("Candidate updated successfully");
+    } catch (error: any) {
+      console.error("Update failed:", error);
+      toast.error(error?.message || "Failed to update candidate");
+    } finally {
+      setLoading(false);
+      router.refresh();
+    }
   }
 
   if (loading) return <p>Loading candidate details...</p>;
@@ -215,7 +223,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                   disabled={loading}
                   className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white"
                 >
-                  {loading ? "Saving..." : "Save Changes"}
+                  {loading ? "Updating.." : "Update"}
                 </button>
               </div>
             )}

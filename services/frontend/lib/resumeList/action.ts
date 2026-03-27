@@ -12,7 +12,7 @@ export async function uploadBulkResumes(files: File[]) {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
-        "ngrok-skip-browser-warning": "true",
+        // "ngrok-skip-browser-warning": "true",
       },
       body: formData,
     }
