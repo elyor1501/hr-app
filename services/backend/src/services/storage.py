@@ -13,8 +13,31 @@ else:
 
 BUCKET_NAME = "resumes"
 
+async def upload_file_bytes(content: bytes, filename: str, content_type: str = None) -> str:
+    if not supabase:
+        print("Supabase not configured")
+        return None
+
+    try:
+        file_ext = filename.split(".")[-1] if "." in filename else "pdf"
+        file_path = f"{uuid.uuid4()}.{file_ext}"
+        
+        if not content_type:
+            content_type = "application/pdf"
+
+        supabase.storage.from_(BUCKET_NAME).upload(
+            path=file_path,
+            file=content,
+            file_options={"content-type": content_type}
+        )
+
+        public_url = supabase.storage.from_(BUCKET_NAME).get_public_url(file_path)
+        return public_url
+    except Exception as e:
+        print(f"Upload failed: {e}")
+        return None
+
 async def upload_file(file: UploadFile) -> str:
-    """Uploads file to Supabase and returns the public URL."""
     if not supabase:
         print("Supabase not configured")
         return None
@@ -22,7 +45,6 @@ async def upload_file(file: UploadFile) -> str:
     try:
         file_content = await file.read()
         file_ext = file.filename.split(".")[-1] if "." in file.filename else "pdf"
-        # We keep the UUID for unique storage path, but track filename in DB
         file_path = f"{uuid.uuid4()}.{file_ext}"
 
         supabase.storage.from_(BUCKET_NAME).upload(
@@ -38,15 +60,12 @@ async def upload_file(file: UploadFile) -> str:
         return None
 
 async def delete_file_from_storage(file_url: str) -> bool:
-    """Deletes file from Supabase storage using its URL."""
     if not supabase or not file_url:
         return False
-    
+
     try:
-        # Extract file path from URL
-        # URL format: .../resumes/uuid.pdf
         file_path = file_url.split(f"/{BUCKET_NAME}/")[-1]
-        
+
         supabase.storage.from_(BUCKET_NAME).remove([file_path])
         return True
     except Exception as e:
