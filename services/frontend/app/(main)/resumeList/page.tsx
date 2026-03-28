@@ -1,7 +1,8 @@
 import AddResumeButton from "@/components/resumes/AddResumeButton";
-
 import ResumeTable from "@/components/resumes/ResumeTable";
 import RouteProtection from "@/components/routeProtection";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   return (
@@ -12,7 +13,7 @@ export default async function Page() {
         <AddResumeButton />
       </div>
 
-        <ResumeTable />
+      <ResumeTable />
     </div>
   );
 }

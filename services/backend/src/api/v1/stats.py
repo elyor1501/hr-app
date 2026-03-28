@@ -1,10 +1,12 @@
+import json
+import asyncio
 from fastapi import APIRouter, Depends
-from sqlalchemy import select, func
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
 from src.db.session import get_db_session
-from src.db.models import Job, Candidate, Resume, ParsedResume
+from src.core.redis import get_redis_pool
 
 router = APIRouter()
 
@@ -36,65 +38,64 @@ class StatsResponse(BaseModel):
     candidates_by_status: CandidatesByStatus
 
 
+STATS_CACHE_KEY = "hr_app:stats:dashboard"
+STATS_CACHE_TTL = 60
+
+
 @router.get("", response_model=StatsResponse)
 async def get_stats(session: AsyncSession = Depends(get_db_session)):
+    try:
+        redis = await get_redis_pool()
+        cached = await redis.get(STATS_CACHE_KEY)
+        if cached:
+            return StatsResponse(**json.loads(cached))
+    except Exception:
+        pass
+
+    query = text("""
+        SELECT 
+            (SELECT COUNT(*) FROM jobs) as total_jobs,
+            (SELECT COUNT(*) FROM parsed_resumes) as total_employees,
+            (SELECT COUNT(*) FROM resumes) as total_resumes,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'full time') as full_time,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'part time') as part_time,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'contract') as contract,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'internship') as internship,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'entry level') as entry_level,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'open') as open_jobs,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'closed') as closed_jobs,
+            (SELECT COUNT(*) FROM parsed_resumes WHERE candidate_status = 'active') as active_candidates,
+            (SELECT COUNT(*) FROM parsed_resumes WHERE candidate_status = 'inactive') as inactive_candidates
+    """)
     
-    total_jobs_result = await session.execute(select(func.count(Job.id)))
-    total_jobs = total_jobs_result.scalar() or 0
-
-    total_employees_result = await session.execute(select(func.count(ParsedResume.id)))
-    total_employees = total_employees_result.scalar() or 0
-
-    total_resumes_result = await session.execute(select(func.count(Resume.id)))
-    total_resumes = total_resumes_result.scalar() or 0
-
-    full_time_result = await session.execute(
-        select(func.count(Job.id)).where(func.lower(Job.employment_type) == "full time")
-    )
-    part_time_result = await session.execute(
-        select(func.count(Job.id)).where(func.lower(Job.employment_type) == "part time")
-    )
-    contract_result = await session.execute(
-        select(func.count(Job.id)).where(func.lower(Job.employment_type) == "contract")
-    )
-    internship_result = await session.execute(
-        select(func.count(Job.id)).where(func.lower(Job.employment_type) == "internship")
-    )
-    entry_level_result = await session.execute(
-        select(func.count(Job.id)).where(func.lower(Job.employment_type) == "entry level")
-    )
-
-    open_jobs_result = await session.execute(
-        select(func.count(Job.id)).where(func.lower(Job.status) == "open")
-    )
-    closed_jobs_result = await session.execute(
-        select(func.count(Job.id)).where(func.lower(Job.status) == "closed")
-    )
-
-    active_candidates_result = await session.execute(
-        select(func.count(ParsedResume.id)).where(ParsedResume.candidate_status == "active")
-    )
-    inactive_candidates_result = await session.execute(
-        select(func.count(ParsedResume.id)).where(ParsedResume.candidate_status == "inactive")
-    )
-
-    return StatsResponse(
-        total_jobs=total_jobs,
-        total_employees=total_employees,
-        total_resumes=total_resumes,
+    result = await session.execute(query)
+    row = result.fetchone()
+    
+    response = StatsResponse(
+        total_jobs=row.total_jobs or 0,
+        total_employees=row.total_employees or 0,
+        total_resumes=row.total_resumes or 0,
         jobs_by_type=JobsByType(
-            full_time=full_time_result.scalar() or 0,
-            part_time=part_time_result.scalar() or 0,
-            contract=contract_result.scalar() or 0,
-            internship=internship_result.scalar() or 0,
-            entry_level=entry_level_result.scalar() or 0
+            full_time=row.full_time or 0,
+            part_time=row.part_time or 0,
+            contract=row.contract or 0,
+            internship=row.internship or 0,
+            entry_level=row.entry_level or 0
         ),
         jobs_by_status=JobsByStatus(
-            open_jobs=open_jobs_result.scalar() or 0,
-            closed_jobs=closed_jobs_result.scalar() or 0
+            open_jobs=row.open_jobs or 0,
+            closed_jobs=row.closed_jobs or 0
         ),
         candidates_by_status=CandidatesByStatus(
-            active=active_candidates_result.scalar() or 0,
-            inactive=inactive_candidates_result.scalar() or 0
+            active=row.active_candidates or 0,
+            inactive=row.inactive_candidates or 0
         )
     )
+
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(STATS_CACHE_KEY, STATS_CACHE_TTL, json.dumps(response.model_dump()))
+    except Exception:
+        pass
+
+    return response

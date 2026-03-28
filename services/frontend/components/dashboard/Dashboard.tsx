@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { EmployeeStatusChart } from "@/components/dashboard/charts/CandidateStatusChart";
 import { JobStatusChart } from "@/components/dashboard/charts/JobStatusChart";
 import { JobTypeChart } from "@/components/dashboard/charts/JobTypeChart";
@@ -26,13 +26,15 @@ interface StatsData {
   };
 }
 
+let statsCache: { data: StatsData; timestamp: number } | null = null;
+const CACHE_TTL = 30000;
+
 export default function DashboardDetail() {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchStats = useCallback(async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     if (!apiUrl) {
@@ -41,42 +43,40 @@ export default function DashboardDetail() {
       return;
     }
 
-    const fetchStats = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        const headers: HeadersInit = {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        };
+    if (statsCache && Date.now() - statsCache.timestamp < CACHE_TTL) {
+      setStats(statsCache.data);
+      setLoading(false);
+      return;
+    }
 
-        const response = await fetch(`${apiUrl}/api/v1/stats`, { headers });
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
+    try {
+      const token = localStorage.getItem("access_token");
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
 
-        const data = await response.json();
-        
-        if (isMounted) {
-          setStats(data);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Failed to fetch stats:", err);
-        if (isMounted) {
-          setError("Failed to load dashboard data");
-          setLoading(false);
-        }
+      const response = await fetch(`${apiUrl}/api/v1/stats`, { headers });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
       }
-    };
 
-    fetchStats();
-
-    return () => {
-      isMounted = false;
-    };
+      const data = await response.json();
+      statsCache = { data, timestamp: Date.now() };
+      setStats(data);
+      setLoading(false);
+    } catch (err) {
+      console.error("Failed to fetch stats:", err);
+      setError("Failed to load dashboard data");
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   if (loading) {
     return (
@@ -98,7 +98,12 @@ export default function DashboardDetail() {
       <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
         <p className="text-red-600">{error || "No data available"}</p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            statsCache = null;
+            setLoading(true);
+            setError(null);
+            fetchStats();
+          }}
           className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
         >
           Retry

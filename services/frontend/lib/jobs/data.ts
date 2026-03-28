@@ -1,5 +1,5 @@
 export type JobList = {
-  id:string;
+  id: string;
   title: string;
   department: string;
   employment_type: string;
@@ -16,11 +16,18 @@ export type JobList = {
   openings?: number;
   hiring_manager?: string;
   application_deadline?: string;
-  status:string;
+  status: string;
 };
+
+let jobCache: { data: JobList[]; timestamp: number } | null = null;
+const CACHE_TTL = 30000;
 
 export async function getJob(): Promise<JobList[]> {
   try {
+    if (jobCache && Date.now() - jobCache.timestamp < CACHE_TTL) {
+      return jobCache.data;
+    }
+
     const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     const headers: HeadersInit = {
       "ngrok-skip-browser-warning": "true",
@@ -29,9 +36,9 @@ export async function getJob(): Promise<JobList[]> {
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/?page=1&page_size=100`,
-      { 
+      {
         headers,
-        cache: "no-store" 
+        next: { revalidate: 30 },
       }
     );
 
@@ -42,18 +49,24 @@ export async function getJob(): Promise<JobList[]> {
     }
 
     const data = await res.json();
-    
-    // Handle paginated response
+
+    let items: JobList[] = [];
     if (data && data.items && Array.isArray(data.items)) {
-      return data.items;
+      items = data.items;
+    } else if (Array.isArray(data)) {
+      items = data;
     }
-    
-    // Fallback for non-paginated response
-    return Array.isArray(data) ? data : [];
+
+    jobCache = { data: items, timestamp: Date.now() };
+    return items;
   } catch (err) {
     console.error("Fetch error:", err);
     return [];
   }
+}
+
+export function invalidateJobCache() {
+  jobCache = null;
 }
 
 export async function getJobById(id: string) {
@@ -69,7 +82,7 @@ export async function getJobById(id: string) {
       {
         method: "GET",
         headers,
-        cache: "no-store", 
+        next: { revalidate: 60 },
       }
     );
 
@@ -88,10 +101,7 @@ export async function getJobById(id: string) {
 }
 
 export async function matchCandidates(jobId: string, candidateIds: string[]) {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("access_token")
-      : null;
+  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/v1/match/bulk`,
@@ -116,6 +126,5 @@ export async function matchCandidates(jobId: string, candidateIds: string[]) {
   }
 
   const data = await res.json();
-
   return data;
 }

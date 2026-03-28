@@ -3,10 +3,17 @@ export type Resume = {
   file_name: string;
   file_url: string;
   created_at: string;
-  updated_at:string;
+  updated_at: string;
 };
 
+let resumeCache: { data: Resume[]; timestamp: number } | null = null;
+const CACHE_TTL = 30000;
+
 export async function getResumes(): Promise<Resume[]> {
+  if (resumeCache && Date.now() - resumeCache.timestamp < CACHE_TTL) {
+    return resumeCache.data;
+  }
+
   const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
   const headers: HeadersInit = {
     "ngrok-skip-browser-warning": "true",
@@ -18,7 +25,7 @@ export async function getResumes(): Promise<Resume[]> {
     {
       method: "GET",
       headers,
-      cache: "no-store",
+      next: { revalidate: 30 },
     }
   );
 
@@ -26,5 +33,11 @@ export async function getResumes(): Promise<Resume[]> {
     throw new Error("Failed to fetch resumes");
   }
 
-  return res.json();
+  const data = await res.json();
+  resumeCache = { data, timestamp: Date.now() };
+  return data;
+}
+
+export function invalidateResumeCache() {
+  resumeCache = null;
 }
