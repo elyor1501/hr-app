@@ -6,26 +6,37 @@ export async function uploadBulkResumes(files: File[]) {
     formData.append("files", file);
   });
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/bulk`,
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        // "ngrok-skip-browser-warning": "true",
-      },
-      body: formData,
-    }
-  );
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120000);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData?.detail || "Failed to upload resumes"
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/bulk`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formData,
+        signal: controller.signal,
+      }
     );
-  }
 
-  return response.json();
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData?.detail || "Failed to upload resumes");
+    }
+
+    return response.json();
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error("Upload timeout - files may be too large");
+    }
+    throw error;
+  }
 }
 
 export async function deleteResume(id: string) {
@@ -43,9 +54,7 @@ export async function deleteResume(id: string) {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData?.detail || "Failed to delete resume"
-    );
+    throw new Error(errorData?.detail || "Failed to delete resume");
   }
 
   return true;

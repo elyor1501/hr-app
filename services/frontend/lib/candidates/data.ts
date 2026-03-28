@@ -1,10 +1,8 @@
 export type CandidateList = {
   id: string;
   resume_id: string;
-
   first_name?: string | null;
   last_name?: string | null;
-
   email?: string | null;
   phone?: string | null;
   location?: string | null;
@@ -12,36 +10,43 @@ export type CandidateList = {
   linkedin_url?: string | null; 
   portfolio?: string | null;
   summary?: string | null;
-
   skills?: string[];
-
   current_title?: string | null;
   current_company?: string | null;
   years_of_experience?: number | null;
-
   education?: any[];
   experience?: any[];
   projects?: any[];
   certifications?: any[];
-
   candidate_status?: "active" | "inactive";
   status?: "processing" | "completed" | "error";
 };
 
+let candidatesCache: { data: CandidateList[]; timestamp: number } | null = null;
+const CACHE_TTL = 30000;
+
 export async function getCandidates(): Promise<CandidateList[]> {
   try {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("access_token")
-        : null;
+    const isServer = typeof window === "undefined";
+    
+    if (!isServer && candidatesCache && Date.now() - candidatesCache.timestamp < CACHE_TTL) {
+      return candidatesCache.data;
+    }
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      console.warn("NEXT_PUBLIC_API_URL not set");
+      return [];
+    }
+
+    const token = !isServer ? localStorage.getItem("access_token") : null;
     const headers: HeadersInit = {
       "ngrok-skip-browser-warning": "true",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/?page=1&page_size=100`,
+      `${apiUrl}/api/v1/parsed-resumes/?page=1&page_size=100`,
       {
         headers,
         cache: "no-store",
@@ -56,35 +61,54 @@ export async function getCandidates(): Promise<CandidateList[]> {
 
     const data = await res.json();
     
+    let items: CandidateList[] = [];
     if (data && data.items && Array.isArray(data.items)) {
-      return data.items;
+      items = data.items;
+    } else if (Array.isArray(data)) {
+      items = data;
     }
-    
-    return Array.isArray(data) ? data : [];
+
+    if (!isServer) {
+      candidatesCache = { data: items, timestamp: Date.now() };
+    }
+
+    return items;
   } catch (err) {
     console.error("Fetch error:", err);
     return [];
   }
 }
 
+export function invalidateCandidatesCache() {
+  candidatesCache = null;
+}
+
+let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
+
 export async function getCandidateById(id: string) {
   try {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("access_token")
-        : null;
+    const cached = candidateByIdCache.get(id);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      return cached.data;
+    }
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      return null;
+    }
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     const headers: HeadersInit = {
       "ngrok-skip-browser-warning": "true",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/parsed-resumes/${id}`,
+      `${apiUrl}/api/v1/parsed-resumes/${id}`,
       {
         method: "GET",
         headers,
-        cache: "no-store",
+        next: { revalidate: 30 },
       }
     );
 
@@ -99,12 +123,11 @@ export async function getCandidateById(id: string) {
     }
 
     const data = await res.json();
+    const result = Array.isArray(data) ? data[0] : data;
 
-    if (Array.isArray(data)) {
-      return data[0];
-    }
+    candidateByIdCache.set(id, { data: result, timestamp: Date.now() });
 
-    return data;
+    return result;
   } catch (error) {
     console.error("getCandidateById error:", error);
     return null;
@@ -113,8 +136,13 @@ export async function getCandidateById(id: string) {
 
 export async function matchJobs(resumeId: string) {
   try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      return { results: [] };
+    }
+
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/match/candidate-to-jobs`,
+      `${apiUrl}/api/v1/match/candidate-to-jobs`,
       {
         method: "POST",
         headers: {
@@ -136,7 +164,6 @@ export async function matchJobs(resumeId: string) {
     }
 
     return data;
-
   } catch (error) {
     console.error("matchJobs error:", error);
     return { results: [] };
