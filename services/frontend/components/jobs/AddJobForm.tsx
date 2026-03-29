@@ -12,6 +12,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { createJob } from "@/lib/jobs/action";
 import { toast } from "sonner";
 
 type JobForm = {
@@ -83,25 +84,7 @@ export default function CreateJobForm({ setOpenAction }: Props) {
       setLoading(true);
 
       const token = localStorage.getItem("access_token");
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "true",
-          },
-          body: JSON.stringify(values),
-        },
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error("Failed to create job");
-      }
+      await createJob(values, token);
 
       form.reset();
       setOpenAction(false);

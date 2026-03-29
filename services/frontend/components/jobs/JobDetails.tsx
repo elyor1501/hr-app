@@ -47,7 +47,8 @@ export default function JobDetails({ id, jobData, candidateData }: Props) {
     setSaving(true);
 
     try {
-      await updateJob(formData);
+      const token = localStorage.getItem("access_token");
+      await updateJob(formData, token);
 
       const updatedJob = await getJobById(id);
       setJob(updatedJob);
@@ -69,9 +70,12 @@ export default function JobDetails({ id, jobData, candidateData }: Props) {
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
       <form
-        key={isEditing ? "edit" : "view"}
         id="job-form"
-        action={handleSubmit}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          handleSubmit(formData);
+        }}
         className="grid grid-cols-1 md:grid-cols-1 gap-10"
       >
         <input type="hidden" name="id" value={job.id} />

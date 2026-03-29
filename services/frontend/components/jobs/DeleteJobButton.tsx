@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 
@@ -20,12 +21,15 @@ export function DeleteJobButton({ jobId }: { jobId: string }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  const router = useRouter();
   const handleDelete = () => {
+    const token = localStorage.getItem("access_token");
     startTransition(async () => {
       try {
-        await deleteJob(jobId);
+        await deleteJob(jobId, token);
         toast.success("Job deleted successfully");
         setOpen(false);
+        router.refresh();
       } catch (error) {
         toast.error("Failed to delete job");
       }
