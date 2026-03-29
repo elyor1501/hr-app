@@ -71,7 +71,7 @@ export default function CandidateDetails({ id, empData }: Props) {
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">Employee Details</h2>
+        <h2 className="text-xl font-bold">Candidate Details</h2>
         {!isEditing && (
           <button
             type="button"

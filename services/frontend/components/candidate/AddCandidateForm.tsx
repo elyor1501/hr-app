@@ -289,7 +289,7 @@ export default function CreateCandidateForm({ setOpenAction }: Props) {
           </Button>
 
           <Button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create Employee"}
+            {loading ? "Creating..." : "Create Candidate"}
           </Button>
         </div>
       </form>

@@ -52,7 +52,7 @@ export function EmployeeStatusChart({ employees, stats }: EmployeeStatusChartPro
 
   const chartConfig = {
     total: {
-      label: "Employees",
+      label: "Candidates",
       color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
@@ -60,7 +60,7 @@ export function EmployeeStatusChart({ employees, stats }: EmployeeStatusChartPro
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Employees Status</CardTitle>
+        <CardTitle>Candidate Status</CardTitle>
       </CardHeader>
 
       <CardContent>

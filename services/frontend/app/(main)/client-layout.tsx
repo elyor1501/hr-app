@@ -24,8 +24,8 @@ export default function ClientLayout({ children, user }: Props) {
   const getPageTitle = () => {
     if (pathname.startsWith("/dashboard")) return "Dashboard";
     if (pathname.startsWith("/resumeList")) return "Resumes";
-    if (pathname === "/candidates") return "Employees";
-    if (pathname.startsWith("/candidates/")) return "Employee Details";
+    if (pathname === "/candidates") return "Candidates";
+    if (pathname.startsWith("/candidates/")) return "Candidate Details";
     if (pathname === "/jobs") return "Jobs";
     if (pathname.startsWith("/jobs/")) return "Job Details";
     return "HR App";

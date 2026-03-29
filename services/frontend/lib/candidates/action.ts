@@ -20,7 +20,7 @@ export async function deleteCandidate(candidateId: string) {
     if (!res.ok) {
       const text = await res.text();
       console.error("Delete failed:", text);
-      throw new Error("Failed to delete employee");
+      throw new Error("Failed to delete candidate");
     }
 
     revalidatePath("/candidates");

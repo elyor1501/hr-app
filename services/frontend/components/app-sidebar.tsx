@@ -21,7 +21,7 @@ type Props = {
 const items: SidebarItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Resumes List", url: "/resumeList", icon: FileText },
-  { title: "Employees", url: "/candidates", icon: Users },
+  { title: "Candidates", url: "/candidates", icon: Users },
   { title: "Jobs", url: "/jobs", icon: Briefcase },
   { title: "Search", url: "/search", icon: Search },
 ];
