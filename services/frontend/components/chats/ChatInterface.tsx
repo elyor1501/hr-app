@@ -200,9 +200,7 @@ export const ChatInterface: React.FC = () => {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           AI Assistant
-          <span className="text-xs text-gray-500">
-            {language === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}
-          </span>
+         
         </CardTitle>
         <div className="flex">
           <Button 
@@ -258,7 +256,7 @@ export const ChatInterface: React.FC = () => {
                     size="sm"
                     onClick={() => handlePredefinedSearch(searcher)}
                     disabled={isLoading}
-                    className={`flex flex-col items-center gap-1 ${searcher.color} border-0 h-auto py-2`}
+                    className={`flex flex-col items-center justify-center gap-1 ${searcher.color} border-0 w-20 h-16 py-2`}
                     title={description}
                   >
                     <Icon className="h-4 w-4" />
