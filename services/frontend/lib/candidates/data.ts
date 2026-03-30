@@ -87,11 +87,6 @@ let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map(
 
 export async function getCandidateById(id: string) {
   try {
-    const cached = candidateByIdCache.get(id);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      return cached.data;
-    }
-
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
       return null;
@@ -108,7 +103,7 @@ export async function getCandidateById(id: string) {
       {
         method: "GET",
         headers,
-        next: { revalidate: 30 },
+        cache: "no-store", 
       }
     );
 
@@ -123,11 +118,7 @@ export async function getCandidateById(id: string) {
     }
 
     const data = await res.json();
-    const result = Array.isArray(data) ? data[0] : data;
-
-    candidateByIdCache.set(id, { data: result, timestamp: Date.now() });
-
-    return result;
+    return Array.isArray(data) ? data[0] : data;
   } catch (error) {
     console.error("getCandidateById error:", error);
     return null;
