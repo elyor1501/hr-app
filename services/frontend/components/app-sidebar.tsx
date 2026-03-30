@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { Briefcase, FileText, Home, LucideIcon, Search, Users } from "lucide-react";
+import Link from "next/link"; 
 
 type SidebarItem = {
   title: string;
@@ -28,10 +29,10 @@ const items: SidebarItem[] = [
 
 export function AppSidebar({ isOpen }: Props) {
   const pathname = usePathname();
+  
   return (
     <Sidebar className="relative">
       <SidebarContent>
-       
         <div className="flex items-center justify-center h-14">
           <span className="font-semibold">
             {isOpen ? "HR Application" : "HR"}
@@ -42,7 +43,7 @@ export function AppSidebar({ isOpen }: Props) {
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <a
+                <Link
                   href={item.url}
                   data-active={pathname === item.url}
                   className="flex items-center gap-3 rounded-md px-3 py-2
@@ -50,7 +51,7 @@ export function AppSidebar({ isOpen }: Props) {
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
                   {isOpen && <span>{item.title}</span>}
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
