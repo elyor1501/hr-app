@@ -256,7 +256,7 @@ export const ChatInterface: React.FC = () => {
                     size="sm"
                     onClick={() => handlePredefinedSearch(searcher)}
                     disabled={isLoading}
-                    className={`flex flex-col items-center justify-center gap-1 ${searcher.color} border-0 w-20 h-16 py-2`}
+                    className={`flex flex-col items-center justify-center gap-1 ${searcher.color} border-0 w-14 h-12 py-1`} //M w-14 h-12 py-1 B w-20 h-16 py-2 S w-14 h-12 py-1
                     title={description}
                   >
                     <Icon className="h-4 w-4" />
