@@ -20,6 +20,27 @@ class UpdateCandidateStatusRequest(BaseModel):
     candidate_status: str = Field(..., pattern="^(active|inactive)$")
 
 
+class UpdateParsedResumeRequest(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    current_title: Optional[str] = None
+    current_company: Optional[str] = None
+    years_of_experience: Optional[int] = None
+    skills: Optional[List[str]] = None
+    location: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github: Optional[str] = None
+    portfolio: Optional[str] = None
+    summary: Optional[str] = None
+    education: Optional[List[dict]] = None
+    experience: Optional[List[dict]] = None
+    projects: Optional[List[dict]] = None
+    certifications: Optional[List[dict]] = None
+    candidate_status: Optional[str] = Field(None, pattern="^(active|inactive)$")
+
+
 class PaginatedParsedResumesResponse(BaseModel):
     items: List[ParsedResumeResponse]
     total: int
@@ -206,6 +227,43 @@ async def get_parsed_resume_by_resume_id(
     return parsed_resume
 
 
+@router.put("/{parsed_resume_id}")
+async def update_parsed_resume_full(
+    parsed_resume_id: UUID,
+    request: UpdateParsedResumeRequest,
+    session: AsyncSession = Depends(get_db_session),
+):
+    result = await session.execute(
+        select(ParsedResume).where(ParsedResume.id == parsed_resume_id)
+    )
+    parsed_resume = result.scalar_one_or_none()
+    
+    if not parsed_resume:
+        raise HTTPException(status_code=404, detail="Parsed resume not found")
+    
+    update_data = request.model_dump(exclude_unset=True)
+    
+    for field, value in update_data.items():
+        setattr(parsed_resume, field, value)
+    
+    await session.commit()
+    await session.refresh(parsed_resume)
+    
+    await invalidate_parsed_resumes_cache()
+    
+    try:
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:parsed_resume:{parsed_resume.resume_id}")
+    except Exception:
+        pass
+    
+    return {
+        "message": "Resume updated successfully",
+        "id": str(parsed_resume.id),
+        "updated_fields": list(update_data.keys())
+    }
+
+
 @router.patch("/{parsed_resume_id}/status")
 async def update_candidate_status(
     parsed_resume_id: UUID,
@@ -232,9 +290,9 @@ async def update_candidate_status(
 
 
 @router.patch("/{parsed_resume_id}")
-async def update_parsed_resume(
+async def update_parsed_resume_partial(
     parsed_resume_id: UUID,
-    request: UpdateCandidateStatusRequest,
+    request: UpdateParsedResumeRequest,
     session: AsyncSession = Depends(get_db_session),
 ):
     result = await session.execute(
@@ -245,15 +303,29 @@ async def update_parsed_resume(
     if not parsed_resume:
         raise HTTPException(status_code=404, detail="Parsed resume not found")
     
-    parsed_resume.candidate_status = request.candidate_status
+    update_data = request.model_dump(exclude_unset=True)
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    for field, value in update_data.items():
+        setattr(parsed_resume, field, value)
+    
     await session.commit()
+    await session.refresh(parsed_resume)
     
     await invalidate_parsed_resumes_cache()
     
+    try:
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:parsed_resume:{parsed_resume.resume_id}")
+    except Exception:
+        pass
+    
     return {
-        "message": "Status updated successfully",
+        "message": "Resume updated successfully",
         "id": str(parsed_resume.id),
-        "candidate_status": parsed_resume.candidate_status
+        "updated_fields": list(update_data.keys())
     }
 
 
