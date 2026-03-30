@@ -41,9 +41,9 @@ export function DeleteCandidateButton({ candidateId }: { candidateId: string }) 
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Employee</DialogTitle>
+          <DialogTitle>Delete Candidate</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this Employee?
+            Are you sure you want to delete this Candidate?
           </DialogDescription>
         </DialogHeader>
 

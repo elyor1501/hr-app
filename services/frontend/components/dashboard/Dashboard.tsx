@@ -121,7 +121,7 @@ export default function DashboardDetail() {
         </div>
 
         <div className="bg-white border rounded-xl p-6">
-          <h3 className="text-sm text-muted-foreground">Total Employees</h3>
+          <h3 className="text-sm text-muted-foreground">Total Candidates</h3>
           <p className="text-3xl font-bold mt-2">{stats.total_employees}</p>
         </div>
 

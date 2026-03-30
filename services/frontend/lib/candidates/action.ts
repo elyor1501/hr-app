@@ -1,6 +1,4 @@
-"use server";
-
-import { revalidatePath } from "next/cache";
+import { revalidateCandidates } from "./revalidate";
 
 export async function deleteCandidate(candidateId: string) {
   try {
@@ -20,10 +18,10 @@ export async function deleteCandidate(candidateId: string) {
     if (!res.ok) {
       const text = await res.text();
       console.error("Delete failed:", text);
-      throw new Error("Failed to delete employee");
+      throw new Error("Failed to delete candidate");
     }
 
-    revalidatePath("/candidates");
+    await revalidateCandidates();
 
     return { success: true };
   } catch (error) {
@@ -60,7 +58,32 @@ export async function updateCandidate(formData: FormData): Promise<void> {
     throw new Error("Failed to update candidate");
   }
 
-  revalidatePath("/candidates");
+  await revalidateCandidates();
+}
+
+export async function createCandidate(formData: FormData) {
+  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/candidates/`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+      },
+      body: formData,
+    },
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Create failed:", text);
+    throw new Error("Failed to create candidate");
+  }
+
+  await revalidateCandidates();
+
+  return await res.json();
 }
 
 

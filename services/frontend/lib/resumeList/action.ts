@@ -1,3 +1,5 @@
+import { revalidateResumes } from "./revalidate";
+
 export async function uploadBulkResumes(files: File[]) {
   const formData = new FormData();
   const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
@@ -29,6 +31,7 @@ export async function uploadBulkResumes(files: File[]) {
       throw new Error(errorData?.detail || "Failed to upload resumes");
     }
 
+    await revalidateResumes();
     return response.json();
   } catch (error: any) {
     clearTimeout(timeoutId);
@@ -57,6 +60,7 @@ export async function deleteResume(id: string) {
     throw new Error(errorData?.detail || "Failed to delete resume");
   }
 
+  await revalidateResumes();
   return true;
 }
 

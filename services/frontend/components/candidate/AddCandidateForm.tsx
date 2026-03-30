@@ -12,6 +12,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { createCandidate } from "@/lib/candidates/action";
 
 type CandidateForm = {
   id: string;
@@ -80,17 +81,7 @@ export default function CreateCandidateForm({ setOpenAction }: Props) {
         }
       });
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/candidates/`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
-
-      if (!res.ok) throw new Error("Failed to create candidate");
-
-      const data = await res.json();
+      await createCandidate(formData);
 
       form.reset();
       setOpenAction(false);
@@ -289,7 +280,7 @@ export default function CreateCandidateForm({ setOpenAction }: Props) {
           </Button>
 
           <Button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create Employee"}
+            {loading ? "Creating..." : "Create Candidate"}
           </Button>
         </div>
       </form>

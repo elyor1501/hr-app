@@ -1,10 +1,7 @@
-"use server";
+import { revalidateJobs } from "./revalidate";
 
-import { revalidatePath } from "next/cache";
-
-export async function deleteJob(jobId: string) {
+export async function deleteJob(jobId: string, token: string | null) {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${jobId}`,
       {
@@ -23,7 +20,7 @@ export async function deleteJob(jobId: string) {
       throw new Error("Failed to delete job");
     }
 
-    revalidatePath("/jobs");
+    await revalidateJobs();
 
     return { success: true };
   } catch (error) {
@@ -32,12 +29,8 @@ export async function deleteJob(jobId: string) {
   }
 }
 
-export async function updateJob(formData: FormData): Promise<void> {
+export async function updateJob(formData: FormData, token: string | null): Promise<void> {
   const id = formData.get("id") as string;
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("access_token")
-      : null;
 
   const educationInput = formData.getAll("education") as string[];
 
@@ -97,5 +90,30 @@ export async function updateJob(formData: FormData): Promise<void> {
     throw new Error("Failed to update job");
   }
 
-  revalidatePath("/jobs");
+  await revalidateJobs();
+}
+
+export async function createJob(payload: any, token: string | null) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Create failed:", text);
+    throw new Error("Failed to create job");
+  }
+
+  await revalidateJobs();
+
+  return await res.json();
 }
