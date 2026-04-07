@@ -41,7 +41,6 @@ jobs:
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', secrets.NEXT_PUBLIC_API_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_URL={0}', secrets.NEXT_PUBLIC_SUPABASE_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={0}', secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
-            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_GEMINI_API_KEY={0}', secrets.NEXT_PUBLIC_GEMINI_API_KEY) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -190,7 +189,6 @@ jobs:
               -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
-              -e NEXT_PUBLIC_GEMINI_API_KEY=${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
             echo '=== Waiting for all services ==='

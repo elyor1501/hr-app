@@ -1,3 +1,5 @@
+import { getApiUrl, getAuthToken } from "../api-config";
+
 export type Resume = {
   id: string;
   file_name: string;
@@ -10,32 +12,44 @@ let resumeCache: { data: Resume[]; timestamp: number } | null = null;
 const CACHE_TTL = 30000;
 
 export async function getResumes(): Promise<Resume[]> {
-  if (resumeCache && Date.now() - resumeCache.timestamp < CACHE_TTL) {
+  const isServer = typeof window === "undefined";
+  
+  if (!isServer && resumeCache && Date.now() - resumeCache.timestamp < CACHE_TTL) {
     return resumeCache.data;
   }
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  const apiUrl = getApiUrl();
+  const token = getAuthToken();
+  
   const headers: HeadersInit = {
-    "ngrok-skip-browser-warning": "true",
     ...(token ? { Authorization: `Bearer ${token}` } : {})
   };
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/?skip=0&limit=100`,
-    {
+  const fullUrl = apiUrl ? `${apiUrl}/api/v1/resumes/?skip=0&limit=100` : '/api/v1/resumes/?skip=0&limit=100';
+
+  try {
+    const res = await fetch(fullUrl, {
       method: "GET",
       headers,
-      next: { revalidate: 30 },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch resumes:", res.status);
+      return [];
     }
-  );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch resumes");
+    const data = await res.json();
+    
+    if (!isServer) {
+      resumeCache = { data, timestamp: Date.now() };
+    }
+    
+    return data;
+  } catch (error) {
+    console.error("Error fetching resumes:", error);
+    return [];
   }
-
-  const data = await res.json();
-  resumeCache = { data, timestamp: Date.now() };
-  return data;
 }
 
 export function invalidateResumeCache() {

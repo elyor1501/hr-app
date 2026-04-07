@@ -1,9 +1,9 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 import structlog
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+
 from src.api.health import router as health_router
 from src.api.metrics import router as metrics_router
 from src.api.v1.candidates import router as candidates_router
@@ -26,6 +26,7 @@ from src.services.task_queue import get_task_queue, close_task_queue
 
 logger = structlog.get_logger()
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await init_db_connection()
@@ -34,19 +35,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if settings.environment == "development":
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+    logger.info("application_started", environment=settings.environment)
     yield
     await close_db_connection()
     await close_redis_pool()
     await close_task_queue()
-
-
-async def ngrok_middleware(request: Request, call_next):
-    response = await call_next(request)
-
-    if "ngrok" in str(request.url):
-        response.headers["ngrok-skip-browser-warning"] = "true"
-
-    return response
+    logger.info("application_stopped")
 
 
 def create_app() -> FastAPI:
@@ -58,21 +52,12 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://localhost:8000",
-            "https://*.ngrok-free.app",
-            "https://*.ngrok.io",
-            "*",
-        ],
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["*"],
     )
-
-    app.middleware("http")(ngrok_middleware)
 
     app.include_router(health_router)
     app.include_router(metrics_router)
@@ -87,5 +72,6 @@ def create_app() -> FastAPI:
     app.include_router(stats_router, prefix="/api/v1/stats", tags=["stats"])
 
     return app
+
 
 app = create_app()

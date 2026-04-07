@@ -11,6 +11,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-montserrat)", "sans-serif"],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -53,10 +56,20 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      keyframes: {
+        "progress-loading": {
+          "0%": { transform: "translateX(-100%)" },
+          "50%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "gradient-x": {
+          "0%, 100%": { "background-position": "0% 50%" },
+          "50%": { "background-position": "100% 50%" },
+        },
+      },
+      animation: {
+        "progress-loading": "progress-loading 1.5s ease-in-out infinite",
+        "gradient-x": "gradient-x 3s ease infinite",
       },
     },
   },

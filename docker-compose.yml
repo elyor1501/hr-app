@@ -13,7 +13,7 @@ services:
       retries: 5
     networks:
       - hr-network
- 
+
   backend:
     build:
       context: ./services/backend
@@ -35,8 +35,7 @@ services:
       HR_APP_VECTOR_DIMENSION: "768"
       HR_APP_CACHE_PREFIX: "hr_backend:"
       PYTHONPATH: /app
-      # ADD THESE 2 LINES - Storage configuration
-      SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
     ports:
       - "8000:8000"
@@ -46,7 +45,7 @@ services:
     restart: always
     networks:
       - hr-network
- 
+
   worker:
     build:
       context: ./services/backend
@@ -65,8 +64,7 @@ services:
       HR_APP_VECTOR_DIMENSION: "768"
       HR_APP_CACHE_PREFIX: "hr_worker:"
       PYTHONPATH: /app
-      # ADD THESE 2 LINES - Storage configuration
-      SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
     volumes:
       - ./services/backend/src:/app/src
@@ -75,7 +73,7 @@ services:
     restart: always
     networks:
       - hr-network
- 
+
   ai-ml-service:
     build:
       context: ./services/ai-ml
@@ -101,29 +99,42 @@ services:
     restart: always
     networks:
       - hr-network
- 
+
   frontend:
     build:
       context: ./services/frontend
       dockerfile: Dockerfile
     container_name: hr-frontend
     ports:
-      - "80:3000"
+      - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:-}
-      NEXT_PUBLIC_GEMINI_API_KEY: ${NEXT_PUBLIC_GEMINI_API_KEY:-}
+      NEXT_PUBLIC_API_URL: ""
+      NEXT_PUBLIC_SUPABASE_URL: https://ectxlkkilezsebodryhd.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjdHhsa2tpbGV6c2Vib2RyeWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MTkzMTIsImV4cCI6MjA4NDA5NTMxMn0.w3tOvdJPeVoIvl_xlEclmln7iFUMRTf13cjNEIyumyI
     depends_on:
       - backend
     restart: always
     networks:
       - hr-network
- 
+
+  nginx:
+    image: nginx:alpine
+    container_name: hr-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+    networks:
+      - hr-network
+
 volumes:
   redis_data:
   upload_data:
- 
+
 networks:
   hr-network:
     driver: bridge

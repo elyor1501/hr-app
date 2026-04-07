@@ -19,7 +19,7 @@ export function AddJobButton(){
         Create Job
         </div>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-[520px] max-h-[90vh] overflow-y-auto p-4">
+      <DialogContent className="w-[95vw] max-w-[800px] max-h-[90vh] overflow-y-auto p-4">
         <DialogHeader>
           <DialogTitle>Create a new job</DialogTitle>
         </DialogHeader>

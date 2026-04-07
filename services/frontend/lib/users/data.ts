@@ -1,20 +1,22 @@
+import { getApiUrl, getAuthToken } from "../api-config";
+
 export async function getLoggedInUser() {
   if (typeof window === "undefined") return null;
 
-  const token = localStorage.getItem("access_token");
+  const token = getAuthToken();
 
   if (!token) {
     return null;
   }
 
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`;
+    const apiUrl = getApiUrl();
+    const url = `${apiUrl}/api/v1/auth/me`;
 
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
       },
       cache: "no-store",
     });

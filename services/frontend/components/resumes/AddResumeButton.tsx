@@ -2,21 +2,22 @@
 
 import { useState, useEffect } from "react";
 import ResumeUpload from "./ResumeUpload";
+import { getApiUrl, getAuthToken } from "@/lib/api-config";
 
 export default function AddResumeButton() {
   const [open, setOpen] = useState(false);
   const [existingFiles, setExistingFiles] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!open) return; 
+    if (!open) return;
 
     const fetchExistingFiles = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/`, {
+        const token = getAuthToken();
+        const apiUrl = getApiUrl();
+        const res = await fetch(`${apiUrl}/api/v1/resumes/`, {
           headers: {
-            "Authorization": `Bearer ${token}`,
-            "ngrok-skip-browser-warning": "true",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           }
         });
         if (!res.ok) throw new Error("Failed to fetch resumes");
@@ -44,7 +45,6 @@ export default function AddResumeButton() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-xl p-6 relative shadow-lg">
-
             <button
               onClick={() => setOpen(false)}
               className="absolute top-3 right-3 text-gray-500 hover:text-black"
@@ -52,13 +52,11 @@ export default function AddResumeButton() {
               ✕
             </button>
 
-            <h2 className="text-lg font-semibold mb-4">
-              Upload Resume
-            </h2>
+            <h2 className="text-lg font-semibold mb-4">Upload Resume</h2>
 
-            <ResumeUpload 
+            <ResumeUpload
               onClose={() => setOpen(false)}
-              existingFiles={existingFiles} 
+              existingFiles={existingFiles}
             />
           </div>
         </div>

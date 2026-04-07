@@ -4,6 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import { EmployeeStatusChart } from "@/components/dashboard/charts/CandidateStatusChart";
 import { JobStatusChart } from "@/components/dashboard/charts/JobStatusChart";
 import { JobTypeChart } from "@/components/dashboard/charts/JobTypeChart";
+import { getApiUrl, getAuthToken } from "@/lib/api-config";
+import { Loader, SkeletonCard } from "@/components/ui/loader";
+import { Users, Briefcase, FileText, TrendingUp } from "lucide-react";
 
 interface StatsData {
   total_jobs: number;
@@ -35,14 +38,6 @@ export default function DashboardDetail() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = useCallback(async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    if (!apiUrl) {
-      setError("API URL not configured");
-      setLoading(false);
-      return;
-    }
-
     if (statsCache && Date.now() - statsCache.timestamp < CACHE_TTL) {
       setStats(statsCache.data);
       setLoading(false);
@@ -50,10 +45,10 @@ export default function DashboardDetail() {
     }
 
     try {
-      const token = localStorage.getItem("access_token");
+      const token = getAuthToken();
+      const apiUrl = getApiUrl();
       const headers: HeadersInit = {
         "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
@@ -82,21 +77,19 @@ export default function DashboardDetail() {
     return (
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white border rounded-xl p-6 animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-              <div className="h-8 bg-gray-200 rounded w-16"></div>
-            </div>
-          ))}
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
         </div>
+        <Loader />
       </div>
     );
   }
 
   if (error || !stats) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-        <p className="text-red-600">{error || "No data available"}</p>
+      <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
+        <p className="text-destructive font-medium">{error || "No data available"}</p>
         <button
           onClick={() => {
             statsCache = null;
@@ -104,7 +97,7 @@ export default function DashboardDetail() {
             setError(null);
             fetchStats();
           }}
-          className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           Retry
         </button>
@@ -113,32 +106,73 @@ export default function DashboardDetail() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="bg-white border rounded-xl p-6">
-          <h3 className="text-sm text-muted-foreground">Total Jobs</h3>
-          <p className="text-3xl font-bold mt-2">{stats.total_jobs}</p>
+    <div className="space-y-8">
+      {/* Overview Section */}
+      <section>
+        <div className="flex items-center gap-2 mb-4">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <TrendingUp className="w-5 h-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold">Overview</h2>
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="bg-card border rounded-xl p-6 shadow-sm card-hover relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Briefcase className="w-12 h-12" />
+            </div>
+            <h3 className="text-sm font-medium text-muted-foreground">Total Jobs</h3>
+            <p className="text-3xl font-bold mt-2">{stats.total_jobs}</p>
+            <div className="mt-4 flex items-center text-xs text-green-600 font-medium">
+              <span>Active positions</span>
+            </div>
+          </div>
+
+          <div className="bg-card border rounded-xl p-6 shadow-sm card-hover relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Users className="w-12 h-12" />
+            </div>
+            <h3 className="text-sm font-medium text-muted-foreground">Total Candidates</h3>
+            <p className="text-3xl font-bold mt-2">{stats.total_employees}</p>
+            <div className="mt-4 flex items-center text-xs text-blue-600 font-medium">
+              <span>Managed profiles</span>
+            </div>
+          </div>
+
+          <div className="bg-card border rounded-xl p-6 shadow-sm card-hover relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+              <FileText className="w-12 h-12" />
+            </div>
+            <h3 className="text-sm font-medium text-muted-foreground">Total Resumes</h3>
+            <p className="text-3xl font-bold mt-2">{stats.total_resumes}</p>
+            <div className="mt-4 flex items-center text-xs text-purple-600 font-medium">
+              <span>Processed documents</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Reports Section */}
+      <section>
+        <div className="flex items-center gap-2 mb-4">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <FileText className="w-5 h-5 text-primary" />
+          </div>
+          <h2 className="text-xl font-semibold">Reports & Analytics</h2>
         </div>
 
-        <div className="bg-white border rounded-xl p-6">
-          <h3 className="text-sm text-muted-foreground">Total Candidates</h3>
-          <p className="text-3xl font-bold mt-2">{stats.total_employees}</p>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="card-hover">
+            <JobStatusChart stats={stats.jobs_by_status} totalJobs={stats.total_jobs} />
+          </div>
+          <div className="card-hover">
+            <JobTypeChart stats={stats.jobs_by_type} />
+          </div>
+          <div className="card-hover lg:col-span-2">
+            <EmployeeStatusChart stats={stats.candidates_by_status} />
+          </div>
         </div>
-
-        <div className="bg-white border rounded-xl p-6">
-          <h3 className="text-sm text-muted-foreground">Total Resumes</h3>
-          <p className="text-3xl font-bold mt-2">{stats.total_resumes}</p>
-        </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <JobStatusChart stats={stats.jobs_by_status} totalJobs={stats.total_jobs} />
-        <JobTypeChart stats={stats.jobs_by_type} />
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <EmployeeStatusChart stats={stats.candidates_by_status} />
-      </div>
+      </section>
     </div>
   );
 }

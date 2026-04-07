@@ -24,6 +24,7 @@ import {
 
 import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 import { LoginSchemaType, loginSchema } from "@/schemas/loginSchema";
+import { getApiUrl } from "@/lib/api-config";
 
 export function LoginForm() {
   const router = useRouter();
@@ -48,16 +49,16 @@ export function LoginForm() {
       formData.append("username", values.email);
       formData.append("password", values.password);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: formData.toString(),
+      const apiUrl = getApiUrl();
+      const loginUrl = apiUrl ? `${apiUrl}/api/v1/auth/login` : '/api/v1/auth/login';
+
+      const res = await fetch(loginUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-      );
+        body: formData.toString(),
+      });
 
       const data = await res.json();
 

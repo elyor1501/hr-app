@@ -1,46 +1,81 @@
-"use client"
+"use client";
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback } from "react";
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
 interface ChatContextType {
-  isChatOpen: boolean;
+  isOpen: boolean;
   messages: Message[];
+  isLoading: boolean;
+  toggleChat: () => void;
   openChat: () => void;
   closeChat: () => void;
-  addMessage: (message: Message) => void;
-  clearChat: () => void;
+  sendMessage: (content: string) => Promise<void>;
+  clearHistory: () => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  
+  const toggleChat = useCallback(() => setIsOpen((prev) => !prev), []);
+  const openChat = useCallback(() => setIsOpen(true), []);
+  const closeChat = useCallback(() => setIsOpen(false), []);
 
-  const openChat = async () => {
-    setIsChatOpen(true);
+  const clearHistory = useCallback(() => {
+    setMessages([]);
+  }, []);
 
-    if (messages.length === 0) {
-      const welcomeMessage: Message = {
+  const sendMessage = useCallback(async (content: string) => {
+    if (!content.trim()) return;
+
+    // Add user message
+    const userMessage: Message = { role: "user", content };
+    setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
+      // Simulation of AI response (Replace with actual API call if backend is ready)
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      const assistantMessage: Message = {
         role: "assistant",
-        content: `Hello, how can I help you?`,
+        content: `I've analyzed your request regarding "${content}". As your AI HR Assistant, I can help you filter candidates, analyze job requirements, or summarize resumes based on our neural matching engine.`,
       };
-      setMessages([welcomeMessage]);
+      
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      const errorMessage: Message = {
+        role: "assistant",
+        content: "I encountered an error while processing your request. Please try again.",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
-  };
-  const closeChat = () => setIsChatOpen(false);
-  const addMessage = (message: Message) => setMessages((prev) => [...prev, message]);
-  const clearChat = () => setMessages([]);
+  }, []);
 
   return (
-    <ChatContext.Provider value={{ isChatOpen, messages, openChat, closeChat, addMessage, clearChat }}>
+    <ChatContext.Provider
+      value={{
+        isOpen,
+        messages,
+        isLoading,
+        toggleChat,
+        openChat,
+        closeChat,
+        sendMessage,
+        clearHistory,
+      }}
+    >
       {children}
     </ChatContext.Provider>
   );
@@ -49,7 +84,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useChat = () => {
   const context = useContext(ChatContext);
   if (context === undefined) {
-    throw new Error('useChat must be used within a ChatProvider');
+    throw new Error("useChat must be used within a ChatProvider");
   }
   return context;
 };

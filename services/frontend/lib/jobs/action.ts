@@ -1,17 +1,18 @@
 import { revalidateJobs } from "./revalidate";
+import { getApiUrl } from "../api-config";
 
 export async function deleteJob(jobId: string, token: string | null) {
   try {
+    const apiUrl = getApiUrl();
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${jobId}`,
+      `${apiUrl}/api/v1/jobs/${jobId}`,
       {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "ngrok-skip-browser-warning": "true",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         cache: "no-store",
-      },
+      }
     );
 
     if (!res.ok) {
@@ -31,6 +32,7 @@ export async function deleteJob(jobId: string, token: string | null) {
 
 export async function updateJob(formData: FormData, token: string | null): Promise<void> {
   const id = formData.get("id") as string;
+  const apiUrl = getApiUrl();
 
   const educationInput = formData.getAll("education") as string[];
 
@@ -51,32 +53,26 @@ export async function updateJob(formData: FormData, token: string | null): Promi
     employment_type: formData.get("employment_type"),
     work_mode: formData.get("work_mode"),
     location: formData.get("location"),
-
     hiring_manager: formData.get("hiring_manager"),
     openings: Number(formData.get("openings")),
     experience_required: Number(formData.get("experience_required")),
-
     education: educationInput.length ? educationInput : [],
-
     description: formData.get("description"),
     responsibilities: formData.get("responsibilities"),
-
     required_skills: requiredSkills,
     preferred_skills: preferredSkills?.length ? preferredSkills : null,
-
     salary_range: formData.get("salary_range"),
     application_posted: formData.get("application_posted"),
     application_deadline: formData.get("application_deadline"),
   };
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${id}`,
+    `${apiUrl}/api/v1/jobs/${id}`,
     {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        "ngrok-skip-browser-warning": "true",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(payload),
       cache: "no-store",
@@ -94,17 +90,17 @@ export async function updateJob(formData: FormData, token: string | null): Promi
 }
 
 export async function createJob(payload: any, token: string | null) {
+  const apiUrl = getApiUrl();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/`,
+    `${apiUrl}/api/v1/jobs/`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        "ngrok-skip-browser-warning": "true",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(payload),
-    },
+    }
   );
 
   if (!res.ok) {

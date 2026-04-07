@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
+import { Input } from "@/components/ui/input";
 import {
   Search,
   FilterX,
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { getApiUrl } from "@/lib/api-config";
 
 type Candidate = {
   id: string;
@@ -55,18 +57,18 @@ export default function CandidateSearch() {
 
       setLoading(true);
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/search`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              query_text: trimmedQuery,
-              top_k: 10,
-              min_score: minScore,
-            }),
-          },
-        );
+        const apiUrl = getApiUrl();
+        const searchUrl = apiUrl ? `${apiUrl}/api/v1/search` : '/api/v1/search';
+
+        const response = await fetch(searchUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query_text: trimmedQuery,
+            top_k: 10,
+            min_score: minScore,
+          }),
+        });
 
         if (!response.ok) {
           const errorBody = await response.text();
@@ -78,7 +80,7 @@ export default function CandidateSearch() {
 
         const mappedResults = (data.candidates || []).map((c: any) => ({
           id: c.id,
-          resume_id :c.resume_id,
+          resume_id: c.resume_id,
           first_name: c.first_name,
           last_name: c.last_name,
           email: c.email,
@@ -92,14 +94,13 @@ export default function CandidateSearch() {
           status: c.status || "",
           created_at: c.created_at || "",
         }));
-        
 
         setResults(
-                  mappedResults.sort(
-                    (a: Candidate, b: Candidate) =>
-                      b.similarity_score - a.similarity_score,
-                  ),
-                );
+          mappedResults.sort(
+            (a: Candidate, b: Candidate) =>
+              b.similarity_score - a.similarity_score,
+          ),
+        );
       } catch (err) {
         console.error("Semantic Search Error:", err);
         setResults([]);
@@ -116,19 +117,19 @@ export default function CandidateSearch() {
   }, [debouncedQuery, executeSearch]);
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-4">
+    <div className="container mx-auto max-w-6xl space-y-4">      
+      <h1 className="text-xl font-semibold">Candidate Search</h1>
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <textarea
+            <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by skills or keywords"
-              rows={1}
               className="w-full h-10 pl-10 pr-4 py-2 text-sm bg-transparent border rounded-lg
                  focus-visible:ring-1 focus-visible:ring-blue-500
-                 outline-none resize-none overflow-hidden"
+                 outline-none"
             />
           </div>
 

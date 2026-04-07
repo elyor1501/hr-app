@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -10,14 +10,14 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "HR App",
-  description: "AI Powered Application",
+  title: "Smart HR",
+  description: "AI Powered HR Management System",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  display: "swap",
+const montserrat = Montserrat({
   subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body className={`${montserrat.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

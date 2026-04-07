@@ -24,64 +24,67 @@ type JobStatusChartProps = {
 
 export function JobStatusChart({ stats, totalJobs }: JobStatusChartProps) {
   const chartData = [
-    { name: "Open", value: stats.open_jobs, fill: "#4285F4" },
-    { name: "Closed", value: stats.closed_jobs, fill: "#2c7397" },
+    { name: "Open", value: stats.open_jobs, fill: "hsl(var(--chart-1))" },
+    { name: "Closed", value: stats.closed_jobs, fill: "hsl(var(--chart-2))" },
   ]
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col h-full">
       <CardHeader>
         <CardTitle>Jobs Overview</CardTitle>
-        <CardDescription>Open vs Closed Jobs</CardDescription>
+        <CardDescription>Real-time status of job postings</CardDescription>
       </CardHeader>
 
-      <CardContent className="flex items-center justify-between">
-        <RadialBarChart
-          width={250}
-          height={250}
-          data={chartData}
-          innerRadius={80}
-          outerRadius={130}
-          endAngle={180}
-        >
-          <PolarRadiusAxis tick={false} axisLine={false}>
-            <Label
-              content={({ viewBox }) => {
-                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                  return (
-                    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
-                      <tspan
-                        x={viewBox.cx}
-                        y={(viewBox.cy || 0) - 10}
-                        className="fill-foreground text-2xl font-bold"
-                      >
-                        {totalJobs}
-                      </tspan>
-                      <tspan
-                        x={viewBox.cx}
-                        y={(viewBox.cy || 0) + 10}
-                        className="fill-muted-foreground"
-                      >
-                        Total Jobs
-                      </tspan>
-                    </text>
-                  )
-                }
-              }}
-            />
-          </PolarRadiusAxis>
-          <RadialBar dataKey="value" background cornerRadius={6} />
-        </RadialBarChart>
+      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex-1 flex justify-center">
+          <RadialBarChart
+            width={200}
+            height={200}
+            data={chartData}
+            innerRadius={60}
+            outerRadius={90}
+            endAngle={180}
+            startAngle={0}
+          >
+            <PolarRadiusAxis tick={false} axisLine={false}>
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) - 10}
+                          className="fill-foreground text-3xl font-bold"
+                        >
+                          {totalJobs}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 15}
+                          className="fill-muted-foreground text-xs font-medium"
+                        >
+                          Total Jobs
+                        </tspan>
+                      </text>
+                    )
+                  }
+                }}
+              />
+            </PolarRadiusAxis>
+            <RadialBar dataKey="value" background cornerRadius={10} />
+          </RadialBarChart>
+        </div>
 
-        <div className="flex flex-col gap-4 ml-6 w-40">
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="font-medium">Open Jobs</span>
-              <span>{stats.open_jobs}</span>
+        <div className="flex flex-col gap-4 w-full sm:w-48">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="font-medium text-muted-foreground">Open Jobs</span>
+              <span className="font-bold">{stats.open_jobs}</span>
             </div>
-            <div className="w-full bg-gray-200 h-2 rounded">
+            <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
               <div
-                className="bg-[#4285F4] h-2 rounded"
+                className="bg-primary h-2 rounded-full transition-all duration-500"
                 style={{
                   width: totalJobs ? `${(stats.open_jobs / totalJobs) * 100}%` : "0%",
                 }}
@@ -89,14 +92,14 @@ export function JobStatusChart({ stats, totalJobs }: JobStatusChartProps) {
             </div>
           </div>
 
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="font-medium">Closed Jobs</span>
-              <span>{stats.closed_jobs}</span>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="font-medium text-muted-foreground">Closed Jobs</span>
+              <span className="font-bold">{stats.closed_jobs}</span>
             </div>
-            <div className="w-full bg-gray-200 h-2 rounded">
+            <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
               <div
-                className="bg-[#2c7397] h-2 rounded"
+                className="bg-chart-2 h-2 rounded-full transition-all duration-500"
                 style={{
                   width: totalJobs ? `${(stats.closed_jobs / totalJobs) * 100}%` : "0%",
                 }}

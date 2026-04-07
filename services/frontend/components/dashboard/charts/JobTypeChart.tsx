@@ -1,7 +1,7 @@
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis, Cell } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bar, BarChart, XAxis, YAxis, Cell, ResponsiveContainer } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
@@ -29,13 +29,14 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
 
   if (stats) {
     chartData = [
-      { type: "Full Time", count: stats.full_time, fill: "#6366F1" },
-      { type: "Part Time", count: stats.part_time, fill: "#2c7397" },
-      { type: "Contract", count: stats.contract, fill: "#F97316" },
-      { type: "Internship", count: stats.internship, fill: "#0EA5E9" },
-      { type: "Entry Level", count: stats.entry_level, fill: "#10B981" },
+      { type: "Full Time", count: stats.full_time, fill: "hsl(var(--chart-1))" },
+      { type: "Part Time", count: stats.part_time, fill: "hsl(var(--chart-2))" },
+      { type: "Contract", count: stats.contract, fill: "hsl(var(--chart-3))" },
+      { type: "Internship", count: stats.internship, fill: "hsl(var(--chart-4))" },
+      { type: "Entry Level", count: stats.entry_level, fill: "hsl(var(--chart-5))" },
     ];
   } else if (jobs) {
+    // ... logic for jobs array remains similar but with theme colors
     const counts: Record<string, number> = {
       "Full Time": 0,
       "Part Time": 0,
@@ -54,21 +55,21 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
       else counts["Full Time"]++;
     });
 
-    const getColor = (type: string) => {
+    const getHslColor = (type: string) => {
       switch (type) {
-        case "Full Time": return "#6366F1";
-        case "Part Time": return "#2c7397";
-        case "Contract": return "#F97316";
-        case "Internship": return "#0EA5E9";
-        case "Entry Level": return "#10B981";
-        default: return "#6366F1";
+        case "Full Time": return "hsl(var(--chart-1))";
+        case "Part Time": return "hsl(var(--chart-2))";
+        case "Contract": return "hsl(var(--chart-3))";
+        case "Internship": return "hsl(var(--chart-4))";
+        case "Entry Level": return "hsl(var(--chart-5))";
+        default: return "hsl(var(--chart-1))";
       }
     };
 
     chartData = Object.keys(counts).map((type) => ({
       type,
       count: counts[type],
-      fill: getColor(type),
+      fill: getHslColor(type),
     }));
   } else {
     return <div>Loading chart...</div>;
@@ -79,42 +80,48 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
   } satisfies ChartConfig;
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Job Type Distribution</CardTitle>
+        <CardDescription>Breakdown by employment type</CardDescription>
       </CardHeader>
 
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
-          >
-            <XAxis
-              dataKey="type"
-              type="category"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-            />
-            <YAxis
-              type="number"
-              tickLine={false}
-              axisLine={false}
-              allowDecimals={false}
-              domain={[0, "auto"]}
-              tickCount={6}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-              {chartData.map((entry, index) => (
-                <Cell key={index} fill={entry.fill} />
-              ))}
-            </Bar>
-          </BarChart>
+        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 20, left: -20, bottom: 5 }}
+            >
+              <XAxis
+                dataKey="type"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                fontSize={12}
+                className="fill-muted-foreground"
+              />
+              <YAxis
+                type="number"
+                tickLine={false}
+                axisLine={false}
+                allowDecimals={false}
+                domain={[0, "auto"]}
+                tickCount={6}
+                fontSize={12}
+                className="fill-muted-foreground"
+              />
+              <ChartTooltip
+                cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={40}>
+                {chartData.map((entry, index) => (
+                  <Cell key={index} fill={entry.fill} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

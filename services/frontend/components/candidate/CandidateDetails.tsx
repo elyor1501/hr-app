@@ -66,7 +66,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     }
   }
 
-  // if (loading) return <p>Loading candidate details...</p>;
+  if (loading) return <p>Loading candidate details...</p>;
 
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
@@ -92,11 +92,7 @@ export default function CandidateDetails({ id, empData }: Props) {
         <form
           key={isEditing ? "edit" : "view"}
           id="candidate-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            handleSubmit(formData);
-          }}
+          action={handleSubmit}
           className="mt-6"
         >
           <input type="hidden" name="id" value={candidate.id} />
@@ -104,13 +100,11 @@ export default function CandidateDetails({ id, empData }: Props) {
           <TabsContent value="basic" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  First Name
-                </label>
+                <label className="block text-sm font-medium mb-1">Name</label>
                 <input
-                  name="first_name"
-                  defaultValue={`${candidate.first_name}`}
-                  disabled={!isEditing}
+                  name="full_name"
+                  defaultValue={`${candidate.first_name} ${candidate.last_name}`}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -130,36 +124,21 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Last Name
-                </label>
-                <input
-                  name="last_name"
-                  defaultValue={`${candidate.last_name}`}
-                  disabled={!isEditing}
-                  className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium mb-1">Email</label>
                 <input
                   name="email"
                   defaultValue={candidate.email ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
-            </div>
 
-            <div className="grid md:grid-cols-1 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Location
-                </label>
+                <label className="block text-sm font-medium mb-1">Phone</label>
                 <input
-                  name="location"
-                  defaultValue={candidate.location ?? "NA"}
-                  disabled={!isEditing}
+                  name="phone"
+                  defaultValue={candidate.phone ?? "NA"}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -167,11 +146,13 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">Phone</label>
+                <label className="block text-sm font-medium mb-1">
+                  Location
+                </label>
                 <input
-                  name="phone"
-                  defaultValue={candidate.phone ?? "NA"}
-                  disabled={!isEditing}
+                  name="location"
+                  defaultValue={candidate.location ?? "NA"}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -182,7 +163,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <input
                   name="github"
                   defaultValue={candidate.github ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -196,7 +177,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <input
                   name="linkedin_url"
                   defaultValue={candidate.linkedin_url ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -207,7 +188,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <input
                   name="portfolio"
                   defaultValue={candidate.portfolio ?? "NA"}
-                  disabled={!isEditing}
+                  disabled
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               </div>
@@ -219,7 +200,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <textarea
                   name="skills"
                   defaultValue={(candidate.skills || []).join(", ")}
-                  disabled={!isEditing}
+                  disabled
                   rows={10}
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 />
@@ -240,7 +221,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                   form="candidate-form"
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white"
                 >
                   {loading ? "Updating.." : "Update"}
                 </button>

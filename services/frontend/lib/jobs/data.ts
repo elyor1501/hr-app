@@ -1,3 +1,5 @@
+import { getApiUrl, getAuthToken } from "../api-config";
+
 export type JobList = {
   id: string;
   title: string;
@@ -28,14 +30,14 @@ export async function getJob(): Promise<JobList[]> {
       return jobCache.data;
     }
 
-    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    const apiUrl = getApiUrl();
+    const token = getAuthToken();
     const headers: HeadersInit = {
-      "ngrok-skip-browser-warning": "true",
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/?page=1&page_size=100`,
+      `${apiUrl}/api/v1/jobs/?page=1&page_size=100`,
       {
         headers,
         next: { revalidate: 30 },
@@ -71,14 +73,14 @@ export function invalidateJobCache() {
 
 export async function getJobById(id: string) {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    const apiUrl = getApiUrl();
+    const token = getAuthToken();
     const headers: HeadersInit = {
-      "ngrok-skip-browser-warning": "true",
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${id}`,
+      `${apiUrl}/api/v1/jobs/${id}`,
       {
         method: "GET",
         headers,
@@ -101,15 +103,15 @@ export async function getJobById(id: string) {
 }
 
 export async function matchCandidates(jobId: string, candidateIds: string[]) {
-  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  const apiUrl = getApiUrl();
+  const token = getAuthToken();
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/match/bulk`,
+    `${apiUrl}/api/v1/match/bulk`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({

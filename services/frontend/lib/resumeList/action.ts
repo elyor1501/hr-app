@@ -1,8 +1,10 @@
 import { revalidateResumes } from "./revalidate";
+import { getApiUrl, getAuthToken } from "../api-config";
 
 export async function uploadBulkResumes(files: File[]) {
   const formData = new FormData();
-  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  const token = getAuthToken();
+  const apiUrl = getApiUrl();
 
   files.forEach((file) => {
     formData.append("files", file);
@@ -11,18 +13,17 @@ export async function uploadBulkResumes(files: File[]) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 120000);
 
+  const uploadUrl = apiUrl ? `${apiUrl}/api/v1/resumes/bulk` : '/api/v1/resumes/bulk';
+
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/bulk`,
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-        body: formData,
-        signal: controller.signal,
-      }
-    );
+    const response = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+      signal: controller.signal,
+    });
 
     clearTimeout(timeoutId);
 
@@ -43,17 +44,16 @@ export async function uploadBulkResumes(files: File[]) {
 }
 
 export async function deleteResume(id: string) {
-  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "ngrok-skip-browser-warning": "true",
-      },
-    }
-  );
+  const token = getAuthToken();
+  const apiUrl = getApiUrl();
+  const deleteUrl = apiUrl ? `${apiUrl}/api/v1/resumes/${id}` : `/api/v1/resumes/${id}`;
+
+  const response = await fetch(deleteUrl, {
+    method: "DELETE",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -65,25 +65,24 @@ export async function deleteResume(id: string) {
 }
 
 export async function downloadResume(id: string, fileName?: string, fallbackFileUrl?: string) {
-  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-  let downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/${id}/download`;
+  const token = getAuthToken();
+  const apiUrl = getApiUrl();
+  const downloadUrl = apiUrl ? `${apiUrl}/api/v1/resumes/${id}/download` : `/api/v1/resumes/${id}/download`;
 
   let response = await fetch(downloadUrl, {
     headers: {
-      "Authorization": `Bearer ${token}`,
-      "ngrok-skip-browser-warning": "true",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 
   if (!response.ok && fallbackFileUrl) {
-    const fallbackUrl = fallbackFileUrl.startsWith("http") 
-      ? fallbackFileUrl 
-      : `${process.env.NEXT_PUBLIC_API_URL}${fallbackFileUrl}`;
-    
+    const fallbackUrl = fallbackFileUrl.startsWith("http")
+      ? fallbackFileUrl
+      : apiUrl ? `${apiUrl}${fallbackFileUrl}` : fallbackFileUrl;
+
     response = await fetch(fallbackUrl, {
       headers: {
-        "Authorization": `Bearer ${token}`,
-        "ngrok-skip-browser-warning": "true",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
   }
@@ -104,25 +103,24 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
 }
 
 export async function viewResume(id: string, fileName?: string, fallbackFileUrl?: string) {
-  const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-  let downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/resumes/${id}/download`;
+  const token = getAuthToken();
+  const apiUrl = getApiUrl();
+  const viewUrl = apiUrl ? `${apiUrl}/api/v1/resumes/${id}/download` : `/api/v1/resumes/${id}/download`;
 
-  let response = await fetch(downloadUrl, {
+  let response = await fetch(viewUrl, {
     headers: {
-      "Authorization": `Bearer ${token}`,
-      "ngrok-skip-browser-warning": "true",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 
   if (!response.ok && fallbackFileUrl) {
-    const fallbackUrl = fallbackFileUrl.startsWith("http") 
-      ? fallbackFileUrl 
-      : `${process.env.NEXT_PUBLIC_API_URL}${fallbackFileUrl}`;
-    
+    const fallbackUrl = fallbackFileUrl.startsWith("http")
+      ? fallbackFileUrl
+      : apiUrl ? `${apiUrl}${fallbackFileUrl}` : fallbackFileUrl;
+
     response = await fetch(fallbackUrl, {
       headers: {
-        "Authorization": `Bearer ${token}`,
-        "ngrok-skip-browser-warning": "true",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
   }
@@ -131,7 +129,7 @@ export async function viewResume(id: string, fileName?: string, fallbackFileUrl?
 
   const blob = await response.blob();
   const url = window.URL.createObjectURL(blob);
-  
+
   if (blob.type === "application/pdf") {
     window.open(url, "_blank");
   } else {

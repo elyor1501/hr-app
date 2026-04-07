@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
 from urllib.parse import quote_plus
 
 from pydantic import Field
@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     environment: str = Field(default="development")
     host: str = Field(default="0.0.0.0")
     port: int = Field(default=8000)
-    cors_origins: list[str] = Field(default_factory=list)
+    cors_origins: List[str] = Field(default_factory=list)
     log_level: str = Field(default="INFO")
 
     ai_service_url: str = Field(default="http://ai-ml-service:8001")
@@ -33,11 +33,11 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = Field(default=30)
     refresh_token_expire_days: int = Field(default=7)
 
-    redis_host: str = Field(default="localhost")
+    redis_host: str = Field(default="redis")
     redis_port: int = Field(default=6379)
     redis_db: int = Field(default=0)
 
-    vector_dimension: int = Field(default=3072)
+    vector_dimension: int = Field(default=768)
 
     rate_limit_enabled: bool = Field(default=True)
     rate_limit_auth_requests: int = Field(default=10)
@@ -63,14 +63,22 @@ class Settings(BaseSettings):
         default_factory=lambda: ["password", "token", "secret", "authorization"]
     )
 
-    @property
-    def database_url(self) -> str:
+    supabase_url: Optional[str] = Field(default=None)
+    supabase_service_key: Optional[str] = Field(default=None)
+    database_url: Optional[str] = Field(default=None)
+
+    def get_database_url(self) -> str:
+        if self.database_url:
+            return self.database_url
+        
         encoded_password = quote_plus(self.database_password)
         base = f"postgresql+asyncpg://{self.database_user}:{encoded_password}@{self.database_host}:{self.database_port}/{self.database_name}"
-        return f"{base}?prepared_statement_cache_size=0"
+        return base
 
     @property
     def database_url_sync(self) -> str:
+        if self.database_url:
+            return self.database_url.replace("+asyncpg", "").split("?")[0]
         encoded_password = quote_plus(self.database_password)
         return f"postgresql://{self.database_user}:{encoded_password}@{self.database_host}:{self.database_port}/{self.database_name}"
 
@@ -82,6 +90,7 @@ class Settings(BaseSettings):
         env_prefix="HR_APP_",
         env_file=".env",
         case_sensitive=False,
+        extra="allow"
     )
 
 

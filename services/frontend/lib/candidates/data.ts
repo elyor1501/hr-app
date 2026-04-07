@@ -1,3 +1,5 @@
+import { getApiUrl, getAuthToken } from "../api-config";
+
 export type CandidateList = {
   id: string;
   resume_id: string;
@@ -7,7 +9,7 @@ export type CandidateList = {
   phone?: string | null;
   location?: string | null;
   github?: string | null;
-  linkedin_url?: string | null; 
+  linkedin_url?: string | null;
   portfolio?: string | null;
   summary?: string | null;
   skills?: string[];
@@ -28,30 +30,23 @@ const CACHE_TTL = 30000;
 export async function getCandidates(): Promise<CandidateList[]> {
   try {
     const isServer = typeof window === "undefined";
-    
+
     if (!isServer && candidatesCache && Date.now() - candidatesCache.timestamp < CACHE_TTL) {
       return candidatesCache.data;
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) {
-      console.warn("NEXT_PUBLIC_API_URL not set");
-      return [];
-    }
+    const apiUrl = getApiUrl();
+    const token = getAuthToken();
+    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/parsed-resumes/?page=1&page_size=100` : `/api/v1/parsed-resumes/?page=1&page_size=100`;
 
-    const token = !isServer ? localStorage.getItem("access_token") : null;
     const headers: HeadersInit = {
-      "ngrok-skip-browser-warning": "true",
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
 
-    const res = await fetch(
-      `${apiUrl}/api/v1/parsed-resumes/?page=1&page_size=100`,
-      {
-        headers,
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(fetchUrl, {
+      headers,
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       const text = await res.text().catch(() => "Unable to read response");
@@ -60,7 +55,7 @@ export async function getCandidates(): Promise<CandidateList[]> {
     }
 
     const data = await res.json();
-    
+
     let items: CandidateList[] = [];
     if (data && data.items && Array.isArray(data.items)) {
       items = data.items;
@@ -87,25 +82,24 @@ let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map(
 
 export async function getCandidateById(id: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) {
-      return null;
+    const cached = candidateByIdCache.get(id);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      return cached.data;
     }
 
-    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    const apiUrl = getApiUrl();
+    const token = getAuthToken();
+    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/parsed-resumes/${id}` : `/api/v1/parsed-resumes/${id}`;
+
     const headers: HeadersInit = {
-      "ngrok-skip-browser-warning": "true",
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
 
-    const res = await fetch(
-      `${apiUrl}/api/v1/parsed-resumes/${id}`,
-      {
-        method: "GET",
-        headers,
-        cache: "no-store", 
-      }
-    );
+    const res = await fetch(fetchUrl, {
+      method: "GET",
+      headers,
+      next: { revalidate: 30 },
+    });
 
     if (res.status === 404) {
       return { status: "processing" };
@@ -118,7 +112,11 @@ export async function getCandidateById(id: string) {
     }
 
     const data = await res.json();
-    return Array.isArray(data) ? data[0] : data;
+    const result = Array.isArray(data) ? data[0] : data;
+
+    candidateByIdCache.set(id, { data: result, timestamp: Date.now() });
+
+    return result;
   } catch (error) {
     console.error("getCandidateById error:", error);
     return null;
@@ -127,25 +125,20 @@ export async function getCandidateById(id: string) {
 
 export async function matchJobs(resumeId: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) {
-      return { results: [] };
-    }
+    const apiUrl = getApiUrl();
+    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/match/candidate-to-jobs` : `/api/v1/match/candidate-to-jobs`;
 
-    const res = await fetch(
-      `${apiUrl}/api/v1/match/candidate-to-jobs`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          candidate_id: resumeId,
-          top_k: 10,
-          min_score: 0.0,
-        }),
-      }
-    );
+    const res = await fetch(fetchUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        candidate_id: resumeId,
+        top_k: 10,
+        min_score: 0.0,
+      }),
+    });
 
     const data = await res.json();
 
