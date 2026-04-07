@@ -38,7 +38,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-${{ github.sha }}
           build-args: |
-            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', 'http://backend:8000') || '' }}
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', secrets.NEXT_PUBLIC_API_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_URL={0}', secrets.NEXT_PUBLIC_SUPABASE_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={0}', secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
           cache-from: type=gha
@@ -186,7 +186,7 @@ jobs:
               --network hr-network \
               --restart unless-stopped \
               -p 80:3000 \
-              -e NEXT_PUBLIC_API_URL=http://backend:8000 \
+              -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
