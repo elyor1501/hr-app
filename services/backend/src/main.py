@@ -15,6 +15,7 @@ from src.api.v1.resumes import router as resumes_router
 from src.api.v1.tasks import router as tasks_router
 from src.api.v1.parsed_resumes import router as parsed_resumes_router
 from src.api.v1.stats import router as stats_router
+from src.api.v1.requests import router as requests_router
 
 from src.core.config import settings
 from src.core.logging import configure_logging
@@ -70,6 +71,7 @@ def create_app() -> FastAPI:
     app.include_router(tasks_router, prefix="/api/v1/tasks", tags=["tasks"])
     app.include_router(parsed_resumes_router, prefix="/api/v1/parsed-resumes", tags=["parsed-resumes"])
     app.include_router(stats_router, prefix="/api/v1/stats", tags=["stats"])
+    app.include_router(requests_router, prefix="/api/v1/requests", tags=["requests"])
 
     return app
 

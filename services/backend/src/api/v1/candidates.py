@@ -4,7 +4,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
-from sqlalchemy import select, func, text
+from sqlalchemy import select, func, text, or_, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
@@ -32,6 +32,9 @@ ALLOWED_CONTENT_TYPES = [
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]
+
+VALID_EXPERIENCE_LEVELS = ["Junior", "Mid", "Senior", "Lead"]
+VALID_AVAILABILITY = ["Immediate", "2 weeks", "1 month", "3 months", "Not Available"]
 
 
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> CandidateRepository:
@@ -75,6 +78,9 @@ async def create_candidate(
     location: Optional[str] = Form(None),
     linkedin_url: Optional[str] = Form(None),
     skills: Optional[str] = Form(None),
+    experience_level: Optional[str] = Form(None),
+    hourly_rate: Optional[float] = Form(None),
+    availability: Optional[str] = Form(None),
     status_field: str = Form("active", alias="status"),
     resume: Optional[UploadFile] = File(None),
     repo: CandidateRepository = Depends(get_repository),
@@ -84,6 +90,18 @@ async def create_candidate(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Candidate with this email already exists"
+        )
+
+    if experience_level and experience_level not in VALID_EXPERIENCE_LEVELS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"experience_level must be one of {VALID_EXPERIENCE_LEVELS}"
+        )
+
+    if availability and availability not in VALID_AVAILABILITY:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"availability must be one of {VALID_AVAILABILITY}"
         )
 
     candidate_data = {
@@ -97,13 +115,16 @@ async def create_candidate(
         "location": location,
         "linkedin_url": linkedin_url,
         "status": status_field if status_field in ["active", "inactive"] else "active",
+        "experience_level": experience_level,
+        "hourly_rate": hourly_rate,
+        "availability": availability,
     }
 
     if skills:
         candidate_data["skills"] = [s.strip().lower() for s in skills.split(",") if s.strip()]
 
     candidate_data["embedding"] = [
-        random.uniform(-1, 1) for _ in range(settings.vector_dimension)
+        random.uniform(-1, 1) for _ in range(3072)
     ]
 
     resume_url = None
@@ -113,7 +134,6 @@ async def create_candidate(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid file type. Only PDF and Word documents are allowed."
             )
-        
         try:
             resume_url = await upload_file(resume)
             if resume_url:
@@ -125,7 +145,7 @@ async def create_candidate(
 
     if resume_url:
         try:
-            job_id = await job_service.submit_process_resume(
+            await job_service.submit_process_resume(
                 candidate_id=candidate.id,
                 file_path=resume_url,
             )
@@ -140,12 +160,12 @@ async def create_candidate(
 
 @router.get("/", response_model=PaginatedCandidatesResponse)
 async def list_candidates(
-    page: int = Query(1, ge=1, description="Page number (starts from 1)"),
-    page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
 ):
     cache_key = f"{CANDIDATES_CACHE_KEY}:{page}:{page_size}"
-    
+
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -154,22 +174,22 @@ async def list_candidates(
     except Exception:
         pass
 
-    count_query = text("SELECT COUNT(*) FROM candidates")
-    count_result = await session.execute(count_query)
-    total = count_result.scalar() or 0
-    
+    total_result = await session.execute(
+        select(func.count(Candidate.id))
+    )
+    total = total_result.scalar() or 0
+
     offset = (page - 1) * page_size
-    query = (
+    result = await session.execute(
         select(Candidate)
         .order_by(Candidate.created_at.desc())
         .offset(offset)
         .limit(page_size)
     )
-    result = await session.execute(query)
     items = result.scalars().all()
-    
+
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
-    
+
     response_data = {
         "items": [item.to_dict() for item in items],
         "total": total,
@@ -177,16 +197,83 @@ async def list_candidates(
         "page_size": page_size,
         "total_pages": total_pages,
         "has_next": page < total_pages,
-        "has_previous": page > 1
+        "has_previous": page > 1,
     }
 
     try:
         redis = await get_redis_pool()
-        await redis.setex(cache_key, CANDIDATES_CACHE_TTL, json.dumps(response_data))
+        await redis.setex(cache_key, CANDIDATES_CACHE_TTL, json.dumps(response_data, default=str))
     except Exception:
         pass
 
     return PaginatedCandidatesResponse(**response_data)
+
+
+@router.get("/search", response_model=PaginatedCandidatesResponse)
+async def search_candidates(
+    q: Optional[str] = Query(default=None, min_length=1),
+    experience_level: Optional[str] = Query(default=None),
+    availability: Optional[str] = Query(default=None),
+    location: Optional[str] = Query(default=None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    session: AsyncSession = Depends(get_db_session),
+):
+    filters = []
+
+    if q:
+        search_term = f"%{q}%"
+        filters.append(
+            or_(
+                Candidate.first_name.ilike(search_term),
+                Candidate.last_name.ilike(search_term),
+                Candidate.current_title.ilike(search_term),
+                Candidate.location.ilike(search_term),
+                Candidate.email.ilike(search_term),
+            )
+        )
+
+    if experience_level:
+        filters.append(Candidate.experience_level == experience_level)
+
+    if availability:
+        filters.append(Candidate.availability == availability)
+
+    if location:
+        filters.append(Candidate.location.ilike(f"%{location}%"))
+
+    base_query = select(Candidate)
+    count_query = select(func.count(Candidate.id))
+
+    if filters:
+        from sqlalchemy import and_
+        combined = and_(*filters)
+        base_query = base_query.where(combined)
+        count_query = count_query.where(combined)
+
+    total_result = await session.execute(count_query)
+    total = total_result.scalar() or 0
+
+    offset = (page - 1) * page_size
+    result = await session.execute(
+        base_query
+        .order_by(Candidate.created_at.desc())
+        .offset(offset)
+        .limit(page_size)
+    )
+    items = result.scalars().all()
+
+    total_pages = (total + page_size - 1) // page_size if total > 0 else 1
+
+    return PaginatedCandidatesResponse(
+        items=[item.to_dict() for item in items],
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+        has_next=page < total_pages,
+        has_previous=page > 1,
+    )
 
 
 @router.get("/{id}", response_model=CandidateResponse)
@@ -195,7 +282,7 @@ async def get_candidate(
     repo: CandidateRepository = Depends(get_repository),
 ):
     cache_key = f"hr_app:candidate:{id}"
-    
+
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -203,19 +290,19 @@ async def get_candidate(
             return CandidateResponse(**json.loads(cached))
     except Exception:
         pass
-    
+
     candidate = await repo.get_by_id(id)
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
-    
+
     candidate_dict = candidate.to_dict()
-    
+
     try:
         redis = await get_redis_pool()
-        await redis.setex(cache_key, CANDIDATES_CACHE_TTL, json.dumps(candidate_dict))
+        await redis.setex(cache_key, CANDIDATES_CACHE_TTL, json.dumps(candidate_dict, default=str))
     except Exception:
         pass
-    
+
     return candidate
 
 
@@ -229,10 +316,10 @@ async def update_candidate(
         raise HTTPException(status_code=404, detail="Candidate not found")
 
     updated = await repo.update(id, **update_data.model_dump(exclude_unset=True))
-    
+
     await invalidate_candidates_cache()
     await cache.invalidate_candidate(str(id))
-    
+
     return updated
 
 
@@ -244,6 +331,6 @@ async def delete_candidate(
     deleted = await repo.delete(id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Candidate not found")
-    
+
     await invalidate_candidates_cache()
     await cache.invalidate_candidate(str(id))
