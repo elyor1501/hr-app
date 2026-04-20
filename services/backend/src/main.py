@@ -24,6 +24,7 @@ from src.db import close_db_connection, init_db_connection
 from src.db.base import Base
 from src.db.session import engine
 from src.services.task_queue import get_task_queue, close_task_queue
+from src.api.v1.candidate_documents import router as candidate_documents_router
 
 logger = structlog.get_logger()
 
@@ -72,6 +73,7 @@ def create_app() -> FastAPI:
     app.include_router(parsed_resumes_router, prefix="/api/v1/parsed-resumes", tags=["parsed-resumes"])
     app.include_router(stats_router, prefix="/api/v1/stats", tags=["stats"])
     app.include_router(requests_router, prefix="/api/v1/requests", tags=["requests"])
+    app.include_router(candidate_documents_router, prefix="/api/v1/candidates", tags=["candidate-documents"])
 
     return app
 
