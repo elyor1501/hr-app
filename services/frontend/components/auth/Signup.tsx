@@ -33,8 +33,11 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-import { SignUpSchemaType, signUpSchema } from "@/schemas/loginSchema";
+import { signUpSchema } from "@/schemas/loginSchema";
 import { toast } from "sonner";
+import { z } from "zod";
+
+type SignUpFormValues = z.input<typeof signUpSchema>;
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,7 +47,7 @@ export function SignUpForm() {
 
   const router = useRouter();
 
-  const form = useForm<SignUpSchemaType>({
+  const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       full_name: "",
@@ -55,7 +58,7 @@ export function SignUpForm() {
     },
   });
 
-  const handleSubmit = async (values: SignUpSchemaType) => {
+  const handleSubmit = async (values: SignUpFormValues) => {
     if (!acceptTerms) {
       toast.info("Please accept the terms and conditions");
       return;

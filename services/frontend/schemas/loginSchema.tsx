@@ -30,7 +30,7 @@ export const signUpSchema = z
 
     confirmPassword: z.string().min(1, "Confirm password is required"),
 
-    role: z.string().default("recruiter"),
+    role: z.string().min(1).default("recruiter"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
