@@ -1,4 +1,4 @@
-import os
+import asyncio
 import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -132,22 +132,56 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
                 session.add(new_cv)
 
 
+async def _process_single_resume(item: dict) -> dict:
+    resume_id = item["resume_id"]
+    file_url = item["file_url"]
+    file_type = item["file_type"]
+
+    try:
+        extract_task = ai_client.extract_text(file_url, file_type, resume_id)
+        extract_data = await extract_task
+        raw_text = extract_data.get("raw_text", "")
+
+        if not raw_text:
+            return {"resume_id": resume_id, "success": False, "error": "No text extracted"}
+
+        embed_task = ai_client.get_embeddings(raw_text)
+        structure_task = ai_client.structure_resume(raw_text, resume_id)
+
+        embedding, structured_res = await asyncio.gather(embed_task, structure_task)
+
+        structured_data = structured_res.get("structured_data", {})
+
+        return {
+            "resume_id": resume_id,
+            "raw_text": raw_text,
+            "embedding": embedding,
+            "structured_data": structured_data,
+            "success": True,
+        }
+
+    except Exception as e:
+        logger.error("single_resume_processing_failed", resume_id=resume_id, error=str(e))
+        return {"resume_id": resume_id, "success": False, "error": str(e)}
+
+
 async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, file_type: str) -> Dict[str, Any]:
     job_id = ctx.get("job_id")
     try:
         await update_job_status(ctx, job_id, "in_progress", progress=10)
 
-        extract_data = await ai_client.extract_text(file_url, file_type, resume_id)
-        raw_text = extract_data.get("raw_text", "")
+        result = await _process_single_resume({
+            "resume_id": resume_id,
+            "file_url": file_url,
+            "file_type": file_type,
+        })
 
-        await update_job_status(ctx, job_id, "in_progress", progress=40)
+        if not result.get("success"):
+            raise Exception(result.get("error", "Processing failed"))
 
-        embedding = await ai_client.get_embeddings(raw_text)
-
-        await update_job_status(ctx, job_id, "in_progress", progress=60)
-
-        structured_res = await ai_client.structure_resume(raw_text, resume_id)
-        structured_data = structured_res.get("structured_data", {})
+        raw_text = result["raw_text"]
+        embedding = result["embedding"]
+        structured_data = result["structured_data"]
 
         await update_job_status(ctx, job_id, "in_progress", progress=80)
 
@@ -155,7 +189,6 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
         name_parts = full_name.split()
         first_name = name_parts[0] if name_parts else "Unknown"
         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
-
         years_exp = calculate_years_experience(structured_data.get("experience", []))
 
         async with async_session_maker() as session:
@@ -204,9 +237,9 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
 
             await session.commit()
 
-        result = {"resume_id": resume_id, "text_length": len(raw_text), "embedding_generated": True}
-        await update_job_status(ctx, job_id, "completed", progress=100, result=result)
-        return result
+        output = {"resume_id": resume_id, "text_length": len(raw_text), "embedding_generated": True}
+        await update_job_status(ctx, job_id, "completed", progress=100, result=output)
+        return output
 
     except Exception as e:
         error_msg = str(e)
@@ -292,54 +325,36 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
     job_id = ctx.get("job_id")
     try:
         await update_job_status(ctx, job_id, "processing", 5)
-        extracted = []
-        failed_ids = []
 
-        for i, item in enumerate(resume_items):
-            try:
-                res = await ai_client.extract_text(item["file_url"], item["file_type"], item["resume_id"])
-                raw_text = res.get("raw_text", "")
-                if raw_text:
-                    extracted.append({"resume_id": item["resume_id"], "raw_text": raw_text})
-                else:
-                    failed_ids.append(item["resume_id"])
-            except Exception:
-                failed_ids.append(item["resume_id"])
-            progress = int(10 + (30 * (i + 1) / len(resume_items)))
-            await update_job_status(ctx, job_id, "processing", progress)
+        tasks = [_process_single_resume(item) for item in resume_items]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        if not extracted:
-            raise ValueError("No text extracted from any resume in batch")
+        await update_job_status(ctx, job_id, "processing", 70)
 
-        await update_job_status(ctx, job_id, "processing", 55)
-
-        texts = [item["raw_text"] for item in extracted]
-        try:
-            embeddings = await ai_client.get_batch_embeddings(texts)
-        except Exception:
-            embeddings = []
-            for text in texts:
-                try:
-                    embeddings.append(await ai_client.get_embeddings(text))
-                except Exception:
-                    embeddings.append(None)
-
-        await update_job_status(ctx, job_id, "processing", 80)
+        processed = 0
+        failed = 0
 
         async with async_session_maker() as session:
-            for i, item in enumerate(extracted):
-                resume_id = item["resume_id"]
-                raw_text = item["raw_text"]
-                embedding = embeddings[i] if i < len(embeddings) else None
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    logger.error("batch_item_failed", error=str(result))
+                    failed += 1
+                    continue
 
-                resume = await session.get(Resume, UUID(resume_id))
-                if resume:
-                    resume.raw_text = raw_text
-                    resume.embedding = embedding
+                if not result.get("success"):
+                    failed += 1
+                    continue
+
+                resume_id = result["resume_id"]
+                raw_text = result["raw_text"]
+                embedding = result["embedding"]
+                structured_data = result["structured_data"]
 
                 try:
-                    structured_res = await ai_client.structure_resume(raw_text, resume_id)
-                    structured_data = structured_res.get("structured_data", {})
+                    resume = await session.get(Resume, UUID(resume_id))
+                    if resume:
+                        resume.raw_text = raw_text
+                        resume.embedding = embedding
 
                     if structured_data:
                         full_name = (structured_data.get("full_name") or "").strip()
@@ -385,12 +400,15 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
                             raw_text, embedding, parsed
                         )
 
-                except Exception:
-                    pass
+                    processed += 1
+
+                except Exception as e:
+                    logger.error("batch_db_save_failed", resume_id=resume_id, error=str(e))
+                    failed += 1
 
             await session.commit()
 
-        await update_job_status(ctx, job_id, "completed", 100, result={"processed": len(extracted), "failed": len(failed_ids)})
+        await update_job_status(ctx, job_id, "completed", 100, result={"processed": processed, "failed": failed})
 
     except Exception as e:
         await update_job_status(ctx, job_id, "failed", error=str(e))

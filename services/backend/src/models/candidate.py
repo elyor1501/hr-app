@@ -43,7 +43,9 @@ class CandidateBase(BaseSchema):
     @field_validator("linkedin_url")
     @classmethod
     def validate_linkedin_url(cls, v: Optional[str]) -> Optional[str]:
-        if v and not re.match(r"^https?://(www\.)?linkedin\.com(/.*)?$", v):
+        if not v:
+            return None
+        if v.startswith("http") and "linkedin.com" not in v:
             raise ValueError("Invalid LinkedIn URL format")
         return v
 

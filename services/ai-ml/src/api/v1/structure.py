@@ -1,8 +1,8 @@
 import traceback
 import logging
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import Dict, Any, List, Optional, Union
 import datetime
 from services.llm.gemini_llm_client import GeminiLLMClient
 
@@ -56,11 +56,71 @@ class StructuredData(BaseModel):
     skills: List[str] = []
     education: List[EducationItem] = []
     experience: List[ExperienceItem] = []
-    projects: List[Dict[str, Any]] = []
-    certifications: List[Dict[str, Any]] = []
+    projects: List[Union[Dict[str, Any], str]] = []
+    certifications: List[Union[Dict[str, Any], str]] = []
     confidence_scores: Optional[ConfidenceScores] = ConfidenceScores()
     confidence_score: Optional[float] = 0.8
     extraction_latency: Optional[float] = 0.0
+
+    @field_validator("projects", mode="before")
+    @classmethod
+    def normalize_projects(cls, v):
+        if not isinstance(v, list):
+            return []
+        result = []
+        for item in v:
+            if isinstance(item, dict):
+                result.append(item)
+            elif isinstance(item, str) and item.strip():
+                result.append({"name": item.strip()})
+        return result
+
+    @field_validator("certifications", mode="before")
+    @classmethod
+    def normalize_certifications(cls, v):
+        if not isinstance(v, list):
+            return []
+        result = []
+        for item in v:
+            if isinstance(item, dict):
+                result.append(item)
+            elif isinstance(item, str) and item.strip():
+                result.append({"name": item.strip()})
+        return result
+
+    @field_validator("skills", mode="before")
+    @classmethod
+    def normalize_skills(cls, v):
+        if not isinstance(v, list):
+            return []
+        return [str(s).strip() for s in v if s]
+
+    @field_validator("education", mode="before")
+    @classmethod
+    def normalize_education(cls, v):
+        if not isinstance(v, list):
+            return []
+        result = []
+        for item in v:
+            if isinstance(item, dict):
+                result.append(item)
+            elif isinstance(item, str) and item.strip():
+                result.append({"institution": item.strip()})
+        return result
+
+    @field_validator("experience", mode="before")
+    @classmethod
+    def normalize_experience(cls, v):
+        if not isinstance(v, list):
+            return []
+        result = []
+        for item in v:
+            if isinstance(item, dict):
+                result.append(item)
+            elif isinstance(item, str) and item.strip():
+                result.append({"job_title": item.strip()})
+        return result
+
 
 @router.post("")
 async def structure_resume(payload: StructureRequest):
@@ -121,7 +181,7 @@ Resume Text:
 {payload.raw_text}
 """
         logger.info(f"Sending text to Gemini for resume: {payload.resume_id}")
-        
+
         structured = llm.generate_json(prompt)
 
         if not isinstance(structured, dict):

@@ -51,7 +51,7 @@ export function SignUpForm() {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "",
+      role: "recruiter",
     },
   });
 
@@ -62,34 +62,41 @@ export function SignUpForm() {
     }
     setIsLoading(true);
 
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-            full_name: values.full_name,
-            role: values.role,
-          }),
+      const response = await fetch(`${apiUrl}/api/v1/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          full_name: values.full_name,
+          role: values.role || "recruiter",
+        }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.detail || "Registration failed");
+
+        if (typeof errorData.detail === "string") {
+          toast.error(errorData.detail);
+        } else if (Array.isArray(errorData.detail)) {
+          const firstError = errorData.detail[0];
+          toast.error(firstError?.msg || "Registration failed");
+        } else {
+          toast.error("Registration failed. Please check your inputs.");
+        }
         return;
       }
 
       toast.success("Account created successfully!");
       form.reset();
-      router.replace("/login");
+      router.replace("/dashboard");
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error("Cannot connect to server. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -152,27 +159,6 @@ export function SignUpForm() {
                 </FormItem>
               )}
             />
-
-            {/* <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <FormControl>
-                    <select
-                      className="w-full border rounded-md p-2 bg-background"
-                      {...field}
-                    >
-                      <option value="">Select role</option>
-                      <option value="admin">Admin</option>
-                      <option value="recruiter">Recruiter</option>
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
 
             <FormField
               control={form.control}

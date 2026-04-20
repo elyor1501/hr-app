@@ -126,6 +126,18 @@ async def _generate_request_number(session: AsyncSession) -> str:
 
 @router.get("/count", response_model=RequestCountResponse)
 async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
+    cache_key = "hr_app:requests:count"
+
+    try:
+        from src.core.redis import get_redis_pool
+        import json
+        redis = await get_redis_pool()
+        cached = await redis.get(cache_key)
+        if cached:
+            return RequestCountResponse(**json.loads(cached))
+    except Exception:
+        pass
+
     result = await session.execute(
         select(
             StaffingRequest.state,
@@ -138,12 +150,22 @@ async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
     counts = {row.state: row.cnt for row in rows}
     open_count = counts.get("open", 0)
     in_progress_count = counts.get("in_progress", 0)
-    return RequestCountResponse(
+
+    response = RequestCountResponse(
         open_count=open_count,
         in_progress_count=in_progress_count,
         total_active=open_count + in_progress_count
     )
 
+    try:
+        from src.core.redis import get_redis_pool
+        import json
+        redis = await get_redis_pool()
+        await redis.setex(cache_key, 30, json.dumps(response.model_dump()))
+    except Exception:
+        pass
+
+    return response
 
 @router.post("/", response_model=RequestResponse, status_code=status.HTTP_201_CREATED)
 async def create_request(
@@ -185,6 +207,18 @@ async def list_requests(
     state: Optional[str] = Query(default=None),
     session: AsyncSession = Depends(get_db_session)
 ):
+    cache_key = f"hr_app:requests:list:{skip}:{limit}:{state}"
+
+    try:
+        from src.core.redis import get_redis_pool
+        import json
+        redis = await get_redis_pool()
+        cached = await redis.get(cache_key)
+        if cached:
+            return [RequestListItem(**item) for item in json.loads(cached)]
+    except Exception:
+        pass
+
     stmt = (
         select(
             StaffingRequest,
@@ -221,8 +255,15 @@ async def list_requests(
             candidate_count=cnt,
         ))
 
-    return items
+    try:
+        from src.core.redis import get_redis_pool
+        import json
+        redis = await get_redis_pool()
+        await redis.setex(cache_key, 30, json.dumps([i.model_dump() for i in items], default=str))
+    except Exception:
+        pass
 
+    return items
 
 @router.get("/{request_id}", response_model=RequestResponse)
 async def get_request(

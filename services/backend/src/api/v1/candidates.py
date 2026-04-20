@@ -219,6 +219,17 @@ async def search_candidates(
     page_size: int = Query(10, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
 ):
+    import hashlib
+    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{experience_level}{availability}{location}{page}{page_size}'.encode()).hexdigest()}"
+
+    try:
+        redis = await get_redis_pool()
+        cached = await redis.get(cache_key)
+        if cached:
+            return PaginatedCandidatesResponse(**json.loads(cached))
+    except Exception:
+        pass
+
     filters = []
 
     if q:
@@ -265,7 +276,7 @@ async def search_candidates(
 
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
-    return PaginatedCandidatesResponse(
+    response = PaginatedCandidatesResponse(
         items=[item.to_dict() for item in items],
         total=total,
         page=page,
@@ -274,6 +285,14 @@ async def search_candidates(
         has_next=page < total_pages,
         has_previous=page > 1,
     )
+
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(cache_key, 60, json.dumps(response.model_dump(), default=str))
+    except Exception:
+        pass
+
+    return response
 
 
 @router.get("/{id}", response_model=CandidateResponse)
