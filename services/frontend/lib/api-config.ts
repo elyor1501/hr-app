@@ -1,6 +1,6 @@
 export const getApiUrl = (): string => {
   if (typeof window === 'undefined') {
-    return 'http://localhost:8000';
+    return 'http://backend:8000';
   }
   
   const url = process.env.NEXT_PUBLIC_API_URL;
