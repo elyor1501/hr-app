@@ -1,6 +1,6 @@
 import asyncio
 import json
-from datetime import datetime
+from datetime import datetime, date
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 import structlog
@@ -8,7 +8,7 @@ from arq.connections import RedisSettings
 from sqlalchemy import select, func
 from src.core.config import settings
 from src.db.session import async_session_maker
-from src.db.models import Resume, ParsedResume, Candidate, MatchResult, CandidateCV
+from src.db.models import Resume, ParsedResume, Candidate, MatchResult, CandidateCV, StaffingRequest, RequestAuditLog
 from src.services.ai_client import AIClient
 
 logger = structlog.get_logger()
@@ -54,6 +54,79 @@ def calculate_years_experience(experience_list: List[Dict[str, Any]]) -> Optiona
     return total_months // 12 if total_months > 0 else None
 
 
+async def _generate_request_number(session) -> str:
+    year = datetime.now().year
+    prefix = f"REQ-{year}-"
+    result = await session.execute(
+        select(func.count(StaffingRequest.id)).where(
+            StaffingRequest.request_number.like(f"{prefix}%")
+        )
+    )
+    count = result.scalar() or 0
+    return f"{prefix}{str(count + 1).zfill(3)}"
+
+
+async def _auto_create_staffing_request(session, doc_id: str, structured_data: dict, raw_text: str):
+    try:
+        existing = await session.execute(
+            select(StaffingRequest).where(
+                StaffingRequest.request_number.like(f"%{doc_id[:8]}%")
+            )
+        )
+        if existing.scalar_one_or_none():
+            return
+
+        job_title = structured_data.get("job_title") or "Untitled Position"
+        company_name = structured_data.get("company_name") or "Unknown Company"
+        summary = structured_data.get("summary") or ""
+        responsibilities = structured_data.get("responsibilities", [])
+
+        if summary:
+            job_description = summary
+        elif responsibilities:
+            job_description = "\n".join(responsibilities)
+        else:
+            job_description = raw_text[:2000] if raw_text else "No description available"
+
+        request_number = await _generate_request_number(session)
+
+        staffing_req = StaffingRequest(
+            request_number=request_number,
+            company_name=company_name,
+            request_title=job_title,
+            job_description=job_description,
+            prepared_rate=None,
+            final_rate=None,
+            request_date=date.today(),
+            proposed_date=None,
+            customer_feedback=None,
+            contract_status=False,
+            state="open",
+            created_by="system",
+        )
+        session.add(staffing_req)
+        await session.flush()
+
+        audit = RequestAuditLog(
+            request_id=staffing_req.id,
+            old_state=None,
+            new_state="open",
+            notes=f"Auto-created from requirement document {doc_id}",
+        )
+        session.add(audit)
+
+        from sqlalchemy import text
+        await session.execute(
+            text("UPDATE requirement_documents SET staffing_request_id = :req_id WHERE id = :doc_id"),
+            {"req_id": str(staffing_req.id), "doc_id": doc_id}
+        )
+
+        logger.info("auto_created_staffing_request", doc_id=doc_id, request_number=request_number, job_title=job_title)
+
+    except Exception as e:
+        logger.error("auto_create_staffing_request_failed", doc_id=doc_id, error=str(e))
+
+
 async def _auto_create_or_link_candidate(session, resume, structured_data, first_name, last_name, years_exp, raw_text, embedding, parsed):
     candidate_email = structured_data.get("email")
     existing_candidate = None
@@ -85,20 +158,29 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
             existing_candidate.current_company = parsed.current_company
 
         if resume and resume.file_url:
-            cv_count_result = await session.execute(
-                select(func.count(CandidateCV.id)).where(
-                    CandidateCV.candidate_id == existing_candidate.id
+            existing_cv_result = await session.execute(
+                select(CandidateCV).where(
+                    CandidateCV.candidate_id == existing_candidate.id,
+                    CandidateCV.file_url == resume.file_url
                 )
             )
-            cv_count = cv_count_result.scalar() or 0
-            new_cv = CandidateCV(
-                candidate_id=existing_candidate.id,
-                file_name=resume.file_name,
-                file_url=resume.file_url,
-                is_primary=(cv_count == 0),
-                file_size=None,
-            )
-            session.add(new_cv)
+            existing_cv = existing_cv_result.scalar_one_or_none()
+
+            if not existing_cv:
+                cv_count_result = await session.execute(
+                    select(func.count(CandidateCV.id)).where(
+                        CandidateCV.candidate_id == existing_candidate.id
+                    )
+                )
+                cv_count = cv_count_result.scalar() or 0
+                new_cv = CandidateCV(
+                    candidate_id=existing_candidate.id,
+                    file_name=resume.file_name,
+                    file_url=resume.file_url,
+                    is_primary=(cv_count == 0),
+                    file_size=None,
+                )
+                session.add(new_cv)
 
     else:
         if first_name != "Unknown":
@@ -197,36 +279,42 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
                 resume.embedding = embedding
 
             if structured_data:
-                parsed = ParsedResume(
-                    resume_id=UUID(resume_id),
-                    first_name=first_name,
-                    last_name=last_name,
-                    email=structured_data.get("email"),
-                    phone=structured_data.get("phone"),
-                    current_title=None,
-                    current_company=None,
-                    years_of_experience=years_exp,
-                    skills=structured_data.get("skills", []),
-                    location=structured_data.get("location"),
-                    linkedin_url=structured_data.get("linkedin"),
-                    github=structured_data.get("github"),
-                    portfolio=structured_data.get("portfolio"),
-                    summary=structured_data.get("summary"),
-                    education=structured_data.get("education", []),
-                    experience=structured_data.get("experience", []),
-                    projects=structured_data.get("projects", []),
-                    certifications=structured_data.get("certifications", []),
-                    confidence_scores=structured_data.get("confidence_scores", {}),
-                    confidence_score=structured_data.get("confidence_score"),
-                    extraction_latency=structured_data.get("extraction_latency"),
-                    json_data=structured_data
+                existing_parsed = await session.execute(
+                    select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
                 )
+                if not existing_parsed.scalar_one_or_none():
+                    parsed = ParsedResume(
+                        resume_id=UUID(resume_id),
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=structured_data.get("email"),
+                        phone=structured_data.get("phone"),
+                        current_title=None,
+                        current_company=None,
+                        years_of_experience=years_exp,
+                        skills=structured_data.get("skills", []),
+                        location=structured_data.get("location"),
+                        linkedin_url=structured_data.get("linkedin"),
+                        github=structured_data.get("github"),
+                        portfolio=structured_data.get("portfolio"),
+                        summary=structured_data.get("summary"),
+                        education=structured_data.get("education", []),
+                        experience=structured_data.get("experience", []),
+                        projects=structured_data.get("projects", []),
+                        certifications=structured_data.get("certifications", []),
+                        confidence_scores=structured_data.get("confidence_scores", {}),
+                        confidence_score=structured_data.get("confidence_score"),
+                        extraction_latency=structured_data.get("extraction_latency"),
+                        json_data=structured_data
+                    )
 
-                if structured_data.get("experience") and len(structured_data["experience"]) > 0:
-                    parsed.current_title = structured_data["experience"][0].get("job_title")
-                    parsed.current_company = structured_data["experience"][0].get("company")
+                    if structured_data.get("experience") and len(structured_data["experience"]) > 0:
+                        parsed.current_title = structured_data["experience"][0].get("job_title")
+                        parsed.current_company = structured_data["experience"][0].get("company")
 
-                session.add(parsed)
+                    session.add(parsed)
+                else:
+                    parsed = ParsedResume(resume_id=UUID(resume_id))
 
                 await _auto_create_or_link_candidate(
                     session, resume, structured_data,
@@ -273,7 +361,7 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
 
         structured_data = structured_res.get("structured_data", {})
 
-        await update_job_status(ctx, job_id, "in_progress", progress=80)
+        await update_job_status(ctx, job_id, "in_progress", progress=75)
 
         embedding_str = "[" + ",".join(str(x) for x in embedding) + "]"
 
@@ -310,9 +398,17 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
                     "doc_id": doc_id,
                 }
             )
+
+            await _auto_create_staffing_request(session, doc_id, structured_data, raw_text)
             await session.commit()
 
-        output = {"doc_id": doc_id, "text_length": len(raw_text), "embedding_generated": True, "job_title": structured_data.get("job_title")}
+        output = {
+            "doc_id": doc_id,
+            "text_length": len(raw_text),
+            "embedding_generated": True,
+            "job_title": structured_data.get("job_title"),
+            "staffing_request_created": True,
+        }
         await update_job_status(ctx, job_id, "completed", progress=100, result=output)
         return output
 
@@ -447,36 +543,42 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
                         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
                         years_exp = calculate_years_experience(structured_data.get("experience", []))
 
-                        parsed = ParsedResume(
-                            resume_id=UUID(resume_id),
-                            first_name=first_name,
-                            last_name=last_name,
-                            email=structured_data.get("email"),
-                            phone=structured_data.get("phone"),
-                            current_title=None,
-                            current_company=None,
-                            years_of_experience=years_exp,
-                            skills=structured_data.get("skills", []),
-                            location=structured_data.get("location"),
-                            linkedin_url=structured_data.get("linkedin"),
-                            github=structured_data.get("github"),
-                            portfolio=structured_data.get("portfolio"),
-                            summary=structured_data.get("summary"),
-                            education=structured_data.get("education", []),
-                            experience=structured_data.get("experience", []),
-                            projects=structured_data.get("projects", []),
-                            certifications=structured_data.get("certifications", []),
-                            confidence_scores=structured_data.get("confidence_scores", {}),
-                            confidence_score=structured_data.get("confidence_score"),
-                            extraction_latency=structured_data.get("extraction_latency"),
-                            json_data=structured_data
+                        existing_parsed = await session.execute(
+                            select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
                         )
+                        if not existing_parsed.scalar_one_or_none():
+                            parsed = ParsedResume(
+                                resume_id=UUID(resume_id),
+                                first_name=first_name,
+                                last_name=last_name,
+                                email=structured_data.get("email"),
+                                phone=structured_data.get("phone"),
+                                current_title=None,
+                                current_company=None,
+                                years_of_experience=years_exp,
+                                skills=structured_data.get("skills", []),
+                                location=structured_data.get("location"),
+                                linkedin_url=structured_data.get("linkedin"),
+                                github=structured_data.get("github"),
+                                portfolio=structured_data.get("portfolio"),
+                                summary=structured_data.get("summary"),
+                                education=structured_data.get("education", []),
+                                experience=structured_data.get("experience", []),
+                                projects=structured_data.get("projects", []),
+                                certifications=structured_data.get("certifications", []),
+                                confidence_scores=structured_data.get("confidence_scores", {}),
+                                confidence_score=structured_data.get("confidence_score"),
+                                extraction_latency=structured_data.get("extraction_latency"),
+                                json_data=structured_data
+                            )
 
-                        if structured_data.get("experience") and len(structured_data["experience"]) > 0:
-                            parsed.current_title = structured_data["experience"][0].get("job_title")
-                            parsed.current_company = structured_data["experience"][0].get("company")
+                            if structured_data.get("experience") and len(structured_data["experience"]) > 0:
+                                parsed.current_title = structured_data["experience"][0].get("job_title")
+                                parsed.current_company = structured_data["experience"][0].get("company")
 
-                        session.add(parsed)
+                            session.add(parsed)
+                        else:
+                            parsed = ParsedResume(resume_id=UUID(resume_id))
 
                         await _auto_create_or_link_candidate(
                             session, resume, structured_data,
