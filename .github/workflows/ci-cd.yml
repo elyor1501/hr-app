@@ -57,41 +57,42 @@ jobs:
           
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
-          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            echo '=== Cleaning up old containers ==='
+          # SINGLE SSH SESSION - All commands in one connection
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} -o ServerAliveInterval=60 -o ConnectTimeout=30 ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+            set -e
+            
+            echo '=== Starting Deployment ==='
+            
+            # Stop old containers
+            echo 'Stopping old containers...'
             docker stop redis backend ai-ml-service worker frontend 2>/dev/null || true
             docker rm redis backend ai-ml-service worker frontend 2>/dev/null || true
+            
+            # Clean up
+            echo 'Cleaning up...'
             docker system prune -a -f 2>/dev/null || true
-            echo '=== Cleanup complete ==='
-          "
-          
-          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            echo '=== Creating Docker network ==='
+            
+            # Create network
+            echo 'Creating network...'
             docker network create hr-network 2>/dev/null || true
             
-            echo '=== Pulling latest images ==='
+            # Pull images
+            echo 'Pulling images...'
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
             
-            echo '=== Starting Redis (Internal Only - No Port) ==='
-            docker run -d \
-              --name redis \
-              --network hr-network \
-              --restart unless-stopped \
-              redis:7-alpine
+            # Start Redis
+            echo 'Starting Redis...'
+            docker run -d --name redis --network hr-network --restart unless-stopped redis:7-alpine
             
-            echo '=== Starting Backend (Internal Only - No Port Exposed to Host) ==='
+            # Start Backend (no port exposure)
+            echo 'Starting Backend...'
             docker run -d \
               --name backend \
               --network hr-network \
               --restart unless-stopped \
-              -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
-              -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
-              -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
-              -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
               -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
@@ -104,10 +105,12 @@ jobs:
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
-            echo '=== Waiting for backend to initialize ==='
+            # Wait for backend
+            echo 'Waiting for backend...'
             sleep 10
             
-            echo '=== Starting AI-ML Service (Internal Only - No Port) ==='
+            # Start AI-ML
+            echo 'Starting AI-ML Service...'
             docker run -d \
               --name ai-ml-service \
               --network hr-network \
@@ -116,21 +119,17 @@ jobs:
               -e REDIS_PORT=6379 \
               -e REDIS_DB=1 \
               -e REDIS_PREFIX=aiml \
-              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
               -e PYTHONPATH=/app/src \
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             
-            echo '=== Starting Worker (Internal Only - No Port) ==='
+            # Start Worker
+            echo 'Starting Worker...'
             docker run -d \
               --name worker \
               --network hr-network \
               --restart unless-stopped \
-              -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
-              -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
-              -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
-              -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
+              -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
@@ -143,7 +142,8 @@ jobs:
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
             
-            echo '=== Starting Frontend (Only Public Entry Point) ==='
+            # Start Frontend (only public port)
+            echo 'Starting Frontend...'
             docker run -d \
               --name frontend \
               --network hr-network \
@@ -154,71 +154,46 @@ jobs:
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
-            echo '=== Waiting for services to be ready ==='
+            # Wait for services
+            echo 'Waiting for services...'
             sleep 15
             
+            # Show running containers
             echo ''
             echo '=== Running Containers ==='
             docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
-            echo ''
             
-            echo '=== Testing Internal Connectivity ==='
-            if docker exec frontend wget -q -O- --timeout=5 http://backend:8000/health 2>/dev/null; then
-              echo '✅ Frontend → Backend: Connected'
-            else
-              echo '⚠️ Frontend → Backend: Health endpoint not available'
-              if docker ps | grep -q backend; then
-                echo '✅ Backend container is running'
-              else
-                echo '❌ Backend container failed'
-                docker logs backend --tail=20
-              fi
-            fi
-            
+            # Test frontend
             echo ''
-            echo '=== Public Access Tests ==='
-            if curl -f -s -o /dev/null -m 5 http://localhost:80; then
-              echo '✅ Frontend: Accessible on port 80'
+            echo '=== Testing Frontend ==='
+            if curl -f -s -o /dev/null http://localhost:80; then
+              echo '✅ Frontend is running on port 80'
             else
-              echo '❌ Frontend: Not accessible'
+              echo '❌ Frontend failed to start'
               docker logs frontend --tail=20
+              exit 1
             fi
             
+            # Verify no ports exposed for backend
             echo ''
-            echo '=== Security Verification ==='
-            echo 'Checking if backend port 8000 is exposed to host...'
-            if docker port backend 2>/dev/null | grep -q 8000; then
-              echo '❌ WARNING: Backend port 8000 is exposed to host!'
+            echo '=== Security Check ==='
+            if docker port backend 2>/dev/null | grep -q .; then
+              echo '❌ Backend has exposed ports!'
+              docker port backend
             else
-              echo '✅ Backend: No ports exposed to host (Secure)'
+              echo '✅ Backend has no exposed ports (secure)'
             fi
             
-            echo 'Checking if AI-ML port 8001 is exposed to host...'
-            if docker port ai-ml-service 2>/dev/null | grep -q 8001; then
-              echo '❌ WARNING: AI-ML port 8001 is exposed to host!'
-            else
-              echo '✅ AI-ML: No ports exposed to host (Secure)'
-            fi
-            
-            echo 'Checking if Redis port 6379 is exposed to host...'
-            if docker port redis 2>/dev/null | grep -q 6379; then
-              echo '❌ WARNING: Redis port 6379 is exposed to host!'
-            else
-              echo '✅ Redis: No ports exposed to host (Secure)'
-            fi
+            # Show backend logs
+            echo ''
+            echo '=== Backend Logs (last 5 lines) ==='
+            docker logs backend --tail=5 2>&1 || echo 'No logs yet'
             
             echo ''
             echo '=== Deployment Complete ==='
-            echo '✅ Frontend: http://${{ secrets.DEPLOY_HOST }}'
-            echo '✅ Backend: Internal only (NOT exposed to internet)'
-            echo '✅ AI-ML: Internal only (NOT exposed to internet)'
-            echo '✅ Redis: Internal only (NOT exposed to internet)'
-            echo '✅ Worker: Internal only (NOT exposed to internet)'
+            echo '✅ Application live at: http://${{ secrets.DEPLOY_HOST }}'
+            echo '✅ Backend is internal only (not exposed)'
             echo ''
-            echo 'Architecture: Browser → Frontend(port 80) → Backend(internal) → AI-ML/Redis(internal)'
-            echo ''
-            echo 'To check logs:'
-            echo '  docker logs backend'
-            echo '  docker logs ai-ml-service'
-            echo '  docker logs frontend'
-          "
+            echo 'To view logs: docker logs backend'
+            echo 'To restart: docker restart backend'
+          EOF
