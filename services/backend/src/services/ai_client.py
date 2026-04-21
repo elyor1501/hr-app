@@ -52,6 +52,13 @@ class AIClient:
             "file_type": file_type
         })
 
+    async def extract_requirement_doc_text(self, file_url: str, file_type: str, doc_id: str) -> Dict[str, Any]:
+        return await self._request("POST", "/extract", {
+            "resume_id": str(doc_id),
+            "file_url": file_url,
+            "file_type": file_type
+        })
+
     async def get_embeddings(self, text: str) -> List[float]:
         res = await self._request("POST", "/embeddings/embed", {"text": text})
         return res.get("embedding", [])
@@ -63,6 +70,12 @@ class AIClient:
     async def structure_resume(self, raw_text: str, resume_id: str) -> Dict[str, Any]:
         return await self._request("POST", "/structure", {
             "resume_id": str(resume_id),
+            "raw_text": raw_text
+        })
+
+    async def structure_requirement_doc(self, raw_text: str, doc_id: str) -> Dict[str, Any]:
+        return await self._request("POST", "/structure-requirement", {
+            "doc_id": str(doc_id),
             "raw_text": raw_text
         })
 

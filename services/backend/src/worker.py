@@ -138,17 +138,16 @@ async def _process_single_resume(item: dict) -> dict:
     file_type = item["file_type"]
 
     try:
-        extract_task = ai_client.extract_text(file_url, file_type, resume_id)
-        extract_data = await extract_task
+        extract_data = await ai_client.extract_text(file_url, file_type, resume_id)
         raw_text = extract_data.get("raw_text", "")
 
         if not raw_text:
             return {"resume_id": resume_id, "success": False, "error": "No text extracted"}
 
-        embed_task = ai_client.get_embeddings(raw_text)
-        structure_task = ai_client.structure_resume(raw_text, resume_id)
-
-        embedding, structured_res = await asyncio.gather(embed_task, structure_task)
+        embedding, structured_res = await asyncio.gather(
+            ai_client.get_embeddings(raw_text),
+            ai_client.structure_resume(raw_text, resume_id)
+        )
 
         structured_data = structured_res.get("structured_data", {})
 
@@ -244,6 +243,91 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
     except Exception as e:
         error_msg = str(e)
         logger.error("process_resume_failed", job_id=job_id, error=error_msg)
+        job_try = ctx.get("job_try", 1)
+        if job_try >= settings.job_max_retries:
+            await move_to_dlq(ctx, job_id, error_msg)
+            await update_job_status(ctx, job_id, "dead", error=error_msg)
+        else:
+            await update_job_status(ctx, job_id, "retrying", error=error_msg)
+            raise
+        return {"error": error_msg}
+
+
+async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: str, file_type: str) -> Dict[str, Any]:
+    job_id = ctx.get("job_id")
+    try:
+        await update_job_status(ctx, job_id, "in_progress", progress=10)
+
+        extract_data = await ai_client.extract_requirement_doc_text(file_url, file_type, doc_id)
+        raw_text = extract_data.get("raw_text", "")
+
+        if not raw_text:
+            raise Exception("No text extracted from requirement document")
+
+        await update_job_status(ctx, job_id, "in_progress", progress=40)
+
+        embedding, structured_res = await asyncio.gather(
+            ai_client.get_embeddings(raw_text),
+            ai_client.structure_requirement_doc(raw_text, doc_id)
+        )
+
+        structured_data = structured_res.get("structured_data", {})
+
+        await update_job_status(ctx, job_id, "in_progress", progress=80)
+
+        embedding_str = "[" + ",".join(str(x) for x in embedding) + "]"
+
+        async with async_session_maker() as session:
+            from sqlalchemy import text
+            await session.execute(
+                text("""
+                    UPDATE requirement_documents SET
+                        raw_text = :raw_text,
+                        structured_data = CAST(:structured_data AS jsonb),
+                        embedding = CAST(:embedding AS vector),
+                        job_title = :job_title,
+                        required_skills = :required_skills,
+                        preferred_skills = :preferred_skills,
+                        tools_and_technologies = :tools_and_technologies,
+                        experience_required = :experience_required,
+                        employment_type = :employment_type,
+                        work_mode = :work_mode,
+                        processing_status = 'completed',
+                        updated_at = NOW()
+                    WHERE id = :doc_id
+                """),
+                {
+                    "raw_text": raw_text,
+                    "structured_data": json.dumps(structured_data),
+                    "embedding": embedding_str,
+                    "job_title": structured_data.get("job_title"),
+                    "required_skills": structured_data.get("required_skills", []),
+                    "preferred_skills": structured_data.get("preferred_skills", []),
+                    "tools_and_technologies": structured_data.get("tools_and_technologies", []),
+                    "experience_required": structured_data.get("experience_required"),
+                    "employment_type": structured_data.get("employment_type"),
+                    "work_mode": structured_data.get("work_mode"),
+                    "doc_id": doc_id,
+                }
+            )
+            await session.commit()
+
+        output = {"doc_id": doc_id, "text_length": len(raw_text), "embedding_generated": True, "job_title": structured_data.get("job_title")}
+        await update_job_status(ctx, job_id, "completed", progress=100, result=output)
+        return output
+
+    except Exception as e:
+        error_msg = str(e)
+        logger.error("process_requirement_doc_failed", job_id=job_id, error=error_msg)
+
+        async with async_session_maker() as session:
+            from sqlalchemy import text
+            await session.execute(
+                text("UPDATE requirement_documents SET processing_status = 'failed', updated_at = NOW() WHERE id = :doc_id"),
+                {"doc_id": doc_id}
+            )
+            await session.commit()
+
         job_try = ctx.get("job_try", 1)
         if job_try >= settings.job_max_retries:
             await move_to_dlq(ctx, job_id, error_msg)
@@ -416,7 +500,7 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
 
 
 class WorkerSettings:
-    functions = [process_resume, process_resumes_batch]
+    functions = [process_resume, process_resumes_batch, process_requirement_doc]
     redis_settings = RedisSettings(host=settings.redis_host, port=settings.redis_port)
     job_timeout = 600
     max_tries = settings.job_max_retries

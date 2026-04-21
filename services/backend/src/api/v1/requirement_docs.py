@@ -8,6 +8,7 @@ from sqlalchemy import text
 
 from src.db.session import get_db_session
 from src.services.storage import upload_requirement_doc, delete_requirement_doc_from_storage
+from src.services.task_queue import get_task_queue
 from src.core.redis import get_redis_pool
 from pydantic import BaseModel
 
@@ -22,6 +23,31 @@ class RequirementDocResponse(BaseModel):
     id: str
     file_name: str
     file_url: str
+    job_title: Optional[str] = None
+    processing_status: Optional[str] = None
+    task_id: Optional[str] = None
+    created_at: Optional[str]
+    updated_at: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+class RequirementDocDetailResponse(BaseModel):
+    id: str
+    file_name: str
+    file_url: str
+    raw_text: Optional[str] = None
+    structured_data: Optional[dict] = None
+    job_title: Optional[str] = None
+    required_skills: Optional[List[str]] = None
+    preferred_skills: Optional[List[str]] = None
+    tools_and_technologies: Optional[List[str]] = None
+    experience_required: Optional[str] = None
+    employment_type: Optional[str] = None
+    work_mode: Optional[str] = None
+    processing_status: Optional[str] = None
+    task_id: Optional[str] = None
     created_at: Optional[str]
     updated_at: Optional[str]
 
@@ -60,21 +86,34 @@ async def upload_requirement_document(
 
     result = await session.execute(
         text("""
-            INSERT INTO requirement_documents (file_name, file_url)
-            VALUES (:file_name, :file_url)
-            RETURNING id, file_name, file_url, created_at, updated_at
+            INSERT INTO requirement_documents (file_name, file_url, processing_status)
+            VALUES (:file_name, :file_url, 'pending')
+            RETURNING id, file_name, file_url, job_title, processing_status, created_at, updated_at
         """),
         {"file_name": filename, "file_url": public_url}
     )
     await session.commit()
     row = result.fetchone()
 
+    doc_id = str(row.id)
+
+    queue = await get_task_queue()
+    job = await queue.enqueue_job(
+        "process_requirement_doc",
+        doc_id=doc_id,
+        file_url=public_url,
+        file_type=file_ext,
+    )
+
     await invalidate_cache()
 
     return {
-        "id": str(row.id),
+        "id": doc_id,
         "file_name": row.file_name,
         "file_url": row.file_url,
+        "job_title": row.job_title,
+        "processing_status": row.processing_status,
+        "task_id": job.job_id,
         "created_at": row.created_at.isoformat() if row.created_at else None,
         "updated_at": row.updated_at.isoformat() if row.updated_at else None,
     }
@@ -98,7 +137,7 @@ async def list_requirement_documents(
 
     result = await session.execute(
         text("""
-            SELECT id, file_name, file_url, created_at, updated_at
+            SELECT id, file_name, file_url, job_title, processing_status, created_at, updated_at
             FROM requirement_documents
             ORDER BY created_at DESC
             OFFSET :skip LIMIT :limit
@@ -112,6 +151,9 @@ async def list_requirement_documents(
             "id": str(row.id),
             "file_name": row.file_name,
             "file_url": row.file_url,
+            "job_title": row.job_title,
+            "processing_status": row.processing_status,
+            "task_id": None,
             "created_at": row.created_at.isoformat() if row.created_at else None,
             "updated_at": row.updated_at.isoformat() if row.updated_at else None,
         }
@@ -127,7 +169,7 @@ async def list_requirement_documents(
     return docs
 
 
-@router.get("/{id}", response_model=RequirementDocResponse)
+@router.get("/{id}", response_model=RequirementDocDetailResponse)
 async def get_requirement_document(
     id: UUID,
     session: AsyncSession = Depends(get_db_session),
@@ -144,7 +186,11 @@ async def get_requirement_document(
 
     result = await session.execute(
         text("""
-            SELECT id, file_name, file_url, created_at, updated_at
+            SELECT id, file_name, file_url, raw_text, structured_data,
+                   job_title, required_skills, preferred_skills,
+                   tools_and_technologies, experience_required,
+                   employment_type, work_mode, processing_status,
+                   created_at, updated_at
             FROM requirement_documents
             WHERE id = :id
         """),
@@ -159,6 +205,17 @@ async def get_requirement_document(
         "id": str(row.id),
         "file_name": row.file_name,
         "file_url": row.file_url,
+        "raw_text": row.raw_text,
+        "structured_data": row.structured_data,
+        "job_title": row.job_title,
+        "required_skills": row.required_skills,
+        "preferred_skills": row.preferred_skills,
+        "tools_and_technologies": row.tools_and_technologies,
+        "experience_required": row.experience_required,
+        "employment_type": row.employment_type,
+        "work_mode": row.work_mode,
+        "processing_status": row.processing_status,
+        "task_id": None,
         "created_at": row.created_at.isoformat() if row.created_at else None,
         "updated_at": row.updated_at.isoformat() if row.updated_at else None,
     }
