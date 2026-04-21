@@ -21,13 +21,6 @@ embedding_service = EmbeddingService()
 
 @router.post("/process", response_model=ResumeProcessResponse)
 async def process_resume(body: ResumeProcessRequest):
-    """
-    Full pipeline:
-    1. Download file from Supabase
-    2. Extract text using real extractor
-    3. Generate embedding via Gemini
-    """
-    
     try:
         response = requests.get(str(body.file_url))
         response.raise_for_status()
@@ -38,15 +31,17 @@ async def process_resume(body: ResumeProcessRequest):
             detail=f"Failed to download file: {str(e)}"
         )
 
+    try:
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             tmp.write(file_bytes)
             temp_path = tmp.name
 
-        # Detect file type from URL
-        if body.file_url.lower().endswith(".pdf"):
+        file_url_str = str(body.file_url).lower()
+
+        if file_url_str.endswith(".pdf"):
             result = extract_pdf(temp_path)
             extracted_text = result.text
-        elif body.file_url.lower().endswith(".docx"):
+        elif file_url_str.endswith(".docx"):
             result = extract_docx(temp_path)
             extracted_text = result.text
         else:
@@ -61,7 +56,7 @@ async def process_resume(body: ResumeProcessRequest):
         if not extracted_text or not extracted_text.strip():
             raise HTTPException(
                 status_code=422,
-                detail="No text extracted"
+                detail="No text could be extracted from the file"
             )
 
     except HTTPException:
@@ -71,7 +66,7 @@ async def process_resume(body: ResumeProcessRequest):
             status_code=500,
             detail=f"Extraction failed: {str(e)}"
         )
-        
+
     try:
         embedding = embedding_service.get_embedding(extracted_text)
     except Exception as e:
