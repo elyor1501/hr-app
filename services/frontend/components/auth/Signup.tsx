@@ -97,7 +97,7 @@ export function SignUpForm() {
 
       toast.success("Account created successfully!");
       form.reset();
-      router.replace("/dashboard");
+      router.replace("/login");
     } catch (error) {
       toast.error("Cannot connect to server. Please try again.");
     } finally {

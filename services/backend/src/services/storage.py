@@ -3,8 +3,10 @@ import uuid
 from fastapi import UploadFile
 from supabase import create_client, Client
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+from src.core.config import settings
+
+SUPABASE_URL = settings.supabase_url
+SUPABASE_KEY = settings.supabase_service_key
 
 if SUPABASE_URL and SUPABASE_KEY:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
