@@ -3,8 +3,8 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from src.schemas.extracted_cv import ExtractedCV
-from src.services.llm.gemini_llm_client import GeminiLLMClient
+from schemas.extracted_cv import ExtractedCV
+from services.llm.gemini_llm_client import GeminiLLMClient
 
 
 class CVExtractor:
@@ -18,18 +18,20 @@ class CVExtractor:
         return path.read_text()
 
     def extract(self, cv_text: str) -> ExtractedCV:
-
         prompt = self.prompt_template.replace("{cv_text}", cv_text)
 
         raw_output = self.client.generate_json(prompt)
 
         try:
-            parsed = json.loads(raw_output)
+            parsed = json.loads(raw_output) if isinstance(raw_output, str) else raw_output
+            if not parsed.get("full_name"):
+                parsed["full_name"] = ""
             return ExtractedCV(**parsed)
 
         except (json.JSONDecodeError, ValidationError):
-            # Retry once with stricter instruction
-            retry_prompt = prompt + "\n\nReturn only valid JSON."
+            retry_prompt = prompt + "\n\nReturn only valid JSON. Do not include markdown."
             raw_output = self.client.generate_json(retry_prompt)
-            parsed = json.loads(raw_output)
+            parsed = json.loads(raw_output) if isinstance(raw_output, str) else raw_output
+            if not parsed.get("full_name"):
+                parsed["full_name"] = ""
             return ExtractedCV(**parsed)

@@ -1,66 +1,23 @@
+import time
 import traceback
 import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
-import datetime
+
+from schemas.extracted_cv import ExtractedCV
 from services.llm.gemini_llm_client import GeminiLLMClient
 
-llm = GeminiLLMClient()
 
+llm = GeminiLLMClient()
 router = APIRouter(prefix="/structure", tags=["Structured Extraction"])
 logger = logging.getLogger(__name__)
+
 
 class StructureRequest(BaseModel):
     resume_id: str
     raw_text: str = Field(..., min_length=1)
 
-class EducationItem(BaseModel):
-    degree: Optional[str] = None
-    field_of_study: Optional[str] = None
-    institution: Optional[str] = None
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    grade: Optional[str] = None
-    confidence: Optional[float] = 0.8
-
-class ExperienceItem(BaseModel):
-    job_title: Optional[str] = None
-    company: Optional[str] = None
-    location: Optional[str] = None
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    responsibilities: List[str] = []
-    confidence: Optional[float] = 0.8
-
-class ConfidenceScores(BaseModel):
-    full_name: Optional[float] = 0.8
-    email: Optional[float] = 0.8
-    phone: Optional[float] = 0.8
-    location: Optional[float] = 0.8
-    skills: Optional[float] = 0.8
-    education: Optional[float] = 0.8
-    experience: Optional[float] = 0.8
-    projects: Optional[float] = 0.8
-    overall: Optional[float] = 0.8
-
-class StructuredData(BaseModel):
-    full_name: Optional[str] = None
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    location: Optional[str] = None
-    linkedin: Optional[str] = None
-    github: Optional[str] = None
-    portfolio: Optional[str] = None
-    summary: Optional[str] = None
-    skills: List[str] = []
-    education: List[EducationItem] = []
-    experience: List[ExperienceItem] = []
-    projects: List[Dict[str, Any]] = []
-    certifications: List[Dict[str, Any]] = []
-    confidence_scores: Optional[ConfidenceScores] = ConfidenceScores()
-    confidence_score: Optional[float] = 0.8
-    extraction_latency: Optional[float] = 0.0
 
 @router.post("")
 async def structure_resume(payload: StructureRequest):
@@ -85,8 +42,7 @@ Extract structured resume data in JSON format strictly adhering to the following
       "institution": string or null,
       "start_date": string or null,
       "end_date": string or null,
-      "grade": string or null,
-      "confidence": float
+      "grade": string or null
     }}
   ],
   "experience": [
@@ -96,12 +52,17 @@ Extract structured resume data in JSON format strictly adhering to the following
       "location": string or null,
       "start_date": string or null,
       "end_date": string or null,
-      "responsibilities": [string],
-      "confidence": float
+      "responsibilities": [string]
     }}
   ],
-  "projects": [],
-  "certifications": [],
+  "projects": [
+    {{
+      "project_name": string or null,
+      "description": string or null,
+      "technologies": [string]
+    }}
+  ],
+  "certifications": [string],
   "confidence_scores": {{
     "full_name": float,
     "email": float,
@@ -113,23 +74,29 @@ Extract structured resume data in JSON format strictly adhering to the following
     "projects": float,
     "overall": float
   }},
-  "confidence_score": float,
-  "extraction_latency": 0.0
+  "confidence_score": float
 }}
 
 Resume Text:
 {payload.raw_text}
 """
-        logger.info(f"Sending text to Gemini for resume: {payload.resume_id}")
-        
+        start = time.time()
+        logger.info(f"Structuring resume: {payload.resume_id}")
+
         structured = llm.generate_json(prompt)
 
         if not isinstance(structured, dict):
             structured = {}
 
-        candidate_data = StructuredData(**structured)
+        structured["extraction_latency"] = round(time.time() - start, 3)
 
-        logger.info(f"Successfully structured resume: {payload.resume_id}")
+        # full_name is required — fall back to empty string if LLM omits it
+        if not structured.get("full_name"):
+            structured["full_name"] = ""
+
+        candidate_data = ExtractedCV(**structured)
+
+        logger.info(f"Structured resume successfully: {payload.resume_id}")
 
         return {
             "source_file": payload.resume_id,
@@ -137,7 +104,6 @@ Resume Text:
         }
 
     except Exception as e:
-        error_details = traceback.format_exc()
-        print("CRITICAL AI ERROR:\n", error_details)
-        logger.error(f"Structured extraction failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")
+        logger.error(f"Structured extraction failed for {payload.resume_id}: {str(e)}")
+        logger.debug(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Extraction error: {str(e)}")
