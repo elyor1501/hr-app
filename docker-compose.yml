@@ -32,7 +32,7 @@ services:
       HR_APP_REDIS_PORT: "6379"
       HR_APP_REDIS_DB: "0"
       HR_APP_AI_SERVICE_URL: http://ai-ml-service:8001
-      HR_APP_VECTOR_DIMENSION: "768"
+      HR_APP_VECTOR_DIMENSION: "3072"
       HR_APP_CACHE_PREFIX: "hr_backend:"
       PYTHONPATH: /app
       SUPABASE_URL: ${SUPABASE_URL}

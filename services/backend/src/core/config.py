@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     redis_port: int = Field(default=6379)
     redis_db: int = Field(default=0)
 
-    vector_dimension: int = Field(default=768)
+    vector_dimension: int = Field(default=3072)
 
     rate_limit_enabled: bool = Field(default=True)
     rate_limit_auth_requests: int = Field(default=10)
@@ -70,10 +70,8 @@ class Settings(BaseSettings):
     def get_database_url(self) -> str:
         if self.database_url:
             return self.database_url
-        
         encoded_password = quote_plus(self.database_password)
-        base = f"postgresql+asyncpg://{self.database_user}:{encoded_password}@{self.database_host}:{self.database_port}/{self.database_name}"
-        return base
+        return f"postgresql+asyncpg://{self.database_user}:{encoded_password}@{self.database_host}:{self.database_port}/{self.database_name}"
 
     @property
     def database_url_sync(self) -> str:

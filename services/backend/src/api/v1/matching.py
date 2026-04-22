@@ -342,14 +342,12 @@ async def _get_all_open_jobs(session, limit: int = 50):
 
 async def _get_all_parsed_resumes(session, limit: int = 50):
     result = await session.execute(
-        select(ParsedResume)
-        .limit(limit)
+        select(ParsedResume).limit(limit)
     )
     return list(result.scalars().all())
 
 
 async def _find_parsed_resumes_for_job(session, job, limit: int = 20):
-    """Find parsed resumes matching job requirements using array overlap and exact matches."""
     search_terms = []
     if job.required_skills:
         search_terms.extend([s.lower().strip() for s in job.required_skills])
@@ -360,7 +358,7 @@ async def _find_parsed_resumes_for_job(session, job, limit: int = 20):
 
     if search_terms:
         conditions = []
-        
+
         if job.required_skills or job.preferred_skills:
             skills_to_match = (job.required_skills or []) + (job.preferred_skills or [])
             skills_lower = [s.lower().strip() for s in skills_to_match if s]
@@ -390,13 +388,9 @@ async def _find_parsed_resumes_for_job(session, job, limit: int = 20):
             if parsed_resumes:
                 return parsed_resumes
 
-    fallback_query = (
-        select(ParsedResume)
-        .limit(limit)
-    )
+    fallback_query = select(ParsedResume).limit(limit)
     fallback_result = await session.execute(fallback_query)
     return list(fallback_result.scalars().all())
-
 
 
 async def _process_single_candidate_match(
@@ -406,7 +400,6 @@ async def _process_single_candidate_match(
     job_id: str,
     job_title: Optional[str]
 ) -> MatchResultResponse:
-    """Process a single candidate match - used for parallel execution."""
     try:
         structured_cv = await _get_structured_cv_by_id(session, cid)
         candidate_name = await _get_name_by_id(session, cid)
@@ -454,7 +447,6 @@ async def _process_single_job_match(
     candidate_id: str,
     candidate_name: Optional[str]
 ) -> MatchResultResponse:
-    """Process a single job match - used for parallel execution."""
     try:
         ai_result = await ai_client.rag_match(
             job_description=job.description,
@@ -494,7 +486,6 @@ async def _process_single_resume_match(
     job,
     job_id: str,
 ) -> Optional[MatchResultResponse]:
-    """Process a single resume match - used for parallel execution."""
     try:
         structured_cv = await _get_structured_cv_for_parsed_resume(pr)
 
@@ -540,28 +531,17 @@ async def _process_single_resume_match(
         )
 
 
-
 @router.post("", response_model=MatchResultResponse)
 async def match_candidate_to_job(request: MatchByIdRequest):
     try:
         async with async_session_maker() as session:
-            job_description = await _get_job_description(
-                session, request.job_id
-            )
-            job_title = await _get_job_title(
-                session, request.job_id
-            )
-            structured_cv = await _get_structured_cv_by_id(
-                session, request.candidate_id
-            )
-            candidate_name = await _get_name_by_id(
-                session, request.candidate_id
-            )
+            job_description = await _get_job_description(session, request.job_id)
+            job_title = await _get_job_title(session, request.job_id)
+            structured_cv = await _get_structured_cv_by_id(session, request.candidate_id)
+            candidate_name = await _get_name_by_id(session, request.candidate_id)
 
         if not candidate_name:
-            candidate_name = (
-                (structured_cv.get("full_name") or "").strip() or None
-            )
+            candidate_name = (structured_cv.get("full_name") or "").strip() or None
 
         ai_result = await ai_client.rag_match(
             job_description=job_description,
@@ -583,15 +563,8 @@ async def match_candidate_to_job(request: MatchByIdRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            "match_failed",
-            error=str(e),
-            job_id=request.job_id,
-            candidate_id=request.candidate_id,
-        )
-        raise HTTPException(
-            status_code=500, detail=f"Match failed: {str(e)}"
-        )
+        logger.error("match_failed", error=str(e), job_id=request.job_id, candidate_id=request.candidate_id)
+        raise HTTPException(status_code=500, detail=f"Match failed: {str(e)}")
 
 
 @router.post("/raw")
@@ -604,13 +577,11 @@ async def match_raw(request: RawMatchRequest):
         return result
     except Exception as e:
         logger.error("raw_match_failed", error=str(e))
-        raise HTTPException(
-            status_code=500, detail=f"Match failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Match failed: {str(e)}")
+
 
 @router.post("/bulk", response_model=BulkMatchResponse)
 async def match_bulk(request: BulkMatchRequest):
-    """Bulk match candidates to a job using parallel processing with asyncio.gather()."""
     try:
         async with async_session_maker() as session:
             job_description = await _get_job_description(session, request.job_id)
@@ -625,12 +596,8 @@ async def match_bulk(request: BulkMatchRequest):
                     job_id=request.job_id,
                     job_title=job_title
                 )
-        
-        tasks = [
-            process_candidate_with_own_session(cid)
-            for cid in request.candidate_ids
-        ]
-        
+
+        tasks = [process_candidate_with_own_session(cid) for cid in request.candidate_ids]
         results = await asyncio.gather(*tasks, return_exceptions=False)
 
         return BulkMatchResponse(
@@ -643,14 +610,11 @@ async def match_bulk(request: BulkMatchRequest):
         raise
     except Exception as e:
         logger.error("bulk_match_failed", error=str(e))
-        raise HTTPException(
-            status_code=500, detail=f"Bulk match failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Bulk match failed: {str(e)}")
 
 
 @router.post("/job-to-candidates", response_model=JobToCandidatesResponse)
 async def match_job_to_candidates(request: JobToCandidatesRequest):
-    """Match a job to multiple candidates using parallel processing."""
     try:
         async with async_session_maker() as session:
             job = await session.get(Job, UUID(request.job_id))
@@ -687,15 +651,14 @@ async def match_job_to_candidates(request: JobToCandidatesRequest):
 
         tasks = [process_resume_with_own_session(pr) for pr in parsed_resumes]
         all_results = await asyncio.gather(*tasks, return_exceptions=False)
-        
-        results = [r for r in all_results if r is not None]
 
+        results = [r for r in all_results if r is not None]
         results.sort(key=lambda r: r.match_score, reverse=True)
 
         if request.min_score and request.min_score > 0:
             results = [r for r in results if r.match_score >= request.min_score]
 
-        results = results[: (request.top_k or 10)]
+        results = results[:(request.top_k or 10)]
 
         return JobToCandidatesResponse(
             job_id=request.job_id,
@@ -708,102 +671,18 @@ async def match_job_to_candidates(request: JobToCandidatesRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            "job_to_candidates_failed",
-            error=str(e),
-            job_id=request.job_id,
-        )
-        raise HTTPException(
-            status_code=500,
-            detail=f"Job-to-candidates matching failed: {str(e)}",
-        )
-
-@router.post("/job-to-candidates", response_model=JobToCandidatesResponse)
-async def match_job_to_candidates(request: JobToCandidatesRequest):
-    """Match a job to multiple candidates using parallel processing."""
-    try:
-        async with async_session_maker() as session:
-            job = await session.get(Job, UUID(request.job_id))
-            if not job:
-                raise HTTPException(status_code=404, detail=f"Job {request.job_id} not found")
-            if not job.description:
-                raise HTTPException(status_code=422, detail="Job has no description")
-
-            if request.match_all_candidates:
-                parsed_resumes = await _get_all_parsed_resumes(
-                    session, limit=(request.top_k or 10) * 5
-                )
-            else:
-                parsed_resumes = await _find_parsed_resumes_for_job(
-                    session, job, limit=(request.top_k or 10) * 3
-                )
-
-            if not parsed_resumes:
-                return JobToCandidatesResponse(
-                    job_id=request.job_id,
-                    job_title=job.title,
-                    total_candidates_evaluated=0,
-                    total_matches=0,
-                    results=[],
-                )
-
-            tasks = [
-                _process_single_resume_match(
-                    pr=pr,
-                    job=job,
-                    job_id=request.job_id
-                )
-                for pr in parsed_resumes
-            ]
-            
-            all_results = await asyncio.gather(*tasks, return_exceptions=False)
-            
-            results = [r for r in all_results if r is not None]
-
-            results.sort(key=lambda r: r.match_score, reverse=True)
-
-            if request.min_score and request.min_score > 0:
-                results = [r for r in results if r.match_score >= request.min_score]
-
-            results = results[: (request.top_k or 10)]
-
-            return JobToCandidatesResponse(
-                job_id=request.job_id,
-                job_title=job.title,
-                total_candidates_evaluated=len(parsed_resumes),
-                total_matches=len(results),
-                results=results,
-            )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            "job_to_candidates_failed",
-            error=str(e),
-            job_id=request.job_id,
-        )
-        raise HTTPException(
-            status_code=500,
-            detail=f"Job-to-candidates matching failed: {str(e)}",
-        )
+        logger.error("job_to_candidates_failed", error=str(e), job_id=request.job_id)
+        raise HTTPException(status_code=500, detail=f"Job-to-candidates matching failed: {str(e)}")
 
 
 @router.post("/candidate-to-jobs", response_model=CandidateToJobsResponse)
 async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
-    """Match a candidate to multiple jobs using parallel processing."""
     try:
         async with async_session_maker() as session:
-            structured_cv = await _get_structured_cv_by_id(
-                session, request.candidate_id
-            )
-            candidate_name = await _get_name_by_id(
-                session, request.candidate_id
-            )
+            structured_cv = await _get_structured_cv_by_id(session, request.candidate_id)
+            candidate_name = await _get_name_by_id(session, request.candidate_id)
             if not candidate_name:
-                candidate_name = (
-                    (structured_cv.get("full_name") or "").strip() or None
-                )
+                candidate_name = (structured_cv.get("full_name") or "").strip() or None
 
             if request.job_ids and len(request.job_ids) > 0:
                 jobs = []
@@ -816,9 +695,7 @@ async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
                         logger.warning("invalid_job_id_skipped", job_id=jid)
                         continue
             else:
-                jobs = await _get_all_open_jobs(
-                    session, limit=(request.top_k or 10) * 5
-                )
+                jobs = await _get_all_open_jobs(session, limit=(request.top_k or 10) * 5)
 
             if not jobs:
                 return CandidateToJobsResponse(
@@ -838,17 +715,15 @@ async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
                 )
                 for job in jobs
             ]
-            
+
             results = await asyncio.gather(*tasks, return_exceptions=False)
             results = list(results)
-
             results.sort(key=lambda r: r.match_score, reverse=True)
 
             if request.min_score and request.min_score > 0:
                 results = [r for r in results if r.match_score >= request.min_score]
 
-            top_k = request.top_k or 10
-            results = results[:top_k]
+            results = results[:(request.top_k or 10)]
 
             return CandidateToJobsResponse(
                 candidate_id=request.candidate_id,
@@ -861,12 +736,5 @@ async def match_candidate_to_multiple_jobs(request: CandidateToJobsRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(
-            "candidate_to_jobs_failed",
-            error=str(e),
-            candidate_id=request.candidate_id,
-        )
-        raise HTTPException(
-            status_code=500,
-            detail=f"Candidate-to-jobs matching failed: {str(e)}",
-        )
+        logger.error("candidate_to_jobs_failed", error=str(e), candidate_id=request.candidate_id)
+        raise HTTPException(status_code=500, detail=f"Candidate-to-jobs matching failed: {str(e)}")

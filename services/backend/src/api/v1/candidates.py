@@ -4,7 +4,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
-from sqlalchemy import select, func, text, or_, cast, String
+from sqlalchemy import select, func, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
@@ -123,9 +123,7 @@ async def create_candidate(
     if skills:
         candidate_data["skills"] = [s.strip().lower() for s in skills.split(",") if s.strip()]
 
-    candidate_data["embedding"] = [
-        random.uniform(-1, 1) for _ in range(3072)
-    ]
+    candidate_data["embedding"] = [random.uniform(-1, 1) for _ in range(3072)]
 
     resume_url = None
     if resume:
@@ -174,9 +172,7 @@ async def list_candidates(
     except Exception:
         pass
 
-    total_result = await session.execute(
-        select(func.count(Candidate.id))
-    )
+    total_result = await session.execute(select(func.count(Candidate.id)))
     total = total_result.scalar() or 0
 
     offset = (page - 1) * page_size
@@ -215,12 +211,14 @@ async def search_candidates(
     experience_level: Optional[str] = Query(default=None),
     availability: Optional[str] = Query(default=None),
     location: Optional[str] = Query(default=None),
+    skills: Optional[str] = Query(default=None),
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
 ):
     import hashlib
-    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{experience_level}{availability}{location}{page}{page_size}'.encode()).hexdigest()}"
+    skills_list = [s.strip().lower() for s in skills.split(",") if s.strip()] if skills else []
+    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{experience_level}{availability}{location}{skills}{page}{page_size}'.encode()).hexdigest()}"
 
     try:
         redis = await get_redis_pool()
@@ -253,11 +251,16 @@ async def search_candidates(
     if location:
         filters.append(Candidate.location.ilike(f"%{location}%"))
 
+    if skills_list:
+        for skill in skills_list:
+            filters.append(
+                func.lower(func.array_to_string(Candidate.skills, ' ')).contains(skill)
+            )
+
     base_query = select(Candidate)
     count_query = select(func.count(Candidate.id))
 
     if filters:
-        from sqlalchemy import and_
         combined = and_(*filters)
         base_query = base_query.where(combined)
         count_query = count_query.where(combined)

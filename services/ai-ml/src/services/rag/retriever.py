@@ -25,7 +25,7 @@ class RAGRetriever:
             embedding_str = "[" + ",".join(str(float(v)) for v in query_embedding) + "]"
 
             sql = sql_text(
-                "SELECT id, first_name, last_name, "
+                "SELECT id, first_name, last_name, current_title, location, "
                 "1 - (embedding <=> CAST(:query_embedding AS vector)) AS score "
                 "FROM candidates "
                 "WHERE embedding IS NOT NULL "
@@ -45,9 +45,10 @@ class RAGRetriever:
 
             matches = []
             for r in rows:
+                name = f"{r.first_name or ''} {r.last_name or ''}".strip()
                 matches.append({
-                    "source_file": f"{r.first_name} {r.last_name}",
-                    "text_chunk": f"{r.first_name} {r.last_name}",
+                    "source_file": name,
+                    "text_chunk": f"{name} - {r.current_title or ''} - {r.location or ''}".strip(" -"),
                     "score": float(r.score)
                 })
 

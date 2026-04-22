@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from typing import List, Optional
 from uuid import UUID
+import json
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -10,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.session import get_db_session
 from src.db.models import StaffingRequest, RequestCandidate, RequestAuditLog, Candidate
+from src.core.redis import get_redis_pool
 
 logger = structlog.get_logger()
 router = APIRouter()
@@ -20,8 +22,6 @@ VALID_TRANSITIONS = {
     "signed": [],
     "closed": [],
 }
-
-ATTACHMENT_TYPES = ["Certification", "Portfolio", "License", "Cover Letter", "Reference Letter", "Other"]
 
 
 class RequestCreate(BaseModel):
@@ -112,6 +112,19 @@ class RequestCountResponse(BaseModel):
     total_active: int
 
 
+async def _invalidate_requests_cache():
+    try:
+        redis = await get_redis_pool()
+        keys = await redis.keys("hr_app:requests:*")
+        if keys:
+            await redis.delete(*keys)
+        stats_keys = await redis.keys("hr_app:stats:*")
+        if stats_keys:
+            await redis.delete(*stats_keys)
+    except Exception:
+        pass
+
+
 async def _generate_request_number(session: AsyncSession) -> str:
     year = datetime.now().year
     prefix = f"REQ-{year}-"
@@ -129,8 +142,6 @@ async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
     cache_key = "hr_app:requests:count"
 
     try:
-        from src.core.redis import get_redis_pool
-        import json
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
         if cached:
@@ -158,14 +169,13 @@ async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
     )
 
     try:
-        from src.core.redis import get_redis_pool
-        import json
         redis = await get_redis_pool()
         await redis.setex(cache_key, 30, json.dumps(response.model_dump()))
     except Exception:
         pass
 
     return response
+
 
 @router.post("/", response_model=RequestResponse, status_code=status.HTTP_201_CREATED)
 async def create_request(
@@ -197,6 +207,8 @@ async def create_request(
     await session.commit()
     await session.refresh(req)
 
+    await _invalidate_requests_cache()
+
     return _build_response(req, [])
 
 
@@ -210,8 +222,6 @@ async def list_requests(
     cache_key = f"hr_app:requests:list:{skip}:{limit}:{state}"
 
     try:
-        from src.core.redis import get_redis_pool
-        import json
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
         if cached:
@@ -256,8 +266,6 @@ async def list_requests(
         ))
 
     try:
-        from src.core.redis import get_redis_pool
-        import json
         redis = await get_redis_pool()
         await redis.setex(cache_key, 30, json.dumps([i.model_dump() for i in items], default=str))
     except Exception:
@@ -265,16 +273,15 @@ async def list_requests(
 
     return items
 
+
 @router.get("/{request_id}", response_model=RequestResponse)
 async def get_request(
     request_id: UUID,
     session: AsyncSession = Depends(get_db_session)
 ):
-    stmt = (
-        select(StaffingRequest)
-        .where(StaffingRequest.id == request_id)
+    result = await session.execute(
+        select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
-    result = await session.execute(stmt)
     req = result.scalar_one_or_none()
 
     if not req:
@@ -309,6 +316,8 @@ async def update_request(
 
     await session.commit()
     await session.refresh(req)
+
+    await _invalidate_requests_cache()
 
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
@@ -351,6 +360,8 @@ async def transition_state(
     session.add(audit)
     await session.commit()
     await session.refresh(req)
+
+    await _invalidate_requests_cache()
 
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
@@ -415,6 +426,8 @@ async def propose_candidate(
     await session.commit()
     await session.refresh(req)
 
+    await _invalidate_requests_cache()
+
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
 
@@ -452,6 +465,8 @@ async def remove_candidate(
     await session.delete(rc)
     await session.commit()
 
+    await _invalidate_requests_cache()
+
 
 @router.delete("/{request_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_request(
@@ -468,6 +483,8 @@ async def delete_request(
 
     await session.delete(req)
     await session.commit()
+
+    await _invalidate_requests_cache()
 
 
 async def _get_proposed_candidates(session: AsyncSession, request_id: UUID) -> List[CandidateSummary]:
