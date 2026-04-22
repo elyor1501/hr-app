@@ -80,17 +80,17 @@ jobs:
               --restart unless-stopped \
               redis:7-alpine
             
-            echo '=== Starting Backend (No Public Exposure) ==='
+            echo '=== Starting Backend (With ALL Required Env Vars) ==='
             docker run -d \
               --name backend \
               --network hr-network \
               --restart unless-stopped \
+              -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
               -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
-              -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
@@ -100,12 +100,28 @@ jobs:
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
+              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
+              -e JWT_SECRET_KEY=\"${{ secrets.JWT_SECRET_KEY }}\" \
+              -e JWT_ALGORITHM=HS256 \
+              -e ACCESS_TOKEN_EXPIRE_MINUTES=30 \
+              -e HR_APP_SECRET_KEY=\"${{ secrets.HR_APP_SECRET_KEY }}\" \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
-            echo '=== Waiting for backend ==='
-            sleep 10
+            echo '=== Waiting for backend to initialize ==='
+            sleep 20
             
-            echo '=== Starting AI-ML ==='
+            echo '=== Checking Backend Health ==='
+            for i in {1..30}; do
+              if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+                echo '✅ Backend is healthy'
+                break
+              fi
+              echo \"Attempt \$i/30: Backend not ready yet...\"
+              docker logs backend --tail=5 2>/dev/null || true
+              sleep 2
+            done
+            
+            echo '=== Starting AI-ML Service ==='
             docker run -d \
               --name ai-ml-service \
               --network hr-network \
@@ -124,6 +140,7 @@ jobs:
               --name worker \
               --network hr-network \
               --restart unless-stopped \
+              -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
@@ -154,25 +171,26 @@ jobs:
             echo '=== Waiting for services ==='
             sleep 15
             
+            echo ''
             echo '=== Running Containers ==='
             docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
             
+            echo ''
             echo '=== Testing Backend ==='
-            if docker exec backend curl -f http://localhost:8000/health 2>/dev/null; then
-              echo '✅ Backend: OK'
-            else
-              echo '⚠️ Backend logs:'
-              docker logs backend --tail=20
-            fi
+            curl -f http://localhost:8000/health && echo '✅ Backend: OK' || echo '❌ Backend: FAILED'
             
-            echo '=== Testing Frontend ==='
-            if curl -f http://localhost:80 > /dev/null 2>&1; then
-              echo '✅ Frontend: OK'
-            else
-              echo '❌ Frontend: FAILED'
-            fi
+            echo ''
+            echo '=== Testing Login API ==='
+            curl -X POST http://localhost:8000/api/v1/auth/login \
+              -H \"Content-Type: application/json\" \
+              -d '{\"email\":\"admin@example.com\",\"password\":\"admin123\"}' \
+              -w '\nHTTP Status: %{http_code}\n'
             
+            echo ''
+            echo '=== Backend Logs ==='
+            docker logs backend --tail=30
+            
+            echo ''
             echo '=== Deployment Complete ==='
             echo '✅ App: http://${{ secrets.DEPLOY_HOST }}'
-            echo '✅ Backend: Hidden (not exposed to internet)'
           "
