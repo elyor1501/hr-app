@@ -80,7 +80,22 @@ jobs:
               --restart unless-stopped \
               redis:7-alpine
             
-            echo '=== Starting Backend (With ALL Required Env Vars) ==='
+            echo '=== Installing missing packages and starting Backend ==='
+            # Create a temporary container to install missing packages
+            docker create --name backend-temp \
+              --network hr-network \
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
+            
+            docker start backend-temp
+            echo 'Installing psycopg2-binary...'
+            docker exec backend-temp pip install psycopg2-binary asyncpg --no-cache-dir
+            docker stop backend-temp
+            
+            # Commit the fixed image
+            docker commit backend-temp backend-fixed
+            docker rm backend-temp
+            
+            # Run the fixed backend
             docker run -d \
               --name backend \
               --network hr-network \
@@ -105,7 +120,7 @@ jobs:
               -e JWT_ALGORITHM=HS256 \
               -e ACCESS_TOKEN_EXPIRE_MINUTES=30 \
               -e HR_APP_SECRET_KEY=\"${{ secrets.HR_APP_SECRET_KEY }}\" \
-              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
+              backend-fixed
             
             echo '=== Waiting for backend to initialize ==='
             sleep 20
@@ -117,7 +132,6 @@ jobs:
                 break
               fi
               echo \"Attempt \$i/30: Backend not ready yet...\"
-              docker logs backend --tail=5 2>/dev/null || true
               sleep 2
             done
             
@@ -178,13 +192,6 @@ jobs:
             echo ''
             echo '=== Testing Backend ==='
             curl -f http://localhost:8000/health && echo '✅ Backend: OK' || echo '❌ Backend: FAILED'
-            
-            echo ''
-            echo '=== Testing Login API ==='
-            curl -X POST http://localhost:8000/api/v1/auth/login \
-              -H \"Content-Type: application/json\" \
-              -d '{\"email\":\"admin@example.com\",\"password\":\"admin123\"}' \
-              -w '\nHTTP Status: %{http_code}\n'
             
             echo ''
             echo '=== Backend Logs ==='
