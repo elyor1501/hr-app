@@ -38,7 +38,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-${{ github.sha }}
           build-args: |
-            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', secrets.NEXT_PUBLIC_API_URL) || '' }}
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', 'http://localhost:8000') || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_URL={0}', secrets.NEXT_PUBLIC_SUPABASE_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={0}', secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
           cache-from: type=gha
@@ -57,7 +57,6 @@ jobs:
           
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
-          # SINGLE SSH CONNECTION - Removed firewall configuration that was breaking things
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} -o ServerAliveInterval=60 ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Starting Deployment ==='
             
@@ -69,6 +68,10 @@ jobs:
             
             echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
+            
+            echo '=== Getting Docker bridge IP ==='
+            DOCKER_BRIDGE_IP=\$(ip addr show docker0 | grep -Po 'inet \K[\d.]+' || echo '172.17.0.1')
+            echo \"Docker bridge IP: \$DOCKER_BRIDGE_IP\"
             
             echo '=== Pulling latest images ==='
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
@@ -86,7 +89,7 @@ jobs:
             echo '=== Starting Backend ==='
             docker run -d \
               --name backend \
-              --network hr-network \
+              --network host \
               --restart unless-stopped \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
@@ -111,7 +114,7 @@ jobs:
             echo '=== Starting AI-ML Service ==='
             docker run -d \
               --name ai-ml-service \
-              --network hr-network \
+              --network host \
               --restart unless-stopped \
               -e REDIS_HOST=redis \
               -e REDIS_PORT=6379 \
@@ -125,7 +128,7 @@ jobs:
             echo '=== Starting Worker ==='
             docker run -d \
               --name worker \
-              --network hr-network \
+              --network host \
               --restart unless-stopped \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
@@ -147,10 +150,9 @@ jobs:
             echo '=== Starting Frontend ==='
             docker run -d \
               --name frontend \
-              --network hr-network \
+              --network host \
               --restart unless-stopped \
-              -p 80:3000 \
-              -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+              -e NEXT_PUBLIC_API_URL=http://localhost:8000 \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
@@ -164,7 +166,7 @@ jobs:
             
             echo ''
             echo '=== Testing Backend Health ==='
-            if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
+            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
               echo '✅ Backend: OK'
             else
               echo '⚠️ Backend: Health check failed - checking logs'
@@ -173,7 +175,7 @@ jobs:
             
             echo ''
             echo '=== Testing Frontend ==='
-            if curl -f http://localhost:80 > /dev/null 2>&1; then
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
               echo '✅ Frontend: OK'
             else
               echo '❌ Frontend: FAILED'
@@ -181,16 +183,17 @@ jobs:
             fi
             
             echo ''
-            echo '=== Testing Internal Connectivity ==='
-            if docker exec frontend wget -q -O- --timeout=5 http://backend:8000/health 2>/dev/null; then
-              echo '✅ Frontend → Backend: Connected'
+            echo '=== Testing Frontend to Backend Connection ==='
+            if docker exec frontend curl -f -s -o /dev/null http://localhost:8000/health 2>/dev/null; then
+              echo '✅ Frontend → Backend: Connected via localhost'
             else
-              echo '⚠️ Frontend → Backend: Cannot connect'
+              echo '❌ Frontend → Backend: Cannot connect'
+              docker logs frontend --tail=20
             fi
             
             echo ''
             echo '=== Deployment Complete ==='
             echo '✅ Application: http://${{ secrets.DEPLOY_HOST }}'
-            echo '✅ Backend: Internal only (not exposed)'
-            echo '✅ AI-ML: Internal only (not exposed)'
+            echo '✅ Backend: Internal only (via localhost)'
+            echo '✅ AI-ML: Internal only (via localhost)'
           "
