@@ -5,9 +5,8 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: process.env.NEXT_PUBLIC_API_URL 
-          ? `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`
-          : 'http://localhost:8000/api/:path*', // change this to your backend URL if needed from backend (docker) to localhost (local)
+        // Use Docker bridge IP for server-side API calls
+        destination: 'http://172.17.0.1:8000/api/:path*',
       },
     ];
   },

@@ -38,7 +38,6 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-${{ github.sha }}
           build-args: |
-            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', secrets.NEXT_PUBLIC_API_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_URL={0}', secrets.NEXT_PUBLIC_SUPABASE_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={0}', secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
           cache-from: type=gha
@@ -64,14 +63,9 @@ jobs:
             docker stop \$(docker ps -aq) 2>/dev/null || true
             docker rm \$(docker ps -aq) 2>/dev/null || true
             docker system prune -a -f 2>/dev/null || true
-            echo '=== Cleanup complete ==='
             
             echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
-            
-            echo '=== Getting Docker bridge IP ==='
-            DOCKER_BRIDGE_IP=\$(ip addr show docker0 | grep -Po 'inet \K[\d.]+' || echo '172.17.0.1')
-            echo \"Docker bridge IP: \$DOCKER_BRIDGE_IP\"
             
             echo '=== Pulling latest images ==='
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
@@ -86,12 +80,11 @@ jobs:
               --restart unless-stopped \
               redis:7-alpine
             
-            echo '=== Starting Backend ==='
+            echo '=== Starting Backend (No Public Exposure) ==='
             docker run -d \
               --name backend \
               --network hr-network \
               --restart unless-stopped \
-              -p 8000:8000 \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
@@ -109,10 +102,10 @@ jobs:
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
-            echo '=== Waiting for backend to initialize ==='
-            sleep 15
+            echo '=== Waiting for backend ==='
+            sleep 10
             
-            echo '=== Starting AI-ML Service ==='
+            echo '=== Starting AI-ML ==='
             docker run -d \
               --name ai-ml-service \
               --network hr-network \
@@ -154,38 +147,32 @@ jobs:
               --network hr-network \
               --restart unless-stopped \
               -p 80:3000 \
-              -e NEXT_PUBLIC_API_URL=http://172.17.0.1:8000 \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
-            echo '=== Waiting for services to be ready ==='
+            echo '=== Waiting for services ==='
             sleep 15
             
-            echo ''
             echo '=== Running Containers ==='
             docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
             
-            echo ''
-            echo '=== Testing Backend Health ==='
-            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+            echo '=== Testing Backend ==='
+            if docker exec backend curl -f http://localhost:8000/health 2>/dev/null; then
               echo '✅ Backend: OK'
             else
-              echo '⚠️ Backend: Health check failed - checking logs'
-              docker logs backend --tail=30
+              echo '⚠️ Backend logs:'
+              docker logs backend --tail=20
             fi
             
-            echo ''
             echo '=== Testing Frontend ==='
             if curl -f http://localhost:80 > /dev/null 2>&1; then
               echo '✅ Frontend: OK'
             else
               echo '❌ Frontend: FAILED'
-              docker logs frontend --tail=20
             fi
             
-            echo ''
             echo '=== Deployment Complete ==='
-            echo '✅ Application: http://${{ secrets.DEPLOY_HOST }}'
-            echo '✅ Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
+            echo '✅ App: http://${{ secrets.DEPLOY_HOST }}'
+            echo '✅ Backend: Hidden (not exposed to internet)'
           "
