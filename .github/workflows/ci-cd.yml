@@ -38,6 +38,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ matrix.service }}-${{ github.sha }}
           build-args: |
+            ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_API_URL={0}', secrets.NEXT_PUBLIC_API_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_URL={0}', secrets.NEXT_PUBLIC_SUPABASE_URL) || '' }}
             ${{ matrix.service == 'frontend' && format('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY={0}', secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) || '' }}
           cache-from: type=gha
@@ -56,14 +57,40 @@ jobs:
           
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           
-          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} -o ServerAliveInterval=60 ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
-            echo '=== Starting Deployment ==='
-            
-            echo '=== Cleaning up old containers ==='
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
+            echo '=== Cleaning up disk space ==='
             docker stop \$(docker ps -aq) 2>/dev/null || true
             docker rm \$(docker ps -aq) 2>/dev/null || true
             docker system prune -a -f 2>/dev/null || true
-            
+            docker volume prune -f 2>/dev/null || true
+            docker container prune -f 2>/dev/null || true
+            docker image prune -a -f 2>/dev/null || true
+            docker builder prune -a -f 2>/dev/null || true
+            docker rmi \$(docker images -q) 2>/dev/null || true
+            sudo apt-get clean 2>/dev/null || true
+            sudo journalctl --vacuum-time=3d 2>/dev/null || true
+            df -h
+            echo '=== Cleanup complete ==='
+          "
+          
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
+            echo '=== Configuring firewall ==='
+            sudo systemctl stop nginx 2>/dev/null || true
+            sudo systemctl disable nginx 2>/dev/null || true
+            docker stop nginx 2>/dev/null || true
+            docker rm nginx 2>/dev/null || true
+            sudo fuser -k 80/tcp 2>/dev/null || true
+            sudo fuser -k 8000/tcp 2>/dev/null || true
+            sudo fuser -k 8001/tcp 2>/dev/null || true
+            sudo fuser -k 6379/tcp 2>/dev/null || true
+            sudo ufw allow 80/tcp 2>/dev/null || true
+            sudo ufw allow 8000/tcp 2>/dev/null || true
+            sudo ufw delete allow 8001/tcp 2>/dev/null || true
+            sudo ufw reload 2>/dev/null || true
+            echo '=== Firewall configured ==='
+          "
+          
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
             
@@ -78,39 +105,21 @@ jobs:
               --name redis \
               --network hr-network \
               --restart unless-stopped \
+              -p 127.0.0.1:6379:6379 \
               redis:7-alpine
             
-            echo '=== Installing asyncpg driver and starting Backend ==='
-            # Create a temporary container to install asyncpg
-            docker create --name backend-temp \
-              --network hr-network \
-              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
-            
-            docker start backend-temp
-            echo 'Installing asyncpg (async PostgreSQL driver)...'
-            docker exec backend-temp pip install asyncpg --no-cache-dir
-            echo 'Removing sync driver if present...'
-            docker exec backend-temp pip uninstall -y psycopg2-binary psycopg2 2>/dev/null || true
-            docker stop backend-temp
-            
-            # Commit the fixed image
-            docker commit backend-temp backend-fixed
-            docker rm backend-temp
-            
-            # Build async database URL
-            DB_URL=\"postgresql+asyncpg://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}\"
-            
-            # Run the fixed backend
+            echo '=== Starting Backend ==='
             docker run -d \
               --name backend \
               --network hr-network \
               --restart unless-stopped \
-              -e HR_APP_ENVIRONMENT=production \
+              -p 8000:8000 \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
               -e HR_APP_DATABASE_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e HR_APP_DATABASE_NAME=${{ secrets.DB_NAME }} \
+              -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_REDIS_HOST=redis \
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
@@ -120,15 +129,13 @@ jobs:
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
-              -e DATABASE_URL=\"$DB_URL\" \
-              backend-fixed
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
-            echo '=== Waiting for backend to initialize ==='
-            sleep 20
+            echo '=== Waiting for backend to start ==='
+            sleep 10
             
-            echo '=== Checking Backend Health ==='
             for i in {1..30}; do
-              if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+              if curl -f http://127.0.0.1:8000/health 2>/dev/null; then
                 echo '✅ Backend is healthy'
                 break
               fi
@@ -141,11 +148,12 @@ jobs:
               --name ai-ml-service \
               --network hr-network \
               --restart unless-stopped \
+              -p 127.0.0.1:8001:8001 \
               -e REDIS_HOST=redis \
               -e REDIS_PORT=6379 \
               -e REDIS_DB=1 \
               -e REDIS_PREFIX=aiml \
-              -e DATABASE_URL=\"$DB_URL\" \
+              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
               -e PYTHONPATH=/app/src \
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
@@ -155,7 +163,6 @@ jobs:
               --name worker \
               --network hr-network \
               --restart unless-stopped \
-              -e HR_APP_ENVIRONMENT=production \
               -e HR_APP_DATABASE_HOST=${{ secrets.DB_HOST }} \
               -e HR_APP_DATABASE_PORT=${{ secrets.DB_PORT }} \
               -e HR_APP_DATABASE_USER=${{ secrets.DB_USER }} \
@@ -179,38 +186,61 @@ jobs:
               --network hr-network \
               --restart unless-stopped \
               -p 80:3000 \
+              -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             
-            echo '=== Waiting for services ==='
-            sleep 15
+            echo '=== Waiting for all services ==='
+            sleep 10
             
             echo ''
             echo '=== Running Containers ==='
-            docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
-            
+            docker ps --format 'table {{.Names}}\t{{.Status}}'
             echo ''
-            echo '=== Testing Backend ==='
-            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+            
+            echo '=== Health Check Results ==='
+            if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
               echo '✅ Backend: OK'
             else
               echo '❌ Backend: FAILED'
-              echo '=== Backend Logs ==='
-              docker logs backend --tail=50
             fi
             
-            echo ''
-            echo '=== Testing Frontend ==='
+            if curl -f http://127.0.0.1:8001/health > /dev/null 2>&1; then
+              echo '✅ AI-ML: OK'
+            else
+              echo '⚠️ AI-ML: No health endpoint'
+            fi
+            
             if curl -f http://localhost:80 > /dev/null 2>&1; then
               echo '✅ Frontend: OK'
             else
               echo '❌ Frontend: FAILED'
-              docker logs frontend --tail=20
+            fi
+            
+            echo ''
+            echo '=== Port Security Verification ==='
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
+              echo '✅ Backend: Public (Firewall controlled)'
+            else
+              echo '⚠️ Backend: Not accessible'
+            fi
+            
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8001/health > /dev/null 2>&1; then
+              echo '⚠️ AI-ML exposed!'
+            else
+              echo '✅ AI-ML: Localhost only (Secure)'
+            fi
+            
+            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: Public'
+            else
+              echo '❌ Frontend: Not accessible'
             fi
             
             echo ''
             echo '=== Deployment Complete ==='
-            echo '✅ App: http://${{ secrets.DEPLOY_HOST }}'
-            echo '✅ Backend: Internal only (not exposed)'
+            echo 'Frontend: http://${{ secrets.DEPLOY_HOST }}'
+            echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
+            echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
           "
