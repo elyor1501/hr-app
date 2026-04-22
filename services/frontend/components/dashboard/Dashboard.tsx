@@ -34,6 +34,11 @@ const CACHE_TTL = 30000;
 
 export default function DashboardDetail() {
   const [stats, setStats] = useState<StatsData | null>(null);
+  const [openRequests, setOpenRequests] = useState(0);
+  const [requestCounts, setRequestCounts] = useState({
+    open: 0,
+    inProgress: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,15 +57,33 @@ export default function DashboardDetail() {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
-      const response = await fetch(`${apiUrl}/api/v1/stats`, { headers });
+      const [statsRes, requestsRes] = await Promise.all([
+        fetch(`${apiUrl}/api/v1/stats`, { headers }),
+        fetch(`${apiUrl}/api/v1/requests`, { headers }),
+      ]);
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+      if (!statsRes.ok || !requestsRes.ok) {
+        throw new Error("API error");
       }
+      const statsData = await statsRes.json();
+      const requestsData = await requestsRes.json();
+      const openCount = requestsData.filter(
+        (req: any) => req.state === "open",
+      ).length;
 
-      const data = await response.json();
-      statsCache = { data, timestamp: Date.now() };
-      setStats(data);
+      const inProgressCount = requestsData.filter(
+        (req: any) => req.state === "in_progress",
+      ).length;
+
+      setRequestCounts({
+        open: openCount,
+        inProgress: inProgressCount,
+      });
+
+      statsCache = { data: statsData, timestamp: Date.now() };
+
+      setStats(statsData);
+      setOpenRequests(openCount);
       setLoading(false);
     } catch (err) {
       console.error("Failed to fetch stats:", err);
@@ -121,10 +144,26 @@ export default function DashboardDetail() {
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
               <Briefcase className="w-12 h-12" />
             </div>
-            <h3 className="text-sm font-medium text-muted-foreground">Total Jobs</h3>
-            <p className="text-3xl font-bold mt-2">{stats.total_jobs}</p>
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Open Requests
+            </h3>
+
+            <p className="text-3xl font-bold mt-2">
+              {requestCounts.open + requestCounts.inProgress}
+            </p>
+
+            <div className="mt-3 flex items-center gap-4 text-xs font-medium">
+              <span className="px-2 py-1 rounded-full bg-green-100 text-green-700">
+                Open: {requestCounts.open}
+              </span>
+
+              <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">
+                In Progress: {requestCounts.inProgress}
+              </span>
+            </div>
+
             <div className="mt-4 flex items-center text-xs text-green-600 font-medium">
-              <span>Active positions</span>
+              <span>Active staffing demand</span>
             </div>
           </div>
 

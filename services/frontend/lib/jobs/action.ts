@@ -1,5 +1,5 @@
 import { revalidateJobs } from "./revalidate";
-import { getApiUrl } from "../api-config";
+import { getApiUrl, getAuthToken } from "../api-config";
 
 export async function deleteJob(jobId: string, token: string | null) {
   try {
@@ -112,4 +112,46 @@ export async function createJob(payload: any, token: string | null) {
   await revalidateJobs();
 
   return await res.json();
+}
+
+export async function uploadJobDescriptions(files: File[]) {
+  const token = getAuthToken();
+  const apiUrl = getApiUrl();
+  const results = [];
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120000);
+
+  try {
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${apiUrl}/api/v1/requirement-docs/upload`, {
+        method: "POST",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: formData,
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData?.detail || `Upload failed for ${file.name}`);
+      }
+
+      results.push(await res.json());
+    }
+
+    clearTimeout(timeoutId);
+    await revalidateJobs();
+    return results;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error("Upload timeout - files may be too large");
+    }
+    throw error;
+  }
 }

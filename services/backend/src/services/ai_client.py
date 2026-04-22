@@ -5,32 +5,56 @@ from src.core.config import settings
 
 logger = structlog.get_logger()
 
+_client: Optional[httpx.AsyncClient] = None
+
+
+async def get_ai_http_client() -> httpx.AsyncClient:
+    global _client
+    if _client is None or _client.is_closed:
+        _client = httpx.AsyncClient(
+            timeout=httpx.Timeout(120.0, connect=10.0),
+            limits=httpx.Limits(max_connections=20, max_keepalive_connections=10),
+        )
+    return _client
+
+
+async def close_ai_http_client():
+    global _client
+    if _client and not _client.is_closed:
+        await _client.aclose()
+        _client = None
+
 
 class AIClient:
     def __init__(self):
         self.base_url = settings.ai_service_url
-        self.timeout = httpx.Timeout(300.0, connect=30.0)
 
     async def _request(self, method: str, endpoint: str, payload: Optional[Dict] = None):
         url = f"{self.base_url.rstrip('/')}/api/v1{endpoint}"
-
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            try:
-                logger.info("ai_req", method=method, url=url)
-                resp = await client.request(method, url, json=payload)
-                resp.raise_for_status()
-                return resp.json()
-            except httpx.HTTPStatusError as e:
-                body = e.response.text
-                logger.error("ai_service_error", error=str(e), url=url, status_code=e.response.status_code, response_body=body[:500])
-                raise e
-            except Exception as e:
-                logger.error("ai_service_error", error=str(e), url=url)
-                raise e
+        client = await get_ai_http_client()
+        try:
+            logger.info("ai_req", method=method, url=url)
+            resp = await client.request(method, url, json=payload)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.HTTPStatusError as e:
+            body = e.response.text
+            logger.error("ai_service_error", error=str(e), url=url, status_code=e.response.status_code, response_body=body[:500])
+            raise e
+        except Exception as e:
+            logger.error("ai_service_error", error=str(e), url=url)
+            raise e
 
     async def extract_text(self, file_url: str, file_type: str, resume_id: str) -> Dict[str, Any]:
         return await self._request("POST", "/extract", {
             "resume_id": str(resume_id),
+            "file_url": file_url,
+            "file_type": file_type
+        })
+
+    async def extract_requirement_doc_text(self, file_url: str, file_type: str, doc_id: str) -> Dict[str, Any]:
+        return await self._request("POST", "/extract", {
+            "resume_id": str(doc_id),
             "file_url": file_url,
             "file_type": file_type
         })
@@ -49,6 +73,12 @@ class AIClient:
             "raw_text": raw_text
         })
 
+    async def structure_requirement_doc(self, raw_text: str, doc_id: str) -> Dict[str, Any]:
+        return await self._request("POST", "/structure-requirement", {
+            "doc_id": str(doc_id),
+            "raw_text": raw_text
+        })
+
     async def calculate_match(self, resume_text: str, job_description: str) -> Dict[str, Any]:
         return await self._request("POST", "/inference/match", {
             "resume": resume_text,
@@ -61,7 +91,6 @@ class AIClient:
             or structured_cv.get("name")
             or "Unknown"
         )
-
         candidate_payload = dict(structured_cv)
         candidate_payload["name"] = candidate_name
 

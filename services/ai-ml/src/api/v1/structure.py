@@ -90,7 +90,6 @@ Resume Text:
 
         structured["extraction_latency"] = round(time.time() - start, 3)
 
-        # full_name is required — fall back to empty string if LLM omits it
         if not structured.get("full_name"):
             structured["full_name"] = ""
 

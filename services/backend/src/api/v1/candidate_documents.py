@@ -10,17 +10,30 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.models import Candidate, CandidateCV, CandidateAttachment
 from src.db.session import get_db_session
-from src.services.storage import upload_file, delete_file_from_storage
+from src.services.storage import (
+    upload_candidate_cv,
+    upload_candidate_attachment,
+    delete_candidate_cv_from_storage,
+    delete_candidate_attachment_from_storage,
+)
 
 logger = structlog.get_logger()
 router = APIRouter()
 
-ALLOWED_CV_TYPES = ["application/pdf", "application/msword",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+ALLOWED_CV_TYPES = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]
 
 ALLOWED_ATTACHMENT_TYPES = [
-    "Certification", "Portfolio", "Qualification",
-    "License", "Cover Letter", "Reference Letter", "Other"
+    "Certification",
+    "Portfolio",
+    "Qualification",
+    "License",
+    "Cover Letter",
+    "Reference Letter",
+    "Other",
 ]
 
 
@@ -45,6 +58,31 @@ class AttachmentResponse(BaseModel):
     attachment_type: str
     file_size: Optional[int] = None
     created_at: str
+
+    class Config:
+        from_attributes = True
+
+
+class CandidateProfileResponse(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    email: str
+    phone: Optional[str] = None
+    current_title: Optional[str] = None
+    current_company: Optional[str] = None
+    years_of_experience: Optional[int] = None
+    skills: Optional[List[str]] = None
+    location: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    experience_level: Optional[str] = None
+    hourly_rate: Optional[float] = None
+    availability: Optional[str] = None
+    status: Optional[str] = None
+    cvs: List[CVResponse] = []
+    attachments: List[AttachmentResponse] = []
+    created_at: str
+    updated_at: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -78,6 +116,50 @@ def _attachment_to_response(att: CandidateAttachment) -> AttachmentResponse:
         attachment_type=att.attachment_type,
         file_size=att.file_size,
         created_at=att.created_at.isoformat(),
+    )
+
+
+@router.get("/{candidate_id}/profile", response_model=CandidateProfileResponse)
+async def get_candidate_profile(
+    candidate_id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+):
+    candidate = await _get_candidate_or_404(session, candidate_id)
+
+    cvs_result = await session.execute(
+        select(CandidateCV)
+        .where(CandidateCV.candidate_id == candidate_id)
+        .order_by(CandidateCV.is_primary.desc(), CandidateCV.created_at.desc())
+    )
+    cvs = cvs_result.scalars().all()
+
+    attachments_result = await session.execute(
+        select(CandidateAttachment)
+        .where(CandidateAttachment.candidate_id == candidate_id)
+        .order_by(CandidateAttachment.created_at.desc())
+    )
+    attachments = attachments_result.scalars().all()
+
+    return CandidateProfileResponse(
+        id=str(candidate.id),
+        first_name=candidate.first_name,
+        last_name=candidate.last_name,
+        email=candidate.email,
+        phone=candidate.phone,
+        current_title=candidate.current_title,
+        current_company=candidate.current_company,
+        years_of_experience=candidate.years_of_experience,
+        skills=candidate.skills,
+        location=candidate.location,
+        linkedin_url=candidate.linkedin_url,
+        experience_level=candidate.experience_level,
+        hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
+        availability=candidate.availability,
+        status=candidate.status,
+        cvs=[_cv_to_response(cv) for cv in cvs],
+        attachments=[_attachment_to_response(att) for att in attachments],
+        created_at=candidate.created_at.isoformat(),
+        updated_at=candidate.updated_at.isoformat() if candidate.updated_at else None,
     )
 
 
@@ -129,9 +211,8 @@ async def upload_cv(
         )
 
     from io import BytesIO
-    from fastapi import UploadFile as FU
     file.file = BytesIO(file_content)
-    file_url = await upload_file(file)
+    file_url = await upload_candidate_cv(file)
 
     if not file_url:
         raise HTTPException(status_code=500, detail="File upload failed")
@@ -219,7 +300,7 @@ async def delete_cv(
     was_primary = cv.is_primary
 
     try:
-        await delete_file_from_storage(cv.file_url)
+        await delete_candidate_cv_from_storage(cv.file_url)
     except Exception:
         pass
 
@@ -275,7 +356,7 @@ async def upload_attachment(
 
     from io import BytesIO
     file.file = BytesIO(file_content)
-    file_url = await upload_file(file)
+    file_url = await upload_candidate_attachment(file)
 
     if not file_url:
         raise HTTPException(status_code=500, detail="File upload failed")
@@ -316,7 +397,7 @@ async def delete_attachment(
         raise HTTPException(status_code=404, detail="Attachment not found for this candidate")
 
     try:
-        await delete_file_from_storage(attachment.file_url)
+        await delete_candidate_attachment_from_storage(attachment.file_url)
     except Exception:
         pass
 

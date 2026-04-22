@@ -16,6 +16,7 @@ from src.api.v1.tasks import router as tasks_router
 from src.api.v1.parsed_resumes import router as parsed_resumes_router
 from src.api.v1.stats import router as stats_router
 from src.api.v1.requests import router as requests_router
+from src.api.v1.requirement_docs import router as requirement_docs_router
 
 from src.core.config import settings
 from src.core.logging import configure_logging
@@ -74,6 +75,7 @@ def create_app() -> FastAPI:
     app.include_router(stats_router, prefix="/api/v1/stats", tags=["stats"])
     app.include_router(requests_router, prefix="/api/v1/requests", tags=["requests"])
     app.include_router(candidate_documents_router, prefix="/api/v1/candidates", tags=["candidate-documents"])
+    app.include_router(requirement_docs_router, prefix="/api/v1/requirement-docs", tags=["requirement-docs"])
 
     return app
 
