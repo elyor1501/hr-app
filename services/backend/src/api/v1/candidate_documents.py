@@ -1,5 +1,5 @@
 import hashlib
-from typing import List, Optional
+from typing import Any, List, Optional
 from uuid import UUID
 
 import structlog
@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.models import Candidate, CandidateCV, CandidateAttachment
+from src.db.models import Candidate, CandidateCV, CandidateAttachment, ParsedResume
 from src.db.session import get_db_session
 from src.services.storage import (
     upload_candidate_cv,
@@ -65,9 +65,9 @@ class AttachmentResponse(BaseModel):
 
 class CandidateProfileResponse(BaseModel):
     id: str
-    first_name: str
-    last_name: str
-    email: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
     phone: Optional[str] = None
     current_title: Optional[str] = None
     current_company: Optional[str] = None
@@ -75,10 +75,18 @@ class CandidateProfileResponse(BaseModel):
     skills: Optional[List[str]] = None
     location: Optional[str] = None
     linkedin_url: Optional[str] = None
+    github: Optional[str] = None
+    portfolio: Optional[str] = None
+    summary: Optional[str] = None
+    education: Optional[List[Any]] = None
+    experience: Optional[List[Any]] = None
+    projects: Optional[List[Any]] = None
+    certifications: Optional[List[Any]] = None
     experience_level: Optional[str] = None
     hourly_rate: Optional[float] = None
     availability: Optional[str] = None
     status: Optional[str] = None
+    candidate_status: Optional[str] = None
     cvs: List[CVResponse] = []
     attachments: List[AttachmentResponse] = []
     created_at: str
@@ -93,6 +101,31 @@ async def _get_candidate_or_404(session: AsyncSession, candidate_id: UUID) -> Ca
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
     return candidate
+
+
+async def _get_parsed_resume_for_candidate(session: AsyncSession, candidate: Candidate) -> Optional[ParsedResume]:
+    if candidate.email:
+        result = await session.execute(
+            select(ParsedResume).where(ParsedResume.email == candidate.email)
+        )
+        pr = result.scalar_one_or_none()
+        if pr:
+            return pr
+
+    if candidate.first_name and candidate.last_name:
+        result = await session.execute(
+            select(ParsedResume).where(
+                and_(
+                    func.lower(ParsedResume.first_name) == candidate.first_name.lower(),
+                    func.lower(ParsedResume.last_name) == candidate.last_name.lower(),
+                )
+            )
+        )
+        pr = result.scalar_one_or_none()
+        if pr:
+            return pr
+
+    return None
 
 
 def _cv_to_response(cv: CandidateCV) -> CVResponse:
@@ -126,6 +159,8 @@ async def get_candidate_profile(
 ):
     candidate = await _get_candidate_or_404(session, candidate_id)
 
+    parsed_resume = await _get_parsed_resume_for_candidate(session, candidate)
+
     cvs_result = await session.execute(
         select(CandidateCV)
         .where(CandidateCV.candidate_id == candidate_id)
@@ -140,6 +175,40 @@ async def get_candidate_profile(
     )
     attachments = attachments_result.scalars().all()
 
+    github = None
+    portfolio = None
+    summary = None
+    education = None
+    experience = None
+    projects = None
+    certifications = None
+    candidate_status = None
+
+    if parsed_resume:
+        github = parsed_resume.github
+        portfolio = parsed_resume.portfolio
+        summary = parsed_resume.summary
+        education = parsed_resume.education
+        experience = parsed_resume.experience
+        projects = parsed_resume.projects
+        certifications = parsed_resume.certifications
+        candidate_status = parsed_resume.candidate_status
+
+    if not github and candidate.json_data:
+        github = candidate.json_data.get("github")
+    if not portfolio and candidate.json_data:
+        portfolio = candidate.json_data.get("portfolio")
+    if not summary and candidate.json_data:
+        summary = candidate.json_data.get("summary")
+    if not education and candidate.json_data:
+        education = candidate.json_data.get("education")
+    if not experience and candidate.json_data:
+        experience = candidate.json_data.get("experience")
+    if not projects and candidate.json_data:
+        projects = candidate.json_data.get("projects")
+    if not certifications and candidate.json_data:
+        certifications = candidate.json_data.get("certifications")
+
     return CandidateProfileResponse(
         id=str(candidate.id),
         first_name=candidate.first_name,
@@ -152,10 +221,18 @@ async def get_candidate_profile(
         skills=candidate.skills,
         location=candidate.location,
         linkedin_url=candidate.linkedin_url,
+        github=github,
+        portfolio=portfolio,
+        summary=summary,
+        education=education,
+        experience=experience,
+        projects=projects,
+        certifications=certifications,
         experience_level=candidate.experience_level,
         hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
         availability=candidate.availability,
         status=candidate.status,
+        candidate_status=candidate_status,
         cvs=[_cv_to_response(cv) for cv in cvs],
         attachments=[_attachment_to_response(att) for att in attachments],
         created_at=candidate.created_at.isoformat(),
