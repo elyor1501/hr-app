@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID
 import structlog
 from arq.connections import RedisSettings
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from src.core.config import settings
 from src.db.session import async_session_maker
 from src.db.models import Resume, ParsedResume, Candidate, MatchResult, CandidateCV, StaffingRequest, RequestAuditLog
@@ -52,6 +52,136 @@ def calculate_years_experience(experience_list: List[Dict[str, Any]]) -> Optiona
         except Exception:
             continue
     return total_months // 12 if total_months > 0 else None
+
+
+def _normalize_phone(phone: str) -> str:
+    if not phone:
+        return ""
+    return "".join(c for c in phone if c.isdigit())
+
+
+async def _find_existing_candidate(session, structured_data: dict, first_name: str, last_name: str) -> Optional[Candidate]:
+    candidate_email = structured_data.get("email")
+    candidate_phone = _normalize_phone(structured_data.get("phone") or "")
+
+    if candidate_email:
+        result = await session.execute(
+            select(Candidate).where(Candidate.email == candidate_email)
+        )
+        found = result.scalar_one_or_none()
+        if found:
+            logger.info("candidate_matched_by_email", email=candidate_email)
+            return found
+
+    if candidate_phone and len(candidate_phone) >= 7:
+        all_candidates = await session.execute(
+            select(Candidate).where(Candidate.phone.is_not(None))
+        )
+        for candidate in all_candidates.scalars().all():
+            if candidate.phone:
+                normalized = _normalize_phone(candidate.phone)
+                if normalized and normalized == candidate_phone:
+                    logger.info("candidate_matched_by_phone", phone=candidate_phone)
+                    return candidate
+
+    if first_name and first_name != "Unknown" and last_name:
+        result = await session.execute(
+            select(Candidate).where(
+                Candidate.first_name == first_name,
+                Candidate.last_name == last_name
+            )
+        )
+        found = result.scalar_one_or_none()
+        if found:
+            logger.info("candidate_matched_by_name", first_name=first_name, last_name=last_name)
+            return found
+
+    return None
+
+
+async def _link_cv_to_candidate(session, candidate: Candidate, resume: Resume) -> None:
+    if not resume or not resume.file_url:
+        return
+
+    existing_cv_result = await session.execute(
+        select(CandidateCV).where(
+            CandidateCV.candidate_id == candidate.id,
+            CandidateCV.file_url == resume.file_url
+        )
+    )
+    if existing_cv_result.scalar_one_or_none():
+        return
+
+    existing_primary_result = await session.execute(
+        select(CandidateCV).where(
+            CandidateCV.candidate_id == candidate.id,
+            CandidateCV.is_primary == True
+        )
+    )
+    has_primary = existing_primary_result.scalar_one_or_none() is not None
+
+    cv_count_result = await session.execute(
+        select(func.count(CandidateCV.id)).where(
+            CandidateCV.candidate_id == candidate.id
+        )
+    )
+    cv_count = cv_count_result.scalar() or 0
+
+    new_cv = CandidateCV(
+        candidate_id=candidate.id,
+        file_name=resume.file_name,
+        file_url=resume.file_url,
+        is_primary=(cv_count == 0 and not has_primary),
+        file_size=None,
+    )
+    session.add(new_cv)
+    logger.info("cv_linked_to_candidate", candidate_id=str(candidate.id), is_primary=(cv_count == 0 and not has_primary))
+
+
+async def _auto_create_or_link_candidate(session, resume, structured_data, first_name, last_name, years_exp, raw_text, embedding, parsed):
+    existing_candidate = await _find_existing_candidate(session, structured_data, first_name, last_name)
+
+    if existing_candidate:
+        existing_candidate.resume_text = raw_text
+        existing_candidate.embedding = embedding
+        existing_candidate.json_data = structured_data
+
+        if not existing_candidate.skills and structured_data.get("skills"):
+            existing_candidate.skills = structured_data.get("skills")
+        if not existing_candidate.current_title and parsed.current_title:
+            existing_candidate.current_title = parsed.current_title
+        if not existing_candidate.current_company and parsed.current_company:
+            existing_candidate.current_company = parsed.current_company
+        if not existing_candidate.phone and structured_data.get("phone"):
+            existing_candidate.phone = structured_data.get("phone")
+
+        await _link_cv_to_candidate(session, existing_candidate, resume)
+
+    else:
+        if first_name == "Unknown":
+            return
+
+        candidate_email = structured_data.get("email")
+        new_candidate = Candidate(
+            first_name=first_name,
+            last_name=last_name,
+            email=candidate_email or f"unknown_{resume.id}@placeholder.com",
+            phone=structured_data.get("phone"),
+            current_title=parsed.current_title,
+            current_company=parsed.current_company,
+            years_of_experience=years_exp,
+            skills=structured_data.get("skills", []),
+            location=structured_data.get("location"),
+            linkedin_url=structured_data.get("linkedin"),
+            resume_text=raw_text,
+            json_data=structured_data,
+            embedding=embedding,
+            status="active",
+        )
+        session.add(new_candidate)
+        await session.flush()
+
+        await _link_cv_to_candidate(session, new_candidate, resume)
 
 
 async def _generate_request_number(session) -> str:
@@ -127,93 +257,6 @@ async def _auto_create_staffing_request(session, doc_id: str, structured_data: d
         logger.error("auto_create_staffing_request_failed", doc_id=doc_id, error=str(e))
 
 
-async def _auto_create_or_link_candidate(session, resume, structured_data, first_name, last_name, years_exp, raw_text, embedding, parsed):
-    candidate_email = structured_data.get("email")
-    existing_candidate = None
-
-    if candidate_email:
-        email_result = await session.execute(
-            select(Candidate).where(Candidate.email == candidate_email)
-        )
-        existing_candidate = email_result.scalar_one_or_none()
-
-    if not existing_candidate and first_name and first_name != "Unknown":
-        name_result = await session.execute(
-            select(Candidate).where(
-                Candidate.first_name == first_name,
-                Candidate.last_name == last_name
-            )
-        )
-        existing_candidate = name_result.scalar_one_or_none()
-
-    if existing_candidate:
-        existing_candidate.json_data = structured_data
-        existing_candidate.resume_text = raw_text
-        existing_candidate.embedding = embedding
-        if not existing_candidate.skills and structured_data.get("skills"):
-            existing_candidate.skills = structured_data.get("skills")
-        if not existing_candidate.current_title and parsed.current_title:
-            existing_candidate.current_title = parsed.current_title
-        if not existing_candidate.current_company and parsed.current_company:
-            existing_candidate.current_company = parsed.current_company
-
-        if resume and resume.file_url:
-            existing_cv_result = await session.execute(
-                select(CandidateCV).where(
-                    CandidateCV.candidate_id == existing_candidate.id,
-                    CandidateCV.file_url == resume.file_url
-                )
-            )
-            existing_cv = existing_cv_result.scalar_one_or_none()
-
-            if not existing_cv:
-                cv_count_result = await session.execute(
-                    select(func.count(CandidateCV.id)).where(
-                        CandidateCV.candidate_id == existing_candidate.id
-                    )
-                )
-                cv_count = cv_count_result.scalar() or 0
-                new_cv = CandidateCV(
-                    candidate_id=existing_candidate.id,
-                    file_name=resume.file_name,
-                    file_url=resume.file_url,
-                    is_primary=(cv_count == 0),
-                    file_size=None,
-                )
-                session.add(new_cv)
-
-    else:
-        if first_name != "Unknown":
-            new_candidate = Candidate(
-                first_name=first_name,
-                last_name=last_name,
-                email=candidate_email or f"unknown_{resume.id}@placeholder.com",
-                phone=structured_data.get("phone"),
-                current_title=parsed.current_title,
-                current_company=parsed.current_company,
-                years_of_experience=years_exp,
-                skills=structured_data.get("skills", []),
-                location=structured_data.get("location"),
-                linkedin_url=structured_data.get("linkedin"),
-                resume_text=raw_text,
-                json_data=structured_data,
-                embedding=embedding,
-                status="active",
-            )
-            session.add(new_candidate)
-            await session.flush()
-
-            if resume and resume.file_url:
-                new_cv = CandidateCV(
-                    candidate_id=new_candidate.id,
-                    file_name=resume.file_name,
-                    file_url=resume.file_url,
-                    is_primary=True,
-                    file_size=None,
-                )
-                session.add(new_cv)
-
-
 async def _process_single_resume(item: dict) -> dict:
     resume_id = item["resume_id"]
     file_url = item["file_url"]
@@ -279,10 +322,12 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
                 resume.embedding = embedding
 
             if structured_data:
-                existing_parsed = await session.execute(
+                existing_parsed_result = await session.execute(
                     select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
                 )
-                if not existing_parsed.scalar_one_or_none():
+                existing_parsed = existing_parsed_result.scalar_one_or_none()
+
+                if not existing_parsed:
                     parsed = ParsedResume(
                         resume_id=UUID(resume_id),
                         first_name=first_name,
@@ -314,7 +359,7 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
 
                     session.add(parsed)
                 else:
-                    parsed = ParsedResume(resume_id=UUID(resume_id))
+                    parsed = existing_parsed
 
                 await _auto_create_or_link_candidate(
                     session, resume, structured_data,
@@ -543,10 +588,12 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
                         last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
                         years_exp = calculate_years_experience(structured_data.get("experience", []))
 
-                        existing_parsed = await session.execute(
+                        existing_parsed_result = await session.execute(
                             select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
                         )
-                        if not existing_parsed.scalar_one_or_none():
+                        existing_parsed = existing_parsed_result.scalar_one_or_none()
+
+                        if not existing_parsed:
                             parsed = ParsedResume(
                                 resume_id=UUID(resume_id),
                                 first_name=first_name,
@@ -578,7 +625,7 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
 
                             session.add(parsed)
                         else:
-                            parsed = ParsedResume(resume_id=UUID(resume_id))
+                            parsed = existing_parsed
 
                         await _auto_create_or_link_candidate(
                             session, resume, structured_data,
