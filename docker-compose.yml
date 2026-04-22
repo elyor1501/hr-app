@@ -104,13 +104,17 @@ services:
     build:
       context: ./services/frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "http://localhost:8000"
+        NEXT_PUBLIC_SUPABASE_URL: "https://ectxlkkilezsebodryhd.supabase.co"
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjdHhsa2tpbGV6c2Vib2RyeWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MTkzMTIsImV4cCI6MjA4NDA5NTMxMn0.w3tOvdJPeVoIvl_xlEclmln7iFUMRTf13cjNEIyumyI"
     container_name: hr-frontend
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: ""
-      NEXT_PUBLIC_SUPABASE_URL: https://ectxlkkilezsebodryhd.supabase.co
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjdHhsa2tpbGV6c2Vib2RyeWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MTkzMTIsImV4cCI6MjA4NDA5NTMxMn0.w3tOvdJPeVoIvl_xlEclmln7iFUMRTf13cjNEIyumyI
+      NEXT_PUBLIC_API_URL: "http://localhost:8000"
+      NEXT_PUBLIC_SUPABASE_URL: "https://ectxlkkilezsebodryhd.supabase.co"
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjdHhsa2tpbGV6c2Vib2RyeWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MTkzMTIsImV4cCI6MjA4NDA5NTMxMn0.w3tOvdJPeVoIvl_xlEclmln7iFUMRTf13cjNEIyumyI"
     depends_on:
       - backend
     restart: always
