@@ -80,20 +80,25 @@ jobs:
               --restart unless-stopped \
               redis:7-alpine
             
-            echo '=== Installing missing packages and starting Backend ==='
-            # Create a temporary container to install missing packages
+            echo '=== Installing asyncpg driver and starting Backend ==='
+            # Create a temporary container to install asyncpg
             docker create --name backend-temp \
               --network hr-network \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             
             docker start backend-temp
-            echo 'Installing psycopg2-binary...'
-            docker exec backend-temp pip install psycopg2-binary asyncpg --no-cache-dir
+            echo 'Installing asyncpg (async PostgreSQL driver)...'
+            docker exec backend-temp pip install asyncpg --no-cache-dir
+            echo 'Removing sync driver if present...'
+            docker exec backend-temp pip uninstall -y psycopg2-binary psycopg2 2>/dev/null || true
             docker stop backend-temp
             
             # Commit the fixed image
             docker commit backend-temp backend-fixed
             docker rm backend-temp
+            
+            # Build async database URL
+            DB_URL=\"postgresql+asyncpg://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}\"
             
             # Run the fixed backend
             docker run -d \
@@ -115,7 +120,7 @@ jobs:
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
-              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
+              -e DATABASE_URL=\"$DB_URL\" \
               -e JWT_SECRET_KEY=\"${{ secrets.JWT_SECRET_KEY }}\" \
               -e JWT_ALGORITHM=HS256 \
               -e ACCESS_TOKEN_EXPIRE_MINUTES=30 \
@@ -144,7 +149,7 @@ jobs:
               -e REDIS_PORT=6379 \
               -e REDIS_DB=1 \
               -e REDIS_PREFIX=aiml \
-              -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
+              -e DATABASE_URL=\"$DB_URL\" \
               -e PYTHONPATH=/app/src \
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
@@ -191,13 +196,25 @@ jobs:
             
             echo ''
             echo '=== Testing Backend ==='
-            curl -f http://localhost:8000/health && echo '✅ Backend: OK' || echo '❌ Backend: FAILED'
+            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+              echo '✅ Backend: OK'
+            else
+              echo '❌ Backend: FAILED'
+              echo '=== Backend Logs ==='
+              docker logs backend --tail=50
+            fi
             
             echo ''
-            echo '=== Backend Logs ==='
-            docker logs backend --tail=30
+            echo '=== Testing Frontend ==='
+            if curl -f http://localhost:80 > /dev/null 2>&1; then
+              echo '✅ Frontend: OK'
+            else
+              echo '❌ Frontend: FAILED'
+              docker logs frontend --tail=20
+            fi
             
             echo ''
             echo '=== Deployment Complete ==='
             echo '✅ App: http://${{ secrets.DEPLOY_HOST }}'
+            echo '✅ Backend: Internal only (not exposed)'
           "
