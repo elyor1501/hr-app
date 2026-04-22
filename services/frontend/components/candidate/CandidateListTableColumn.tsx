@@ -9,26 +9,31 @@ import { CompareCheckbox } from "./CompareCheckbox";
 import { DeleteCandidateButton } from "./DeleteCandidateButton";
 
 export const columns_candidate_list: ColumnDef<CandidateList>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <div className="flex justify-center w-full">
-        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"></span>
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex justify-center w-full">
-        <CompareCheckbox candidate={row.original} />
-      </div>
-    ),
-    size: 40,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <div className="flex justify-center w-full">
+  //       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"></span>
+  //     </div>
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="flex justify-center w-full">
+  //       <CompareCheckbox candidate={row.original} />
+  //     </div>
+  //   ),
+  //   size: 40,
+  // },
   {
     accessorKey: "first_name",
     header: "Name",
-    cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("first_name") || "NA"}</span>
-    ),
+    cell: ({ row }) => {
+      const first = row.original.first_name || "";
+      const last = row.original.last_name || "";
+
+      const fullName = `${first} ${last}`.trim();
+
+      return <span className="font-medium">{fullName || "NA"}</span>;
+    },
   },
   {
     accessorKey: "email",
@@ -71,8 +76,9 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push(`/candidates/${candidate.resume_id}`)}
+            onClick={() => router.push(`/candidates/${candidate.id}`)}
             className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
+             title="View Candidate" 
           >
             <Eye className="w-4 h-4" />
           </Button>

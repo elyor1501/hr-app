@@ -27,6 +27,13 @@ interface StatsData {
     active: number;
     inactive: number;
   };
+  requests: {
+    open_requests: number;
+    in_progress_requests: number;
+    signed_requests: number;
+    closed_requests: number;
+    total_active_requests: number;
+  };
 }
 
 let statsCache: { data: StatsData; timestamp: number } | null = null;
@@ -34,11 +41,6 @@ const CACHE_TTL = 30000;
 
 export default function DashboardDetail() {
   const [stats, setStats] = useState<StatsData | null>(null);
-  const [openRequests, setOpenRequests] = useState(0);
-  const [requestCounts, setRequestCounts] = useState({
-    open: 0,
-    inProgress: 0,
-  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,38 +54,20 @@ export default function DashboardDetail() {
     try {
       const token = getAuthToken();
       const apiUrl = getApiUrl();
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      };
 
-      const [statsRes, requestsRes] = await Promise.all([
-        fetch(`${apiUrl}/api/v1/stats`, { headers }),
-        fetch(`${apiUrl}/api/v1/requests`, { headers }),
-      ]);
-
-      if (!statsRes.ok || !requestsRes.ok) {
-        throw new Error("API error");
-      }
-      const statsData = await statsRes.json();
-      const requestsData = await requestsRes.json();
-      const openCount = requestsData.filter(
-        (req: any) => req.state === "open",
-      ).length;
-
-      const inProgressCount = requestsData.filter(
-        (req: any) => req.state === "in_progress",
-      ).length;
-
-      setRequestCounts({
-        open: openCount,
-        inProgress: inProgressCount,
+      const res = await fetch(`${apiUrl}/api/v1/stats`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
-      statsCache = { data: statsData, timestamp: Date.now() };
+      if (!res.ok) throw new Error("API error");
 
-      setStats(statsData);
-      setOpenRequests(openCount);
+      const data: StatsData = await res.json();
+
+      statsCache = { data, timestamp: Date.now() };
+      setStats(data);
       setLoading(false);
     } catch (err) {
       console.error("Failed to fetch stats:", err);
@@ -149,16 +133,16 @@ export default function DashboardDetail() {
             </h3>
 
             <p className="text-3xl font-bold mt-2">
-              {requestCounts.open + requestCounts.inProgress}
+              {stats.requests.total_active_requests}
             </p>
 
             <div className="mt-3 flex items-center gap-4 text-xs font-medium">
               <span className="px-2 py-1 rounded-full bg-green-100 text-green-700">
-                Open: {requestCounts.open}
+                Open: {stats.requests.open_requests}
               </span>
 
               <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">
-                In Progress: {requestCounts.inProgress}
+                In Progress: {stats.requests.in_progress_requests}
               </span>
             </div>
 

@@ -59,7 +59,6 @@ export default function ResumeUpload({
     (acceptedFiles: File[]) => {
       setError(null);
       const validFiles: UploadFile[] = [];
-      let duplicateFileName: string | null = null;
 
       acceptedFiles.forEach((file) => {
         const validationError = validateFile(file);
@@ -73,16 +72,6 @@ export default function ResumeUpload({
           return;
         }
 
-        const isDuplicateInUploads = uploads.some(
-          (f) => f.file.name === file.name,
-        );
-        const isDuplicateOnBackend = existingFiles.includes(file.name);
-
-        if (isDuplicateInUploads || isDuplicateOnBackend) {
-          duplicateFileName = file.name;
-          return;
-        }
-
         const previewUrl = URL.createObjectURL(file);
 
         validFiles.push({
@@ -92,15 +81,11 @@ export default function ResumeUpload({
         });
       });
 
-      if (duplicateFileName) {
-        setError(`${duplicateFileName} Resume already exists`);
-      }
-
       if (validFiles.length > 0) {
         setUploads((prev) => [...prev, ...validFiles]);
       }
     },
-    [uploads, existingFiles],
+    [uploads],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -149,7 +134,7 @@ export default function ResumeUpload({
       setError(null);
       setUploadStatus(`Uploading ${uploads.length} files...`);
       
-      const filesToUpload = uploads.map(u => u.file);
+      const filesToUpload = uploads.map((u) => u.file);
       const result = await uploadBulkResumes(filesToUpload);
 
       if (Array.isArray(result)) {

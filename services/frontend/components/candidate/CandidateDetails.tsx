@@ -2,10 +2,26 @@
 
 import { useState } from "react";
 import { getCandidateById, matchJobs } from "@/lib/candidates/data";
-import { updateCandidate } from "@/lib/candidates/action";
+import {
+  updateCandidate,
+  uploadAttachment,
+  setPrimaryResume,
+  deleteResume,
+  deleteAttachment,
+} from "@/lib/candidates/action";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import {
+  FileText,
+  Trash2,
+  CheckCircle,
+  Upload,
+  Paperclip,
+  EyeIcon,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { DeleteResumeButton } from "./DeleteCandiResumeButton";
 
 type Props = {
   id: string;
@@ -20,6 +36,8 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [loading, setLoading] = useState(false);
   const [matching, setMatching] = useState(false);
   const [matches, setMatches] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [docType, setDocType] = useState("");
 
   const router = useRouter();
 
@@ -66,7 +84,102 @@ export default function CandidateDetails({ id, empData }: Props) {
     }
   }
 
-  if (loading) return <p>Loading candidate details...</p>;
+  async function handleUploadAttachment(
+    e: React.ChangeEvent<HTMLInputElement>,
+    docType: string,
+  ) {
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      toast.error("No file selected");
+      return;
+    }
+
+    if (file.size === 0) {
+      toast.error("File is empty");
+      return;
+    }
+
+    if (!docType) {
+      toast.error("Attachment type is required");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+
+      formData.append("file", file);
+      formData.append("attachment_type", docType);
+
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      await uploadAttachment(id, formData);
+
+      const updated = await getCandidateById(id);
+      setCandidate(updated);
+
+      toast.success("Attachment uploaded successfully");
+
+      e.target.value = "";
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(error?.message || "Failed to upload attachment");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleSetPrimary(resumeId: string) {
+    setUploading(true);
+    try {
+      await setPrimaryResume(id, resumeId);
+      const updated = await getCandidateById(id);
+      setCandidate(updated);
+      toast.success("Primary resume updated");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to set primary resume");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleDeleteAttachment(attachmentId: string) {
+    if (!confirm("Are you sure you want to delete this attachment?")) return;
+
+    try {
+      await deleteAttachment(id, attachmentId);
+      const updated = await getCandidateById(id);
+      setCandidate(updated);
+      toast.success("Attachment deleted");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete attachment");
+    }
+  }
+
+  if (loading || !candidate) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-500 font-medium">
+          Loading candidate profile...
+        </p>
+      </div>
+    );
+  }
+
+  const attachmentTypes = [
+    "Certification",
+    "Portfolio",
+    "Qualification",
+    "License",
+    "Cover Letter",
+    "Reference Letter",
+    "Other",
+  ];
 
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
@@ -83,10 +196,11 @@ export default function CandidateDetails({ id, empData }: Props) {
         )}
       </div>
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="basic">Basic</TabsTrigger>
-          <TabsTrigger value="education">Education</TabsTrigger>
           <TabsTrigger value="experience">Experience</TabsTrigger>
+          <TabsTrigger value="resume">Resumes</TabsTrigger>
+          <TabsTrigger value="attachments">Attachments</TabsTrigger>
         </TabsList>
 
         <form
@@ -228,6 +342,41 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             )}
 
+            <h2 className="text-lg font-semibold">Educational Details</h2>
+            {(candidate.education || []).map((edu: any, index: number) => (
+              <div
+                key={index}
+                className="border rounded-lg p-5 bg-gray-50 space-y-2"
+              >
+                <div className="font-semibold flex justify-between items-center">
+                  {edu.degree}
+                  {edu.field_of_study ? ` in ${edu.field_of_study}` : ""}
+
+                  {(edu.start_date || edu.end_date) && (
+                    <span>
+                      {edu.start_date && edu.end_date
+                        ? `${edu.start_date} - ${edu.end_date}`
+                        : edu.start_date
+                          ? edu.start_date
+                          : edu.end_date}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <span className="text-sm text-gray-700">
+                    {edu.institution}
+                  </span>
+                </div>
+
+                {edu.grade && (
+                  <div className="text-sm text-gray-700">
+                    Grade : {edu.grade}
+                  </div>
+                )}
+              </div>
+            ))}
+
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">
@@ -294,40 +443,6 @@ export default function CandidateDetails({ id, empData }: Props) {
             </div>
           </TabsContent>
 
-          <TabsContent value="education" className="space-y-6">
-            {(candidate.education || []).map((edu: any, index: number) => (
-              <div
-                key={index}
-                className="border rounded-lg p-5 bg-gray-50 space-y-2"
-              >
-                <div className="font-semibold flex justify-between items-center">
-                  {edu.degree}
-                  {edu.field_of_study ? ` in ${edu.field_of_study}` : ""}
-
-                  {(edu.start_date || edu.end_date) && (
-                    <span>
-                      {edu.start_date && edu.end_date
-                        ? `${edu.start_date} - ${edu.end_date}`
-                        : edu.start_date
-                          ? edu.start_date
-                          : edu.end_date}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <span className="text-sm text-gray-700">
-                    {edu.institution}
-                  </span>
-                </div>
-
-                {edu.grade && (
-                  <div className="text-sm text-gray-700">{edu.grade}</div>
-                )}
-              </div>
-            ))}
-          </TabsContent>
-
           <TabsContent value="experience" className="space-y-6">
             {(candidate.experience || []).map((exp: any, index: number) => (
               <div
@@ -351,6 +466,191 @@ export default function CandidateDetails({ id, empData }: Props) {
                 )}
               </div>
             ))}
+          </TabsContent>
+
+          <TabsContent value="resume" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Manage Resumes
+              </h3>
+            </div>
+
+            <div className="grid gap-4">
+              {(candidate.cvs || []).length === 0 ? (
+                <div className="text-center py-12 border-2 border-dashed rounded-xl bg-gray-50">
+                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500">No resumes uploaded yet</p>
+                </div>
+              ) : (
+                candidate.cvs.map((resume: any) => (
+                  <div
+                    key={resume.id}
+                    className={cn(
+                      "flex items-center justify-between p-4 rounded-xl border transition-all",
+                      resume.is_primary
+                        ? "bg-blue-50/50 border-blue-200 ring-1 ring-blue-200"
+                        : "bg-white border-gray-100 hover:border-gray-200 shadow-sm",
+                    )}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={cn(
+                          "p-2 rounded-lg",
+                          resume.is_primary
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-gray-100 text-gray-500",
+                        )}
+                      >
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900">
+                            {resume.file_name || "Resume"}
+                          </span>
+                          {resume.is_primary && (
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                              Primary
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Uploaded on{" "}
+                          {new Date(resume.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {!resume.is_primary && (
+                        <button
+                          type="button"
+                          onClick={() => handleSetPrimary(resume.id)}
+                          disabled={uploading}
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Set as Primary"
+                        >
+                          <CheckCircle className="w-5 h-5" />
+                        </button>
+                      )}
+
+                      <a
+                        href={resume.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="View Resume"
+                      >
+                        <EyeIcon className="w-5 h-5" />
+                      </a>
+
+                      {(candidate.cvs || []).length > 1 && (
+                        <DeleteResumeButton
+                          candidateId={id}
+                          resumeId={resume.id}
+                          onSuccess={(updated) => setCandidate(updated)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="attachments" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Miscellaneous Documents
+              </h3>
+              <div className="flex gap-2">
+                <select
+                  value={docType}
+                  onChange={(e) => setDocType(e.target.value.trim())}
+                  className="border rounded-lg px-2 py-1 text-sm"
+                >
+                  <option value="" disabled>
+                    Select attachment type
+                  </option>
+                  {attachmentTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="relative">
+                  <input
+                    type="file"
+                    id="attachment-upload"
+                    className="hidden"
+                    onChange={(e) => handleUploadAttachment(e, docType)}
+                    disabled={uploading}
+                  />
+
+                  <label
+                    htmlFor="attachment-upload"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium cursor-pointer hover:bg-blue transition-colors"
+                  >
+                    {uploading ? "Uploading..." : "Upload File"}
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4">
+              {(candidate.attachments || []).length === 0 ? (
+                <div className="text-center py-12 border-2 border-dashed rounded-xl bg-gray-50">
+                  <Paperclip className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500">No attachments found</p>
+                </div>
+              ) : (
+                candidate.attachments.map((attachment: any) => (
+                  <div
+                    key={attachment.id}
+                    className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-gray-200 transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-gray-50 text-gray-500 rounded-lg">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900">
+                            {attachment.file_name || attachment.filename}
+                          </span>
+                          <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                            {attachment.document_type}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Uploaded on{" "}
+                          {new Date(attachment.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={attachment.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <Upload className="w-5 h-5 rotate-90" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteAttachment(attachment.id)}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </TabsContent>
         </form>
       </Tabs>

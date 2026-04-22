@@ -61,14 +61,14 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
     accessorKey: "id",
     header: "Id",
     cell: ({ row }) => (
-      <span className="font-medium text-xs text-muted-foreground uppercase">{row.getValue("id") || "NA"}</span>
+      <span>{row.getValue("id") || "NA"}</span>
     ),
   },
   {
     accessorKey: "file_name",
     header: "File Name",
     cell: ({ row }) => (
-      <span className="whitespace-normal font-medium text-xs text-muted-foreground uppercase">{row.getValue("file_name") || "NA"}</span>
+      <span className="uppercase">{row.getValue("file_name") || "NA"}</span>
     ),
   },
   {
@@ -84,12 +84,12 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <span className="text-xs font-medium tabular-nums">
+      <span>
         {new Date(row.getValue("created_at"))
           .toLocaleDateString("en-GB")
           .replace(/\//g, ".")}
         &nbsp;
-        <span className="text-muted-foreground">
+        <span>
           {new Date(row.getValue("created_at")).toLocaleTimeString("en-GB", {
             hour12: false,
           })}

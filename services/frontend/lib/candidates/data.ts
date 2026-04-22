@@ -37,7 +37,7 @@ export async function getCandidates(): Promise<CandidateList[]> {
 
     const apiUrl = getApiUrl();
     const token = getAuthToken();
-    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/parsed-resumes/?page=1&page_size=100` : `/api/v1/parsed-resumes/?page=1&page_size=100`;
+    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/candidates` : `/api/v1/candidates`;
 
     const headers: HeadersInit = {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -89,7 +89,7 @@ export async function getCandidateById(id: string) {
 
     const apiUrl = getApiUrl();
     const token = getAuthToken();
-    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/parsed-resumes/${id}` : `/api/v1/parsed-resumes/${id}`;
+    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${id}/profile` : `/api/v1/candidates/${id}/profile`;
 
     const headers: HeadersInit = {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
