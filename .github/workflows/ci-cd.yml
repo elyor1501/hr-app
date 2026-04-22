@@ -121,10 +121,6 @@ jobs:
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               -e DATABASE_URL=\"$DB_URL\" \
-              -e JWT_SECRET_KEY=\"${{ secrets.JWT_SECRET_KEY }}\" \
-              -e JWT_ALGORITHM=HS256 \
-              -e ACCESS_TOKEN_EXPIRE_MINUTES=30 \
-              -e HR_APP_SECRET_KEY=\"${{ secrets.HR_APP_SECRET_KEY }}\" \
               backend-fixed
             
             echo '=== Waiting for backend to initialize ==='
