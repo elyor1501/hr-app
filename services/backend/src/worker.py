@@ -1,5 +1,6 @@
 import asyncio
 import json
+import uuid as uuid_module
 from datetime import datetime, date
 from typing import Any, Dict, List, Optional
 from uuid import UUID
@@ -184,18 +185,6 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
         await _link_cv_to_candidate(session, new_candidate, resume)
 
 
-async def _generate_request_number(session) -> str:
-    year = datetime.now().year
-    prefix = f"REQ-{year}-"
-    result = await session.execute(
-        select(func.count(StaffingRequest.id)).where(
-            StaffingRequest.request_number.like(f"{prefix}%")
-        )
-    )
-    count = result.scalar() or 0
-    return f"{prefix}{str(count + 1).zfill(3)}"
-
-
 async def _auto_create_staffing_request(session, doc_id: str, structured_data: dict, raw_text: str):
     try:
         existing = await session.execute(
@@ -218,7 +207,9 @@ async def _auto_create_staffing_request(session, doc_id: str, structured_data: d
         else:
             job_description = raw_text[:2000] if raw_text else "No description available"
 
-        request_number = await _generate_request_number(session)
+        unique_suffix = uuid_module.uuid4().hex[:6].upper()
+        year = datetime.now().year
+        request_number = f"REQ-{year}-{unique_suffix}"
 
         staffing_req = StaffingRequest(
             request_number=request_number,
@@ -255,6 +246,7 @@ async def _auto_create_staffing_request(session, doc_id: str, structured_data: d
 
     except Exception as e:
         logger.error("auto_create_staffing_request_failed", doc_id=doc_id, error=str(e))
+        await session.rollback()
 
 
 async def _process_single_resume(item: dict) -> dict:
@@ -443,7 +435,9 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
                     "doc_id": doc_id,
                 }
             )
+            await session.commit()
 
+        async with async_session_maker() as session:
             await _auto_create_staffing_request(session, doc_id, structured_data, raw_text)
             await session.commit()
 
