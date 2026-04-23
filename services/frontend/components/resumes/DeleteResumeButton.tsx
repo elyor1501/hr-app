@@ -42,6 +42,7 @@ export function DeleteResumeButton({ id }: { id: string }) {
           variant="ghost"
           size="icon"
           className="text-red-500 hover:text-red-600"
+          title="Delete Resume"
         >
           <Trash className="w-4 h-4" />
         </Button>
