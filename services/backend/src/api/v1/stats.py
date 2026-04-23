@@ -63,7 +63,7 @@ async def get_stats(session: AsyncSession = Depends(get_db_session)):
     query = text("""
         SELECT 
             (SELECT COUNT(*) FROM jobs) as total_jobs,
-            (SELECT COUNT(*) FROM parsed_resumes) as total_employees,
+            (SELECT COUNT(*) FROM candidates) as total_employees,
             (SELECT COUNT(*) FROM resumes) as total_resumes,
             (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'full time') as full_time,
             (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'part time') as part_time,
