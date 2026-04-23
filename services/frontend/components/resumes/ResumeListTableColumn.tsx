@@ -45,11 +45,11 @@ const ActionCell = ({ resume }: { resume: ResumeList }) => {
 
   return (
     <div className="flex gap-2">
-      <Button variant="ghost" size="icon" onClick={onView} disabled={isViewing}>
+      <Button variant="ghost" size="icon" onClick={onView} disabled={isViewing} title="View Resume">
         {isViewing ? <Loader2 className="w-4 h-4 animate-spin" /> : <EyeIcon className="w-4 h-4" />}
       </Button>       
       <DeleteResumeButton id={resume.id} />
-      <Button variant="ghost" size="icon" onClick={onDownload} disabled={isDownloading}>
+      <Button variant="ghost" size="icon" onClick={onDownload} disabled={isDownloading} title="Download Resume">
         {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
       </Button>
     </div>
