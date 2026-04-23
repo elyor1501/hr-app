@@ -200,4 +200,12 @@ Resume Text:
         error_details = traceback.format_exc()
         print("CRITICAL AI ERROR:\n", error_details)
         logger.error(f"Structured extraction failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")
+
+        try:
+            empty_data = StructuredData()
+            return {
+                "source_file": payload.resume_id,
+                "structured_data": empty_data.model_dump(),
+            }
+        except Exception:
+            raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")

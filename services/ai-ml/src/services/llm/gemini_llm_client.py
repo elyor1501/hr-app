@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import logging
 from typing import Any, Dict
@@ -11,7 +12,6 @@ logger = logging.getLogger(__name__)
 class GeminiLLMClient:
 
     def __init__(self, api_key: str | None = None):
-
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
 
         print("===== GEMINI CLIENT INIT =====")
@@ -22,50 +22,94 @@ class GeminiLLMClient:
             raise RuntimeError("GEMINI_API_KEY not set")
 
         self.client = genai.Client(api_key=self.api_key)
-
         self.model_name = "gemini-2.5-flash"
 
-    def generate_json(self, prompt: str) -> Dict[str, Any]:
+    def _clean_json_string(self, raw: str) -> str:
+        raw = raw.strip()
+
+        if "```json" in raw:
+            raw = raw.split("```json")[1].split("```")[0].strip()
+        elif "```" in raw:
+            raw = raw.split("```")[1].split("```")[0].strip()
+
+        start = raw.find("{")
+        end = raw.rfind("}") + 1
+        if start != -1 and end > start:
+            raw = raw[start:end]
+
+        raw = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', raw)
+        raw = re.sub(r',\s*}', '}', raw)
+        raw = re.sub(r',\s*]', ']', raw)
+        raw = re.sub(r':\s*,', ': null,', raw)
+        raw = re.sub(r':\s*}', ': null}', raw)
+
+        return raw
+
+    def _try_parse_json(self, text: str) -> Dict[str, Any] | None:
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            pass
+
+        cleaned = self._clean_json_string(text)
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            pass
 
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config={
-                    "temperature": 0,
-                    "max_output_tokens": 8192,
-                    "response_mime_type": "application/json"
-                }
-            )
+            import ast
+            fixed = ast.literal_eval(cleaned)
+            if isinstance(fixed, dict):
+                return fixed
+        except Exception:
+            pass
 
-            if not response:
-                raise RuntimeError("No response object from Gemini")
+        return None
 
-            if not response.text:
-                raise RuntimeError("Gemini response.text is empty")
+    def _call_gemini(self, prompt: str) -> str:
+        response = self.client.models.generate_content(
+            model=self.model_name,
+            contents=prompt,
+            config={
+                "temperature": 0,
+                "max_output_tokens": 8192,
+                "response_mime_type": "application/json"
+            }
+        )
 
-            raw_text = response.text.strip()
+        if not response:
+            raise RuntimeError("No response from Gemini")
 
-            try:
-                parsed = json.loads(raw_text)
-                return parsed
-            except json.JSONDecodeError:
-                pass
+        if not response.text:
+            raise RuntimeError("Gemini response.text is empty")
 
-            if "```json" in raw_text:
-                raw_text = raw_text.split("```json")[1].split("```")[0].strip()
-            elif "```" in raw_text:
-                raw_text = raw_text.split("```")[1].split("```")[0].strip()
+        return response.text
 
-            start = raw_text.find("{")
-            end = raw_text.rfind("}") + 1
+    def generate_json(self, prompt: str) -> Dict[str, Any]:
+        raw_text = self._call_gemini(prompt)
+        result = self._try_parse_json(raw_text)
 
-            if start != -1 and end > start:
-                json_str = raw_text[start:end]
-                return json.loads(json_str)
+        if result is not None:
+            return result
 
-            raise RuntimeError("Gemini returned non-JSON output")
+        logger.warning("First Gemini attempt returned invalid JSON — retrying with strict prompt")
 
-        except Exception as e:
-            logger.exception("Gemini generation failed")
-            raise RuntimeError(str(e))
+        strict_suffix = (
+            "\n\nCRITICAL: Your previous response was not valid JSON. "
+            "Return ONLY a single valid JSON object. "
+            "No markdown, no code blocks, no explanation. "
+            "Every string value must be properly quoted. "
+            "Every array and object must be properly closed. "
+            "Do not truncate the response."
+        )
+
+        raw_text_retry = self._call_gemini(prompt + strict_suffix)
+        result = self._try_parse_json(raw_text_retry)
+
+        if result is not None:
+            logger.info("Retry succeeded with strict prompt")
+            return result
+
+        logger.error("Both Gemini attempts returned invalid JSON — returning empty fallback")
+        return {}

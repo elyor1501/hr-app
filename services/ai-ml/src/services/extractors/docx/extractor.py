@@ -8,21 +8,11 @@ from .models import DocxExtractionResult, DocxBlock
 from .confidence import compute_docx_confidence
 from .exceptions import (
     DocxExtractionError,
-    UnsupportedDocxFormatError,
     CorruptedDocxError,
 )
 
 
 class DOCXExtractor:
-    """
-    Orchestrates DOCX extraction:
-
-    • paragraphs + lists
-    • tables
-    • headers / footers
-    • text boxes
-    • timing + memory
-    """
 
     def extract(self, path: str) -> DocxExtractionResult:
 
@@ -34,11 +24,6 @@ class DOCXExtractor:
         full_text = ""
 
         try:
-
-            # ----------------------------------------
-            # Normalize path
-            # ----------------------------------------
-
             path = Path(path)
 
             if not path.is_absolute():
@@ -47,19 +32,6 @@ class DOCXExtractor:
 
             path = str(path)
 
-            # ----------------------------------------
-            # Validate extension
-            # ----------------------------------------
-
-            if not path.lower().endswith(".docx"):
-                raise UnsupportedDocxFormatError(
-                    f"Unsupported file type: {path}"
-                )
-
-            # ----------------------------------------
-            # Load DOCX
-            # ----------------------------------------
-
             try:
                 document = Document(path)
             except Exception as exc:
@@ -67,22 +39,18 @@ class DOCXExtractor:
                     f"Failed to open DOCX: {exc}"
                 ) from exc
 
-            # ----------------------------------------
-            # Paragraphs + lists
-            # ----------------------------------------
+            seen_texts = set()
 
             for para in document.paragraphs:
-
                 text = para.text.strip()
                 if not text:
                     continue
+                if text in seen_texts:
+                    continue
+                seen_texts.add(text)
 
                 style = para.style.name if para.style else ""
-
-                block_type = "paragraph"
-
-                if "List" in style:
-                    block_type = "list"
+                block_type = "list" if "List" in style else "paragraph"
 
                 blocks.append(
                     DocxBlock(
@@ -93,40 +61,35 @@ class DOCXExtractor:
                     )
                 )
 
-            # ----------------------------------------
-            # Tables
-            # ----------------------------------------
-
             for table in document.tables:
-
                 rows = []
-
+                table_texts = []
                 for row in table.rows:
-                    rows.append(
-                        [cell.text.strip() for cell in row.cells]
-                    )
+                    row_cells = [cell.text.strip() for cell in row.cells]
+                    rows.append(row_cells)
+                    for cell_text in row_cells:
+                        if cell_text and cell_text not in seen_texts:
+                            seen_texts.add(cell_text)
+                            table_texts.append(cell_text)
 
-                blocks.append(
-                    DocxBlock(
-                        type="table",
-                        text="",
-                        metadata={"rows": rows},
-                        confidence=0.95,
+                if table_texts:
+                    blocks.append(
+                        DocxBlock(
+                            type="table",
+                            text="\n".join(table_texts),
+                            metadata={"rows": rows},
+                            confidence=0.95,
+                        )
                     )
-                )
-
-            # ----------------------------------------
-            # Headers & footers
-            # ----------------------------------------
 
             for section in document.sections:
-
                 header_text = "\n".join(
                     p.text for p in section.header.paragraphs
-                    if p.text.strip()
+                    if p.text.strip() and p.text.strip() not in seen_texts
                 )
-
                 if header_text:
+                    for line in header_text.split("\n"):
+                        seen_texts.add(line)
                     blocks.append(
                         DocxBlock(
                             type="header",
@@ -138,10 +101,11 @@ class DOCXExtractor:
 
                 footer_text = "\n".join(
                     p.text for p in section.footer.paragraphs
-                    if p.text.strip()
+                    if p.text.strip() and p.text.strip() not in seen_texts
                 )
-
                 if footer_text:
+                    for line in footer_text.split("\n"):
+                        seen_texts.add(line)
                     blocks.append(
                         DocxBlock(
                             type="footer",
@@ -151,47 +115,17 @@ class DOCXExtractor:
                         )
                     )
 
-            # ----------------------------------------
-            # Textboxes (via XML)
-            # ----------------------------------------
-
-            for para in document.paragraphs:
-
-                runs = para._p.xpath(".//w:t")
-
-                for run in runs:
-                    txt = run.text.strip()
-                    if txt:
-                        blocks.append(
-                            DocxBlock(
-                                type="textbox",
-                                text=txt,
-                                metadata={},
-                                confidence=0.85,
-                            )
-                        )
-
-            # ----------------------------------------
-            # Build full text
-            # ----------------------------------------
-
             full_text = "\n\n".join(
                 b.text for b in blocks if b.text
             )
 
         except Exception as exc:
-
             error = DocxExtractionError(
                 message=str(exc),
                 stage="docx_extraction_pipeline",
             )
-
             blocks = []
             full_text = ""
-
-        # ----------------------------------------
-        # Memory tracking
-        # ----------------------------------------
 
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
@@ -208,14 +142,6 @@ class DOCXExtractor:
         )
 
 
-# ============================================================
-# PUBLIC ENTRYPOINT — used by orchestrators / API
-# ============================================================
-
 def extract_docx(path: str) -> DocxExtractionResult:
-    """
-    Public wrapper so callers do NOT instantiate classes directly.
-    Keeps a clean API boundary.
-    """
     extractor = DOCXExtractor()
     return extractor.extract(path)

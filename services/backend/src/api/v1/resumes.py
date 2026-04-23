@@ -63,7 +63,7 @@ async def upload_to_storage(file: UploadFile):
     filename = file.filename or "unknown.pdf"
     file_ext = filename.split(".")[-1].lower()
 
-    if file_ext not in ["pdf", "doc", "docx"]:
+    if file_ext not in ["pdf", "doc", "docx", "ppt", "pptx"]:
         return None
 
     try:
@@ -80,7 +80,6 @@ async def upload_to_storage(file: UploadFile):
 
     except Exception:
         return None
-
 
 async def invalidate_resumes_cache():
     try:
