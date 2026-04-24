@@ -14,10 +14,11 @@ from src.models.base import (
 )
 from src.models.enums import CandidateStatus
 
+
 class CandidateBase(BaseSchema):
     first_name: str = Field(..., min_length=1, max_length=100)
     last_name: str = Field(..., min_length=1, max_length=100)
-    email: EmailStr = Field(...)
+    email: Optional[str] = Field(default=None)
     phone: Optional[str] = Field(default=None)
     current_title: Optional[str] = Field(default=None, max_length=200)
     current_company: Optional[str] = Field(default=None, max_length=200)
@@ -29,6 +30,15 @@ class CandidateBase(BaseSchema):
     resume: Optional[str] = Field(default=None, description="URL to resume file")
     json_data: Optional[Dict[str, Any]] = Field(default=None)
 
+    @field_validator("email", mode="before")
+    @classmethod
+    def validate_email(cls, v: Optional[str]) -> Optional[str]:
+        if not v or not v.strip():
+            return None
+        if "@" not in v:
+            return None
+        return v.strip()
+
     @field_validator("phone")
     @classmethod
     def validate_phone(cls, v: Optional[str]) -> Optional[str]:
@@ -37,7 +47,8 @@ class CandidateBase(BaseSchema):
     @field_validator("skills", mode="before")
     @classmethod
     def normalize_skills(cls, v: Optional[List[str]]) -> Optional[List[str]]:
-        if v is None: return None
+        if v is None:
+            return None
         return list(set([skill.strip().lower() for skill in v if skill.strip()]))
 
     @field_validator("linkedin_url")
@@ -55,13 +66,15 @@ class CandidateBase(BaseSchema):
         self.last_name = self.last_name.strip().title()
         return self
 
+
 class CandidateCreate(CandidateBase):
     status: CandidateStatus = Field(default=CandidateStatus.ACTIVE)
+
 
 class CandidateUpdate(BaseSchema):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     phone: Optional[str] = None
     current_title: Optional[str] = None
     current_company: Optional[str] = None
@@ -79,11 +92,14 @@ class CandidateUpdate(BaseSchema):
     def validate_phone(cls, v: Optional[str]) -> Optional[str]:
         return validate_phone_number(v)
 
+
 class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     status: CandidateStatus = Field(...)
 
+
 class CandidateInDB(CandidateResponse, EmbeddingMixin):
     pass
+
 
 class CandidateList(BaseSchema):
     items: List[CandidateResponse]
