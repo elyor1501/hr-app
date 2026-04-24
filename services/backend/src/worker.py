@@ -61,6 +61,25 @@ def _normalize_phone(phone: str) -> str:
     return "".join(c for c in phone if c.isdigit())
 
 
+def _extract_name_from_raw_text(raw_text: str) -> tuple:
+    if not raw_text:
+        return "Unknown", ""
+    lines = [line.strip() for line in raw_text.strip().split("\n") if line.strip()]
+    for line in lines[:5]:
+        if (
+            len(line) > 2
+            and len(line) < 80
+            and "@" not in line
+            and "http" not in line.lower()
+            and not any(char.isdigit() for char in line[:3])
+            and len(line.split()) >= 2
+            and len(line.split()) <= 5
+        ):
+            name_parts = line.split()
+            return name_parts[0], " ".join(name_parts[1:])
+    return "Unknown", ""
+
+
 async def _find_existing_candidate(session, structured_data: dict, first_name: str, last_name: str) -> Optional[Candidate]:
     candidate_email = structured_data.get("email")
     candidate_phone = _normalize_phone(structured_data.get("phone") or "")
@@ -165,13 +184,14 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
         candidate_email = structured_data.get("email")
 
         if not candidate_email or not candidate_email.strip() or "@" not in candidate_email:
-            logger.info("skipping_candidate_no_email", first_name=first_name, last_name=last_name)
-            return
+            name_slug = f"{first_name.lower()}_{last_name.lower()}".replace(" ", "_")
+            candidate_email = f"{name_slug}@noemail.vaspp.com"
+            logger.info("creating_candidate_without_email", first_name=first_name, last_name=last_name)
 
         new_candidate = Candidate(
             first_name=first_name,
             last_name=last_name,
-            email=candidate_email or None,
+            email=candidate_email,
             phone=structured_data.get("phone"),
             current_title=parsed.current_title,
             current_company=parsed.current_company,
@@ -286,6 +306,18 @@ async def _process_single_resume(item: dict) -> dict:
         return {"resume_id": resume_id, "success": False, "error": str(e)}
 
 
+def _resolve_name(structured_data: dict, raw_text: str) -> tuple:
+    full_name = (structured_data.get("full_name") or "").strip()
+    if not full_name and raw_text:
+        full_name_fallback, last_fallback = _extract_name_from_raw_text(raw_text)
+        if full_name_fallback != "Unknown":
+            return full_name_fallback, last_fallback
+    name_parts = full_name.split()
+    first_name = name_parts[0] if name_parts else "Unknown"
+    last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+    return first_name, last_name
+
+
 async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, file_type: str) -> Dict[str, Any]:
     job_id = ctx.get("job_id")
     try:
@@ -306,10 +338,7 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
 
         await update_job_status(ctx, job_id, "in_progress", progress=80)
 
-        full_name = (structured_data.get("full_name") or "").strip()
-        name_parts = full_name.split()
-        first_name = name_parts[0] if name_parts else "Unknown"
-        last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+        first_name, last_name = _resolve_name(structured_data, raw_text)
         years_exp = calculate_years_experience(structured_data.get("experience", []))
 
         async with async_session_maker() as session:
@@ -318,7 +347,7 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
                 resume.raw_text = raw_text
                 resume.embedding = embedding
 
-            if structured_data:
+            if structured_data is not None:
                 existing_parsed_result = await session.execute(
                     select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
                 )
@@ -580,11 +609,8 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
                         resume.raw_text = raw_text
                         resume.embedding = embedding
 
-                    if structured_data:
-                        full_name = (structured_data.get("full_name") or "").strip()
-                        name_parts = full_name.split()
-                        first_name = name_parts[0] if name_parts else "Unknown"
-                        last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+                    if structured_data is not None:
+                        first_name, last_name = _resolve_name(structured_data, raw_text)
                         years_exp = calculate_years_experience(structured_data.get("experience", []))
 
                         existing_parsed_result = await session.execute(

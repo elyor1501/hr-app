@@ -42,6 +42,8 @@ def _clean_email(email: Optional[str]) -> Optional[str]:
         return None
     if "@placeholder.com" in email:
         return None
+    if "@noemail.vaspp.com" in email:
+        return None
     if email.startswith("unknown_"):
         return None
     return email

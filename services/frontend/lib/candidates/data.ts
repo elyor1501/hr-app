@@ -37,7 +37,7 @@ export async function getCandidates(): Promise<CandidateList[]> {
 
     const apiUrl = getApiUrl();
     const token = getAuthToken();
-    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/candidates` : `/api/v1/candidates`;
+    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/candidates?page=1&page_size=100` : `/api/v1/candidates?page=1&page_size=100`;
 
     const headers: HeadersInit = {
       ...(token ? { Authorization: `Bearer ${token}` } : {})

@@ -37,6 +37,12 @@ class CandidateBase(BaseSchema):
             return None
         if "@" not in v:
             return None
+        if "@placeholder.com" in v:
+            return None
+        if "@noemail.vaspp.com" in v:
+            return None
+        if v.startswith("unknown_"):
+            return None
         return v.strip()
 
     @field_validator("phone")
