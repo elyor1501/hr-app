@@ -124,8 +124,8 @@ jobs:
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
               -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
-              -e HR_APP_VECTOR_DIMENSION=768 \
-              -e HR_APP_CACHE_PREFIX=hr_backend \
+              -e HR_APP_VECTOR_DIMENSION=3072 \
+              -e HR_APP_CACHE_PREFIX=hr_backend: \
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
@@ -172,7 +172,7 @@ jobs:
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
               -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
-              -e HR_APP_VECTOR_DIMENSION=768 \
+              -e HR_APP_VECTOR_DIMENSION=3072 \
               -e HR_APP_CACHE_PREFIX=hr_worker \
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \

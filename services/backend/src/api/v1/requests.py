@@ -2,6 +2,7 @@ from datetime import date, datetime
 from typing import List, Optional
 from uuid import UUID
 import json
+import asyncio
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -9,12 +10,14 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.session import get_db_session
-from src.db.models import StaffingRequest, RequestCandidate, RequestAuditLog, Candidate
+from src.db.session import get_db_session, async_session_maker
+from src.db.models import StaffingRequest, RequestCandidate, RequestAuditLog, Candidate, ParsedResume
 from src.core.redis import get_redis_pool
+from src.services.ai_client import AIClient
 
 logger = structlog.get_logger()
 router = APIRouter()
+ai_client = AIClient()
 
 VALID_TRANSITIONS = {
     "open": ["in_progress"],
@@ -55,11 +58,54 @@ class ProposeCandidateRequest(BaseModel):
     notes: Optional[str] = Field(default=None)
 
 
+class AutoMatchRequest(BaseModel):
+    top_k: int = Field(default=10, ge=1, le=10)
+    min_score: int = Field(default=0, ge=0, le=100)
+    auto_propose: bool = Field(default=False)
+
+
+class SkillsComparison(BaseModel):
+    job_required_skills: List[str] = []
+    candidate_skills: List[str] = []
+    matching_skills: List[str] = []
+    missing_skills: List[str] = []
+
+
+class CandidateMatchResult(BaseModel):
+    candidate_id: str
+    first_name: str
+    last_name: str
+    email: Optional[str] = None
+    current_title: Optional[str] = None
+    current_company: Optional[str] = None
+    location: Optional[str] = None
+    years_of_experience: Optional[int] = None
+    match_score: int
+    reasoning: str
+    strengths: List[str] = []
+    gaps: List[str] = []
+    recommendations: List[str] = []
+    skills_comparison: SkillsComparison
+    hourly_rate: Optional[float] = None
+    availability: Optional[str] = None
+
+
+class AutoMatchResponse(BaseModel):
+    request_id: str
+    request_number: str
+    request_title: str
+    job_description_preview: str
+    total_candidates_evaluated: int
+    total_matches: int
+    auto_proposed: bool
+    matches: List[CandidateMatchResult]
+
+
 class CandidateSummary(BaseModel):
     id: str
     first_name: str
     last_name: str
-    email: str
+    email: Optional[str] = None
     current_title: Optional[str] = None
     proposed_rate: Optional[float] = None
     proposed_date: Optional[date] = None
@@ -135,6 +181,146 @@ async def _generate_request_number(session: AsyncSession) -> str:
     )
     count = result.scalar() or 0
     return f"{prefix}{str(count + 1).zfill(3)}"
+
+
+def _extract_skills_from_jd(job_description: str) -> List[str]:
+    common_skills = [
+        "python", "java", "javascript", "typescript", "golang", "rust", "c++", "c#",
+        "react", "angular", "vue", "node.js", "fastapi", "django", "flask", "spring",
+        "aws", "gcp", "azure", "docker", "kubernetes", "terraform", "ci/cd",
+        "postgresql", "mysql", "mongodb", "redis", "elasticsearch",
+        "machine learning", "deep learning", "nlp", "ai", "data science",
+        "sql", "nosql", "rest", "graphql", "grpc", "microservices",
+        "git", "linux", "bash", "agile", "scrum",
+    ]
+    jd_lower = job_description.lower()
+    found = []
+    for skill in common_skills:
+        if skill in jd_lower:
+            found.append(skill)
+    return found
+
+
+def _build_skills_comparison(
+    job_description: str,
+    candidate_skills: List[str],
+    structured_data: dict,
+) -> SkillsComparison:
+    jd_skills = _extract_skills_from_jd(job_description)
+
+    all_candidate_skills = list(candidate_skills or [])
+    if structured_data.get("skills"):
+        for s in structured_data["skills"]:
+            if s.lower() not in [x.lower() for x in all_candidate_skills]:
+                all_candidate_skills.append(s)
+
+    candidate_skills_lower = [s.lower() for s in all_candidate_skills]
+
+    matching = [s for s in jd_skills if s.lower() in candidate_skills_lower]
+    missing = [s for s in jd_skills if s.lower() not in candidate_skills_lower]
+
+    return SkillsComparison(
+        job_required_skills=jd_skills,
+        candidate_skills=all_candidate_skills[:30],
+        matching_skills=matching,
+        missing_skills=missing,
+    )
+
+
+async def _get_structured_cv_for_candidate(session: AsyncSession, candidate: Candidate) -> dict:
+    if candidate.json_data and isinstance(candidate.json_data, dict):
+        return candidate.json_data
+
+    if candidate.email and "@placeholder.com" not in candidate.email:
+        result = await session.execute(
+            select(ParsedResume).where(ParsedResume.email == candidate.email).limit(1)
+        )
+        pr = result.scalars().first()
+        if pr and pr.json_data:
+            return pr.json_data
+
+    if candidate.first_name and candidate.last_name:
+        result = await session.execute(
+            select(ParsedResume).where(
+                and_(
+                    func.lower(ParsedResume.first_name) == candidate.first_name.lower(),
+                    func.lower(ParsedResume.last_name) == candidate.last_name.lower(),
+                )
+            ).limit(1)
+        )
+        pr = result.scalars().first()
+        if pr and pr.json_data:
+            return pr.json_data
+
+    cv = {}
+    if candidate.first_name:
+        cv["full_name"] = f"{candidate.first_name} {candidate.last_name}".strip()
+    if candidate.email and "@placeholder.com" not in candidate.email:
+        cv["email"] = candidate.email
+    if candidate.skills:
+        cv["skills"] = candidate.skills
+    if candidate.current_title:
+        cv["current_title"] = candidate.current_title
+    if candidate.current_company:
+        cv["current_company"] = candidate.current_company
+    if candidate.location:
+        cv["location"] = candidate.location
+    if candidate.resume_text:
+        cv["summary"] = candidate.resume_text[:2000]
+    return cv
+
+
+async def _match_single_candidate(
+    candidate: Candidate,
+    job_description: str,
+    request_id: str,
+) -> Optional[CandidateMatchResult]:
+    try:
+        async with async_session_maker() as session:
+            structured_cv = await _get_structured_cv_for_candidate(session, candidate)
+
+        if not structured_cv:
+            return None
+
+        ai_result = await ai_client.rag_match(
+            job_description=job_description,
+            structured_cv=structured_cv,
+        )
+
+        match_score = ai_result.get("match_score", 0)
+
+        skills_comparison = _build_skills_comparison(
+            job_description=job_description,
+            candidate_skills=candidate.skills or [],
+            structured_data=structured_cv,
+        )
+
+        clean_email = candidate.email
+        if clean_email and ("@placeholder.com" in clean_email or clean_email.startswith("unknown_")):
+            clean_email = None
+
+        return CandidateMatchResult(
+            candidate_id=str(candidate.id),
+            first_name=candidate.first_name,
+            last_name=candidate.last_name,
+            email=clean_email,
+            current_title=candidate.current_title,
+            current_company=candidate.current_company,
+            location=candidate.location,
+            years_of_experience=candidate.years_of_experience,
+            match_score=match_score,
+            reasoning=ai_result.get("reasoning", ""),
+            strengths=ai_result.get("strengths", []),
+            gaps=ai_result.get("gaps", []),
+            recommendations=ai_result.get("recommendations", []),
+            skills_comparison=skills_comparison,
+            hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
+            availability=candidate.availability,
+        )
+
+    except Exception as e:
+        logger.error("candidate_match_failed", candidate_id=str(candidate.id), error=str(e))
+        return None
 
 
 @router.get("/count", response_model=RequestCountResponse)
@@ -367,6 +553,111 @@ async def transition_state(
     return _build_response(req, candidates)
 
 
+@router.post("/{request_id}/auto-match", response_model=AutoMatchResponse)
+async def auto_match_candidates(
+    request_id: UUID,
+    data: AutoMatchRequest = AutoMatchRequest(),
+    session: AsyncSession = Depends(get_db_session)
+):
+    result = await session.execute(
+        select(StaffingRequest).where(StaffingRequest.id == request_id)
+    )
+    req = result.scalar_one_or_none()
+
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    if not req.job_description or not req.job_description.strip():
+        raise HTTPException(status_code=422, detail="Request has no job description to match against")
+
+    candidates_result = await session.execute(
+        select(Candidate)
+        .where(
+            Candidate.status == "active",
+        )
+        .order_by(Candidate.created_at.desc())
+        .limit(50)
+    )
+    candidates = candidates_result.scalars().all()
+
+    if not candidates:
+        return AutoMatchResponse(
+            request_id=str(req.id),
+            request_number=req.request_number,
+            request_title=req.request_title,
+            job_description_preview=req.job_description[:200] + "..." if len(req.job_description) > 200 else req.job_description,
+            total_candidates_evaluated=0,
+            total_matches=0,
+            auto_proposed=False,
+            matches=[],
+        )
+
+    tasks = [
+        _match_single_candidate(
+            candidate=c,
+            job_description=req.job_description,
+            request_id=str(req.id),
+        )
+        for c in candidates
+    ]
+
+    all_results = await asyncio.gather(*tasks, return_exceptions=False)
+
+    matches = [r for r in all_results if r is not None]
+    matches.sort(key=lambda x: x.match_score, reverse=True)
+
+    if data.min_score > 0:
+        matches = [m for m in matches if m.match_score >= data.min_score]
+
+    matches = matches[:data.top_k]
+
+    auto_proposed = False
+    if data.auto_propose and matches and req.state not in ["signed", "closed"]:
+        for match in matches:
+            existing = await session.execute(
+                select(RequestCandidate).where(
+                    and_(
+                        RequestCandidate.request_id == request_id,
+                        RequestCandidate.candidate_id == UUID(match.candidate_id)
+                    )
+                )
+            )
+            if not existing.scalar_one_or_none():
+                rc = RequestCandidate(
+                    request_id=request_id,
+                    candidate_id=UUID(match.candidate_id),
+                    proposed_rate=None,
+                    proposed_date=date.today(),
+                    notes=f"Auto-matched with {match.match_score}% score",
+                )
+                session.add(rc)
+
+        if req.state == "open":
+            req.state = "in_progress"
+            audit = RequestAuditLog(
+                request_id=req.id,
+                old_state="open",
+                new_state="in_progress",
+                notes="Auto-transitioned via auto-match",
+            )
+            session.add(audit)
+
+        await session.commit()
+        await _invalidate_requests_cache()
+        auto_proposed = True
+
+    return AutoMatchResponse(
+        request_id=str(req.id),
+        request_number=req.request_number,
+        request_title=req.request_title,
+        job_description_preview=req.job_description[:200] + "..." if len(req.job_description) > 200 else req.job_description,
+        total_candidates_evaluated=len(candidates),
+        total_matches=len(matches),
+        auto_proposed=auto_proposed,
+        matches=matches,
+    )
+
+
 @router.post("/{request_id}/candidates", response_model=RequestResponse, status_code=status.HTTP_201_CREATED)
 async def propose_candidate(
     request_id: UUID,
@@ -510,7 +801,7 @@ async def _get_proposed_candidates(session: AsyncSession, request_id: UUID) -> L
             id=str(row.id),
             first_name=row.first_name,
             last_name=row.last_name,
-            email=row.email,
+            email=row.email if row.email and "@placeholder.com" not in row.email else None,
             current_title=row.current_title,
             proposed_rate=float(row.proposed_rate) if row.proposed_rate else None,
             proposed_date=row.proposed_date,
