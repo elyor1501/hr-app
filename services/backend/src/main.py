@@ -26,6 +26,7 @@ from src.db.base import Base
 from src.db.session import engine
 from src.services.task_queue import get_task_queue, close_task_queue
 from src.api.v1.candidate_documents import router as candidate_documents_router
+from src.api.v1.extraction_status import router as extraction_status_router
 
 logger = structlog.get_logger()
 
@@ -76,6 +77,7 @@ def create_app() -> FastAPI:
     app.include_router(requests_router, prefix="/api/v1/requests", tags=["requests"])
     app.include_router(candidate_documents_router, prefix="/api/v1/candidates", tags=["candidate-documents"])
     app.include_router(requirement_docs_router, prefix="/api/v1/requirement-docs", tags=["requirement-docs"])
+    app.include_router(extraction_status_router, prefix="/api/v1", tags=["extraction-status"])
 
     return app
 

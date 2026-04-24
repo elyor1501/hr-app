@@ -58,6 +58,13 @@ class Candidate(BaseModel):
         Index("idx_candidates_name", "first_name", "last_name"),
     )
 
+    def to_dict(self):
+        d = super().to_dict()
+        email = d.get("email")
+        if email and ("@placeholder.com" in email or email.startswith("unknown_")):
+            d["email"] = None
+        return d
+
 
 class CandidateCV(BaseModel):
     __tablename__ = "candidate_cvs"

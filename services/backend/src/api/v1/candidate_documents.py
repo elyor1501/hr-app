@@ -37,6 +37,16 @@ ALLOWED_ATTACHMENT_TYPES = [
 ]
 
 
+def _clean_email(email: Optional[str]) -> Optional[str]:
+    if not email:
+        return None
+    if "@placeholder.com" in email:
+        return None
+    if email.startswith("unknown_"):
+        return None
+    return email
+
+
 class CVResponse(BaseModel):
     id: str
     candidate_id: str
@@ -44,6 +54,7 @@ class CVResponse(BaseModel):
     file_url: str
     is_primary: bool
     file_size: Optional[int] = None
+    attachment_type: Optional[str] = None
     created_at: str
 
     class Config:
@@ -104,11 +115,11 @@ async def _get_candidate_or_404(session: AsyncSession, candidate_id: UUID) -> Ca
 
 
 async def _get_parsed_resume_for_candidate(session: AsyncSession, candidate: Candidate) -> Optional[ParsedResume]:
-    if candidate.email:
+    if candidate.email and "@placeholder.com" not in candidate.email:
         result = await session.execute(
-            select(ParsedResume).where(ParsedResume.email == candidate.email)
+            select(ParsedResume).where(ParsedResume.email == candidate.email).limit(1)
         )
-        pr = result.scalar_one_or_none()
+        pr = result.scalars().first()
         if pr:
             return pr
 
@@ -119,16 +130,16 @@ async def _get_parsed_resume_for_candidate(session: AsyncSession, candidate: Can
                     func.lower(ParsedResume.first_name) == candidate.first_name.lower(),
                     func.lower(ParsedResume.last_name) == candidate.last_name.lower(),
                 )
-            )
+            ).limit(1)
         )
-        pr = result.scalar_one_or_none()
+        pr = result.scalars().first()
         if pr:
             return pr
 
     return None
 
 
-def _cv_to_response(cv: CandidateCV) -> CVResponse:
+def _cv_to_response(cv: CandidateCV, attachment_type: Optional[str] = None) -> CVResponse:
     return CVResponse(
         id=str(cv.id),
         candidate_id=str(cv.candidate_id),
@@ -136,6 +147,7 @@ def _cv_to_response(cv: CandidateCV) -> CVResponse:
         file_url=cv.file_url,
         is_primary=cv.is_primary,
         file_size=cv.file_size,
+        attachment_type=attachment_type,
         created_at=cv.created_at.isoformat(),
     )
 
@@ -213,7 +225,7 @@ async def get_candidate_profile(
         id=str(candidate.id),
         first_name=candidate.first_name,
         last_name=candidate.last_name,
-        email=candidate.email,
+        email=_clean_email(candidate.email),
         phone=candidate.phone,
         current_title=candidate.current_title,
         current_company=candidate.current_company,
@@ -260,6 +272,7 @@ async def list_cvs(
 async def upload_cv(
     candidate_id: UUID,
     file: UploadFile = File(...),
+    attachment_type: Optional[str] = Form(None),
     session: AsyncSession = Depends(get_db_session),
 ):
     await _get_candidate_or_404(session, candidate_id)
@@ -287,8 +300,7 @@ async def upload_cv(
             detail="This exact CV has already been uploaded for this candidate."
         )
 
-    from io import BytesIO
-    file.file = BytesIO(file_content)
+    file.file.seek(0)
     file_url = await upload_candidate_cv(file)
 
     if not file_url:
@@ -312,7 +324,7 @@ async def upload_cv(
     await session.commit()
     await session.refresh(cv)
 
-    return _cv_to_response(cv)
+    return _cv_to_response(cv, attachment_type)
 
 
 @router.patch("/{candidate_id}/cvs/{cv_id}/set-primary", response_model=CVResponse)
@@ -430,9 +442,7 @@ async def upload_attachment(
         )
 
     file_content = await file.read()
-
-    from io import BytesIO
-    file.file = BytesIO(file_content)
+    file.file.seek(0)
     file_url = await upload_candidate_attachment(file)
 
     if not file_url:

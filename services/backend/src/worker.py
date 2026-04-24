@@ -163,10 +163,15 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
             return
 
         candidate_email = structured_data.get("email")
+
+        if not candidate_email or not candidate_email.strip() or "@" not in candidate_email:
+            logger.info("skipping_candidate_no_email", first_name=first_name, last_name=last_name)
+            return
+
         new_candidate = Candidate(
             first_name=first_name,
             last_name=last_name,
-            email=candidate_email or f"unknown_{resume.id}@placeholder.com",
+            email=candidate_email or None,
             phone=structured_data.get("phone"),
             current_title=parsed.current_title,
             current_company=parsed.current_company,
