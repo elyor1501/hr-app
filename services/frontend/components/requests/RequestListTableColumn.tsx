@@ -31,7 +31,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
   {
     accessorKey: "company_name",
     header: "Company",
-    cell: ({ row }) => <span>{row.getValue("company_name") || "NA"}</span>,
+    cell: ({ row }) => <span className="break-words whitespace-normal">{row.getValue("company_name") || "NA"}</span>,
   },
   {
     accessorKey: "request_title",
@@ -44,7 +44,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "state",
-    header: "State",
+    header: "Request State",
     cell: ({ row }) => <span>{row.getValue("state") || "NA"}</span>,
   },
   {

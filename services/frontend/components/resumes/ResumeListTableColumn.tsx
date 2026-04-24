@@ -68,7 +68,9 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
     accessorKey: "file_name",
     header: "File Name",
     cell: ({ row }) => (
-      <span className="uppercase">{row.getValue("file_name") || "NA"}</span>
+      <span className="uppercase break-words whitespace-normal">
+        {row.getValue("file_name") || "NA"}
+      </span>
     ),
   },
   {
