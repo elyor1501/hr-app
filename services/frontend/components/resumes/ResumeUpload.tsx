@@ -42,10 +42,12 @@ export default function ResumeUpload({
     const allowedTypes = [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      return "Only PDF and DOCX files allowed.";
+      return "Only PDF, DOCX, PPT and PPTX files allowed.";
     }
 
     if (file.size > MAX_SIZE) {
@@ -95,6 +97,9 @@ export default function ResumeUpload({
       "application/pdf": [],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         [],
+      "application/vnd.ms-powerpoint": [".ppt"],
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        [".pptx"],
     },
   });
 
@@ -172,7 +177,7 @@ export default function ResumeUpload({
         <input {...getInputProps()} />
         <p className="text-sm font-medium">Drag & drop files</p>
         <p className="text-xs text-gray-500">
-          PDF/DOCX — Max 10MB — Max 20 files
+          PDF / DOCX / PPT / PPTX — Max 10MB — Max 20 files
         </p>
       </div>
 
