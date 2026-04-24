@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FileUpload } from "./JobUpload";
 import { getApiUrl, getAuthToken } from "@/lib/api-config";
 import { Upload } from "lucide-react";
+import { FileUpload } from "./JobUpload";
 
 export function ImportJobButton() {
   const [open, setOpen] = useState(false);

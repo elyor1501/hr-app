@@ -35,6 +35,8 @@ export default function ClientLayout({ children, user }: Props) {
     if (pathname.startsWith("/candidates/")) return "Candidate Insights";
     if (pathname === "/jobs") return "Job Postings";
     if (pathname.startsWith("/jobs/")) return "Role Description";
+    if (pathname === "/requests") return "Requests";
+    if (pathname.startsWith("/requests/")) return "Request Description";
     if (pathname === "/search") return "Smart Search";
     return "HR Suite";
   };

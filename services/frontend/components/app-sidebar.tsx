@@ -10,7 +10,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import { Briefcase, FileText, LayoutDashboard, Search, Users, ChevronRight, Sparkles } from "lucide-react";
+import { Briefcase, FileText, LayoutDashboard, Search, Users, ChevronRight, Sparkles, NotebookPen } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -20,6 +20,7 @@ const items = [
   { title: "Resumes", url: "/resumeList", icon: FileText },
   { title: "Candidates", url: "/candidates", icon: Users },
   { title: "Jobs", url: "/jobs", icon: Briefcase },
+  { title: "Request", url: "/requests", icon: NotebookPen },
   { title: "Search", url: "/search", icon: Search },
 ];
 
