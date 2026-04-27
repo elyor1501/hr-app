@@ -1,5 +1,4 @@
 import DashboardDetail from "@/components/dashboard/Dashboard";
-import RouteProtection from "@/components/routeProtection";
 import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
@@ -23,7 +22,6 @@ export default function Dashboard() {
       </div>
       
       <div className="animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-        <RouteProtection/>
         <DashboardDetail />
       </div>
     </div>

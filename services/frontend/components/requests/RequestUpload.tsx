@@ -159,11 +159,9 @@ export function FileUpload({
 
       setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
 
-      setTimeout(() => {
-        onClose();
-        router.refresh();
-        setUploads([]);
-      }, 1500);
+      onClose();
+      router.refresh();
+      setUploads([]);
     } catch (error: any) {
       console.error("Upload failed:", error);
       setError(error?.message || "Upload failed. Check console.");

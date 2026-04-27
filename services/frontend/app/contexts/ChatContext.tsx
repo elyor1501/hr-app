@@ -42,8 +42,6 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(true);
 
     try {
-      // Simulation of AI response (Replace with actual API call if backend is ready)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
       
       const assistantMessage: Message = {
         role: "assistant",

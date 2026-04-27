@@ -45,7 +45,7 @@ export default function CandidateSearch() {
   const [loading, setLoading] = useState(false);
   const [minScore, setMinScore] = useState(0.0);
 
-  const debouncedQuery = useDebounce(query, 500);
+  const debouncedQuery = useDebounce(query);
 
   const executeSearch = useCallback(
     async (searchQuery: string) => {

@@ -1,7 +1,6 @@
 import { AddCandidateButton } from "@/components/candidate/AddCandidateButton";
 import CandidatesTable from "@/components/candidate/CandidateTable";
 import { CompareBar } from "@/components/candidate/CompareBar";
-import RouteProtection from "@/components/routeProtection";
 
 
 export const dynamic = "force-dynamic";
@@ -13,7 +12,6 @@ export default async function Page() {
         <h1 className="font-semibold">Candidate List</h1>
         {/* <AddCandidateButton /> */}
       </div>
-      <RouteProtection/>
         <CandidatesTable />
       <CompareBar />
     </div>

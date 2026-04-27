@@ -283,7 +283,6 @@ export default function CompareView({ candidates: initialCandidates }: Props) {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       toast.success("Comparison link copied to clipboard!");
-      setTimeout(() => setCopied(false), 2500);
     } catch {
       toast.error("Failed to copy link");
     }
