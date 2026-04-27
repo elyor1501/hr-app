@@ -68,8 +68,8 @@ export function FileUpload({
           return;
         }
 
-        if (uploads.length + validFiles.length >= 20) {
-          setError("Maximum 20 files allowed at once.");
+        if (uploads.length + validFiles.length >= 300) {
+          setError("Maximum 300 files allowed at once.");
           return;
         }
 
@@ -187,7 +187,7 @@ export function FileUpload({
         <input {...getInputProps()} />
         <p className="text-sm font-medium">Drag & drop files</p>
         <p className="text-xs text-gray-500">
-          PDF/DOCX — Max 10MB — Max 20 files
+          PDF/DOCX — Max 10MB — Max 30 files
         </p>
       </div>
 

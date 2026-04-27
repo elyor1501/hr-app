@@ -1,16 +1,17 @@
+import asyncio
 import json
 from typing import List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, text
 
-from src.db.session import get_db_session
+from src.db.session import get_db_session, async_session_maker
 from src.repositories.base import BaseRepository
 from src.db.models import Resume, ParsedResume
-from src.services.storage import upload_file, delete_file_from_storage
+from src.services.storage import upload_file_bytes, delete_file_from_storage
 from src.services.task_queue import get_task_queue
 from src.models.base import IDSchema, TimestampSchema
 from src.core.redis import get_redis_pool
@@ -18,9 +19,12 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
-BATCH_THRESHOLD = 3
 RESUMES_CACHE_KEY = "hr_app:resumes:list"
 RESUMES_CACHE_TTL = 60
+MAX_UPLOAD_LIMIT = 300
+UPLOAD_CONCURRENCY = 5
+
+ALLOWED_EXTENSIONS = {"pdf", "doc", "docx", "ppt", "pptx"}
 
 
 class ResumeResponse(IDSchema, TimestampSchema):
@@ -55,31 +59,15 @@ class ParsedDataResponse(BaseModel):
     json_data: Optional[dict]
 
 
+class BulkUploadAccepted(BaseModel):
+    accepted: int
+    message: str
+    batch_id: str
+
+
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepository[Resume]:
     return BaseRepository(Resume, session)
 
-
-async def upload_to_storage(file: UploadFile):
-    filename = file.filename or "unknown.pdf"
-    file_ext = filename.split(".")[-1].lower()
-
-    if file_ext not in ["pdf", "doc", "docx", "ppt", "pptx"]:
-        return None
-
-    try:
-        public_url = await upload_file(file)
-
-        if not public_url:
-            return None
-
-        return {
-            "file_name": filename,
-            "file_url": public_url,
-            "file_type": file_ext,
-        }
-
-    except Exception:
-        return None
 
 async def invalidate_resumes_cache():
     try:
@@ -91,92 +79,116 @@ async def invalidate_resumes_cache():
         pass
 
 
-@router.post("/bulk", response_model=List[ResumeResponse], status_code=status.HTTP_201_CREATED)
-async def bulk_upload_resumes(
-    files: List[UploadFile] = File(...),
-    repo: BaseRepository[Resume] = Depends(get_repository),
-):
-    if len(files) > 50:
-        raise HTTPException(400, "Maximum 50 files allowed")
+async def _process_file_background(file_data: dict):
+    try:
+        url = await upload_file_bytes(
+            file_content=file_data["content"],
+            filename=file_data["filename"],
+            content_type=file_data["content_type"],
+        )
+        if not url:
+            return None
 
-    uploaded_files = []
-    for file in files:
-        result = await upload_to_storage(file)
+        async with async_session_maker() as session:
+            resume = Resume(
+                file_name=file_data["filename"],
+                file_url=url,
+            )
+            session.add(resume)
+            await session.commit()
+            await session.refresh(resume)
+
+        return {
+            "resume_id": str(resume.id),
+            "file_url": url,
+            "file_type": file_data["file_ext"],
+        }
+
+    except Exception:
+        return None
+
+
+async def _process_batch_background(files_data: List[dict]):
+    semaphore = asyncio.Semaphore(UPLOAD_CONCURRENCY)
+
+    async def process_one(fd):
+        async with semaphore:
+            return await _process_file_background(fd)
+
+    upload_results = await asyncio.gather(*[process_one(fd) for fd in files_data], return_exceptions=True)
+
+    created_items = []
+    for result in upload_results:
+        if isinstance(result, Exception):
+            continue
         if result:
-            uploaded_files.append(result)
-
-    if not uploaded_files:
-        raise HTTPException(400, "No valid files uploaded")
-
-    created_resumes = []
-
-    for item in uploaded_files:
-        resume = await repo.create(
-            file_name=item["file_name"],
-            file_url=item["file_url"],
-        )
-        created_resumes.append(
-            {
-                "resume_id": str(resume.id),
-                "file_url": item["file_url"],
-                "file_type": item["file_type"],
-                "resume_dict": resume.to_dict(),
-            }
-        )
+            created_items.append(result)
 
     await invalidate_resumes_cache()
 
+    if not created_items:
+        return
+
     queue = await get_task_queue()
 
-    if len(created_resumes) >= BATCH_THRESHOLD:
-        resume_items = [
-            {
-                "resume_id": item["resume_id"],
-                "file_url": item["file_url"],
-                "file_type": item["file_type"],
-            }
-            for item in created_resumes
-        ]
+    JOB_CHUNK_SIZE = 100
+    chunks = [created_items[i:i + JOB_CHUNK_SIZE] for i in range(0, len(created_items), JOB_CHUNK_SIZE)]
 
-        job = await queue.enqueue_job(
+    for chunk in chunks:
+        await queue.enqueue_job(
             "process_resumes_batch",
-            resume_items=resume_items,
+            resume_items=chunk,
         )
 
-        response = []
-        for item in created_resumes:
-            d = item["resume_dict"]
-            d["task_id"] = job.job_id
-            response.append(d)
 
-        return response
+@router.post("/bulk", response_model=BulkUploadAccepted, status_code=status.HTTP_202_ACCEPTED)
+async def bulk_upload_resumes(
+    background_tasks: BackgroundTasks,
+    files: List[UploadFile] = File(...),
+):
+    if len(files) > MAX_UPLOAD_LIMIT:
+        raise HTTPException(400, f"Maximum {MAX_UPLOAD_LIMIT} files allowed")
 
-    else:
-        response = []
+    valid_files = []
+    for file in files:
+        filename = file.filename or "unknown.pdf"
+        file_ext = filename.split(".")[-1].lower()
+        if file_ext not in ALLOWED_EXTENSIONS:
+            continue
+        content = await file.read()
+        if not content:
+            continue
+        valid_files.append({
+            "content": content,
+            "filename": filename,
+            "content_type": file.content_type or "application/octet-stream",
+            "file_ext": file_ext,
+        })
 
-        for item in created_resumes:
-            job = await queue.enqueue_job(
-                "process_resume",
-                resume_id=item["resume_id"],
-                file_url=item["file_url"],
-                file_type=item["file_type"],
-            )
+    if not valid_files:
+        raise HTTPException(400, "No valid files uploaded")
 
-            d = item["resume_dict"]
-            d["task_id"] = job.job_id
-            response.append(d)
+    batch_id = str(uuid4())
 
-        return response
+    await invalidate_resumes_cache()
+
+    background_tasks.add_task(_process_batch_background, valid_files)
+
+    return BulkUploadAccepted(
+        accepted=len(valid_files),
+        message=f"{len(valid_files)} files accepted for processing",
+        batch_id=batch_id,
+    )
 
 
 @router.get("/", response_model=List[ResumeResponse])
 async def list_resumes(
-    skip: int = Query(0, ge=0), 
-    limit: int = Query(100, ge=1, le=100), 
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session)
 ):
     cache_key = f"{RESUMES_CACHE_KEY}:{skip}:{limit}"
-    
+
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -191,10 +203,10 @@ async def list_resumes(
         ORDER BY created_at DESC
         OFFSET :skip LIMIT :limit
     """)
-    
+
     result = await session.execute(query, {"skip": skip, "limit": limit})
     rows = result.fetchall()
-    
+
     resumes = [
         {
             "id": str(row.id),
@@ -220,7 +232,7 @@ async def list_resumes(
 @router.get("/{id}", response_model=ResumeDetailResponse)
 async def get_resume(id: UUID, repo: BaseRepository[Resume] = Depends(get_repository)):
     cache_key = f"hr_app:resume:{id}"
-    
+
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -228,11 +240,11 @@ async def get_resume(id: UUID, repo: BaseRepository[Resume] = Depends(get_reposi
             return json.loads(cached)
     except Exception:
         pass
-    
+
     resume = await repo.get_by_id(id)
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
-    
+
     response = {
         "id": str(resume.id),
         "file_name": resume.file_name,
@@ -243,20 +255,20 @@ async def get_resume(id: UUID, repo: BaseRepository[Resume] = Depends(get_reposi
         "updated_at": resume.updated_at.isoformat() if resume.updated_at else None,
         "task_id": None
     }
-    
+
     try:
         redis = await get_redis_pool()
         await redis.setex(cache_key, RESUMES_CACHE_TTL, json.dumps(response))
     except Exception:
         pass
-    
+
     return response
 
 
 @router.get("/{id}/parsed", response_model=ParsedDataResponse)
 async def get_parsed_resume(id: UUID, session: AsyncSession = Depends(get_db_session)):
     cache_key = f"hr_app:parsed_resume:{id}"
-    
+
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -264,14 +276,14 @@ async def get_parsed_resume(id: UUID, session: AsyncSession = Depends(get_db_ses
             return json.loads(cached)
     except Exception:
         pass
-    
+
     stmt = select(ParsedResume).where(ParsedResume.resume_id == id)
     result = await session.execute(stmt)
     parsed = result.scalar_one_or_none()
-    
+
     if not parsed:
         raise HTTPException(status_code=404, detail="Parsed data not found for this resume")
-    
+
     response = {
         "id": str(parsed.id),
         "resume_id": str(parsed.resume_id),
@@ -288,13 +300,13 @@ async def get_parsed_resume(id: UUID, session: AsyncSession = Depends(get_db_ses
         "summary": parsed.summary,
         "json_data": parsed.json_data
     }
-    
+
     try:
         redis = await get_redis_pool()
         await redis.setex(cache_key, RESUMES_CACHE_TTL, json.dumps(response))
     except Exception:
         pass
-    
+
     return response
 
 

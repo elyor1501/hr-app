@@ -15,6 +15,13 @@ class StructureRequest(BaseModel):
     resume_id: str
     raw_text: str = Field(..., min_length=1)
 
+class BatchStructureItem(BaseModel):
+    resume_id: str
+    raw_text: str = Field(..., min_length=1)
+
+class BatchStructureRequest(BaseModel):
+    resumes: List[BatchStructureItem] = Field(..., min_length=1, max_length=10)
+
 class EducationItem(BaseModel):
     degree: Optional[str] = None
     field_of_study: Optional[str] = None
@@ -209,3 +216,40 @@ Resume Text:
             }
         except Exception:
             raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")
+
+
+@router.post("/batch")
+async def structure_resume_batch(payload: BatchStructureRequest):
+    try:
+        logger.info(f"Batch structuring {len(payload.resumes)} resumes")
+
+        resume_texts = [
+            {"resume_id": r.resume_id, "raw_text": r.raw_text}
+            for r in payload.resumes
+        ]
+
+        import asyncio
+        results_raw = await asyncio.to_thread(llm.generate_json_batch, resume_texts)
+
+        results = []
+        for raw in results_raw:
+            if not isinstance(raw, dict):
+                raw = {}
+            resume_id = raw.pop("resume_id", "unknown")
+            try:
+                candidate_data = StructuredData(**raw)
+            except Exception:
+                candidate_data = StructuredData()
+            results.append({
+                "source_file": resume_id,
+                "structured_data": candidate_data.model_dump(),
+            })
+
+        logger.info(f"Batch structuring completed for {len(results)} resumes")
+        return {"results": results}
+
+    except Exception as e:
+        error_details = traceback.format_exc()
+        print("CRITICAL BATCH AI ERROR:\n", error_details)
+        logger.error(f"Batch structuring failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Batch AI Error: {str(e)}")

@@ -47,7 +47,7 @@ class StatsResponse(BaseModel):
 
 
 STATS_CACHE_KEY = "hr_app:stats:dashboard"
-STATS_CACHE_TTL = 60
+STATS_CACHE_TTL = 300
 
 
 @router.get("", response_model=StatsResponse)
@@ -60,28 +60,32 @@ async def get_stats(session: AsyncSession = Depends(get_db_session)):
     except Exception:
         pass
 
-    query = text("""
-        SELECT 
-            (SELECT COUNT(*) FROM jobs) as total_jobs,
-            (SELECT COUNT(*) FROM candidates) as total_employees,
-            (SELECT COUNT(*) FROM resumes) as total_resumes,
-            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'full time') as full_time,
-            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'part time') as part_time,
-            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'contract') as contract,
-            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'internship') as internship,
-            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'entry level') as entry_level,
-            (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'open') as open_jobs,
-            (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'closed') as closed_jobs,
-            (SELECT COUNT(*) FROM parsed_resumes WHERE candidate_status = 'active') as active_candidates,
-            (SELECT COUNT(*) FROM parsed_resumes WHERE candidate_status = 'inactive') as inactive_candidates,
-            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'open') as open_requests,
-            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'in_progress') as in_progress_requests,
-            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'signed') as signed_requests,
-            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'closed') as closed_requests
-    """)
-
-    result = await session.execute(query)
-    row = result.fetchone()
+    try:
+        query = text("SELECT * FROM dashboard_stats LIMIT 1")
+        result = await session.execute(query)
+        row = result.fetchone()
+    except Exception:
+        query = text("""
+            SELECT 
+                (SELECT COUNT(*) FROM jobs) as total_jobs,
+                (SELECT COUNT(*) FROM candidates) as total_employees,
+                (SELECT COUNT(*) FROM resumes) as total_resumes,
+                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'full time') as full_time,
+                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'part time') as part_time,
+                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'contract') as contract,
+                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'internship') as internship,
+                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'entry level') as entry_level,
+                (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'open') as open_jobs,
+                (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'closed') as closed_jobs,
+                (SELECT COUNT(*) FROM candidates WHERE status = 'active') as active_candidates,
+                (SELECT COUNT(*) FROM candidates WHERE status = 'inactive') as inactive_candidates,
+                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'open') as open_requests,
+                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'in_progress') as in_progress_requests,
+                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'signed') as signed_requests,
+                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'closed') as closed_requests
+        """)
+        result = await session.execute(query)
+        row = result.fetchone()
 
     open_requests = row.open_requests or 0
     in_progress_requests = row.in_progress_requests or 0

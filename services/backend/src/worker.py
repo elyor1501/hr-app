@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID
 import structlog
 from arq.connections import RedisSettings
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func
 from src.core.config import settings
 from src.db.session import async_session_maker
 from src.db.models import Resume, ParsedResume, Candidate, MatchResult, CandidateCV, StaffingRequest, RequestAuditLog
@@ -14,6 +14,10 @@ from src.services.ai_client import AIClient
 
 logger = structlog.get_logger()
 ai_client = AIClient()
+
+EXTRACT_CONCURRENCY = 20
+GEMINI_BATCH_SIZE = 5
+GEMINI_BATCH_CONCURRENCY = 3
 
 
 async def update_job_status(ctx: Dict[str, Any], job_id: str, status: str, progress: int = 0, result: Optional[Dict] = None, error: Optional[str] = None):
@@ -78,6 +82,18 @@ def _extract_name_from_raw_text(raw_text: str) -> tuple:
             name_parts = line.split()
             return name_parts[0], " ".join(name_parts[1:])
     return "Unknown", ""
+
+
+def _resolve_name(structured_data: dict, raw_text: str) -> tuple:
+    full_name = (structured_data.get("full_name") or "").strip()
+    if not full_name and raw_text:
+        full_name_fallback, last_fallback = _extract_name_from_raw_text(raw_text)
+        if full_name_fallback != "Unknown":
+            return full_name_fallback, last_fallback
+    name_parts = full_name.split()
+    first_name = name_parts[0] if name_parts else "Unknown"
+    last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+    return first_name, last_name
 
 
 async def _find_existing_candidate(session, structured_data: dict, first_name: str, last_name: str) -> Optional[Candidate]:
@@ -274,6 +290,11 @@ async def _auto_create_staffing_request(session, doc_id: str, structured_data: d
         await session.rollback()
 
 
+async def _process_single_resume_with_semaphore(item: dict, semaphore: asyncio.Semaphore) -> dict:
+    async with semaphore:
+        return await _process_single_resume(item)
+
+
 async def _process_single_resume(item: dict) -> dict:
     resume_id = item["resume_id"]
     file_url = item["file_url"]
@@ -286,18 +307,13 @@ async def _process_single_resume(item: dict) -> dict:
         if not raw_text:
             return {"resume_id": resume_id, "success": False, "error": "No text extracted"}
 
-        embedding, structured_res = await asyncio.gather(
-            ai_client.get_embeddings(raw_text),
-            ai_client.structure_resume(raw_text, resume_id)
-        )
-
-        structured_data = structured_res.get("structured_data", {})
+        embedding = await ai_client.get_embeddings(raw_text)
 
         return {
             "resume_id": resume_id,
             "raw_text": raw_text,
             "embedding": embedding,
-            "structured_data": structured_data,
+            "structured_data": None,
             "success": True,
         }
 
@@ -306,38 +322,16 @@ async def _process_single_resume(item: dict) -> dict:
         return {"resume_id": resume_id, "success": False, "error": str(e)}
 
 
-def _resolve_name(structured_data: dict, raw_text: str) -> tuple:
-    full_name = (structured_data.get("full_name") or "").strip()
-    if not full_name and raw_text:
-        full_name_fallback, last_fallback = _extract_name_from_raw_text(raw_text)
-        if full_name_fallback != "Unknown":
-            return full_name_fallback, last_fallback
-    name_parts = full_name.split()
-    first_name = name_parts[0] if name_parts else "Unknown"
-    last_name = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
-    return first_name, last_name
+async def _save_resume_result(result: dict) -> bool:
+    if not result.get("success"):
+        return False
 
+    resume_id = result["resume_id"]
+    raw_text = result["raw_text"]
+    embedding = result["embedding"]
+    structured_data = result["structured_data"]
 
-async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, file_type: str) -> Dict[str, Any]:
-    job_id = ctx.get("job_id")
     try:
-        await update_job_status(ctx, job_id, "in_progress", progress=10)
-
-        result = await _process_single_resume({
-            "resume_id": resume_id,
-            "file_url": file_url,
-            "file_type": file_type,
-        })
-
-        if not result.get("success"):
-            raise Exception(result.get("error", "Processing failed"))
-
-        raw_text = result["raw_text"]
-        embedding = result["embedding"]
-        structured_data = result["structured_data"]
-
-        await update_job_status(ctx, job_id, "in_progress", progress=80)
-
         first_name, last_name = _resolve_name(structured_data, raw_text)
         years_exp = calculate_years_experience(structured_data.get("experience", []))
 
@@ -395,7 +389,53 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
 
             await session.commit()
 
-        output = {"resume_id": resume_id, "text_length": len(raw_text), "embedding_generated": True}
+        logger.info("resume_saved", resume_id=resume_id, name=f"{first_name} {last_name}")
+        return True
+
+    except Exception as e:
+        logger.error("resume_save_failed", resume_id=resume_id, error=str(e))
+        return False
+
+
+async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, file_type: str) -> Dict[str, Any]:
+    job_id = ctx.get("job_id")
+    try:
+        await update_job_status(ctx, job_id, "in_progress", progress=10)
+
+        result = await _process_single_resume({
+            "resume_id": resume_id,
+            "file_url": file_url,
+            "file_type": file_type,
+        })
+
+        if not result.get("success"):
+            raise Exception(result.get("error", "Processing failed"))
+
+        await update_job_status(ctx, job_id, "in_progress", progress=60)
+
+        try:
+            structured_res = await ai_client.structure_resume(result["raw_text"], resume_id)
+            result["structured_data"] = structured_res.get("structured_data", {})
+        except Exception as e:
+            logger.error("structure_single_failed", resume_id=resume_id, error=str(e))
+            result["structured_data"] = {}
+
+        await update_job_status(ctx, job_id, "in_progress", progress=80)
+
+        saved = await _save_resume_result(result)
+
+        if not saved:
+            raise Exception("Failed to save resume data")
+
+        try:
+            async with async_session_maker() as session:
+                from sqlalchemy import text
+                await session.execute(text("REFRESH MATERIALIZED VIEW dashboard_stats"))
+                await session.commit()
+        except Exception:
+            pass
+
+        output = {"resume_id": resume_id, "text_length": len(result["raw_text"]), "embedding_generated": True}
         await update_job_status(ctx, job_id, "completed", progress=100, result=output)
         return output
 
@@ -474,6 +514,14 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
         async with async_session_maker() as session:
             await _auto_create_staffing_request(session, doc_id, structured_data, raw_text)
             await session.commit()
+
+        try:
+            async with async_session_maker() as session:
+                from sqlalchemy import text
+                await session.execute(text("REFRESH MATERIALIZED VIEW dashboard_stats"))
+                await session.commit()
+        except Exception:
+            pass
 
         output = {
             "doc_id": doc_id,
@@ -579,99 +627,83 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
     try:
         await update_job_status(ctx, job_id, "processing", 5)
 
-        tasks = [_process_single_resume(item) for item in resume_items]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        extract_semaphore = asyncio.Semaphore(EXTRACT_CONCURRENCY)
 
-        await update_job_status(ctx, job_id, "processing", 70)
+        async def extract_one(item):
+            async with extract_semaphore:
+                return await _process_single_resume(item)
 
-        processed = 0
+        extract_tasks = [extract_one(item) for item in resume_items]
+        extract_results = await asyncio.gather(*extract_tasks, return_exceptions=True)
+
+        await update_job_status(ctx, job_id, "processing", 35)
+
+        successful = []
         failed = 0
+        for result in extract_results:
+            if isinstance(result, Exception):
+                failed += 1
+                continue
+            if not result.get("success"):
+                failed += 1
+                continue
+            successful.append(result)
 
-        async with async_session_maker() as session:
-            for i, result in enumerate(results):
-                if isinstance(result, Exception):
-                    logger.error("batch_item_failed", error=str(result))
-                    failed += 1
-                    continue
+        logger.info("extraction_complete", total=len(resume_items), successful=len(successful), failed=failed)
 
-                if not result.get("success"):
-                    failed += 1
-                    continue
+        batches = [successful[i:i + GEMINI_BATCH_SIZE] for i in range(0, len(successful), GEMINI_BATCH_SIZE)]
 
-                resume_id = result["resume_id"]
-                raw_text = result["raw_text"]
-                embedding = result["embedding"]
-                structured_data = result["structured_data"]
+        structure_semaphore = asyncio.Semaphore(GEMINI_BATCH_CONCURRENCY)
+        processed_count = 0
+        failed_count = failed
 
+        async def structure_and_save_batch(batch):
+            nonlocal processed_count, failed_count
+            async with structure_semaphore:
+                batch_items = [
+                    {"resume_id": r["resume_id"], "raw_text": r["raw_text"]}
+                    for r in batch
+                ]
                 try:
-                    resume = await session.get(Resume, UUID(resume_id))
-                    if resume:
-                        resume.raw_text = raw_text
-                        resume.embedding = embedding
-
-                    if structured_data is not None:
-                        first_name, last_name = _resolve_name(structured_data, raw_text)
-                        years_exp = calculate_years_experience(structured_data.get("experience", []))
-
-                        existing_parsed_result = await session.execute(
-                            select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
-                        )
-                        existing_parsed = existing_parsed_result.scalar_one_or_none()
-
-                        if not existing_parsed:
-                            parsed = ParsedResume(
-                                resume_id=UUID(resume_id),
-                                first_name=first_name,
-                                last_name=last_name,
-                                email=structured_data.get("email"),
-                                phone=structured_data.get("phone"),
-                                current_title=None,
-                                current_company=None,
-                                years_of_experience=years_exp,
-                                skills=structured_data.get("skills", []),
-                                location=structured_data.get("location"),
-                                linkedin_url=structured_data.get("linkedin"),
-                                github=structured_data.get("github"),
-                                portfolio=structured_data.get("portfolio"),
-                                summary=structured_data.get("summary"),
-                                education=structured_data.get("education", []),
-                                experience=structured_data.get("experience", []),
-                                projects=structured_data.get("projects", []),
-                                certifications=structured_data.get("certifications", []),
-                                confidence_scores=structured_data.get("confidence_scores", {}),
-                                confidence_score=structured_data.get("confidence_score"),
-                                extraction_latency=structured_data.get("extraction_latency"),
-                                json_data=structured_data
-                            )
-
-                            if structured_data.get("experience") and len(structured_data["experience"]) > 0:
-                                parsed.current_title = structured_data["experience"][0].get("job_title")
-                                parsed.current_company = structured_data["experience"][0].get("company")
-
-                            session.add(parsed)
-                        else:
-                            parsed = existing_parsed
-
-                        await _auto_create_or_link_candidate(
-                            session, resume, structured_data,
-                            first_name, last_name, years_exp,
-                            raw_text, embedding, parsed
-                        )
-
-                    processed += 1
-
+                    batch_structured = await ai_client.structure_resume_batch(batch_items)
+                    structured_map = {
+                        s.get("source_file"): s.get("structured_data", {})
+                        for s in batch_structured
+                    }
+                    for result in batch:
+                        result["structured_data"] = structured_map.get(result["resume_id"], {})
                 except Exception as e:
-                    logger.error("batch_db_save_failed", resume_id=resume_id, error=str(e))
-                    failed += 1
+                    logger.error("batch_structure_failed", error=str(e))
+                    for result in batch:
+                        result["structured_data"] = {}
 
-            await session.commit()
+                save_tasks = [_save_resume_result(result) for result in batch]
+                save_results = await asyncio.gather(*save_tasks, return_exceptions=True)
 
-        await update_job_status(ctx, job_id, "completed", 100, result={"processed": processed, "failed": failed})
+                for saved in save_results:
+                    if isinstance(saved, Exception) or not saved:
+                        failed_count += 1
+                    else:
+                        processed_count += 1
+
+        structure_tasks = [structure_and_save_batch(batch) for batch in batches]
+        await asyncio.gather(*structure_tasks, return_exceptions=True)
+
+        await update_job_status(ctx, job_id, "processing", 90)
+
+        try:
+            async with async_session_maker() as session:
+                from sqlalchemy import text
+                await session.execute(text("REFRESH MATERIALIZED VIEW dashboard_stats"))
+                await session.commit()
+        except Exception:
+            pass
+
+        await update_job_status(ctx, job_id, "completed", 100, result={"processed": processed_count, "failed": failed_count})
 
     except Exception as e:
         await update_job_status(ctx, job_id, "failed", error=str(e))
         raise e
-
 
 class WorkerSettings:
     functions = [process_resume, process_resumes_batch, process_requirement_doc]

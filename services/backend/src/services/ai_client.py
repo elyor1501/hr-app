@@ -73,6 +73,10 @@ class AIClient:
             "raw_text": raw_text
         })
 
+    async def structure_resume_batch(self, items: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+        res = await self._request("POST", "/structure/batch", {"resumes": items})
+        return res.get("results", [])
+
     async def structure_requirement_doc(self, raw_text: str, doc_id: str) -> Dict[str, Any]:
         return await self._request("POST", "/structure-requirement", {
             "doc_id": str(doc_id),

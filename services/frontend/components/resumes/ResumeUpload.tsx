@@ -69,8 +69,8 @@ export default function ResumeUpload({
           return;
         }
 
-        if (uploads.length + validFiles.length >= 20) {
-          setError("Maximum 20 files allowed at once.");
+        if (uploads.length + validFiles.length >= 300) {
+          setError("Maximum 300 files allowed at once.");
           return;
         }
 
@@ -132,36 +132,45 @@ export default function ResumeUpload({
   }, []);
 
   const handleBulkSubmit = async () => {
-    if (uploads.length === 0) return;
+      if (uploads.length === 0) return;
 
-    try {
-      setIsUploading(true);
-      setError(null);
-      setUploadStatus(`Uploading ${uploads.length} files...`);
-      
-      const filesToUpload = uploads.map((u) => u.file);
-      const result = await uploadBulkResumes(filesToUpload);
+      try {
+        setIsUploading(true);
+        setError(null);
+        setUploadStatus(`Uploading ${uploads.length} files...`);
 
-      if (Array.isArray(result)) {
-        setUploadStatus(`${result.length} files uploaded! Processing started.`);
-        toast.success(`${result.length} resumes uploaded successfully`);
-      }
+        const filesToUpload = uploads.map((u) => u.file);
+        const result = await uploadBulkResumes(filesToUpload);
 
-      setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
+        const accepted = result?.accepted ?? (Array.isArray(result) ? result.length : uploads.length);
 
-      setTimeout(() => {
+        setUploadStatus(`${accepted} files accepted! Appearing shortly...`);
+        toast.success(`${accepted} resumes accepted for processing`);
+
+        setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
+
         onClose();
-        router.refresh();
         setUploads([]);
-      }, 1500);
-    } catch (error: any) {
-      console.error("Upload failed:", error);
-      setError(error?.message || "Upload failed. Check console.");
-      toast.error(error?.message || "Upload failed");
-    } finally {
-      setIsUploading(false);
-    }
-  };
+
+        router.refresh();
+
+        let attempts = 0;
+        const poll = setInterval(() => {
+          router.refresh();
+          attempts++;
+          if (attempts >= 20) {
+            clearInterval(poll);
+          }
+        }, 3000);
+
+      } catch (error: any) {
+        console.error("Upload failed:", error);
+        setError(error?.message || "Upload failed. Check console.");
+        toast.error(error?.message || "Upload failed");
+      } finally {
+        setIsUploading(false);
+      }
+    };
 
   return (
     <div className="w-full max-w-lg space-y-4">
@@ -177,7 +186,7 @@ export default function ResumeUpload({
         <input {...getInputProps()} />
         <p className="text-sm font-medium">Drag & drop files</p>
         <p className="text-xs text-gray-500">
-          PDF / DOCX / PPT / PPTX — Max 10MB — Max 20 files
+          PDF / DOCX / PPT / PPTX — Max 10MB — Max 300 files
         </p>
       </div>
 
