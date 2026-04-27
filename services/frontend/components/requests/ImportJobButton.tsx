@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { getApiUrl, getAuthToken } from "@/lib/api-config";
 import { Upload } from "lucide-react";
-import { FileUpload } from "./JobUpload";
+import { FileUpload } from "./RequestUpload";
 
 export function ImportJobButton() {
   const [open, setOpen] = useState(false);

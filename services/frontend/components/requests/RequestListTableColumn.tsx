@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DeleteRequestButton } from "./DeleteRequestButton";
 
 export type Request = {
   id: string;
@@ -70,11 +71,12 @@ export const columns_request_list: ColumnDef<Request>[] = [
           <Button
             variant="ghost"
             size="icon"
-            // onClick={() => router.push(`/requests/${request.id}`)}
+            onClick={() => router.push(`/requests/${request.id}`)}
             className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
           >
             <Eye className="w-4 h-4" />
           </Button>
+          <DeleteRequestButton requestId={request.id} />
         </div>
       );
     },

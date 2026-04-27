@@ -32,13 +32,13 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
 
       const fullName = `${first} ${last}`.trim();
 
-      return <span className="font-medium break-words whitespace-normal">{fullName || "NA"}</span>;
+      return <span className="font-medium">{fullName || "NA"}</span>;
     },
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <span className="break-words whitespace-normal">{row.getValue("email") || "NA"}</span>,
+    cell: ({ row }) => <span className="break-words">{row.getValue("email") || "NA"}</span>,
   },
   {
     accessorKey: "current_title",
