@@ -3,7 +3,7 @@ import { DataTable } from "@/components/table/data-table";
 import { columns_candidate_list } from "@/components/candidate/CandidateListTableColumn";
 import { getResumes } from "@/lib/resumeList/data";
 import { ResumeExtractionToast } from "./ExtractionMsg";
-import { SmartAutoRefresh } from "./Autorefresh";
+// import { SmartAutoRefresh } from "./Autorefresh";
 import { Suspense } from "react";
 
 async function CandidateStatusTracker() {
