@@ -44,3 +44,30 @@ export async function getRequests(): Promise<RequestItem[]> {
     return [];
   }
 }
+
+export async function getRequestById(id: string): Promise<RequestItem | null> {
+  const apiUrl = getApiUrl();
+  const token = getAuthToken();
+
+  try {
+    const res = await fetch(`${apiUrl}/api/v1/requests/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch request: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    return data?.data ?? data ?? null;
+  } catch (error) {
+    console.error("getRequestById error:", error);
+    return null;
+  }
+}

@@ -56,7 +56,7 @@ export function DataTable<TData, TValue>({
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
-    created_at: false,
+    created_at: true,
   });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,

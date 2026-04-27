@@ -6,12 +6,13 @@ export type Resume = {
   file_url: string;
   created_at: string;
   updated_at: string;
+  raw_text:string;
 };
 
 let resumeCache: { data: Resume[]; timestamp: number } | null = null;
 const CACHE_TTL = 30000;
 
-export async function getResumes(): Promise<Resume[]> {
+export async function getResumes(): Promise<any[]> {
   const isServer = typeof window === "undefined";
   
   if (!isServer && resumeCache && Date.now() - resumeCache.timestamp < CACHE_TTL) {
@@ -39,13 +40,21 @@ export async function getResumes(): Promise<Resume[]> {
       return [];
     }
 
-    const data = await res.json();
-    
+    const data: Resume[] = await res.json();
+
+    const updated = data.map((resume) => ({
+      ...resume,
+      extraction_status:
+        resume.raw_text && resume.raw_text.trim().length > 0
+          ? "completed"
+          : "processing",
+    }));
+
     if (!isServer) {
-      resumeCache = { data, timestamp: Date.now() };
+      resumeCache = { data: updated, timestamp: Date.now() };
     }
-    
-    return data;
+
+    return updated;
   } catch (error) {
     console.error("Error fetching resumes:", error);
     return [];

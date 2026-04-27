@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import { JobList } from "@/lib/jobs/data";
 import { DeleteJobButton } from "../jobs/DeleteJobButton";
 import { useRouter } from "next/navigation";
@@ -43,22 +43,41 @@ export const columns_job_list: ColumnDef<JobList>[] = [
     ),
     size: 120,
   },
-  {
-    accessorKey: "openings",
-    header: () => <div className="text-center w-full">Openings</div>,
-    cell: ({ row }) => (
-      <div className="text-center w-full">
-        {row.getValue("openings") || "NA"}
-      </div>
-    ),
-    size: 120,
-  },
+  // {
+  //   accessorKey: "openings",
+  //   header: () => <div className="text-center w-full">Openings</div>,
+  //   cell: ({ row }) => (
+  //     <div className="text-center w-full">
+  //       {row.getValue("openings") || "NA"}
+  //     </div>
+  //   ),
+  //   size: 120,
+  // },
   {
     accessorKey: "created_at",
-    header: () => <div className="text-center w-full">Created At</div>,
-    cell: ({ row }) => {
-      row.getValue("created_at");
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className=""
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Created At
+        <ArrowUpDown className="ml-2 h-3 w-3" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <span>
+        {new Date(row.getValue("created_at"))
+          .toLocaleDateString("en-GB")
+          .replace(/\//g, ".")}
+        &nbsp;
+        <span>
+          {new Date(row.getValue("created_at")).toLocaleTimeString("en-GB", {
+            hour12: false,
+          })}
+        </span>
+      </span>
+    ),
   },
   {
     header: "Actions",

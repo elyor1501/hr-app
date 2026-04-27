@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import { CandidateList } from "@/lib/candidates/data";
 import { useRouter } from "next/navigation";
 import { CompareCheckbox } from "./CompareCheckbox";
@@ -32,13 +32,13 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
 
       const fullName = `${first} ${last}`.trim();
 
-      return <span className="font-medium break-words whitespace-normal">{fullName || "NA"}</span>;
+      return <span className="font-medium">{fullName || "NA"}</span>;
     },
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <span className="break-words whitespace-normal">{row.getValue("email") || "NA"}</span>,
+    cell: ({ row }) => <span className="break-words">{row.getValue("email") || "NA"}</span>,
   },
   {
     accessorKey: "current_title",
@@ -60,12 +60,31 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     size: 80,
   },
   {
-    accessorKey: "created_at",
-    header: () => <div className="text-center w-full">Created At</div>,
-    cell: ({ row }) => {
-      row.getValue("created_at");
+      accessorKey: "created_at",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className=""
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-3 w-3" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <span>
+          {new Date(row.getValue("created_at"))
+            .toLocaleDateString("en-GB")
+            .replace(/\//g, ".")}
+          &nbsp;
+          <span>
+            {new Date(row.getValue("created_at")).toLocaleTimeString("en-GB", {
+              hour12: false,
+            })}
+          </span>
+        </span>
+      ),
     },
-  },
   {
     header: "Actions",
     cell: ({ row }) => {
