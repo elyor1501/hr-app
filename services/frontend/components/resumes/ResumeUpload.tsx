@@ -142,7 +142,7 @@ export default function ResumeUpload({
         const filesToUpload = uploads.map((u) => u.file);
         const result = await uploadBulkResumes(filesToUpload);
 
-        const accepted = result?.accepted ?? (Array.isArray(result) ? result.length : uploads.length);
+        const accepted = (result as any)?.accepted ?? (Array.isArray(result) ? result.length : uploads.length);
 
         setUploadStatus(`${accepted} files accepted! Appearing shortly...`);
         toast.success(`${accepted} resumes accepted for processing`);
