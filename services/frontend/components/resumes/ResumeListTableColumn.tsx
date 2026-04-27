@@ -81,7 +81,7 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
         className=""
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Created At
+        Uploaded At
         <ArrowUpDown className="ml-2 h-3 w-3" />
       </Button>
     ),
@@ -99,33 +99,6 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
       </span>
     ),
   },
-  {
-    accessorKey: "updated_at",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className=""
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Uploaded At
-        <ArrowUpDown className="ml-2 h-3 w-3" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <span className="text-xs font-medium tabular-nums">
-        {new Date(row.getValue("updated_at"))
-          .toLocaleDateString("en-GB")
-          .replace(/\//g, ".")}
-        &nbsp;
-        <span className="text-muted-foreground">
-          {new Date(row.getValue("updated_at")).toLocaleTimeString("en-GB", {
-            hour12: false,
-          })}
-        </span>
-      </span>
-    ),
-  },
-
   {
     id: "actions",
     header: "Actions",

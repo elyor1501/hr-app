@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DeleteRequestButton } from "./DeleteRequestButton";
 
@@ -50,15 +50,29 @@ export const columns_request_list: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "created_at",
-    header: "Created At",
-    cell: ({ row }) => {
-      const date = row.getValue("created_at") as string;
-      return (
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className=""
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Created At
+        <ArrowUpDown className="ml-2 h-3 w-3" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <span>
+        {new Date(row.getValue("created_at"))
+          .toLocaleDateString("en-GB")
+          .replace(/\//g, ".")}
+        &nbsp;
         <span>
-          {date ? new Date(date).toLocaleDateString() : "NA"}
+          {new Date(row.getValue("created_at")).toLocaleTimeString("en-GB", {
+            hour12: false,
+          })}
         </span>
-      );
-    },
+      </span>
+    ),
   },
   {
     header: "Actions",
