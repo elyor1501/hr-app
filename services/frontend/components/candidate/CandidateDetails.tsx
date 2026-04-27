@@ -159,8 +159,8 @@ export default function CandidateDetails({ id, empData }: Props) {
               <div>
                 <label className="block text-sm font-medium mb-1">Status</label>
                 <select
-                  name="candidate_status"
-                  defaultValue={candidate.candidate_status ?? "active"}
+                  name="status"
+                  defaultValue={candidate.status ?? "active"}
                   disabled={!isEditing}
                   className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
                 >
@@ -386,7 +386,15 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <div className="flex justify-between text-lg font-semibold">
                   <span>{exp.job_title}</span>
                   <span>
-                    ({exp.start_date} - {exp.end_date})
+                    {(exp.start_date || exp.end_date) && (
+                      <span>
+                        {exp.start_date && exp.end_date
+                          ? `${exp.start_date} - ${exp.end_date}`
+                          : exp.start_date
+                            ? exp.start_date
+                            : exp.end_date}
+                      </span>
+                    )}
                   </span>
                 </div>
 

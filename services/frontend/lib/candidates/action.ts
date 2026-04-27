@@ -36,7 +36,7 @@ export async function updateCandidate(formData: FormData): Promise<void> {
   const apiUrl = getApiUrl();
 
   const payload = {
-    candidate_status: formData.get("candidate_status") as string,
+    status: formData.get("status") as string,
   };
 
   const updateUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${id}` : `/api/v1/candidates/${id}`;
