@@ -47,50 +47,14 @@ class StatsResponse(BaseModel):
 
 
 STATS_CACHE_KEY = "hr_app:stats:dashboard"
-STATS_CACHE_TTL = 300
+STATS_CACHE_TTL = 30
 
 
-@router.get("", response_model=StatsResponse)
-async def get_stats(session: AsyncSession = Depends(get_db_session)):
-    try:
-        redis = await get_redis_pool()
-        cached = await redis.get(STATS_CACHE_KEY)
-        if cached:
-            return StatsResponse(**json.loads(cached))
-    except Exception:
-        pass
-
-    try:
-        query = text("SELECT * FROM dashboard_stats LIMIT 1")
-        result = await session.execute(query)
-        row = result.fetchone()
-    except Exception:
-        query = text("""
-            SELECT 
-                (SELECT COUNT(*) FROM jobs) as total_jobs,
-                (SELECT COUNT(*) FROM candidates) as total_employees,
-                (SELECT COUNT(*) FROM resumes) as total_resumes,
-                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'full time') as full_time,
-                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'part time') as part_time,
-                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'contract') as contract,
-                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'internship') as internship,
-                (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'entry level') as entry_level,
-                (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'open') as open_jobs,
-                (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'closed') as closed_jobs,
-                (SELECT COUNT(*) FROM candidates WHERE status = 'active') as active_candidates,
-                (SELECT COUNT(*) FROM candidates WHERE status = 'inactive') as inactive_candidates,
-                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'open') as open_requests,
-                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'in_progress') as in_progress_requests,
-                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'signed') as signed_requests,
-                (SELECT COUNT(*) FROM staffing_requests WHERE state = 'closed') as closed_requests
-        """)
-        result = await session.execute(query)
-        row = result.fetchone()
-
+async def _build_stats_from_row(row) -> StatsResponse:
     open_requests = row.open_requests or 0
     in_progress_requests = row.in_progress_requests or 0
 
-    response = StatsResponse(
+    return StatsResponse(
         total_jobs=row.total_jobs or 0,
         total_employees=row.total_employees or 0,
         total_resumes=row.total_resumes or 0,
@@ -117,6 +81,76 @@ async def get_stats(session: AsyncSession = Depends(get_db_session)):
             total_active_requests=open_requests + in_progress_requests
         )
     )
+
+
+async def _fetch_fresh_stats(session: AsyncSession) -> StatsResponse:
+    try:
+        await session.execute(text("REFRESH MATERIALIZED VIEW dashboard_stats"))
+        await session.commit()
+    except Exception:
+        pass
+
+    try:
+        result = await session.execute(text("SELECT * FROM dashboard_stats LIMIT 1"))
+        row = result.fetchone()
+        if row:
+            return await _build_stats_from_row(row)
+    except Exception:
+        pass
+
+    result = await session.execute(text("""
+        SELECT 
+            (SELECT COUNT(*) FROM jobs) as total_jobs,
+            (SELECT COUNT(*) FROM candidates) as total_employees,
+            (SELECT COUNT(*) FROM resumes) as total_resumes,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'full time') as full_time,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'part time') as part_time,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'contract') as contract,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'internship') as internship,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'entry level') as entry_level,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'open') as open_jobs,
+            (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'closed') as closed_jobs,
+            (SELECT COUNT(*) FROM candidates WHERE status = 'active') as active_candidates,
+            (SELECT COUNT(*) FROM candidates WHERE status = 'inactive') as inactive_candidates,
+            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'open') as open_requests,
+            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'in_progress') as in_progress_requests,
+            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'signed') as signed_requests,
+            (SELECT COUNT(*) FROM staffing_requests WHERE state = 'closed') as closed_requests
+    """))
+    row = result.fetchone()
+    return await _build_stats_from_row(row)
+
+
+@router.get("", response_model=StatsResponse)
+async def get_stats(session: AsyncSession = Depends(get_db_session)):
+    try:
+        redis = await get_redis_pool()
+        cached = await redis.get(STATS_CACHE_KEY)
+        if cached:
+            return StatsResponse(**json.loads(cached))
+    except Exception:
+        pass
+
+    response = await _fetch_fresh_stats(session)
+
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(STATS_CACHE_KEY, STATS_CACHE_TTL, json.dumps(response.model_dump()))
+    except Exception:
+        pass
+
+    return response
+
+
+@router.post("/refresh", response_model=StatsResponse)
+async def refresh_stats(session: AsyncSession = Depends(get_db_session)):
+    try:
+        redis = await get_redis_pool()
+        await redis.delete(STATS_CACHE_KEY)
+    except Exception:
+        pass
+
+    response = await _fetch_fresh_stats(session)
 
     try:
         redis = await get_redis_pool()

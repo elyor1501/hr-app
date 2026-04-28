@@ -1,276 +1,276 @@
-"use client";
+  "use client";
 
-import { EyeIcon, TrashIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { toast } from "sonner";
-import { uploadBulkResumes } from "@/lib/resumeList/action";
+  import { EyeIcon, TrashIcon } from "lucide-react";
+  import { useRouter } from "next/navigation";
+  import { useCallback, useEffect, useState } from "react";
+  import { useDropzone } from "react-dropzone";
+  import { toast } from "sonner";
+  import { uploadBulkResumes } from "@/lib/resumeList/action";
 
-type UploadFile = {
-  file: File;
-  progress: number;
-  previewUrl: string;
-};
-
-const MAX_SIZE = 10 * 1024 * 1024;
-const ITEMS_PER_PAGE = 3;
-
-export default function ResumeUpload({
-  onClose,
-  existingFiles = [],
-}: {
-  onClose: () => void;
-  existingFiles?: string[];
-}) {
-  const [uploads, setUploads] = useState<UploadFile[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [uploadStatus, setUploadStatus] = useState<string>("");
-
-  const router = useRouter();
-
-  const totalPages = Math.ceil(uploads.length / ITEMS_PER_PAGE);
-
-  const paginatedUploads = uploads.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
-
-  const validateFile = (file: File) => {
-    const allowedTypes = [
-      "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.ms-powerpoint",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      return "Only PDF, DOCX, PPT and PPTX files allowed.";
-    }
-
-    if (file.size > MAX_SIZE) {
-      return "File must be under 10MB.";
-    }
-
-    return null;
+  type UploadFile = {
+    file: File;
+    progress: number;
+    previewUrl: string;
   };
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      setError(null);
-      const validFiles: UploadFile[] = [];
+  const MAX_SIZE = 10 * 1024 * 1024;
+  const ITEMS_PER_PAGE = 3;
 
-      acceptedFiles.forEach((file) => {
-        const validationError = validateFile(file);
-        if (validationError) {
-          setError(validationError);
-          return;
-        }
+  export default function ResumeUpload({
+    onClose,
+    existingFiles = [],
+  }: {
+    onClose: () => void;
+    existingFiles?: string[];
+  }) {
+    const [uploads, setUploads] = useState<UploadFile[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [uploadStatus, setUploadStatus] = useState<string>("");
 
-        if (uploads.length + validFiles.length >= 300) {
-          setError("Maximum 300 files allowed at once.");
-          return;
-        }
+    const router = useRouter();
 
-        const previewUrl = URL.createObjectURL(file);
+    const totalPages = Math.ceil(uploads.length / ITEMS_PER_PAGE);
 
-        validFiles.push({
-          file,
-          progress: 100,
-          previewUrl,
-        });
-      });
+    const paginatedUploads = uploads.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE,
+    );
 
-      if (validFiles.length > 0) {
-        setUploads((prev) => [...prev, ...validFiles]);
+    const validateFile = (file: File) => {
+      const allowedTypes = [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        return "Only PDF, DOCX, PPT and PPTX files allowed.";
       }
-    },
-    [uploads],
-  );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: true,
-    accept: {
-      "application/pdf": [],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        [],
-      "application/vnd.ms-powerpoint": [".ppt"],
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-        [".pptx"],
-    },
-  });
+      if (file.size > MAX_SIZE) {
+        return "File must be under 10MB.";
+      }
 
-  const removeFile = (index: number) => {
-    setUploads((prev) => {
-      URL.revokeObjectURL(prev[index].previewUrl);
-      const copy = [...prev];
-      copy.splice(index, 1);
-      return copy;
-    });
-  };
-
-  const openPreview = (file: UploadFile) => {
-    if (file.file.type === "application/pdf") {
-      window.open(file.previewUrl, "_blank");
-    } else {
-      const link = document.createElement("a");
-      link.href = file.previewUrl;
-      link.download = file.file.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      uploads.forEach((f) => URL.revokeObjectURL(f.previewUrl));
+      return null;
     };
-  }, []);
 
-  const handleBulkSubmit = async () => {
-      if (uploads.length === 0) return;
-
-      try {
-        setIsUploading(true);
+    const onDrop = useCallback(
+      (acceptedFiles: File[]) => {
         setError(null);
-        setUploadStatus(`Uploading ${uploads.length} files...`);
+        const validFiles: UploadFile[] = [];
 
-        const filesToUpload = uploads.map((u) => u.file);
-        const result = await uploadBulkResumes(filesToUpload);
-
-        const accepted = (result as any)?.accepted ?? (Array.isArray(result) ? result.length : uploads.length);
-
-        setUploadStatus(`${accepted} files accepted! Appearing shortly...`);
-        toast.success(`${accepted} resumes accepted for processing`);
-
-        setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
-
-        onClose();
-        setUploads([]);
-
-        router.refresh();
-
-        let attempts = 0;
-        const poll = setInterval(() => {
-          router.refresh();
-          attempts++;
-          if (attempts >= 20) {
-            clearInterval(poll);
+        acceptedFiles.forEach((file) => {
+          const validationError = validateFile(file);
+          if (validationError) {
+            setError(validationError);
+            return;
           }
-        }, 3000);
 
-      } catch (error: any) {
-        console.error("Upload failed:", error);
-        setError(error?.message || "Upload failed. Check console.");
-        toast.error(error?.message || "Upload failed");
-      } finally {
-        setIsUploading(false);
+          if (uploads.length + validFiles.length >= 300) {
+            setError("Maximum 300 files allowed at once.");
+            return;
+          }
+
+          const previewUrl = URL.createObjectURL(file);
+
+          validFiles.push({
+            file,
+            progress: 100,
+            previewUrl,
+          });
+        });
+
+        if (validFiles.length > 0) {
+          setUploads((prev) => [...prev, ...validFiles]);
+        }
+      },
+      [uploads],
+    );
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      onDrop,
+      multiple: true,
+      accept: {
+        "application/pdf": [],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          [],
+        "application/vnd.ms-powerpoint": [".ppt"],
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+          [".pptx"],
+      },
+    });
+
+    const removeFile = (index: number) => {
+      setUploads((prev) => {
+        URL.revokeObjectURL(prev[index].previewUrl);
+        const copy = [...prev];
+        copy.splice(index, 1);
+        return copy;
+      });
+    };
+
+    const openPreview = (file: UploadFile) => {
+      if (file.file.type === "application/pdf") {
+        window.open(file.previewUrl, "_blank");
+      } else {
+        const link = document.createElement("a");
+        link.href = file.previewUrl;
+        link.download = file.file.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
     };
 
-  return (
-    <div className="w-full max-w-lg space-y-4">
-      <div
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition
-        ${
-          isDragActive
-            ? "border-blue-500 bg-blue-50"
-            : "border-gray-300 hover:border-blue-400"
-        }`}
-      >
-        <input {...getInputProps()} />
-        <p className="text-sm font-medium">Drag & drop files</p>
-        <p className="text-xs text-gray-500">
-          PDF / DOCX / PPT / PPTX — Max 10MB — Max 300 files
-        </p>
-      </div>
+    useEffect(() => {
+      return () => {
+        uploads.forEach((f) => URL.revokeObjectURL(f.previewUrl));
+      };
+    }, []);
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      {uploadStatus && !error && (
-        <p className="text-green-600 text-sm">{uploadStatus}</p>
-      )}
+    const handleBulkSubmit = async () => {
+        if (uploads.length === 0) return;
 
-      {paginatedUploads.map((upload, i) => {
-        const actualIndex = (currentPage - 1) * ITEMS_PER_PAGE + i;
+        try {
+          setIsUploading(true);
+          setError(null);
+          setUploadStatus(`Uploading ${uploads.length} files...`);
 
-        return (
-          <div key={actualIndex} className="border rounded-lg p-3 space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-medium truncate w-44">
-                {upload.file.name}
-              </span>
+          const filesToUpload = uploads.map((u) => u.file);
+          const result = await uploadBulkResumes(filesToUpload);
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => openPreview(upload)}
-                  disabled={isUploading}
-                  className="p-1 hover:bg-blue-100 rounded"
-                >
-                  <EyeIcon className="w-4 h-4 text-blue-600" />
-                </button>
+          const accepted = (result as any)?.accepted ?? (Array.isArray(result) ? result.length : uploads.length);
 
-                <button
-                  onClick={() => removeFile(actualIndex)}
-                  disabled={isUploading}
-                  className="p-1 hover:bg-red-100 rounded"
-                >
-                  <TrashIcon className="w-4 h-4 text-red-600" />
-                </button>
+          setUploadStatus(`${accepted} files accepted! Appearing shortly...`);
+          toast.success(`${accepted} resumes accepted for processing`);
+
+          setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
+
+          onClose();
+          setUploads([]);
+
+          router.refresh();
+
+          let attempts = 0;
+          const poll = setInterval(() => {
+            router.refresh();
+            attempts++;
+            if (attempts >= 20) {
+              clearInterval(poll);
+            }
+          }, 3000);
+
+        } catch (error: any) {
+          console.error("Upload failed:", error);
+          setError(error?.message || "Upload failed. Check console.");
+          toast.error(error?.message || "Upload failed");
+        } finally {
+          setIsUploading(false);
+        }
+      };
+
+    return (
+      <div className="w-full max-w-lg space-y-4">
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition
+          ${
+            isDragActive
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 hover:border-blue-400"
+          }`}
+        >
+          <input {...getInputProps()} />
+          <p className="text-sm font-medium">Drag & drop files</p>
+          <p className="text-xs text-gray-500">
+            PDF / DOCX / PPT / PPTX — Max 10MB — Max 300 files
+          </p>
+        </div>
+
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {uploadStatus && !error && (
+          <p className="text-green-600 text-sm">{uploadStatus}</p>
+        )}
+
+        {paginatedUploads.map((upload, i) => {
+          const actualIndex = (currentPage - 1) * ITEMS_PER_PAGE + i;
+
+          return (
+            <div key={actualIndex} className="border rounded-lg p-3 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium truncate w-44">
+                  {upload.file.name}
+                </span>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => openPreview(upload)}
+                    disabled={isUploading}
+                    className="p-1 hover:bg-blue-100 rounded"
+                  >
+                    <EyeIcon className="w-4 h-4 text-blue-600" />
+                  </button>
+
+                  <button
+                    onClick={() => removeFile(actualIndex)}
+                    disabled={isUploading}
+                    className="p-1 hover:bg-red-100 rounded"
+                  >
+                    <TrashIcon className="w-4 h-4 text-red-600" />
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="w-full bg-gray-200 h-1.5 rounded">
-              <div
-                className="h-1.5 bg-blue-500 rounded transition-all"
-                style={{ width: `${upload.progress}%` }}
-              />
-            </div>
+              <div className="w-full bg-gray-200 h-1.5 rounded">
+                <div
+                  className="h-1.5 bg-blue-500 rounded transition-all"
+                  style={{ width: `${upload.progress}%` }}
+                />
+              </div>
 
-            <p className="text-[10px]">{upload.progress}% uploaded</p>
+              <p className="text-[10px]">{upload.progress}% uploaded</p>
+            </div>
+          );
+        })}
+
+        {uploads.length > ITEMS_PER_PAGE && (
+          <div className="flex justify-between text-sm">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {currentPage} / {totalPages}
+            </span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
-        );
-      })}
+        )}
 
-      {uploads.length > ITEMS_PER_PAGE && (
-        <div className="flex justify-between text-sm">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-
-          <span>
-            Page {currentPage} / {totalPages}
-          </span>
-
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
-
-      {uploads.length > 0 && (
-        <div className="flex justify-end">
-          <button
-            onClick={handleBulkSubmit}
-            disabled={isUploading}
-            className="bg-blue-600 text-white px-2 py-1 rounded disabled:opacity-50"
-          >
-            {isUploading ? "Uploading..." : `Upload ${uploads.length} Files`}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
+        {uploads.length > 0 && (
+          <div className="flex justify-end">
+            <button
+              onClick={handleBulkSubmit}
+              disabled={isUploading}
+              className="bg-blue-600 text-white px-2 py-1 rounded disabled:opacity-50"
+            >
+              {isUploading ? "Uploading..." : `Upload ${uploads.length} Files`}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }

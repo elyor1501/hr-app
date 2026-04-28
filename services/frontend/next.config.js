@@ -1,13 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: "standalone",
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "500mb",
+    },
+  },
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
-        destination: process.env.NEXT_PUBLIC_API_URL 
-          ? `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`
-          : 'http://localhost:8000/api/:path*', // change this to your backend URL if needed from backend (docker) to localhost (local)
+        source: "/api/:path*",
+        destination: process.env.INTERNAL_API_URL
+          ? `${process.env.INTERNAL_API_URL}/api/:path*`
+          : "http://backend:8000/api/:path*",
       },
     ];
   },

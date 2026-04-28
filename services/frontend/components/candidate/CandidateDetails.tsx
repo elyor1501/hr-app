@@ -41,7 +41,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     setMatching(true);
 
     try {
-      const matchData = await matchJobs(candidateData.resume_id);
+      const matchData = await matchJobs(candidateData.id);
 
       const topMatches = (matchData.results || [])
         .map((item: any) => ({

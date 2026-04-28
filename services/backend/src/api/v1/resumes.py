@@ -22,7 +22,8 @@ router = APIRouter()
 RESUMES_CACHE_KEY = "hr_app:resumes:list"
 RESUMES_CACHE_TTL = 60
 MAX_UPLOAD_LIMIT = 300
-UPLOAD_CONCURRENCY = 5
+UPLOAD_CONCURRENCY = 3
+JOB_CHUNK_SIZE = 10
 
 ALLOWED_EXTENSIONS = {"pdf", "doc", "docx", "ppt", "pptx"}
 
@@ -115,7 +116,10 @@ async def _process_batch_background(files_data: List[dict]):
         async with semaphore:
             return await _process_file_background(fd)
 
-    upload_results = await asyncio.gather(*[process_one(fd) for fd in files_data], return_exceptions=True)
+    upload_results = await asyncio.gather(
+        *[process_one(fd) for fd in files_data],
+        return_exceptions=True
+    )
 
     created_items = []
     for result in upload_results:
@@ -131,8 +135,10 @@ async def _process_batch_background(files_data: List[dict]):
 
     queue = await get_task_queue()
 
-    JOB_CHUNK_SIZE = 100
-    chunks = [created_items[i:i + JOB_CHUNK_SIZE] for i in range(0, len(created_items), JOB_CHUNK_SIZE)]
+    chunks = [
+        created_items[i:i + JOB_CHUNK_SIZE]
+        for i in range(0, len(created_items), JOB_CHUNK_SIZE)
+    ]
 
     for chunk in chunks:
         await queue.enqueue_job(

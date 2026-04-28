@@ -5,9 +5,9 @@ import json
 import asyncio
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select, and_
+from sqlalchemy import func, select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.session import get_db_session, async_session_maker
@@ -25,6 +25,10 @@ VALID_TRANSITIONS = {
     "signed": [],
     "closed": [],
 }
+
+MATCH_CACHE_TTL = 86400
+MATCH_LOCK_TTL = 600
+CV_CACHE_TTL = 3600
 
 
 class RequestCreate(BaseModel):
@@ -62,6 +66,7 @@ class AutoMatchRequest(BaseModel):
     top_k: int = Field(default=10, ge=1, le=10)
     min_score: int = Field(default=0, ge=0, le=100)
     auto_propose: bool = Field(default=False)
+    force_refresh: bool = Field(default=False)
 
 
 class SkillsComparison(BaseModel):
@@ -99,6 +104,13 @@ class AutoMatchResponse(BaseModel):
     total_matches: int
     auto_proposed: bool
     matches: List[CandidateMatchResult]
+
+
+class MatchStatusResponse(BaseModel):
+    status: str
+    request_id: str
+    message: str
+    result: Optional[AutoMatchResponse] = None
 
 
 class CandidateSummary(BaseModel):
@@ -215,7 +227,6 @@ def _build_skills_comparison(
                 all_candidate_skills.append(s)
 
     candidate_skills_lower = [s.lower() for s in all_candidate_skills]
-
     matching = [s for s in jd_skills if s.lower() in candidate_skills_lower]
     missing = [s for s in jd_skills if s.lower() not in candidate_skills_lower]
 
@@ -231,7 +242,7 @@ async def _get_structured_cv_for_candidate(session: AsyncSession, candidate: Can
     if candidate.json_data and isinstance(candidate.json_data, dict):
         return candidate.json_data
 
-    if candidate.email and "@placeholder.com" not in candidate.email:
+    if candidate.email and "@placeholder.com" not in candidate.email and "@noemail.vaspp.com" not in candidate.email:
         result = await session.execute(
             select(ParsedResume).where(ParsedResume.email == candidate.email).limit(1)
         )
@@ -270,21 +281,53 @@ async def _get_structured_cv_for_candidate(session: AsyncSession, candidate: Can
     return cv
 
 
+async def _get_structured_cv_cached(candidate: Candidate) -> dict:
+    cache_key = f"hr_app:cv_cache:{candidate.id}"
+    try:
+        redis = await get_redis_pool()
+        cached = await redis.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception:
+        pass
+
+    async with async_session_maker() as session:
+        cv = await _get_structured_cv_for_candidate(session, candidate)
+
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(cache_key, CV_CACHE_TTL, json.dumps(cv, default=str))
+    except Exception:
+        pass
+
+    return cv
+
+
 async def _match_single_candidate(
     candidate: Candidate,
     job_description: str,
     request_id: str,
 ) -> Optional[CandidateMatchResult]:
     try:
-        async with async_session_maker() as session:
-            structured_cv = await _get_structured_cv_for_candidate(session, candidate)
+        structured_cv = await _get_structured_cv_cached(candidate)
 
         if not structured_cv:
             return None
 
+        trimmed_cv = {
+            "full_name": structured_cv.get("full_name") or f"{candidate.first_name} {candidate.last_name}".strip(),
+            "current_title": structured_cv.get("current_title") or candidate.current_title or "",
+            "current_company": structured_cv.get("current_company") or candidate.current_company or "",
+            "location": structured_cv.get("location") or candidate.location or "",
+            "skills": (structured_cv.get("skills") or candidate.skills or [])[:20],
+            "summary": (structured_cv.get("summary") or "")[:500],
+            "experience": structured_cv.get("experience", [])[:3],
+            "education": structured_cv.get("education", [])[:2],
+        }
+
         ai_result = await ai_client.rag_match(
             job_description=job_description,
-            structured_cv=structured_cv,
+            structured_cv=trimmed_cv,
         )
 
         match_score = ai_result.get("match_score", 0)
@@ -296,7 +339,7 @@ async def _match_single_candidate(
         )
 
         clean_email = candidate.email
-        if clean_email and ("@placeholder.com" in clean_email or clean_email.startswith("unknown_")):
+        if clean_email and ("@placeholder.com" in clean_email or "@noemail.vaspp.com" in clean_email or clean_email.startswith("unknown_")):
             clean_email = None
 
         return CandidateMatchResult(
@@ -321,6 +364,119 @@ async def _match_single_candidate(
     except Exception as e:
         logger.error("candidate_match_failed", candidate_id=str(candidate.id), error=str(e))
         return None
+
+
+async def _run_matching_background(
+    request_id: str,
+    job_description: str,
+    request_number: str,
+    request_title: str,
+    top_k: int,
+    min_score: int,
+    candidate_ids: List[str],
+):
+    cache_key = f"hr_app:match_result:{request_id}"
+    lock_key = f"hr_app:match_lock:{request_id}"
+
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(lock_key, MATCH_LOCK_TTL, "processing")
+
+        async with async_session_maker() as session:
+            result = await session.execute(
+                select(Candidate).where(Candidate.id.in_([UUID(cid) for cid in candidate_ids]))
+            )
+            candidates = result.scalars().all()
+
+        final_matches = []
+
+        for candidate in candidates:
+            try:
+                structured_cv = await _get_structured_cv_cached(candidate)
+
+                trimmed_cv = {
+                    "full_name": structured_cv.get("full_name") or f"{candidate.first_name} {candidate.last_name}".strip(),
+                    "current_title": structured_cv.get("current_title") or candidate.current_title or "",
+                    "current_company": structured_cv.get("current_company") or candidate.current_company or "",
+                    "location": structured_cv.get("location") or candidate.location or "",
+                    "skills": (structured_cv.get("skills") or candidate.skills or [])[:20],
+                    "summary": (structured_cv.get("summary") or "")[:500],
+                    "experience": structured_cv.get("experience", [])[:3],
+                    "education": structured_cv.get("education", [])[:2],
+                }
+
+                ai_result = await ai_client.rag_match(
+                    job_description=job_description,
+                    structured_cv=trimmed_cv,
+                )
+
+                skills_comparison = _build_skills_comparison(
+                    job_description=job_description,
+                    candidate_skills=candidate.skills or [],
+                    structured_data=structured_cv,
+                )
+
+                clean_email = candidate.email
+                if clean_email and ("@placeholder.com" in clean_email or "@noemail.vaspp.com" in clean_email or clean_email.startswith("unknown_")):
+                    clean_email = None
+
+                final_matches.append(
+                    CandidateMatchResult(
+                        candidate_id=str(candidate.id),
+                        first_name=candidate.first_name,
+                        last_name=candidate.last_name,
+                        email=clean_email,
+                        current_title=candidate.current_title,
+                        current_company=candidate.current_company,
+                        location=candidate.location,
+                        years_of_experience=candidate.years_of_experience,
+                        match_score=ai_result.get("match_score", 0),
+                        reasoning=ai_result.get("reasoning", ""),
+                        strengths=ai_result.get("strengths", []),
+                        gaps=ai_result.get("gaps", []),
+                        recommendations=ai_result.get("recommendations", []),
+                        skills_comparison=skills_comparison,
+                        hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
+                        availability=candidate.availability,
+                    )
+                )
+            except Exception as e:
+                logger.error("single_candidate_match_failed", candidate_id=str(candidate.id), error=str(e))
+                continue
+
+        final_matches.sort(key=lambda x: x.match_score, reverse=True)
+
+        if min_score > 0:
+            final_matches = [m for m in final_matches if m.match_score >= min_score]
+
+        final_matches = final_matches[:top_k]
+
+        response = AutoMatchResponse(
+            request_id=request_id,
+            request_number=request_number,
+            request_title=request_title,
+            job_description_preview=job_description[:200] + "..." if len(job_description) > 200 else job_description,
+            total_candidates_evaluated=len(candidates),
+            total_matches=len(final_matches),
+            auto_proposed=False,
+            matches=final_matches,
+        )
+
+        redis = await get_redis_pool()
+        await redis.setex(cache_key, MATCH_CACHE_TTL, json.dumps(response.model_dump(), default=str))
+        await redis.delete(lock_key)
+
+        logger.info("matching_complete", request_id=request_id, total_matches=len(final_matches))
+
+    except Exception as e:
+        logger.error("background_matching_failed", request_id=request_id, error=str(e))
+        try:
+            redis = await get_redis_pool()
+            await redis.delete(lock_key)
+            error_data = {"error": str(e), "request_id": request_id}
+            await redis.setex(f"hr_app:match_error:{request_id}", 300, json.dumps(error_data))
+        except Exception:
+            pass
 
 
 @router.get("/count", response_model=RequestCountResponse)
@@ -553,9 +709,10 @@ async def transition_state(
     return _build_response(req, candidates)
 
 
-@router.post("/{request_id}/auto-match", response_model=AutoMatchResponse)
+@router.post("/{request_id}/auto-match", response_model=MatchStatusResponse)
 async def auto_match_candidates(
     request_id: UUID,
+    background_tasks: BackgroundTasks,
     data: AutoMatchRequest = AutoMatchRequest(),
     session: AsyncSession = Depends(get_db_session)
 ):
@@ -570,91 +727,166 @@ async def auto_match_candidates(
     if not req.job_description or not req.job_description.strip():
         raise HTTPException(status_code=422, detail="Request has no job description to match against")
 
-    candidates_result = await session.execute(
-        select(Candidate)
-        .where(
-            Candidate.status == "active",
+    cache_key = f"hr_app:match_result:{request_id}"
+    lock_key = f"hr_app:match_lock:{request_id}"
+
+    try:
+        redis = await get_redis_pool()
+
+        if not data.force_refresh:
+            cached = await redis.get(cache_key)
+            if cached:
+                cached_result = AutoMatchResponse(**json.loads(cached))
+                return MatchStatusResponse(
+                    status="completed",
+                    request_id=str(request_id),
+                    message=f"Found {cached_result.total_matches} matches (cached)",
+                    result=cached_result,
+                )
+
+        is_processing = await redis.get(lock_key)
+        if is_processing:
+            return MatchStatusResponse(
+                status="processing",
+                request_id=str(request_id),
+                message="Matching in progress. Please wait...",
+                result=None,
+            )
+
+        if data.force_refresh:
+            await redis.delete(cache_key)
+
+    except Exception:
+        pass
+
+    jd_lower = req.job_description.lower()
+    jd_words = [w.strip() for w in jd_lower.split() if len(w.strip()) >= 4][:15]
+
+    skill_conditions = []
+    for word in jd_words[:8]:
+        skill_conditions.append(
+            func.lower(func.array_to_string(Candidate.skills, ' ')).contains(word)
         )
-        .order_by(Candidate.created_at.desc())
-        .limit(50)
+        skill_conditions.append(
+            func.lower(func.coalesce(Candidate.current_title, '')).contains(word)
+        )
+        skill_conditions.append(
+            func.lower(func.coalesce(Candidate.resume_text, '')).contains(word)
+        )
+
+    if skill_conditions:
+        filtered_result = await session.execute(
+            select(Candidate)
+            .where(Candidate.status == "active")
+            .where(or_(*skill_conditions))
+            .order_by(Candidate.created_at.desc())
+            .limit(20)
+        )
+        candidates = filtered_result.scalars().all()
+
+        if len(candidates) < 5:
+            fallback_result = await session.execute(
+                select(Candidate)
+                .where(Candidate.status == "active")
+                .order_by(Candidate.created_at.desc())
+                .limit(20)
+            )
+            candidates = fallback_result.scalars().all()
+    else:
+        fallback_result = await session.execute(
+            select(Candidate)
+            .where(Candidate.status == "active")
+            .order_by(Candidate.created_at.desc())
+            .limit(20)
+        )
+        candidates = fallback_result.scalars().all()
+
+    preliminary = []
+    for candidate in candidates:
+        structured_cv = await _get_structured_cv_cached(candidate)
+        preliminary.append(_build_preliminary_candidate_match(candidate, req.job_description, structured_cv))
+
+    preliminary.sort(key=lambda x: x.match_score, reverse=True)
+    preliminary = preliminary[:data.top_k]
+
+    candidate_ids = [m.candidate_id for m in preliminary]
+
+    background_tasks.add_task(
+        _run_matching_background,
+        str(request_id),
+        req.job_description,
+        req.request_number,
+        req.request_title,
+        data.top_k,
+        data.min_score,
+        candidate_ids,
     )
-    candidates = candidates_result.scalars().all()
 
-    if not candidates:
-        return AutoMatchResponse(
-            request_id=str(req.id),
-            request_number=req.request_number,
-            request_title=req.request_title,
-            job_description_preview=req.job_description[:200] + "..." if len(req.job_description) > 200 else req.job_description,
-            total_candidates_evaluated=0,
-            total_matches=0,
-            auto_proposed=False,
-            matches=[],
-        )
-
-    tasks = [
-        _match_single_candidate(
-            candidate=c,
-            job_description=req.job_description,
-            request_id=str(req.id),
-        )
-        for c in candidates
-    ]
-
-    all_results = await asyncio.gather(*tasks, return_exceptions=False)
-
-    matches = [r for r in all_results if r is not None]
-    matches.sort(key=lambda x: x.match_score, reverse=True)
-
-    if data.min_score > 0:
-        matches = [m for m in matches if m.match_score >= data.min_score]
-
-    matches = matches[:data.top_k]
-
-    auto_proposed = False
-    if data.auto_propose and matches and req.state not in ["signed", "closed"]:
-        for match in matches:
-            existing = await session.execute(
-                select(RequestCandidate).where(
-                    and_(
-                        RequestCandidate.request_id == request_id,
-                        RequestCandidate.candidate_id == UUID(match.candidate_id)
-                    )
-                )
-            )
-            if not existing.scalar_one_or_none():
-                rc = RequestCandidate(
-                    request_id=request_id,
-                    candidate_id=UUID(match.candidate_id),
-                    proposed_rate=None,
-                    proposed_date=date.today(),
-                    notes=f"Auto-matched with {match.match_score}% score",
-                )
-                session.add(rc)
-
-        if req.state == "open":
-            req.state = "in_progress"
-            audit = RequestAuditLog(
-                request_id=req.id,
-                old_state="open",
-                new_state="in_progress",
-                notes="Auto-transitioned via auto-match",
-            )
-            session.add(audit)
-
-        await session.commit()
-        await _invalidate_requests_cache()
-        auto_proposed = True
-
-    return AutoMatchResponse(
-        request_id=str(req.id),
+    preliminary_response = AutoMatchResponse(
+        request_id=str(request_id),
         request_number=req.request_number,
         request_title=req.request_title,
         job_description_preview=req.job_description[:200] + "..." if len(req.job_description) > 200 else req.job_description,
         total_candidates_evaluated=len(candidates),
-        total_matches=len(matches),
-        auto_proposed=auto_proposed,
-        matches=matches,
+        total_matches=len(preliminary),
+        auto_proposed=False,
+        matches=preliminary,
+    )
+
+    return MatchStatusResponse(
+        status="processing",
+        request_id=str(request_id),
+        message="Preliminary matches ready. AI validation is running in background.",
+        result=preliminary_response,
+    )
+
+
+@router.get("/{request_id}/auto-match/status", response_model=MatchStatusResponse)
+async def get_match_status(request_id: UUID):
+    cache_key = f"hr_app:match_result:{request_id}"
+    lock_key = f"hr_app:match_lock:{request_id}"
+    error_key = f"hr_app:match_error:{request_id}"
+
+    try:
+        redis = await get_redis_pool()
+
+        cached = await redis.get(cache_key)
+        if cached:
+            cached_result = AutoMatchResponse(**json.loads(cached))
+            return MatchStatusResponse(
+                status="completed",
+                request_id=str(request_id),
+                message=f"Found {cached_result.total_matches} matching candidates",
+                result=cached_result,
+            )
+
+        error = await redis.get(error_key)
+        if error:
+            error_data = json.loads(error)
+            return MatchStatusResponse(
+                status="error",
+                request_id=str(request_id),
+                message=f"Matching failed: {error_data.get('error', 'Unknown error')}",
+                result=None,
+            )
+
+        is_processing = await redis.get(lock_key)
+        if is_processing:
+            return MatchStatusResponse(
+                status="processing",
+                request_id=str(request_id),
+                message="Matching in progress...",
+                result=None,
+            )
+
+    except Exception:
+        pass
+
+    return MatchStatusResponse(
+        status="idle",
+        request_id=str(request_id),
+        message="No matching started yet",
+        result=None,
     )
 
 
@@ -776,7 +1008,62 @@ async def delete_request(
     await session.commit()
 
     await _invalidate_requests_cache()
+def _quick_overlap_score(job_description: str, candidate: Candidate, structured_cv: dict) -> int:
+    jd_lower = job_description.lower()
+    title = (candidate.current_title or structured_cv.get("current_title") or "").lower()
+    summary = (structured_cv.get("summary") or candidate.resume_text or "")[:1000].lower()
+    skills = [s.lower() for s in (structured_cv.get("skills") or candidate.skills or [])]
 
+    jd_skills = _extract_skills_from_jd(job_description)
+    matching_skills = [s for s in jd_skills if s.lower() in skills]
+
+    score = 0
+    score += min(len(matching_skills) * 12, 60)
+
+    title_words = [w for w in jd_lower.split() if len(w) >= 4][:10]
+    if any(word in title for word in title_words):
+        score += 20
+
+    if any(word in summary for word in title_words[:5]):
+        score += 20
+
+    return min(score, 100)
+
+
+def _build_preliminary_candidate_match(
+    candidate: Candidate,
+    job_description: str,
+    structured_cv: dict,
+) -> CandidateMatchResult:
+    score = _quick_overlap_score(job_description, candidate, structured_cv)
+    skills_comparison = _build_skills_comparison(
+        job_description=job_description,
+        candidate_skills=candidate.skills or [],
+        structured_data=structured_cv,
+    )
+
+    clean_email = candidate.email
+    if clean_email and ("@placeholder.com" in clean_email or "@noemail.vaspp.com" in clean_email or clean_email.startswith("unknown_")):
+        clean_email = None
+
+    return CandidateMatchResult(
+        candidate_id=str(candidate.id),
+        first_name=candidate.first_name,
+        last_name=candidate.last_name,
+        email=clean_email,
+        current_title=candidate.current_title,
+        current_company=candidate.current_company,
+        location=candidate.location,
+        years_of_experience=candidate.years_of_experience,
+        match_score=score,
+        reasoning="Preliminary match based on skills, title, and summary overlap. AI validation is in progress.",
+        strengths=[f"Matching skills: {', '.join(skills_comparison.matching_skills[:5])}"] if skills_comparison.matching_skills else [],
+        gaps=[f"Missing skills: {', '.join(skills_comparison.missing_skills[:5])}"] if skills_comparison.missing_skills else [],
+        recommendations=["Final AI reasoning will replace this preliminary result once background matching completes."],
+        skills_comparison=skills_comparison,
+        hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
+        availability=candidate.availability,
+    )
 
 async def _get_proposed_candidates(session: AsyncSession, request_id: UUID) -> List[CandidateSummary]:
     stmt = (

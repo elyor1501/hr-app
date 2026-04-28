@@ -1,10 +1,17 @@
 import { revalidateResumes } from "./revalidate";
-import { getApiUrl, getAuthToken } from "../api-config";
+import { getAuthToken } from "../api-config";
 
-const BATCH_SIZE = 10;
-const BATCH_TIMEOUT = 120000;
+const BATCH_SIZE = 5;
+const BATCH_TIMEOUT = 180000;
 
-async function uploadBatch(batch: File[], uploadUrl: string, token: string | null): Promise<any[]> {
+function getBackendUrl(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || "http://backend:8000";
+}
+
+async function uploadSingleBatch(batch: File[], token: string | null): Promise<any> {
   const formData = new FormData();
   batch.forEach((file) => formData.append("files", file));
 
@@ -12,7 +19,7 @@ async function uploadBatch(batch: File[], uploadUrl: string, token: string | nul
   const timeoutId = setTimeout(() => controller.abort(), BATCH_TIMEOUT);
 
   try {
-    const response = await fetch(uploadUrl, {
+    const response = await fetch(`${getBackendUrl()}/api/v1/resumes/bulk`, {
       method: "POST",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -28,8 +35,7 @@ async function uploadBatch(batch: File[], uploadUrl: string, token: string | nul
       throw new Error(errorData?.detail || "Failed to upload batch");
     }
 
-    const result = await response.json();
-    return Array.isArray(result) ? result : [];
+    return response.json();
   } catch (error: any) {
     clearTimeout(timeoutId);
     if (error.name === "AbortError") {
@@ -40,47 +46,28 @@ async function uploadBatch(batch: File[], uploadUrl: string, token: string | nul
 }
 
 export async function uploadBulkResumes(files: File[]) {
-    const BATCH_SIZE = 10
-    const token = getAuthToken()
-    const apiUrl = getApiUrl()
-    const uploadUrl = apiUrl ? `${apiUrl}/api/v1/resumes/bulk` : "/api/v1/resumes/bulk"
+  const token = getAuthToken();
 
-    const batches: File[][] = []
-    for (let i = 0; i < files.length; i += BATCH_SIZE) {
-        batches.push(files.slice(i, i + BATCH_SIZE))
-    }
+  const batches: File[][] = [];
+  for (let i = 0; i < files.length; i += BATCH_SIZE) {
+    batches.push(files.slice(i, i + BATCH_SIZE));
+  }
 
-    const uploadBatch = async (batch: File[]) => {
-        const formData = new FormData()
-        batch.forEach(file => formData.append("files", file))
+  let totalAccepted = 0;
 
-        const res = await fetch(uploadUrl, {
-            method: "POST",
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-            body: formData,
-        })
+  for (const batch of batches) {
+    const result = await uploadSingleBatch(batch, token);
+    totalAccepted += result?.accepted || 0;
+  }
 
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}))
-            throw new Error(errorData?.detail || "Failed to upload batch")
-        }
-
-        return res.json()
-    }
-
-    const batchResults = await Promise.all(batches.map(batch => uploadBatch(batch)))
-    const totalAccepted = batchResults.reduce((sum, r) => sum + (r.accepted || 0), 0)
-
-    await revalidateResumes()
-    return Array.from({ length: totalAccepted }, (_, i) => ({ id: i }))
+  await revalidateResumes();
+  return { accepted: totalAccepted };
 }
 
 export async function deleteResume(id: string) {
   const token = getAuthToken();
-  const apiUrl = getApiUrl();
-  const deleteUrl = apiUrl ? `${apiUrl}/api/v1/resumes/${id}` : `/api/v1/resumes/${id}`;
 
-  const response = await fetch(deleteUrl, {
+  const response = await fetch(`${getBackendUrl()}/api/v1/resumes/${id}`, {
     method: "DELETE",
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -98,25 +85,24 @@ export async function deleteResume(id: string) {
 
 export async function downloadResume(id: string, fileName?: string, fallbackFileUrl?: string) {
   const token = getAuthToken();
-  const apiUrl = getApiUrl();
-  const downloadUrl = apiUrl ? `${apiUrl}/api/v1/resumes/${id}/download` : `/api/v1/resumes/${id}/download`;
 
-  let response = await fetch(downloadUrl, {
+  let response = await fetch(`${getBackendUrl()}/api/v1/resumes/${id}/download`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 
   if (!response.ok && fallbackFileUrl) {
-    const fallbackUrl = fallbackFileUrl.startsWith("http")
-      ? fallbackFileUrl
-      : apiUrl ? `${apiUrl}${fallbackFileUrl}` : fallbackFileUrl;
-
-    response = await fetch(fallbackUrl, {
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
+    response = await fetch(
+      fallbackFileUrl.startsWith("http")
+        ? fallbackFileUrl
+        : `${getBackendUrl()}${fallbackFileUrl}`,
+      {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }
+    );
   }
 
   if (!response.ok) throw new Error("Failed to download resume");
@@ -136,25 +122,24 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
 
 export async function viewResume(id: string, fileName?: string, fallbackFileUrl?: string) {
   const token = getAuthToken();
-  const apiUrl = getApiUrl();
-  const viewUrl = apiUrl ? `${apiUrl}/api/v1/resumes/${id}/download` : `/api/v1/resumes/${id}/download`;
 
-  let response = await fetch(viewUrl, {
+  let response = await fetch(`${getBackendUrl()}/api/v1/resumes/${id}/download`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 
   if (!response.ok && fallbackFileUrl) {
-    const fallbackUrl = fallbackFileUrl.startsWith("http")
-      ? fallbackFileUrl
-      : apiUrl ? `${apiUrl}${fallbackFileUrl}` : fallbackFileUrl;
-
-    response = await fetch(fallbackUrl, {
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
+    response = await fetch(
+      fallbackFileUrl.startsWith("http")
+        ? fallbackFileUrl
+        : `${getBackendUrl()}${fallbackFileUrl}`,
+      {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }
+    );
   }
 
   if (!response.ok) throw new Error("Failed to fetch resume for viewing");

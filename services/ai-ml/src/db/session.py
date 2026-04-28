@@ -8,8 +8,8 @@ if DATABASE_URL.startswith("postgresql://"):
 
 engine = create_async_engine(
     DATABASE_URL,
-    pool_size=5,
-    max_overflow=10,
+    pool_size=20,
+    max_overflow=30,
     connect_args={
         "statement_cache_size": 0,
         "prepared_statement_cache_size": 0,

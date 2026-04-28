@@ -15,16 +15,25 @@ from src.services.ai_client import AIClient
 logger = structlog.get_logger()
 ai_client = AIClient()
 
-EXTRACT_CONCURRENCY = 20
-GEMINI_BATCH_SIZE = 5
-GEMINI_BATCH_CONCURRENCY = 3
+EXTRACT_CONCURRENCY = 3
+GEMINI_BATCH_SIZE = 3
+GEMINI_BATCH_CONCURRENCY = 1
+EXTRACT_RETRY_ATTEMPTS = 3
+EXTRACT_RETRY_DELAY = 3
 
 
 async def update_job_status(ctx: Dict[str, Any], job_id: str, status: str, progress: int = 0, result: Optional[Dict] = None, error: Optional[str] = None):
     redis = ctx.get("redis")
     if redis:
         key = f"{settings.cache_prefix}:jobs:{job_id}"
-        data = {"job_id": job_id, "status": status, "progress": progress, "result": result, "error": error, "updated_at": datetime.utcnow().isoformat()}
+        data = {
+            "job_id": job_id,
+            "status": status,
+            "progress": progress,
+            "result": result,
+            "error": error,
+            "updated_at": datetime.utcnow().isoformat()
+        }
         await redis.setex(key, settings.job_result_ttl, json.dumps(data))
 
 
@@ -32,7 +41,11 @@ async def move_to_dlq(ctx: Dict[str, Any], job_id: str, error: str):
     redis = ctx.get("redis")
     if redis:
         dlq_key = f"{settings.cache_prefix}:dlq"
-        data = {"job_id": job_id, "error": error, "failed_at": datetime.utcnow().isoformat()}
+        data = {
+            "job_id": job_id,
+            "error": error,
+            "failed_at": datetime.utcnow().isoformat()
+        }
         await redis.lpush(dlq_key, json.dumps(data))
 
 
@@ -96,7 +109,7 @@ def _resolve_name(structured_data: dict, raw_text: str) -> tuple:
     return first_name, last_name
 
 
-async def _find_existing_candidate(session, structured_data: dict, first_name: str, last_name: str) -> Optional[Candidate]:
+async def _find_existing_candidate(session, structured_data: dict, first_name: str, last_name: str, generated_email: str) -> Optional[Candidate]:
     candidate_email = structured_data.get("email")
     candidate_phone = _normalize_phone(structured_data.get("phone") or "")
 
@@ -131,6 +144,14 @@ async def _find_existing_candidate(session, structured_data: dict, first_name: s
         if found:
             logger.info("candidate_matched_by_name", first_name=first_name, last_name=last_name)
             return found
+
+    result = await session.execute(
+        select(Candidate).where(Candidate.email == generated_email)
+    )
+    found = result.scalar_one_or_none()
+    if found:
+        logger.info("candidate_matched_by_generated_email", email=generated_email)
+        return found
 
     return None
 
@@ -175,7 +196,17 @@ async def _link_cv_to_candidate(session, candidate: Candidate, resume: Resume) -
 
 
 async def _auto_create_or_link_candidate(session, resume, structured_data, first_name, last_name, years_exp, raw_text, embedding, parsed):
-    existing_candidate = await _find_existing_candidate(session, structured_data, first_name, last_name)
+    if first_name == "Unknown":
+        return
+
+    candidate_email = structured_data.get("email")
+    if not candidate_email or not candidate_email.strip() or "@" not in candidate_email:
+        name_slug = f"{first_name.lower()}_{last_name.lower()}".replace(" ", "_")
+        generated_email = f"{name_slug}@noemail.vaspp.com"
+    else:
+        generated_email = candidate_email
+
+    existing_candidate = await _find_existing_candidate(session, structured_data, first_name, last_name, generated_email)
 
     if existing_candidate:
         existing_candidate.resume_text = raw_text
@@ -192,38 +223,31 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
             existing_candidate.phone = structured_data.get("phone")
 
         await _link_cv_to_candidate(session, existing_candidate, resume)
+        return
 
-    else:
-        if first_name == "Unknown":
-            return
+    if generated_email != candidate_email:
+        logger.info("creating_candidate_without_email", first_name=first_name, last_name=last_name)
 
-        candidate_email = structured_data.get("email")
+    new_candidate = Candidate(
+        first_name=first_name,
+        last_name=last_name,
+        email=generated_email,
+        phone=structured_data.get("phone"),
+        current_title=parsed.current_title,
+        current_company=parsed.current_company,
+        years_of_experience=years_exp,
+        skills=structured_data.get("skills", []),
+        location=structured_data.get("location"),
+        linkedin_url=structured_data.get("linkedin"),
+        resume_text=raw_text,
+        json_data=structured_data,
+        embedding=embedding,
+        status="active",
+    )
+    session.add(new_candidate)
+    await session.flush()
 
-        if not candidate_email or not candidate_email.strip() or "@" not in candidate_email:
-            name_slug = f"{first_name.lower()}_{last_name.lower()}".replace(" ", "_")
-            candidate_email = f"{name_slug}@noemail.vaspp.com"
-            logger.info("creating_candidate_without_email", first_name=first_name, last_name=last_name)
-
-        new_candidate = Candidate(
-            first_name=first_name,
-            last_name=last_name,
-            email=candidate_email,
-            phone=structured_data.get("phone"),
-            current_title=parsed.current_title,
-            current_company=parsed.current_company,
-            years_of_experience=years_exp,
-            skills=structured_data.get("skills", []),
-            location=structured_data.get("location"),
-            linkedin_url=structured_data.get("linkedin"),
-            resume_text=raw_text,
-            json_data=structured_data,
-            embedding=embedding,
-            status="active",
-        )
-        session.add(new_candidate)
-        await session.flush()
-
-        await _link_cv_to_candidate(session, new_candidate, resume)
+    await _link_cv_to_candidate(session, new_candidate, resume)
 
 
 async def _auto_create_staffing_request(session, doc_id: str, structured_data: dict, raw_text: str):
@@ -290,36 +314,37 @@ async def _auto_create_staffing_request(session, doc_id: str, structured_data: d
         await session.rollback()
 
 
-async def _process_single_resume_with_semaphore(item: dict, semaphore: asyncio.Semaphore) -> dict:
-    async with semaphore:
-        return await _process_single_resume(item)
-
-
 async def _process_single_resume(item: dict) -> dict:
     resume_id = item["resume_id"]
     file_url = item["file_url"]
     file_type = item["file_type"]
 
-    try:
-        extract_data = await ai_client.extract_text(file_url, file_type, resume_id)
-        raw_text = extract_data.get("raw_text", "")
+    for attempt in range(EXTRACT_RETRY_ATTEMPTS):
+        try:
+            extract_data = await ai_client.extract_text(file_url, file_type, resume_id)
+            raw_text = extract_data.get("raw_text", "")
 
-        if not raw_text:
-            return {"resume_id": resume_id, "success": False, "error": "No text extracted"}
+            if not raw_text:
+                return {"resume_id": resume_id, "success": False, "error": "No text extracted"}
 
-        embedding = await ai_client.get_embeddings(raw_text)
+            embedding = await ai_client.get_embeddings(raw_text)
 
-        return {
-            "resume_id": resume_id,
-            "raw_text": raw_text,
-            "embedding": embedding,
-            "structured_data": None,
-            "success": True,
-        }
+            return {
+                "resume_id": resume_id,
+                "raw_text": raw_text,
+                "embedding": embedding,
+                "structured_data": None,
+                "success": True,
+            }
 
-    except Exception as e:
-        logger.error("single_resume_processing_failed", resume_id=resume_id, error=str(e))
-        return {"resume_id": resume_id, "success": False, "error": str(e)}
+        except Exception as e:
+            if attempt < EXTRACT_RETRY_ATTEMPTS - 1:
+                wait = EXTRACT_RETRY_DELAY * (2 ** attempt)
+                logger.info("extract_retry", resume_id=resume_id, attempt=attempt + 1, wait=wait)
+                await asyncio.sleep(wait)
+                continue
+            logger.error("single_resume_processing_failed", resume_id=resume_id, error=str(e))
+            return {"resume_id": resume_id, "success": False, "error": str(e)}
 
 
 async def _save_resume_result(result: dict) -> bool:
@@ -329,7 +354,7 @@ async def _save_resume_result(result: dict) -> bool:
     resume_id = result["resume_id"]
     raw_text = result["raw_text"]
     embedding = result["embedding"]
-    structured_data = result["structured_data"]
+    structured_data = result["structured_data"] or {}
 
     try:
         first_name, last_name = _resolve_name(structured_data, raw_text)
@@ -341,53 +366,64 @@ async def _save_resume_result(result: dict) -> bool:
                 resume.raw_text = raw_text
                 resume.embedding = embedding
 
-            if structured_data is not None:
-                existing_parsed_result = await session.execute(
-                    select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
+            existing_parsed_result = await session.execute(
+                select(ParsedResume).where(ParsedResume.resume_id == UUID(resume_id))
+            )
+            existing_parsed = existing_parsed_result.scalar_one_or_none()
+
+            if not existing_parsed:
+                parsed = ParsedResume(
+                    resume_id=UUID(resume_id),
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=structured_data.get("email"),
+                    phone=structured_data.get("phone"),
+                    current_title=None,
+                    current_company=None,
+                    years_of_experience=years_exp,
+                    skills=structured_data.get("skills", []),
+                    location=structured_data.get("location"),
+                    linkedin_url=structured_data.get("linkedin"),
+                    github=structured_data.get("github"),
+                    portfolio=structured_data.get("portfolio"),
+                    summary=structured_data.get("summary"),
+                    education=structured_data.get("education", []),
+                    experience=structured_data.get("experience", []),
+                    projects=structured_data.get("projects", []),
+                    certifications=structured_data.get("certifications", []),
+                    confidence_scores=structured_data.get("confidence_scores", {}),
+                    confidence_score=structured_data.get("confidence_score"),
+                    extraction_latency=structured_data.get("extraction_latency"),
+                    json_data=structured_data
                 )
-                existing_parsed = existing_parsed_result.scalar_one_or_none()
 
-                if not existing_parsed:
-                    parsed = ParsedResume(
-                        resume_id=UUID(resume_id),
-                        first_name=first_name,
-                        last_name=last_name,
-                        email=structured_data.get("email"),
-                        phone=structured_data.get("phone"),
-                        current_title=None,
-                        current_company=None,
-                        years_of_experience=years_exp,
-                        skills=structured_data.get("skills", []),
-                        location=structured_data.get("location"),
-                        linkedin_url=structured_data.get("linkedin"),
-                        github=structured_data.get("github"),
-                        portfolio=structured_data.get("portfolio"),
-                        summary=structured_data.get("summary"),
-                        education=structured_data.get("education", []),
-                        experience=structured_data.get("experience", []),
-                        projects=structured_data.get("projects", []),
-                        certifications=structured_data.get("certifications", []),
-                        confidence_scores=structured_data.get("confidence_scores", {}),
-                        confidence_score=structured_data.get("confidence_score"),
-                        extraction_latency=structured_data.get("extraction_latency"),
-                        json_data=structured_data
-                    )
+                if structured_data.get("experience") and len(structured_data["experience"]) > 0:
+                    parsed.current_title = structured_data["experience"][0].get("job_title")
+                    parsed.current_company = structured_data["experience"][0].get("company")
 
-                    if structured_data.get("experience") and len(structured_data["experience"]) > 0:
-                        parsed.current_title = structured_data["experience"][0].get("job_title")
-                        parsed.current_company = structured_data["experience"][0].get("company")
+                session.add(parsed)
+            else:
+                parsed = existing_parsed
 
-                    session.add(parsed)
-                else:
-                    parsed = existing_parsed
-
+            try:
                 await _auto_create_or_link_candidate(
                     session, resume, structured_data,
                     first_name, last_name, years_exp,
                     raw_text, embedding, parsed
                 )
-
-            await session.commit()
+                await session.commit()
+            except Exception as e:
+                await session.rollback()
+                if "UniqueViolationError" in str(e) or "unique constraint" in str(e).lower():
+                    logger.info("candidate_duplicate_skipped", resume_id=resume_id, first_name=first_name, last_name=last_name)
+                    async with async_session_maker() as session2:
+                        resume2 = await session2.get(Resume, UUID(resume_id))
+                        if resume2:
+                            resume2.raw_text = raw_text
+                            resume2.embedding = embedding
+                        await session2.commit()
+                    return True
+                raise
 
         logger.info("resume_saved", resume_id=resume_id, name=f"{first_name} {last_name}")
         return True
@@ -435,7 +471,11 @@ async def process_resume(ctx: Dict[str, Any], resume_id: str, file_url: str, fil
         except Exception:
             pass
 
-        output = {"resume_id": resume_id, "text_length": len(result["raw_text"]), "embedding_generated": True}
+        output = {
+            "resume_id": resume_id,
+            "text_length": len(result["raw_text"]),
+            "embedding_generated": True
+        }
         await update_job_status(ctx, job_id, "completed", progress=100, result=output)
         return output
 
@@ -561,7 +601,11 @@ async def generate_embeddings(ctx: Dict[str, Any], record_type: str, record_id: 
         await update_job_status(ctx, job_id, "in_progress", progress=20)
         embedding = await ai_client.get_embeddings(text)
         await update_job_status(ctx, job_id, "in_progress", progress=80)
-        result = {"record_type": record_type, "record_id": record_id, "embedding_dimension": len(embedding)}
+        result = {
+            "record_type": record_type,
+            "record_id": record_id,
+            "embedding_dimension": len(embedding)
+        }
         await update_job_status(ctx, job_id, "completed", progress=100, result=result)
         return result
     except Exception as e:
@@ -651,43 +695,40 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
 
         logger.info("extraction_complete", total=len(resume_items), successful=len(successful), failed=failed)
 
-        batches = [successful[i:i + GEMINI_BATCH_SIZE] for i in range(0, len(successful), GEMINI_BATCH_SIZE)]
+        batches = [
+            successful[i:i + GEMINI_BATCH_SIZE]
+            for i in range(0, len(successful), GEMINI_BATCH_SIZE)
+        ]
 
-        structure_semaphore = asyncio.Semaphore(GEMINI_BATCH_CONCURRENCY)
         processed_count = 0
         failed_count = failed
 
-        async def structure_and_save_batch(batch):
-            nonlocal processed_count, failed_count
-            async with structure_semaphore:
-                batch_items = [
-                    {"resume_id": r["resume_id"], "raw_text": r["raw_text"]}
-                    for r in batch
-                ]
-                try:
-                    batch_structured = await ai_client.structure_resume_batch(batch_items)
-                    structured_map = {
-                        s.get("source_file"): s.get("structured_data", {})
-                        for s in batch_structured
-                    }
-                    for result in batch:
-                        result["structured_data"] = structured_map.get(result["resume_id"], {})
-                except Exception as e:
-                    logger.error("batch_structure_failed", error=str(e))
-                    for result in batch:
-                        result["structured_data"] = {}
+        for batch in batches:
+            batch_items = [
+                {"resume_id": r["resume_id"], "raw_text": r["raw_text"]}
+                for r in batch
+            ]
+            try:
+                batch_structured = await ai_client.structure_resume_batch(batch_items)
+                structured_map = {
+                    s.get("source_file"): s.get("structured_data", {})
+                    for s in batch_structured
+                }
+                for result in batch:
+                    result["structured_data"] = structured_map.get(result["resume_id"], {})
+            except Exception as e:
+                logger.error("batch_structure_failed", error=str(e))
+                for result in batch:
+                    result["structured_data"] = {}
 
-                save_tasks = [_save_resume_result(result) for result in batch]
-                save_results = await asyncio.gather(*save_tasks, return_exceptions=True)
+            for result in batch:
+                saved = await _save_resume_result(result)
+                if saved:
+                    processed_count += 1
+                else:
+                    failed_count += 1
 
-                for saved in save_results:
-                    if isinstance(saved, Exception) or not saved:
-                        failed_count += 1
-                    else:
-                        processed_count += 1
-
-        structure_tasks = [structure_and_save_batch(batch) for batch in batches]
-        await asyncio.gather(*structure_tasks, return_exceptions=True)
+            await asyncio.sleep(1)
 
         await update_job_status(ctx, job_id, "processing", 90)
 
@@ -699,14 +740,19 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
         except Exception:
             pass
 
-        await update_job_status(ctx, job_id, "completed", 100, result={"processed": processed_count, "failed": failed_count})
+        await update_job_status(
+            ctx, job_id, "completed", 100,
+            result={"processed": processed_count, "failed": failed_count}
+        )
 
     except Exception as e:
         await update_job_status(ctx, job_id, "failed", error=str(e))
         raise e
+
 
 class WorkerSettings:
     functions = [process_resume, process_resumes_batch, process_requirement_doc]
     redis_settings = RedisSettings(host=settings.redis_host, port=settings.redis_port)
     job_timeout = 600
     max_tries = settings.job_max_retries
+    max_jobs = 2
