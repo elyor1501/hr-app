@@ -1,6 +1,5 @@
 import { getCandidateById, CandidateList } from "@/lib/candidates/data";
 import CompareView from "@/components/candidate/CompareView";
-import RouteProtection from "@/components/routeProtection";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +28,6 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
  return (
   <div>
-    <RouteProtection/>
     <CompareView candidates={candidates} />
   </div>
 );

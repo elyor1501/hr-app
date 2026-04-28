@@ -30,18 +30,18 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar collapsible="icon" className="border-r bg-white dark:bg-slate-950 transition-all duration-300 shadow-sm opacity-100">
-      <SidebarHeader className="h-20 flex items-center justify-center border-b border-sidebar-border mb-4 px-4">
+    <Sidebar collapsible="icon" className="border-r border-border/40 bg-background/95 backdrop-blur-sm transition-all duration-300 z-40">
+      <SidebarHeader className="h-20 flex items-center justify-center border-b border-border/40 mb-4 px-4 bg-background/50">
         <div className="flex items-center gap-3 w-full overflow-hidden">
-          <div className="flex-shrink-0 w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm transition-transform">
-            <Sparkles className="text-primary-foreground w-6 h-6" />
+          <div className="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg transition-transform hover:scale-105">
+            <Sparkles className="text-white w-6 h-6" />
           </div>
           {!isCollapsed && (
-            <div className="flex flex-col animate-in fade-in slide-in-from-left-2 duration-300">
-              <span className="font-bold text-lg leading-none tracking-tight text-foreground">
+            <div className="flex flex-col animate-in fade-in slide-in-from-left-3 duration-500">
+              <span className="font-extrabold text-xl leading-none tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Smart HR
               </span>
-              <span className="text-xs text-muted-foreground font-medium mt-1">
+              <span className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter">
                 Management System
               </span>
             </div>

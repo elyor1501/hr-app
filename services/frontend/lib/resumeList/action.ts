@@ -16,7 +16,6 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
   batch.forEach((file) => formData.append("files", file));
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), BATCH_TIMEOUT);
 
   try {
     const response = await fetch(`${getBackendUrl()}/api/v1/resumes/bulk`, {
@@ -28,8 +27,6 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
       signal: controller.signal,
     });
 
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData?.detail || "Failed to upload batch");
@@ -37,10 +34,6 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
 
     return response.json();
   } catch (error: any) {
-    clearTimeout(timeoutId);
-    if (error.name === "AbortError") {
-      throw new Error("Upload timeout - files may be too large");
-    }
     throw error;
   }
 }
@@ -117,7 +110,6 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
   if (link.parentNode) {
     link.parentNode.removeChild(link);
   }
-  setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }
 
 export async function viewResume(id: string, fileName?: string, fallbackFileUrl?: string) {
@@ -159,5 +151,4 @@ export async function viewResume(id: string, fileName?: string, fallbackFileUrl?
       link.parentNode.removeChild(link);
     }
   }
-  setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }

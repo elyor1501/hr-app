@@ -9,9 +9,6 @@ import { UserNav } from "@/components/user-nav";
 import { ChatProvider } from "@/app/contexts/ChatContext";
 import { ChatButton } from "@/components/chats/ChatButton";
 import { ChatInterface } from "@/components/chats/ChatInterface";
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { Loader } from "@/components/ui/loader";
 
 type Props = {
   children: React.ReactNode;
@@ -20,13 +17,6 @@ type Props = {
 
 export default function ClientLayout({ children, user }: Props) {
   const pathname = usePathname();
-  const [isPageLoading, setIsPageLoading] = useState(false);
-
-  useEffect(() => {
-    setIsPageLoading(true);
-    const timer = setTimeout(() => setIsPageLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, [pathname]);
 
   const getPageTitle = () => {
     if (pathname.startsWith("/dashboard")) return "Dashboard Overview";
@@ -47,18 +37,17 @@ export default function ClientLayout({ children, user }: Props) {
         <div className="flex h-screen w-full overflow-hidden bg-background">
           <AppSidebar />
           
-          <SidebarInset className="flex flex-col overflow-hidden">
-            <header className="h-20 border-b bg-card shadow-sm z-20 sticky top-0">
-              <div className="flex h-full items-center justify-between px-8">
-                <div className="flex items-center gap-6">
-                  <SidebarTrigger className="hover:bg-secondary transition-colors" />
-                  <div className="flex items-center gap-4">
-                    <BackButton />
-                    <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                      <h1 className="text-xl font-bold tracking-tight text-foreground">
-                        {getPageTitle()}
-                      </h1>
-                    </div>
+          <SidebarInset className="flex overflow-hidden bg-slate-50/50 dark:bg-slate-950/50" style={{ marginLeft: "13rem" }} >
+            <header className="h-20 border-b border-border/50 bg-background/80 backdrop-blur-md shadow-sm z-30 sticky top-0 px-6 transition-all duration-300">
+              <div className="flex h-full items-center justify-between">
+                <div className="flex items-center gap-4">
+                  {/* <SidebarTrigger className="h-9 w-9 bg-secondary/50 hover:bg-secondary rounded-lg transition-colors" /> */}
+                  <div className="h-6 w-[px] bg-border/40 mx-1 hidden md:block" />
+                  <BackButton />
+                  <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+                    <h1 className="text-xl font-bold tracking-tight text-foreground/90">
+                      {getPageTitle()}
+                    </h1>
                   </div>
                 </div>
 
@@ -72,24 +61,11 @@ export default function ClientLayout({ children, user }: Props) {
                   <UserNav user={user} />
                 </div>
               </div>
-              
-              {/* Top Loading Bar */}
-              {isPageLoading && (
-                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary/20 overflow-hidden">
-                  <div className="h-full bg-primary animate-progress-loading w-full origin-left" />
-                </div>
-              )}
             </header>
 
             <main className="flex-1 overflow-y-auto bg-background/50 custom-scrollbar relative">
               <div className="container max-w-7xl mx-auto p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                {isPageLoading ? (
-                  <div className="flex items-center justify-center h-[60vh]">
-                    <Loader />
-                  </div>
-                ) : (
-                  children
-                )}
+                {children}
               </div>
             </main>
           </SidebarInset>

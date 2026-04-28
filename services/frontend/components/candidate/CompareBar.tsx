@@ -20,7 +20,6 @@ export function CompareBar() {
     setIsLoading(true);
     const ids = selected.map((c) => c.id).join(",");
     router.push(`/candidates/compare?ids=${ids}`);
-    setTimeout(() => setIsLoading(false), 3000);
   };
 
   return (

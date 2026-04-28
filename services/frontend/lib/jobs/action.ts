@@ -119,9 +119,6 @@ export async function uploadJobDescriptions(files: File[]) {
   const apiUrl = getApiUrl();
   const results = [];
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 120000);
-
   try {
     for (const file of files) {
       const formData = new FormData();
@@ -133,7 +130,6 @@ export async function uploadJobDescriptions(files: File[]) {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: formData,
-        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -144,14 +140,9 @@ export async function uploadJobDescriptions(files: File[]) {
       results.push(await res.json());
     }
 
-    clearTimeout(timeoutId);
     await revalidateJobs();
     return results;
   } catch (error: any) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      throw new Error("Upload timeout - files may be too large");
-    }
     throw error;
   }
 }
