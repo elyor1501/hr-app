@@ -45,7 +45,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "state",
-    header: "Request State",
+    header: "Request Status",
     cell: ({ row }) => <span>{row.getValue("state") || "NA"}</span>,
   },
   {

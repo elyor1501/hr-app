@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateRequest } from "@/lib/requests/action";
 import { getRequestById } from "@/lib/requests/data";
+import { EyeIcon } from "lucide-react";
 
 type Props = {
   id: string;
@@ -174,9 +175,18 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
               <input name="request_number" defaultValue={request.request_number ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select name="state" defaultValue={request.state ?? "open"} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100">
+              <label className="block text-sm font-medium mb-1">
+                Request Status
+              </label>
+              <select
+                name="state"
+                defaultValue={request.state ?? "open"}
+                disabled={!isEditing}
+                className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+              >
                 <option value="open">Open</option>
+                <option value="in_progress">In Progress</option>
+                <option value="signed">Signed</option>
                 <option value="closed">Closed</option>
               </select>
             </div>
@@ -188,11 +198,23 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
               <input name="request_title" defaultValue={request.request_title} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Contract Status</label>
-              <select name="contract_status" defaultValue={String(request.contract_status)} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100">
+              <label className="block text-sm font-medium mb-1">
+                Contract Status
+              </label>
+              <select
+                name="contract_status"
+                defaultValue={String(request.contract_status)}
+                disabled={!isEditing || request.state !== "signed"}
+                className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+              >
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
               </select>
+              {request.state !== "signed" && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Contract can only be activated when request is signed
+                </p>
+              )}
             </div>
           </div>
 
@@ -336,7 +358,21 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
                   </div>
                 )}
 
-                {candidate.hourly_rate && <p className="text-xs text-gray-500">Rate: €{candidate.hourly_rate}/hr</p>}
+                {candidate.hourly_rate && (
+                  <p className="text-xs text-gray-500">
+                    Rate: €{candidate.hourly_rate}/hr
+                  </p>
+                )}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() =>
+                      router.push(`/candidates/${candidate.candidate_id}`)
+                    }
+                    className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    <EyeIcon className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
