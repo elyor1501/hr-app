@@ -1,20 +1,11 @@
 import { revalidateResumes } from "./revalidate";
-import { getAuthToken } from "../api-config";
+import { getApiUrl, getAuthToken } from "../api-config";
 
 const BATCH_TIMEOUT = 180000;
 const MAX_BATCH_SIZE_BYTES = 8 * 1024 * 1024;
 const MAX_CONCURRENT_UPLOADS = 3;
 
-function getBackendUrl(): string {
-  if (typeof window !== "undefined") {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (apiUrl && apiUrl !== "undefined" && apiUrl.trim() !== "") {
-      return apiUrl.replace(/\/$/, "");
-    }
-    return window.location.origin;
-  }
-  return process.env.INTERNAL_API_URL || "http://backend:8000";
-}
+const getApi = getApiUrl();
 
 function createBatches(files: File[]): File[][] {
   const batches: File[][] = [];
@@ -60,7 +51,7 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
   const timeoutId = setTimeout(() => controller.abort(), BATCH_TIMEOUT);
 
   try {
-    const response = await fetch(`${getBackendUrl()}/api/v1/resumes/bulk`, {
+    const response = await fetch(`${getApi}/api/v1/resumes/bulk`, {
       method: "POST",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -123,7 +114,7 @@ export async function uploadBulkResumes(files: File[]) {
 export async function deleteResume(id: string) {
   const token = getAuthToken();
 
-  const response = await fetch(`${getBackendUrl()}/api/v1/resumes/${id}`, {
+  const response = await fetch(`${getApi}/api/v1/resumes/${id}`, {
     method: "DELETE",
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -142,7 +133,7 @@ export async function deleteResume(id: string) {
 export async function downloadResume(id: string, fileName?: string, fallbackFileUrl?: string) {
   const token = getAuthToken();
 
-  let response = await fetch(`${getBackendUrl()}/api/v1/resumes/${id}/download`, {
+  let response = await fetch(`${getApi}/api/v1/resumes/${id}/download`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
@@ -152,7 +143,7 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
     response = await fetch(
       fallbackFileUrl.startsWith("http")
         ? fallbackFileUrl
-        : `${getBackendUrl()}${fallbackFileUrl}`,
+        : `${getApi}${fallbackFileUrl}`,
       {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -179,7 +170,7 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
 export async function viewResume(id: string, fileName?: string, fallbackFileUrl?: string) {
   const token = getAuthToken();
 
-  let response = await fetch(`${getBackendUrl()}/api/v1/resumes/${id}/download`, {
+  let response = await fetch(`${getApi}/api/v1/resumes/${id}/download`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
@@ -189,7 +180,7 @@ export async function viewResume(id: string, fileName?: string, fallbackFileUrl?
     response = await fetch(
       fallbackFileUrl.startsWith("http")
         ? fallbackFileUrl
-        : `${getBackendUrl()}${fallbackFileUrl}`,
+        : `${getApi}${fallbackFileUrl}`,
       {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import { UserProvider } from "@/app/contexts/UserContext";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -34,8 +35,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster richColors position="bottom-right" />
+          <UserProvider>
+            {children}
+            <Toaster richColors position="bottom-right" />
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { useUser } from "@/app/contexts/UserContext";
 
 type UserNavProps = {
   user: {
@@ -26,6 +27,7 @@ type UserNavProps = {
 
 export function UserNav({ user }: UserNavProps) {
   const router = useRouter();
+  const { clearUser } = useUser();
 
   const email = user?.email ?? "";
   const name =
@@ -38,7 +40,7 @@ export function UserNav({ user }: UserNavProps) {
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
-
+    clearUser();
     router.push("/login");
     router.refresh();
   };

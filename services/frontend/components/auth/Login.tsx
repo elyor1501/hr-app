@@ -25,9 +25,11 @@ import {
 import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 import { LoginSchemaType, loginSchema } from "@/schemas/loginSchema";
 import { getApiUrl } from "@/lib/api-config";
+import { useUser } from "@/app/contexts/UserContext";
 
 export function LoginForm() {
   const router = useRouter();
+  const { refreshUser } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +68,10 @@ export function LoginForm() {
         setError(data.detail || "Invalid email or password");
         return;
       }
+
       localStorage.setItem("access_token", data.access_token);
+
+      await refreshUser();
 
       router.push("/dashboard");
     } catch (error) {
