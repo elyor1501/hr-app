@@ -1,14 +1,50 @@
 import { revalidateResumes } from "./revalidate";
 import { getAuthToken } from "../api-config";
 
-const BATCH_SIZE = 5;
 const BATCH_TIMEOUT = 180000;
+const MAX_BATCH_SIZE_BYTES = 8 * 1024 * 1024;
 
 function getBackendUrl(): string {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  return process.env.NEXT_PUBLIC_API_URL || "http://backend:8000";
+  return process.env.INTERNAL_API_URL || "http://backend:8000";
+}
+
+function createBatches(files: File[]): File[][] {
+  const batches: File[][] = [];
+  let currentBatch: File[] = [];
+  let currentBatchSize = 0;
+
+  for (const file of files) {
+    if (
+      currentBatch.length > 0 &&
+      currentBatchSize + file.size > MAX_BATCH_SIZE_BYTES
+    ) {
+      batches.push(currentBatch);
+      currentBatch = [];
+      currentBatchSize = 0;
+    }
+
+    if (file.size > MAX_BATCH_SIZE_BYTES) {
+      if (currentBatch.length > 0) {
+        batches.push(currentBatch);
+        currentBatch = [];
+        currentBatchSize = 0;
+      }
+      batches.push([file]);
+      continue;
+    }
+
+    currentBatch.push(file);
+    currentBatchSize += file.size;
+  }
+
+  if (currentBatch.length > 0) {
+    batches.push(currentBatch);
+  }
+
+  return batches;
 }
 
 async function uploadSingleBatch(batch: File[], token: string | null): Promise<any> {
@@ -16,6 +52,7 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
   batch.forEach((file) => formData.append("files", file));
 
   const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), BATCH_TIMEOUT);
 
   try {
     const response = await fetch(`${getBackendUrl()}/api/v1/resumes/bulk`, {
@@ -27,6 +64,8 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
       signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData?.detail || "Failed to upload batch");
@@ -34,17 +73,17 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
 
     return response.json();
   } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === "AbortError") {
+      throw new Error("Upload timeout - files may be too large");
+    }
     throw error;
   }
 }
 
 export async function uploadBulkResumes(files: File[]) {
   const token = getAuthToken();
-
-  const batches: File[][] = [];
-  for (let i = 0; i < files.length; i += BATCH_SIZE) {
-    batches.push(files.slice(i, i + BATCH_SIZE));
-  }
+  const batches = createBatches(files);
 
   let totalAccepted = 0;
 
@@ -110,6 +149,7 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
   if (link.parentNode) {
     link.parentNode.removeChild(link);
   }
+  setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }
 
 export async function viewResume(id: string, fileName?: string, fallbackFileUrl?: string) {
@@ -151,4 +191,5 @@ export async function viewResume(id: string, fileName?: string, fallbackFileUrl?
       link.parentNode.removeChild(link);
     }
   }
+  setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }
