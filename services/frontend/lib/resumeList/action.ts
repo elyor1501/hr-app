@@ -6,6 +6,10 @@ const MAX_BATCH_SIZE_BYTES = 8 * 1024 * 1024;
 
 function getBackendUrl(): string {
   if (typeof window !== "undefined") {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (apiUrl && apiUrl !== "undefined" && apiUrl.trim() !== "") {
+      return apiUrl.replace(/\/$/, "");
+    }
     return window.location.origin;
   }
   return process.env.INTERNAL_API_URL || "http://backend:8000";
@@ -85,12 +89,11 @@ export async function uploadBulkResumes(files: File[]) {
   const token = getAuthToken();
   const batches = createBatches(files);
 
-  let totalAccepted = 0;
+  const results = await Promise.all(
+    batches.map((batch) => uploadSingleBatch(batch, token))
+  );
 
-  for (const batch of batches) {
-    const result = await uploadSingleBatch(batch, token);
-    totalAccepted += result?.accepted || 0;
-  }
+  const totalAccepted = results.reduce((sum, r) => sum + (r?.accepted || 0), 0);
 
   await revalidateResumes();
   return { accepted: totalAccepted };
