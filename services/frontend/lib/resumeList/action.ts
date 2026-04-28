@@ -3,6 +3,7 @@ import { getAuthToken } from "../api-config";
 
 const BATCH_TIMEOUT = 180000;
 const MAX_BATCH_SIZE_BYTES = 8 * 1024 * 1024;
+const MAX_CONCURRENT_UPLOADS = 3;
 
 function getBackendUrl(): string {
   if (typeof window !== "undefined") {
@@ -85,13 +86,33 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
   }
 }
 
+async function uploadWithConcurrency(
+  batches: File[][],
+  token: string | null,
+  concurrency: number
+): Promise<any[]> {
+  const results: any[] = [];
+  let index = 0;
+
+  async function worker() {
+    while (index < batches.length) {
+      const currentIndex = index++;
+      const result = await uploadSingleBatch(batches[currentIndex], token);
+      results[currentIndex] = result;
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(concurrency, batches.length) }, () => worker());
+  await Promise.all(workers);
+
+  return results;
+}
+
 export async function uploadBulkResumes(files: File[]) {
   const token = getAuthToken();
   const batches = createBatches(files);
 
-  const results = await Promise.all(
-    batches.map((batch) => uploadSingleBatch(batch, token))
-  );
+  const results = await uploadWithConcurrency(batches, token, MAX_CONCURRENT_UPLOADS);
 
   const totalAccepted = results.reduce((sum, r) => sum + (r?.accepted || 0), 0);
 
