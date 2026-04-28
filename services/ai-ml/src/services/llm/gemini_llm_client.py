@@ -3,6 +3,7 @@ import re
 import json
 import logging
 import asyncio
+import concurrent.futures
 from typing import Any, Dict, List
 
 from google import genai
@@ -15,9 +16,10 @@ class GeminiLLMClient:
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
 
-        print("===== GEMINI CLIENT INIT =====")
-        print("API KEY PRESENT:", bool(self.api_key))
-        print("==============================")
+        # Retained for local diagnostics; not suitable for production logging
+        # print("===== GEMINI CLIENT INIT =====")
+        # print("API KEY PRESENT:", bool(self.api_key))
+        # print("==============================")
 
         if not self.api_key:
             raise RuntimeError("GEMINI_API_KEY not set")
@@ -69,15 +71,26 @@ class GeminiLLMClient:
         return None
 
     def _call_gemini(self, prompt: str) -> str:
-        response = self.client.models.generate_content(
-            model=self.model_name,
-            contents=prompt,
-            config={
-                "temperature": 0,
-                "max_output_tokens": 8192,
-                "response_mime_type": "application/json"
-            }
-        )
+        # ThreadPoolExecutor allows future.result(timeout=) to enforce a hard ceiling;
+        # the SDK has no native timeout parameter in this version
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(
+                self.client.models.generate_content,
+                model=self.model_name,
+                contents=prompt,
+                config={
+                    "temperature": 0,
+                    "max_output_tokens": 8192,
+                    "response_mime_type": "application/json",
+                    # thinking_budget=0 disables extended reasoning; adds 3-8s latency per call
+                    # with no accuracy benefit for deterministic JSON extraction tasks
+                    "thinking_config": {"thinking_budget": 0}
+                }
+            )
+            try:
+                response = future.result(timeout=60)
+            except concurrent.futures.TimeoutError:
+                raise RuntimeError("Gemini request timed out after 60 seconds")
 
         if not response:
             raise RuntimeError("No response from Gemini")

@@ -136,6 +136,7 @@ class StructuredData(BaseModel):
         return result
 
 
+# Nested types must be fully defined in the schema; empty arrays cause the model to return empty arrays verbatim
 RESUME_PROMPT_TEMPLATE = """Extract structured resume data in JSON format strictly adhering to the following structure. Return ONLY valid JSON, no markdown.
 
 {{
@@ -170,8 +171,14 @@ RESUME_PROMPT_TEMPLATE = """Extract structured resume data in JSON format strict
       "confidence": float
     }}
   ],
-  "projects": [],
-  "certifications": [],
+  "projects": [
+  {{
+  "name": string or null,
+  "description": string or null,
+  "technologies":[string],
+  "url": string or null
+  }}
+  ],
   "confidence_scores": {{
     "full_name": float,
     "email": float,
