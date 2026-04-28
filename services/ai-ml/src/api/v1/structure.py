@@ -1,9 +1,9 @@
 import traceback
 import logging
+import asyncio
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, field_validator
 from typing import Dict, Any, List, Optional, Union
-import datetime
 from services.llm.gemini_llm_client import GeminiLLMClient
 
 llm = GeminiLLMClient()
@@ -11,16 +11,20 @@ llm = GeminiLLMClient()
 router = APIRouter(prefix="/structure", tags=["Structured Extraction"])
 logger = logging.getLogger(__name__)
 
+
 class StructureRequest(BaseModel):
     resume_id: str
     raw_text: str = Field(..., min_length=1)
+
 
 class BatchStructureItem(BaseModel):
     resume_id: str
     raw_text: str = Field(..., min_length=1)
 
+
 class BatchStructureRequest(BaseModel):
     resumes: List[BatchStructureItem] = Field(..., min_length=1, max_length=10)
+
 
 class EducationItem(BaseModel):
     degree: Optional[str] = None
@@ -31,6 +35,7 @@ class EducationItem(BaseModel):
     grade: Optional[str] = None
     confidence: Optional[float] = 0.8
 
+
 class ExperienceItem(BaseModel):
     job_title: Optional[str] = None
     company: Optional[str] = None
@@ -39,6 +44,7 @@ class ExperienceItem(BaseModel):
     end_date: Optional[str] = None
     responsibilities: List[str] = []
     confidence: Optional[float] = 0.8
+
 
 class ConfidenceScores(BaseModel):
     full_name: Optional[float] = 0.8
@@ -50,6 +56,7 @@ class ConfidenceScores(BaseModel):
     experience: Optional[float] = 0.8
     projects: Optional[float] = 0.8
     overall: Optional[float] = 0.8
+
 
 class StructuredData(BaseModel):
     full_name: Optional[str] = None
@@ -129,11 +136,7 @@ class StructuredData(BaseModel):
         return result
 
 
-@router.post("")
-async def structure_resume(payload: StructureRequest):
-    try:
-        prompt = f"""
-Extract structured resume data in JSON format strictly adhering to the following structure. Return ONLY valid JSON, no markdown.
+RESUME_PROMPT_TEMPLATE = """Extract structured resume data in JSON format strictly adhering to the following structure. Return ONLY valid JSON, no markdown.
 
 {{
   "full_name": string or null,
@@ -185,34 +188,50 @@ Extract structured resume data in JSON format strictly adhering to the following
 }}
 
 Resume Text:
-{payload.raw_text}
-"""
-        logger.info(f"Sending text to Gemini for resume: {payload.resume_id}")
+{raw_text}"""
 
-        structured = llm.generate_json(prompt)
 
+async def _structure_one(resume_id: str, raw_text: str) -> dict:
+    prompt = RESUME_PROMPT_TEMPLATE.format(raw_text=raw_text)
+    try:
+        structured = await llm.generate_json_async(prompt)
         if not isinstance(structured, dict):
             structured = {}
-
         candidate_data = StructuredData(**structured)
+        logger.info("structured_resume", extra={"resume_id": resume_id})
+        return {
+            "source_file": resume_id,
+            "structured_data": candidate_data.model_dump(),
+        }
+    except Exception as e:
+        logger.error("structure_one_failed", extra={"resume_id": resume_id, "error": str(e), "error_type": type(e).__name__})
+        return {
+            "source_file": resume_id,
+            "structured_data": StructuredData().model_dump(),
+        }
 
-        logger.info(f"Successfully structured resume: {payload.resume_id}")
 
+@router.post("")
+async def structure_resume(payload: StructureRequest):
+    try:
+        prompt = RESUME_PROMPT_TEMPLATE.format(raw_text=payload.raw_text)
+        logger.info("structuring_resume", extra={"resume_id": payload.resume_id})
+        structured = await llm.generate_json_async(prompt)
+        if not isinstance(structured, dict):
+            structured = {}
+        candidate_data = StructuredData(**structured)
+        logger.info("structured_resume_complete", extra={"resume_id": payload.resume_id})
         return {
             "source_file": payload.resume_id,
             "structured_data": candidate_data.model_dump(),
         }
-
     except Exception as e:
         error_details = traceback.format_exc()
-        print("CRITICAL AI ERROR:\n", error_details)
-        logger.error(f"Structured extraction failed: {str(e)}")
-
+        logger.error("structure_failed", extra={"resume_id": payload.resume_id, "error": str(e), "traceback": error_details})
         try:
-            empty_data = StructuredData()
             return {
                 "source_file": payload.resume_id,
-                "structured_data": empty_data.model_dump(),
+                "structured_data": StructuredData().model_dump(),
             }
         except Exception:
             raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")
@@ -221,35 +240,31 @@ Resume Text:
 @router.post("/batch")
 async def structure_resume_batch(payload: BatchStructureRequest):
     try:
-        logger.info(f"Batch structuring {len(payload.resumes)} resumes")
+        logger.info("batch_structuring_start", extra={"count": len(payload.resumes)})
 
-        resume_texts = [
-            {"resume_id": r.resume_id, "raw_text": r.raw_text}
+        tasks = [
+            _structure_one(r.resume_id, r.raw_text)
             for r in payload.resumes
         ]
 
-        import asyncio
-        results_raw = await asyncio.to_thread(llm.generate_json_batch, resume_texts)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        results = []
-        for raw in results_raw:
-            if not isinstance(raw, dict):
-                raw = {}
-            resume_id = raw.pop("resume_id", "unknown")
-            try:
-                candidate_data = StructuredData(**raw)
-            except Exception:
-                candidate_data = StructuredData()
-            results.append({
-                "source_file": resume_id,
-                "structured_data": candidate_data.model_dump(),
-            })
+        output = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                resume_id = payload.resumes[i].resume_id
+                logger.error("batch_item_failed", extra={"resume_id": resume_id, "error": str(result), "error_type": type(result).__name__})
+                output.append({
+                    "source_file": resume_id,
+                    "structured_data": StructuredData().model_dump(),
+                })
+            else:
+                output.append(result)
 
-        logger.info(f"Batch structuring completed for {len(results)} resumes")
-        return {"results": results}
+        logger.info("batch_structuring_complete", extra={"total": len(output)})
+        return {"results": output}
 
     except Exception as e:
         error_details = traceback.format_exc()
-        print("CRITICAL BATCH AI ERROR:\n", error_details)
-        logger.error(f"Batch structuring failed: {str(e)}")
+        logger.error("batch_structure_endpoint_failed", extra={"error": str(e), "error_type": type(e).__name__, "traceback": error_details})
         raise HTTPException(status_code=500, detail=f"Batch AI Error: {str(e)}")

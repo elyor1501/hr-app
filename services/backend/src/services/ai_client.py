@@ -12,8 +12,8 @@ async def get_ai_http_client() -> httpx.AsyncClient:
     global _client
     if _client is None or _client.is_closed:
         _client = httpx.AsyncClient(
-            timeout=httpx.Timeout(120.0, connect=10.0),
-            limits=httpx.Limits(max_connections=20, max_keepalive_connections=10),
+            timeout=httpx.Timeout(connect=10.0, read=120.0, write=30.0, pool=10.0),
+            limits=httpx.Limits(max_connections=50, max_keepalive_connections=20),
         )
     return _client
 
@@ -37,13 +37,19 @@ class AIClient:
             resp = await client.request(method, url, json=payload)
             resp.raise_for_status()
             return resp.json()
+        except httpx.TimeoutException as e:
+            logger.error("ai_service_timeout", url=url, error=str(e), error_type=type(e).__name__)
+            raise
+        except httpx.ConnectError as e:
+            logger.error("ai_service_connect_error", url=url, error=str(e), error_type=type(e).__name__)
+            raise
         except httpx.HTTPStatusError as e:
             body = e.response.text
-            logger.error("ai_service_error", error=str(e), url=url, status_code=e.response.status_code, response_body=body[:500])
-            raise e
+            logger.error("ai_service_http_error", url=url, status_code=e.response.status_code, response_body=body[:500])
+            raise
         except Exception as e:
-            logger.error("ai_service_error", error=str(e), url=url)
-            raise e
+            logger.error("ai_service_error", url=url, error=str(e), error_type=type(e).__name__)
+            raise
 
     async def extract_text(self, file_url: str, file_type: str, resume_id: str) -> Dict[str, Any]:
         return await self._request("POST", "/extract", {

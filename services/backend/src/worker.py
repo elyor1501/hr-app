@@ -15,11 +15,11 @@ from src.services.ai_client import AIClient
 logger = structlog.get_logger()
 ai_client = AIClient()
 
-EXTRACT_CONCURRENCY = 3
-GEMINI_BATCH_SIZE = 3
-GEMINI_BATCH_CONCURRENCY = 1
-EXTRACT_RETRY_ATTEMPTS = 3
-EXTRACT_RETRY_DELAY = 3
+EXTRACT_CONCURRENCY = 5
+GEMINI_BATCH_SIZE = 5
+GEMINI_BATCH_CONCURRENCY = 2
+EXTRACT_RETRY_ATTEMPTS = 2
+EXTRACT_RETRY_DELAY = 2
 
 
 async def update_job_status(ctx: Dict[str, Any], job_id: str, status: str, progress: int = 0, result: Optional[Dict] = None, error: Optional[str] = None):
@@ -319,6 +319,10 @@ async def _process_single_resume(item: dict) -> dict:
     file_url = item["file_url"]
     file_type = item["file_type"]
 
+    if not file_url or not (file_url.startswith("http://") or file_url.startswith("https://")):
+        logger.error("invalid_file_url", resume_id=resume_id, file_url=repr(file_url))
+        return {"resume_id": resume_id, "success": False, "error": f"Invalid file_url: {file_url!r}"}
+
     for attempt in range(EXTRACT_RETRY_ATTEMPTS):
         try:
             extract_data = await ai_client.extract_text(file_url, file_type, resume_id)
@@ -343,7 +347,7 @@ async def _process_single_resume(item: dict) -> dict:
                 logger.info("extract_retry", resume_id=resume_id, attempt=attempt + 1, wait=wait)
                 await asyncio.sleep(wait)
                 continue
-            logger.error("single_resume_processing_failed", resume_id=resume_id, error=str(e))
+            logger.error("single_resume_processing_failed", resume_id=resume_id, error=str(e), error_type=type(e).__name__)
             return {"resume_id": resume_id, "success": False, "error": str(e)}
 
 
@@ -695,6 +699,8 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
 
         logger.info("extraction_complete", total=len(resume_items), successful=len(successful), failed=failed)
 
+        structure_semaphore = asyncio.Semaphore(GEMINI_BATCH_CONCURRENCY)
+
         batches = [
             successful[i:i + GEMINI_BATCH_SIZE]
             for i in range(0, len(successful), GEMINI_BATCH_SIZE)
@@ -703,32 +709,35 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
         processed_count = 0
         failed_count = failed
 
-        for batch in batches:
-            batch_items = [
-                {"resume_id": r["resume_id"], "raw_text": r["raw_text"]}
-                for r in batch
-            ]
-            try:
-                batch_structured = await ai_client.structure_resume_batch(batch_items)
-                structured_map = {
-                    s.get("source_file"): s.get("structured_data", {})
-                    for s in batch_structured
-                }
-                for result in batch:
-                    result["structured_data"] = structured_map.get(result["resume_id"], {})
-            except Exception as e:
-                logger.error("batch_structure_failed", error=str(e))
-                for result in batch:
-                    result["structured_data"] = {}
+        async def process_batch(batch):
+            nonlocal processed_count, failed_count
+            async with structure_semaphore:
+                batch_items = [
+                    {"resume_id": r["resume_id"], "raw_text": r["raw_text"]}
+                    for r in batch
+                ]
+                try:
+                    batch_structured = await ai_client.structure_resume_batch(batch_items)
+                    structured_map = {
+                        s.get("source_file"): s.get("structured_data", {})
+                        for s in batch_structured
+                    }
+                    for result in batch:
+                        result["structured_data"] = structured_map.get(result["resume_id"], {})
+                except Exception as e:
+                    logger.error("batch_structure_failed", error=str(e))
+                    for result in batch:
+                        result["structured_data"] = {}
 
-            for result in batch:
-                saved = await _save_resume_result(result)
-                if saved:
-                    processed_count += 1
-                else:
-                    failed_count += 1
+                for result in batch:
+                    saved = await _save_resume_result(result)
+                    if saved:
+                        processed_count += 1
+                    else:
+                        failed_count += 1
 
-            await asyncio.sleep(1)
+        batch_tasks = [process_batch(batch) for batch in batches]
+        await asyncio.gather(*batch_tasks, return_exceptions=True)
 
         await update_job_status(ctx, job_id, "processing", 90)
 
@@ -753,6 +762,6 @@ async def process_resumes_batch(ctx, resume_items: List[dict]):
 class WorkerSettings:
     functions = [process_resume, process_resumes_batch, process_requirement_doc]
     redis_settings = RedisSettings(host=settings.redis_host, port=settings.redis_port)
-    job_timeout = 600
+    job_timeout = 900
     max_tries = settings.job_max_retries
-    max_jobs = 2
+    max_jobs = 5
