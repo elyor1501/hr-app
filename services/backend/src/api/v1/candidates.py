@@ -337,10 +337,30 @@ async def update_candidate(
     if not await repo.exists(id):
         raise HTTPException(status_code=404, detail="Candidate not found")
 
-    updated = await repo.update(id, **update_data.model_dump(exclude_unset=True))
+    update_dict = update_data.model_dump(exclude_unset=True)
+
+    if "status" in update_dict:
+        if update_dict["status"] not in ["active", "inactive"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Status must be active or inactive"
+            )
+
+    updated = await repo.update(id, **update_dict)
 
     await invalidate_candidates_cache()
-    await cache.invalidate_candidate(str(id))
+
+    try:
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:candidate:{id}")
+        keys = await redis.keys(f"hr_app:candidates:*")
+        if keys:
+            await redis.delete(*keys)
+        search_keys = await redis.keys(f"hr_backend:search:*")
+        if search_keys:
+            await redis.delete(*search_keys)
+    except Exception:
+        pass
 
     return updated
 

@@ -20,10 +20,10 @@ router = APIRouter()
 ai_client = AIClient()
 
 VALID_TRANSITIONS = {
-    "open": ["in_progress"],
-    "in_progress": ["signed", "closed"],
-    "signed": [],
-    "closed": [],
+    "open": ["in_progress", "closed"],
+    "in_progress": ["signed", "closed", "open"],
+    "signed": ["closed"],
+    "closed": ["open"],
 }
 
 MATCH_CACHE_TTL = 86400
@@ -49,6 +49,7 @@ class RequestUpdate(BaseModel):
     proposed_date: Optional[date] = Field(default=None)
     customer_feedback: Optional[str] = Field(default=None)
     contract_status: Optional[bool] = Field(default=None)
+    state: Optional[str] = Field(default=None)
 
 
 class StateTransition(BaseModel):
@@ -649,9 +650,31 @@ async def update_request(
 
     update_data = data.model_dump(exclude_none=True)
 
+    if "state" in update_data:
+        new_state = update_data["state"]
+        allowed = VALID_TRANSITIONS.get(req.state, [])
+        if new_state != req.state and new_state not in allowed:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot transition from '{req.state}' to '{new_state}'. Allowed: {allowed}"
+            )
+        if new_state != req.state:
+            audit = RequestAuditLog(
+                request_id=req.id,
+                old_state=req.state,
+                new_state=new_state,
+                notes="State updated via edit",
+            )
+            session.add(audit)
+        if new_state == "signed":
+            req.contract_status = True
+
     if "contract_status" in update_data and update_data["contract_status"] is True:
-        if req.state != "signed":
-            raise HTTPException(status_code=400, detail="Contract can only be set when request is signed")
+        if req.state != "signed" and update_data.get("state") != "signed":
+            raise HTTPException(
+                status_code=400,
+                detail="Contract can only be set when request is signed"
+            )
 
     for field, value in update_data.items():
         setattr(req, field, value)

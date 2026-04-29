@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import re
 from typing import List, Optional, Dict, Any
 
-from pydantic import EmailStr, Field, field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from src.models.base import (
     BaseSchema,
@@ -27,7 +26,7 @@ class CandidateBase(BaseSchema):
     resume_text: Optional[str] = Field(default=None, max_length=50000)
     location: Optional[str] = Field(default=None, max_length=200)
     linkedin_url: Optional[str] = Field(default=None, max_length=500)
-    resume: Optional[str] = Field(default=None, description="URL to resume file")
+    resume: Optional[str] = Field(default=None)
     json_data: Optional[Dict[str, Any]] = Field(default=None)
 
     @field_validator("email", mode="before")
@@ -90,8 +89,20 @@ class CandidateUpdate(BaseSchema):
     location: Optional[str] = None
     linkedin_url: Optional[str] = None
     status: Optional[CandidateStatus] = None
+    experience_level: Optional[str] = None
+    hourly_rate: Optional[float] = None
+    availability: Optional[str] = None
     resume: Optional[str] = None
     json_data: Optional[Dict[str, Any]] = None
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        if v not in ["active", "inactive"]:
+            raise ValueError("Status must be active or inactive")
+        return v
 
     @field_validator("phone")
     @classmethod
@@ -101,6 +112,9 @@ class CandidateUpdate(BaseSchema):
 
 class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     status: CandidateStatus = Field(...)
+    experience_level: Optional[str] = None
+    hourly_rate: Optional[float] = None
+    availability: Optional[str] = None
 
 
 class CandidateInDB(CandidateResponse, EmbeddingMixin):
