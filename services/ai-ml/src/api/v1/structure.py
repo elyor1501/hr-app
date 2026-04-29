@@ -1,3 +1,5 @@
+import os
+import time
 import traceback
 import logging
 import asyncio
@@ -5,11 +7,16 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, field_validator
 from typing import Dict, Any, List, Optional, Union
 from services.llm.gemini_llm_client import GeminiLLMClient
+from services.parsers import parse_cv
 
 llm = GeminiLLMClient()
 
 router = APIRouter(prefix="/structure", tags=["Structured Extraction"])
 logger = logging.getLogger(__name__)
+
+
+def _use_local_parser() -> bool:
+    return os.getenv("USE_LOCAL_PARSER", "false").lower() == "true"
 
 
 class StructureRequest(BaseModel):
@@ -198,7 +205,39 @@ Resume Text:
 {raw_text}"""
 
 
+def _local_structure(resume_id: str, raw_text: str) -> dict:
+    """Local parser path — zero cost, CPU-only, no Gemini call."""
+    t0 = time.time()
+    result = parse_cv(raw_text)
+    latency = round(time.time() - t0, 3)
+    has_skills = len(result.skills) > 0
+    candidate_data = StructuredData(
+        email=result.email,
+        phone=result.phone,
+        summary=result.raw_sections.get("summary"),
+        skills=[s.value for s in result.skills],
+        education=[],
+        experience=[],
+        confidence_scores=ConfidenceScores(
+            email=0.95 if result.email else 0.0,
+            phone=0.95 if result.phone else 0.0,
+            skills=0.90 if has_skills else 0.0,
+            overall=0.85 if has_skills else 0.5,
+        ),
+        confidence_score=0.85 if has_skills else 0.5,
+        extraction_latency=latency,
+    )
+    logger.info("local_structure_complete", extra={
+        "resume_id": resume_id,
+        "skills_found": len(result.skills),
+        "latency_s": latency,
+    })
+    return {"source_file": resume_id, "structured_data": candidate_data.model_dump()}
+
+
 async def _structure_one(resume_id: str, raw_text: str) -> dict:
+    if _use_local_parser():
+        return _local_structure(resume_id, raw_text)
     prompt = RESUME_PROMPT_TEMPLATE.format(raw_text=raw_text)
     try:
         structured = await llm.generate_json_async(prompt)
@@ -220,6 +259,8 @@ async def _structure_one(resume_id: str, raw_text: str) -> dict:
 
 @router.post("")
 async def structure_resume(payload: StructureRequest):
+    if _use_local_parser():
+        return _local_structure(payload.resume_id, payload.raw_text)
     try:
         prompt = RESUME_PROMPT_TEMPLATE.format(raw_text=payload.raw_text)
         logger.info("structuring_resume", extra={"resume_id": payload.resume_id})
