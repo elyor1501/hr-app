@@ -24,22 +24,27 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   //   size: 40,
   // },
   {
-    accessorKey: "first_name",
-    header: "Name",
-    cell: ({ row }) => {
-      const first = row.original.first_name || "";
-      const last = row.original.last_name || "";
+  accessorKey: "first_name",
+  header: "Name and Email",
+  cell: ({ row }) => {
+    const first = row.original.first_name || "";
+    const last = row.original.last_name || "";
+    const email = row.original.email || "NA";
 
-      const fullName = `${first} ${last}`.trim();
+    const fullName = `${first} ${last}`.trim();
 
-      return <span className="font-medium">{fullName || "NA"}</span>;
-    },
+    return (
+      <div className="flex flex-col">
+        <span className="font-medium">
+          {fullName || "NA"}
+        </span>
+        <span className="text-sm text-gray-500 break-all">
+          {email}
+        </span>
+      </div>
+    );
   },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => <span className="break-words">{row.getValue("email") || "NA"}</span>,
-  },
+},
   {
     accessorKey: "current_title",
     header: "Role",
@@ -60,31 +65,28 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     size: 80,
   },
   {
-      accessorKey: "created_at",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          className=""
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Created At
-          <ArrowUpDown className="ml-2 h-3 w-3" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <span>
-          {new Date(row.getValue("created_at"))
-            .toLocaleDateString("en-GB")
-            .replace(/\//g, ".")}
-          &nbsp;
-          <span>
-            {new Date(row.getValue("created_at")).toLocaleTimeString("en-GB", {
-              hour12: false,
-            })}
-          </span>
-        </span>
-      ),
-    },
+  accessorKey: "created_at",
+  header: ({ column }) => (
+    <div className="flex items-center justify-center w-full">
+      <Button
+        variant="ghost"
+        className="flex items-center gap-1 px-2 py-1"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span>Created At</span>
+        <ArrowUpDown className="h-3 w-3" />
+      </Button>
+    </div>
+  ),
+  cell: ({ row }) => {
+    const date = new Date(row.getValue("created_at"));
+    return (
+      <div className="text-center w-full px-2 py-1">
+        {date.toLocaleDateString("en-GB").replace(/\//g, ".")}
+      </div>
+    );
+  },
+},
   {
     header: "Actions",
     cell: ({ row }) => {
