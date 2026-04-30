@@ -1,13 +1,9 @@
-import { getCandidates } from "@/lib/candidates/data";
 import { DataTable } from "@/components/table/data-table";
 import { columns_candidate_list } from "@/components/candidate/CandidateListTableColumn";
-import { getResumes } from "@/lib/resumeList/data";
 import { ResumeExtractionToast } from "./ExtractionMsg";
 // import { SmartAutoRefresh } from "./Autorefresh";
-import { Suspense } from "react";
 
-async function CandidateStatusTracker() {
-  const resumes = await getResumes();
+function CandidateStatusTracker({ resumes }: { resumes: any[] }) {
   return (
     <>
       {/* <SmartAutoRefresh resumes={resumes} /> */}
@@ -16,14 +12,10 @@ async function CandidateStatusTracker() {
   );
 }
 
-export default async function CandidatesTable() {
-  const data = await getCandidates();
-
+export default function CandidatesTable({ data, resumes }: { data: any[], resumes: any[] }) {
   return (
     <div className="space-y-4">
-      <Suspense fallback={null}>
-        <CandidateStatusTracker />
-      </Suspense>
+      <CandidateStatusTracker resumes={resumes} />
       
       <div className="animate-in fade-in duration-500">
         <DataTable

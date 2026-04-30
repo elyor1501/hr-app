@@ -1,9 +1,7 @@
 import { DataTable } from "@/components/table/data-table";
 import { columns_job_list } from "./JobListTableColumn";
-import { getJob } from "@/lib/jobs/data";
 
-export default async function JobTable() {
-  const data = await getJob();
+export default function JobTable({ data }: { data: any[] }) {
   return (
     <DataTable
       columns={columns_job_list}

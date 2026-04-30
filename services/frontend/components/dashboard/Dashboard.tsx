@@ -39,9 +39,9 @@ interface StatsData {
 let statsCache: { data: StatsData; timestamp: number } | null = null;
 const CACHE_TTL = 30000;
 
-export default function DashboardDetail() {
-  const [stats, setStats] = useState<StatsData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function DashboardDetail({ initialStats }: { initialStats: StatsData | null }) {
+  const [stats, setStats] = useState<StatsData | null>(initialStats);
+  const [loading, setLoading] = useState(!initialStats);
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = useCallback(async () => {
@@ -77,10 +77,12 @@ export default function DashboardDetail() {
   }, []);
 
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    if (!initialStats) {
+      fetchStats();
+    }
+  }, [fetchStats, initialStats]);
 
-  if (loading) {
+  if (loading && !stats) {
     return (
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-3">

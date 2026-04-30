@@ -1,9 +1,7 @@
 import { DataTable } from "@/components/table/data-table";
 import { columns_request_list } from "../requests/RequestListTableColumn";
-import { getRequests } from "@/lib/requests/data";
 
-export default async function RequestTable() {
-  const data = await getRequests();
+export default function RequestTable({ data }: { data: any[] }) {
   return (
     <DataTable
       columns={columns_request_list}
@@ -12,4 +10,4 @@ export default async function RequestTable() {
       sort={""}
     />
   );
-}
+}
