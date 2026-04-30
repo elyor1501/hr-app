@@ -162,7 +162,7 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className="border-b hover:bg-gray-50 border-neutral-200 dark:border-neutral-800 whitespace-nowrap"
+                  className="border-b hover:bg-muted/50 dark:hover:bg-neutral-800/60 border-neutral-200 dark:border-neutral-800 whitespace-nowrap"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

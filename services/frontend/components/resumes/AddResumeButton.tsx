@@ -37,7 +37,7 @@ export default function AddResumeButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="bg-blue-600 text-white text-sm px-3 py-1.5 rounded-md hover:bg-blue-700 transition"
+        className="bg-primary text-primary-foreground text-sm px-3 py-1.5 rounded-md hover:bg-primary/90 transition"
       >
         Add Resume
       </button>

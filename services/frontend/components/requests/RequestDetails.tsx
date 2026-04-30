@@ -13,7 +13,11 @@ type Props = {
   candidateData: any[];
 };
 
-export default function RequestDetails({ id, requestData, candidateData }: Props) {
+export default function RequestDetails({
+  id,
+  requestData,
+  candidateData,
+}: Props) {
   const [request, setRequest] = useState<any>(requestData);
   const [candidates] = useState<any[]>(candidateData);
   const [matches, setMatches] = useState<any[]>([]);
@@ -40,16 +44,21 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
   async function pollMatchStatus() {
     try {
       const token = getToken();
-      const res = await fetch(`${apiUrl}/api/v1/requests/${id}/auto-match/status`, {
-        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      });
+      const res = await fetch(
+        `${apiUrl}/api/v1/requests/${id}/auto-match/status`,
+        {
+          headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        },
+      );
 
       if (!res.ok) return;
 
       const data = await res.json();
 
       if (data.result?.matches) {
-        const sorted = [...data.result.matches].sort((a: any, b: any) => b.match_score - a.match_score);
+        const sorted = [...data.result.matches].sort(
+          (a: any, b: any) => b.match_score - a.match_score,
+        );
         setMatches(sorted);
       }
 
@@ -98,23 +107,28 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
       const data = await res.json();
 
       if (data.result?.matches) {
-        const sorted = [...data.result.matches].sort((a: any, b: any) => b.match_score - a.match_score);
+        const sorted = [...data.result.matches].sort(
+          (a: any, b: any) => b.match_score - a.match_score,
+        );
         setMatches(sorted);
       }
 
       if (data.status === "completed" && data.result) {
         setMatching(false);
         setMatchStatus("");
-        toast.success(`Found ${data.result.total_matches} matching candidates (cached)`);
+        toast.success(
+          `Found ${data.result.total_matches} matching candidates (cached)`,
+        );
         return;
       }
 
       setMatchStatus("Preliminary matches ready. AI validation running...");
-      toast.info("Preliminary matches loaded instantly. AI is refining results...");
+      toast.info(
+        "Preliminary matches loaded instantly. AI is refining results...",
+      );
 
       if (pollRef.current) clearInterval(pollRef.current);
       pollRef.current = setInterval(pollMatchStatus, 4000);
-
     } catch (error: any) {
       console.error("Matching error:", error);
       setMatching(false);
@@ -140,10 +154,14 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
     }
   }
 
-  if (!request) return <p>Loading request details...</p>;
+  if (!request)
+    return <p className="text-muted-foreground">Loading request details...</p>;
+
+  const fieldClass =
+    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border p-8">
+    <div className="max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-sm border border-border p-8">
       <form
         id="request-form"
         onSubmit={(e) => {
@@ -157,12 +175,14 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
 
         <div className="space-y-6">
           <div className="flex justify-between mb-6">
-            <h2 className="text-lg font-semibold">Request Details</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Request Details
+            </h2>
             {!isEditing && (
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-colors"
               >
                 Edit
               </button>
@@ -171,18 +191,31 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-1">Request Number</label>
-              <input name="request_number" defaultValue={request.request_number ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Request Number
+              </label>
+              <input
+                name="request_number"
+                defaultValue={request.request_number ?? ""}
+                disabled={!isEditing}
+                className={fieldClass}
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1 text-foreground">
                 Request Status
               </label>
               <select
                 name="state"
-                defaultValue={request.state ?? "open"}
+                value={request?.state ?? "open"}
+                onChange={(e) =>
+                  setRequest((prev: any) => ({
+                    ...prev,
+                    state: e.target.value,
+                  }))
+                }
                 disabled={!isEditing}
-                className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                className={fieldClass}
               >
                 <option value="open">Open</option>
                 <option value="in_progress">In Progress</option>
@@ -194,24 +227,31 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-1">Request Title</label>
-              <input name="request_title" defaultValue={request.request_title} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Request Title
+              </label>
+              <input
+                name="request_title"
+                defaultValue={request.request_title}
+                disabled={!isEditing}
+                className={fieldClass}
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1 text-foreground">
                 Contract Status
               </label>
               <select
                 name="contract_status"
                 defaultValue={String(request.contract_status)}
                 disabled={!isEditing || request.state !== "signed"}
-                className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100"
+                className={fieldClass}
               >
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
               </select>
               {request.state !== "signed" && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Contract can only be activated when request is signed
                 </p>
               )}
@@ -219,48 +259,114 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Company Name</label>
-            <input name="company_name" defaultValue={request.company_name ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+            <label className="block text-sm font-medium mb-1 text-foreground">
+              Company Name
+            </label>
+            <input
+              name="company_name"
+              defaultValue={request.company_name ?? ""}
+              disabled={!isEditing}
+              className={fieldClass}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-1">Prepared Rate</label>
-              <input type="number" name="prepared_rate" defaultValue={request.prepared_rate ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Prepared Rate
+              </label>
+              <input
+                type="number"
+                name="prepared_rate"
+                defaultValue={request.prepared_rate ?? ""}
+                disabled={!isEditing}
+                className={fieldClass}
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Final Rate</label>
-              <input type="number" name="final_rate" defaultValue={request.final_rate ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Final Rate
+              </label>
+              <input
+                type="number"
+                name="final_rate"
+                defaultValue={request.final_rate ?? ""}
+                disabled={!isEditing}
+                className={fieldClass}
+              />
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-1">Request Date</label>
-              <input type="date" name="request_date" defaultValue={request.request_date ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Request Date
+              </label>
+              <input
+                type="date"
+                name="request_date"
+                defaultValue={request.request_date ?? ""}
+                disabled={!isEditing}
+                className={fieldClass}
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Proposed Date</label>
-              <input type="date" name="proposed_date" defaultValue={request.proposed_date ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Proposed Date
+              </label>
+              <input
+                type="date"
+                name="proposed_date"
+                defaultValue={request.proposed_date ?? ""}
+                disabled={!isEditing}
+                className={fieldClass}
+              />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Job Description</label>
-            <textarea name="job_description" rows={4} defaultValue={request.job_description ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+            <label className="block text-sm font-medium mb-1 text-foreground">
+              Job Description
+            </label>
+            <textarea
+              name="job_description"
+              rows={4}
+              defaultValue={request.job_description ?? ""}
+              disabled={!isEditing}
+              className={fieldClass}
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Customer Feedback</label>
-            <textarea name="customer_feedback" rows={3} defaultValue={request.customer_feedback ?? ""} disabled={!isEditing} className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100" />
+            <label className="block text-sm font-medium mb-1 text-foreground">
+              Customer Feedback
+            </label>
+            <textarea
+              name="customer_feedback"
+              rows={3}
+              defaultValue={request.customer_feedback ?? ""}
+              disabled={!isEditing}
+              className={fieldClass}
+            />
           </div>
         </div>
       </form>
 
       {isEditing && (
         <div className="flex justify-end mt-8 gap-3">
-          <button type="button" onClick={() => setIsEditing(false)} className="px-4 py-2 border rounded-lg text-sm">Cancel</button>
-          <button form="request-form" type="submit" disabled={saving} className={`px-4 py-2 rounded-lg text-sm ${saving ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}>
+          <button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            className="px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            form="request-form"
+            type="submit"
+            disabled={saving}
+            className={`px-4 py-2 rounded-lg text-sm transition-colors ${saving ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+          >
             {saving ? "Updating..." : "Update"}
           </button>
         </div>
@@ -268,12 +374,14 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
 
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Matching Candidates ({matches.length})</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Matching Candidates ({matches.length})
+          </h2>
           <div className="flex gap-2">
             <button
               onClick={() => runCandidateMatching(false)}
               disabled={matching}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50 hover:bg-blue-700 transition-colors"
             >
               {matching ? "Matching..." : "Find Matching Candidates"}
             </button>
@@ -281,7 +389,7 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
               <button
                 onClick={() => runCandidateMatching(true)}
                 disabled={matching}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                className="px-3 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-muted disabled:opacity-50 transition-colors"
               >
                 Refresh
               </button>
@@ -290,68 +398,127 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
         </div>
 
         {matching && (
-          <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg mb-4">
+          <div className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-4">
             <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-blue-700">{matchStatus || "Matching in progress..."}</p>
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              {matchStatus || "Matching in progress..."}
+            </p>
           </div>
         )}
 
         {matches.length === 0 && !matching ? (
-          <p className="text-gray-500">No matching candidates found. Click the button above.</p>
+          <p className="text-muted-foreground">
+            No matching candidates found. Click the button above.
+          </p>
         ) : (
           <div className="grid gap-4">
             {matches.map((candidate) => (
-              <div key={candidate.candidate_id} className="border rounded-lg p-5 shadow-sm space-y-3">
+              <div
+                key={candidate.candidate_id}
+                className="border border-border rounded-lg p-5 shadow-sm space-y-3 bg-card"
+              >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-semibold text-lg">{candidate.first_name} {candidate.last_name}</h3>
-                    <p className="text-sm text-gray-500">{candidate.current_title || "N/A"} {candidate.current_company ? `@ ${candidate.current_company}` : ""}</p>
-                    <p className="text-xs text-gray-400">{candidate.location || ""} {candidate.email ? `• ${candidate.email}` : ""}</p>
+                    <h3 className="font-semibold text-lg text-foreground">
+                      {candidate.first_name} {candidate.last_name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {candidate.current_title || "N/A"}{" "}
+                      {candidate.current_company
+                        ? `@ ${candidate.current_company}`
+                        : ""}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {candidate.location || ""}{" "}
+                      {candidate.email ? `• ${candidate.email}` : ""}
+                    </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${candidate.match_score >= 70 ? "bg-green-100 text-green-700" : candidate.match_score >= 40 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      candidate.match_score >= 70
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                        : candidate.match_score >= 40
+                          ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300"
+                          : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                    }`}
+                  >
                     {candidate.match_score}% Match
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600">{candidate.reasoning}</p>
+                <p className="text-sm text-muted-foreground">
+                  {candidate.reasoning}
+                </p>
 
                 {candidate.strengths && candidate.strengths.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-green-700 mb-1">Strengths</p>
+                    <p className="text-xs font-semibold text-green-700 dark:text-green-400 mb-1">
+                      Strengths
+                    </p>
                     <ul className="list-disc pl-4 space-y-1">
-                      {candidate.strengths.map((s: string, i: number) => <li key={i} className="text-xs text-gray-600">{s}</li>)}
+                      {candidate.strengths.map((s: string, i: number) => (
+                        <li key={i} className="text-xs text-muted-foreground">
+                          {s}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}
 
                 {candidate.gaps && candidate.gaps.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-red-700 mb-1">Gaps</p>
+                    <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-1">
+                      Gaps
+                    </p>
                     <ul className="list-disc pl-4 space-y-1">
-                      {candidate.gaps.map((g: string, i: number) => <li key={i} className="text-xs text-gray-600">{g}</li>)}
+                      {candidate.gaps.map((g: string, i: number) => (
+                        <li key={i} className="text-xs text-muted-foreground">
+                          {g}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}
 
                 {candidate.skills_comparison && (
                   <div className="grid grid-cols-2 gap-3">
-                    {candidate.skills_comparison.matching_skills?.length > 0 && (
+                    {candidate.skills_comparison.matching_skills?.length >
+                      0 && (
                       <div>
-                        <p className="text-xs font-semibold text-blue-700 mb-1">Matching Skills</p>
+                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-1">
+                          Matching Skills
+                        </p>
                         <div className="flex flex-wrap gap-1">
-                          {candidate.skills_comparison.matching_skills.map((skill: string, i: number) => (
-                            <span key={i} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">{skill}</span>
-                          ))}
+                          {candidate.skills_comparison.matching_skills.map(
+                            (skill: string, i: number) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs"
+                              >
+                                {skill}
+                              </span>
+                            ),
+                          )}
                         </div>
                       </div>
                     )}
-                    {candidate.skills_comparison.candidate_skills?.length > 0 && (
+                    {candidate.skills_comparison.candidate_skills?.length >
+                      0 && (
                       <div>
-                        <p className="text-xs font-semibold text-gray-600 mb-1">Candidate Skills</p>
+                        <p className="text-xs font-semibold text-muted-foreground mb-1">
+                          Candidate Skills
+                        </p>
                         <div className="flex flex-wrap gap-1">
-                          {candidate.skills_comparison.candidate_skills.slice(0, 10).map((skill: string, i: number) => (
-                            <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{skill}</span>
-                          ))}
+                          {candidate.skills_comparison.candidate_skills
+                            .slice(0, 10)
+                            .map((skill: string, i: number) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-xs"
+                              >
+                                {skill}
+                              </span>
+                            ))}
                         </div>
                       </div>
                     )}
@@ -359,7 +526,7 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
                 )}
 
                 {candidate.hourly_rate && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Rate: €{candidate.hourly_rate}/hr
                   </p>
                 )}
@@ -368,7 +535,7 @@ export default function RequestDetails({ id, requestData, candidateData }: Props
                     onClick={() =>
                       router.push(`/candidates/${candidate.candidate_id}`)
                     }
-                    className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                   >
                     <EyeIcon className="w-4 h-4" />
                   </button>
