@@ -365,7 +365,7 @@ export default function RequestDetails({
             form="request-form"
             type="submit"
             disabled={saving}
-            className={`px-4 py-2 rounded-lg text-sm transition-colors ${saving ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+            className={`px-4 py-2 rounded-lg text-sm transition-colors ${saving ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
           >
             {saving ? "Updating..." : "Update"}
           </button>

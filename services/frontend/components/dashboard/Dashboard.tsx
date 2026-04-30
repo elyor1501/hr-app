@@ -136,7 +136,7 @@ export default function DashboardDetail() {
               {stats.requests.total_active_requests}
             </p>
 
-            <div className="mt-3 flex items-center gap-4 text-xs font-medium">
+            {/* <div className="mt-3 flex items-center gap-4 text-xs font-medium">
               <span className="px-2 py-1 rounded-full bg-green-100 text-green-700">
                 Open: {stats.requests.open_requests}
               </span>
@@ -144,7 +144,7 @@ export default function DashboardDetail() {
               <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">
                 In Progress: {stats.requests.in_progress_requests}
               </span>
-            </div>
+            </div> */}
 
             <div className="mt-4 flex items-center text-xs text-green-600 font-medium">
               <span>Active staffing demand</span>

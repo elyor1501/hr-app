@@ -165,7 +165,7 @@ export default function CandidateSearch() {
         ) : results.length > 0 ? (
           results.map((profile) => (
             <Card
-              key={profile.resume_id}
+              key={profile.id}
               className="group border shadow-sm hover:border-blue-200 transition-all duration-300"
             >
               <CardContent className="p-6 flex flex-col md:flex-row justify-between gap-6">
@@ -220,7 +220,7 @@ export default function CandidateSearch() {
 
                   <Button
                     variant="default"
-                    onClick={() => router.push(`/candidates/${profile.resume_id}`)}
+                    onClick={() => router.push(`/candidates/${profile.id}`)}
                     className="h-8 mt-4 text-xs font-semibold bg-blue-600 hover:bg-blue-700"
                   >
                     <Eye className="h-4 w-4 mr-2" /> View Profile
