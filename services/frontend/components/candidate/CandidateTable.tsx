@@ -24,6 +24,8 @@ export default function CandidatesTable({ data, resumes }: { data: any[], resume
           filter={"first_name"}
           sort={""}
           showPagination={false}
+          showSearch={false}
+          showColumns={false}
         />
       </div>
     </div>

@@ -1,8 +1,6 @@
 import { getApiUrl, getAuthToken } from "../api-config";
 
 export async function getLoggedInUser() {
-  if (typeof window === "undefined") return null;
-
   const token = getAuthToken();
 
   if (!token) {

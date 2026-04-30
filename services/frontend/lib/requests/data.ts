@@ -37,7 +37,7 @@ export async function getRequests(
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        cache: "no-store",
+        next: { revalidate: 30 },
       }
     );
 
@@ -65,7 +65,7 @@ export async function getRequestById(id: string): Promise<RequestItem | null> {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      cache: "no-store",
+      next: { revalidate: 30 },
     });
 
     if (!res.ok) {

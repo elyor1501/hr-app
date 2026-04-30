@@ -63,7 +63,7 @@ export async function getResumes(
     const res = await fetch(fullUrl, {
       method: "GET",
       headers,
-      cache: "no-store",
+      next: { revalidate: 30 },
     });
 
     if (!res.ok) {

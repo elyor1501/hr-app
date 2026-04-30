@@ -47,7 +47,7 @@ export async function getStats(): Promise<StatsData | null> {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      cache: "no-store",
+      next: { revalidate: 60 }, // Revalidate every minute
     });
 
     if (!res.ok) throw new Error("API error");

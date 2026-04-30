@@ -77,7 +77,7 @@ export async function getCandidates(
   try {
     const res = await fetch(fetchUrl, {
       headers,
-      cache: "no-store",
+      next: { revalidate: 30 },
     });
 
     if (!res.ok) {
@@ -188,5 +188,63 @@ export async function matchJobs(resumeId: string) {
   } catch (error) {
     console.error("matchJobs error:", error);
     return { results: [] };
+  }
+}
+
+export async function searchCandidates(params: any): Promise<CandidateList[]> {
+  try {
+    const apiUrl = getApiUrl();
+    const token = getAuthToken();
+    
+    const queryParams = new URLSearchParams();
+    if (params.q) queryParams.set("q", params.q);
+    if (params.name) queryParams.set("name", params.name as string);
+    if (params.jobTitle) queryParams.set("job_title", params.jobTitle as string);
+    if (params.location) queryParams.set("location", params.location as string);
+    if (params.experienceLevel) queryParams.set("experience_level", params.experienceLevel as string);
+    if (params.availability) queryParams.set("availability", params.availability as string);
+    
+    if (params.skills) {
+      const skills = Array.isArray(params.skills) ? params.skills.join(",") : params.skills;
+      queryParams.set("skills", skills);
+    }
+    
+    queryParams.set("page", "1");
+    queryParams.set("page_size", "100");
+
+    const fetchUrl = apiUrl 
+      ? `${apiUrl}/api/v1/candidates/search?${queryParams.toString()}` 
+      : `/api/v1/candidates/search?${queryParams.toString()}`;
+
+    const headers: HeadersInit = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+
+    const res = await fetch(fetchUrl, {
+      method: "GET",
+      headers,
+      next: { revalidate: 30 },
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Search failed:", res.status, text);
+      return [];
+    }
+
+    const data = await res.json();
+    
+    // Support both {items: []} and direct array responses
+    let items: CandidateList[] = [];
+    if (data && data.items && Array.isArray(data.items)) {
+      items = data.items;
+    } else if (Array.isArray(data)) {
+      items = data;
+    }
+
+    return items;
+  } catch (err) {
+    console.error("Search fetch error:", err);
+    return [];
   }
 }

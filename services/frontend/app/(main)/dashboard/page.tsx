@@ -1,12 +1,30 @@
 import DashboardDetail from "@/components/dashboard/Dashboard";
 import { Sparkles } from "lucide-react";
 import { getStats } from "@/lib/dashboard/data";
+import { Suspense } from "react";
+import { SkeletonCard } from "@/components/ui/loader";
 
 export const dynamic = "force-dynamic";
 
-export default async function Dashboard() {
+async function DashboardStats() {
   const stats = await getStats();
+  return <DashboardDetail initialStats={stats} />;
+}
 
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="grid gap-6 md:grid-cols-3">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
+      <div className="h-[400px] w-full bg-muted animate-pulse rounded-xl" />
+    </div>
+  );
+}
+
+export default async function Dashboard() {
   return (
     <div className="space-y-10">
       <div className="relative overflow-hidden rounded-3xl bg-primary px-8 py-10 text-primary-foreground shadow-2xl shadow-primary/20">
@@ -27,9 +45,12 @@ export default async function Dashboard() {
       </div>
       
       <div className="animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-        <DashboardDetail initialStats={stats} />
+        <Suspense fallback={<DashboardSkeleton />}>
+          <DashboardStats />
+        </Suspense>
       </div>
     </div>
   );
 }
+
 
