@@ -19,18 +19,27 @@ export type RequestItem = {
   candidate_count: number;
 };
 
-export async function getRequests(): Promise<RequestItem[]> {
+export async function getRequests(
+  page: number = 1,
+  limit: number = 10
+): Promise<RequestItem[]> {
   const apiUrl = getApiUrl();
   const token = getAuthToken();
-  
+
+  const skip = (page - 1) * limit;
+
   try {
-    const res = await fetch(`${apiUrl}/api/v1/requests`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${apiUrl}/api/v1/requests?skip=${skip}&limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        cache: "no-store",
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`Failed to fetch requests: ${res.status}`);
@@ -38,7 +47,7 @@ export async function getRequests(): Promise<RequestItem[]> {
 
     const data = await res.json();
 
-    return data?.data ?? data ?? [];
+    return Array.isArray(data) ? data : data?.items ?? data?.data ?? [];
   } catch (error) {
     console.error("getRequests error:", error);
     return [];
@@ -54,7 +63,7 @@ export async function getRequestById(id: string): Promise<RequestItem | null> {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       cache: "no-store",
     });

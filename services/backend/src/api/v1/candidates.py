@@ -231,17 +231,20 @@ async def search_candidates(
     filters = []
 
     if q:
-        search_term = f"%{q}%"
+        search_term = f"%{q.lower()}%"
         filters.append(
             or_(
-                Candidate.first_name.ilike(search_term),
-                Candidate.last_name.ilike(search_term),
-                Candidate.current_title.ilike(search_term),
-                Candidate.location.ilike(search_term),
-                Candidate.email.ilike(search_term),
+                Candidate.first_name.ilike(f"%{q}%"),
+                Candidate.last_name.ilike(f"%{q}%"),
+                Candidate.current_title.ilike(f"%{q}%"),
+                Candidate.location.ilike(f"%{q}%"),
+                Candidate.email.ilike(f"%{q}%"),
+                Candidate.resume_text.ilike(f"%{q}%"),
+                func.lower(
+                    func.array_to_string(Candidate.skills, ' ')
+                ).contains(q.lower()),
             )
         )
-
     if experience_level:
         filters.append(Candidate.experience_level == experience_level)
 

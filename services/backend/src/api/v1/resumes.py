@@ -43,6 +43,16 @@ class ResumeDetailResponse(IDSchema, TimestampSchema):
     task_id: Optional[str] = None
 
 
+class PaginatedResumesResponse(BaseModel):
+    items: List[ResumeResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    has_next: bool
+    has_previous: bool
+
+
 class ParsedDataResponse(BaseModel):
     id: UUID
     resume_id: UUID
@@ -187,21 +197,27 @@ async def bulk_upload_resumes(
     )
 
 
-@router.get("/", response_model=List[ResumeResponse])
+@router.get("/", response_model=PaginatedResumesResponse)
 async def list_resumes(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session)
 ):
-    cache_key = f"{RESUMES_CACHE_KEY}:{skip}:{limit}"
+    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}"
 
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
         if cached:
-            return json.loads(cached)
+            return PaginatedResumesResponse(**json.loads(cached))
     except Exception:
         pass
+
+    count_result = await session.execute(text("SELECT COUNT(*) FROM resumes"))
+    total = count_result.scalar() or 0
+
+    offset = (page - 1) * page_size
+    total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
     query = text("""
         SELECT id, file_name, file_url, raw_text, created_at, updated_at
@@ -210,7 +226,7 @@ async def list_resumes(
         OFFSET :skip LIMIT :limit
     """)
 
-    result = await session.execute(query, {"skip": skip, "limit": limit})
+    result = await session.execute(query, {"skip": offset, "limit": page_size})
     rows = result.fetchall()
 
     resumes = [
@@ -226,13 +242,23 @@ async def list_resumes(
         for row in rows
     ]
 
+    response_data = {
+        "items": resumes,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": total_pages,
+        "has_next": page < total_pages,
+        "has_previous": page > 1,
+    }
+
     try:
         redis = await get_redis_pool()
-        await redis.setex(cache_key, RESUMES_CACHE_TTL, json.dumps(resumes))
+        await redis.setex(cache_key, RESUMES_CACHE_TTL, json.dumps(response_data))
     except Exception:
         pass
 
-    return resumes
+    return PaginatedResumesResponse(**response_data)
 
 
 @router.get("/{id}", response_model=ResumeDetailResponse)

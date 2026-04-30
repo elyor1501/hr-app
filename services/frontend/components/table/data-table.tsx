@@ -37,6 +37,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   filter: string;
   sort: string;
+  showPagination?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -44,23 +45,24 @@ export function DataTable<TData, TValue>({
   data,
   filter,
   sort,
+  showPagination = true,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
-  {
-    id: "created_at", 
-    desc: true,       
-  },
-]);
+    {
+      id: "created_at",
+      desc: true,
+    },
+  ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
-    created_at: true,
-  });
+      created_at: true,
+    });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 15,
+    pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = React.useState("");
 
@@ -178,7 +180,7 @@ export function DataTable<TData, TValue>({
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -197,30 +199,32 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-center space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          <ArrowLeft />
-        </Button>
+      {showPagination && (
+        <div className="flex items-center justify-center space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ArrowLeft />
+          </Button>
 
-        <span className="text-sm">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
+          <span className="text-sm">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </span>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          <ArrowRight />
-        </Button>
-      </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <ArrowRight />
+          </Button>
+        </div>
+      )}
     </>
   );
 }

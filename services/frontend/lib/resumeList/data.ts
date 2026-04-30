@@ -6,27 +6,58 @@ export type Resume = {
   file_url: string;
   created_at: string;
   updated_at: string;
-  raw_text:string;
+  raw_text: string;
 };
 
-let resumeCache: { data: Resume[]; timestamp: number } | null = null;
-const CACHE_TTL = 30000;
+export type PaginatedResumes = {
+  items: Resume[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+};
 
-export async function getResumes(): Promise<any[]> {
+const CACHE_TTL = 30000;
+let resumeCache: { data: PaginatedResumes; timestamp: number } | null = null;
+
+export async function getResumes(
+  page: number = 1,
+  page_size: number = 10
+): Promise<PaginatedResumes> {
   const isServer = typeof window === "undefined";
-  
-  if (!isServer && resumeCache && Date.now() - resumeCache.timestamp < CACHE_TTL) {
+
+  if (
+    !isServer &&
+    resumeCache &&
+    resumeCache.data.page === page &&
+    resumeCache.data.page_size === page_size &&
+    Date.now() - resumeCache.timestamp < CACHE_TTL
+  ) {
     return resumeCache.data;
   }
 
   const apiUrl = getApiUrl();
   const token = getAuthToken();
-  
+
   const headers: HeadersInit = {
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
-  const fullUrl = apiUrl ? `${apiUrl}/api/v1/resumes/?skip=0&limit=100` : '/api/v1/resumes/?skip=0&limit=100';
+  const fullUrl = apiUrl
+    ? `${apiUrl}/api/v1/resumes/?page=${page}&page_size=${page_size}`
+    : `/api/v1/resumes/?page=${page}&page_size=${page_size}`;
+
+  const empty: PaginatedResumes = {
+    items: [],
+    total: 0,
+    page: 1,
+    page_size: 10,
+    total_pages: 1,
+    has_next: false,
+    has_previous: false,
+  };
 
   try {
     const res = await fetch(fullUrl, {
@@ -37,12 +68,12 @@ export async function getResumes(): Promise<any[]> {
 
     if (!res.ok) {
       console.error("Failed to fetch resumes:", res.status);
-      return [];
+      return empty;
     }
 
-    const data: Resume[] = await res.json();
+    const data: PaginatedResumes = await res.json();
 
-    const updated = data.map((resume) => ({
+    const updatedItems = data.items.map((resume) => ({
       ...resume,
       extraction_status:
         resume.raw_text && resume.raw_text.trim().length > 0
@@ -50,14 +81,16 @@ export async function getResumes(): Promise<any[]> {
           : "processing",
     }));
 
+    const result: PaginatedResumes = { ...data, items: updatedItems };
+
     if (!isServer) {
-      resumeCache = { data: updated, timestamp: Date.now() };
+      resumeCache = { data: result, timestamp: Date.now() };
     }
 
-    return updated;
+    return result;
   } catch (error) {
     console.error("Error fetching resumes:", error);
-    return [];
+    return empty;
   }
 }
 

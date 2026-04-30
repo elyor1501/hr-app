@@ -24,25 +24,57 @@ export type CandidateList = {
   status?: "processing" | "completed" | "error";
 };
 
-let candidatesCache: { data: CandidateList[]; timestamp: number } | null = null;
+export type PaginatedCandidates = {
+  items: CandidateList[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+};
+
 const CACHE_TTL = 30000;
+let candidatesCache: { data: PaginatedCandidates; timestamp: number } | null = null;
+let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
 
-export async function getCandidates(): Promise<CandidateList[]> {
+export async function getCandidates(
+  page: number = 1,
+  page_size: number = 10
+): Promise<PaginatedCandidates> {
+  const isServer = typeof window === "undefined";
+
+  if (
+    !isServer &&
+    candidatesCache &&
+    candidatesCache.data.page === page &&
+    candidatesCache.data.page_size === page_size &&
+    Date.now() - candidatesCache.timestamp < CACHE_TTL
+  ) {
+    return candidatesCache.data;
+  }
+
+  const apiUrl = getApiUrl();
+  const token = getAuthToken();
+  const fetchUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates?page=${page}&page_size=${page_size}`
+    : `/api/v1/candidates?page=${page}&page_size=${page_size}`;
+
+  const headers: HeadersInit = {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  const empty: PaginatedCandidates = {
+    items: [],
+    total: 0,
+    page: 1,
+    page_size: 10,
+    total_pages: 1,
+    has_next: false,
+    has_previous: false,
+  };
+
   try {
-    const isServer = typeof window === "undefined";
-
-    if (!isServer && candidatesCache && Date.now() - candidatesCache.timestamp < CACHE_TTL) {
-      return candidatesCache.data;
-    }
-
-    const apiUrl = getApiUrl();
-    const token = getAuthToken();
-    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/candidates?page=1&page_size=100` : `/api/v1/candidates?page=1&page_size=100`;
-
-    const headers: HeadersInit = {
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    };
-
     const res = await fetch(fetchUrl, {
       headers,
       cache: "no-store",
@@ -51,34 +83,35 @@ export async function getCandidates(): Promise<CandidateList[]> {
     if (!res.ok) {
       const text = await res.text().catch(() => "Unable to read response");
       console.error("Failed to fetch candidates:", res.status, text);
-      return [];
+      return empty;
     }
 
     const data = await res.json();
 
-    let items: CandidateList[] = [];
-    if (data && data.items && Array.isArray(data.items)) {
-      items = data.items;
-    } else if (Array.isArray(data)) {
-      items = data;
-    }
+    const result: PaginatedCandidates = {
+      items: data.items ?? [],
+      total: data.total ?? 0,
+      page: data.page ?? page,
+      page_size: data.page_size ?? page_size,
+      total_pages: data.total_pages ?? 1,
+      has_next: data.has_next ?? false,
+      has_previous: data.has_previous ?? false,
+    };
 
     if (!isServer) {
-      candidatesCache = { data: items, timestamp: Date.now() };
+      candidatesCache = { data: result, timestamp: Date.now() };
     }
 
-    return items;
+    return result;
   } catch (err) {
     console.error("Fetch error:", err);
-    return [];
+    return empty;
   }
 }
 
 export function invalidateCandidatesCache() {
   candidatesCache = null;
 }
-
-let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
 
 export async function getCandidateById(id: string) {
   try {
@@ -89,10 +122,12 @@ export async function getCandidateById(id: string) {
 
     const apiUrl = getApiUrl();
     const token = getAuthToken();
-    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${id}/profile` : `/api/v1/candidates/${id}/profile`;
+    const fetchUrl = apiUrl
+      ? `${apiUrl}/api/v1/candidates/${id}/profile`
+      : `/api/v1/candidates/${id}/profile`;
 
     const headers: HeadersInit = {
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
     const res = await fetch(fetchUrl, {
@@ -126,7 +161,9 @@ export async function getCandidateById(id: string) {
 export async function matchJobs(resumeId: string) {
   try {
     const apiUrl = getApiUrl();
-    const fetchUrl = apiUrl ? `${apiUrl}/api/v1/match/candidate-to-jobs` : `/api/v1/match/candidate-to-jobs`;
+    const fetchUrl = apiUrl
+      ? `${apiUrl}/api/v1/match/candidate-to-jobs`
+      : `/api/v1/match/candidate-to-jobs`;
 
     const res = await fetch(fetchUrl, {
       method: "POST",
