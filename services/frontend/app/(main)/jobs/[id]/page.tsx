@@ -13,7 +13,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <div>
-      <JobDetails id={id} jobData={jobData} candidateData={candidateData} />
+      <JobDetails id={id} jobData={jobData} candidateData={candidateData.items} />
     </div>
   );
 }

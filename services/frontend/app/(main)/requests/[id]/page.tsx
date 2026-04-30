@@ -16,7 +16,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <div>
-      <RequestDetails id={id} requestData={reqData} candidateData={candidateData} />
+      <RequestDetails id={id} requestData={reqData} candidateData={candidateData.items} />
     </div>
   );
 }
