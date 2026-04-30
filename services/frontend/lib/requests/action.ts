@@ -38,6 +38,7 @@ export async function updateRequest(formData: FormData): Promise<void> {
   const payload = {
     company_name: formData.get("company_name"),
     request_title: formData.get("request_title"),
+    state: formData.get("state"),
     job_description: formData.get("job_description"),
     prepared_rate: formData.get("prepared_rate")
       ? Number(formData.get("prepared_rate"))
@@ -62,7 +63,16 @@ export async function updateRequest(formData: FormData): Promise<void> {
 
   if (!res.ok) {
     const text = await res.text();
+    let errorMessage = "Failed to update request";
+    try {
+      const errorData = JSON.parse(text);
+      errorMessage = errorData.detail || errorData.message || errorMessage;
+    } catch (e) {
+      errorMessage = text || errorMessage;
+    }
     console.error("Update failed:", text);
     throw new Error("Failed to update request");
   }
+
+  await revalidateRequest(id);
 }

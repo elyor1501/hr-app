@@ -38,7 +38,7 @@ export function ImportJobButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-white text-slate-700 text-sm px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50 transition shadow-sm font-medium"
+        className="flex items-center gap-2 bg-primary text-primary-foreground text-sm px-3 py-1.5 rounded-md hover:bg-primary/90 transition font-medium"
       >
         <Upload className="w-4 h-4" />
         Import

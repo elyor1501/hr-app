@@ -26,13 +26,19 @@ export const columns_request_list: ColumnDef<Request>[] = [
     accessorKey: "request_number",
     header: "Request No",
     cell: ({ row }) => (
-      <span className="font-medium">{row.getValue("request_number") || "NA"}</span>
+      <span className="font-medium">
+        {row.getValue("request_number") || "NA"}
+      </span>
     ),
   },
   {
     accessorKey: "company_name",
     header: "Company",
-    cell: ({ row }) => <span className="break-words whitespace-normal">{row.getValue("company_name") || "NA"}</span>,
+    cell: ({ row }) => (
+      <span className="break-words whitespace-normal">
+        {row.getValue("company_name") || "NA"}
+      </span>
+    ),
   },
   {
     accessorKey: "request_title",
@@ -51,28 +57,25 @@ export const columns_request_list: ColumnDef<Request>[] = [
   {
     accessorKey: "created_at",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className=""
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Created At
-        <ArrowUpDown className="ml-2 h-3 w-3" />
-      </Button>
+      <div className="flex items-center justify-center w-full">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-1 px-2 py-1"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span>Created At</span>
+          <ArrowUpDown className="h-3 w-3" />
+        </Button>
+      </div>
     ),
-    cell: ({ row }) => (
-      <span>
-        {new Date(row.getValue("created_at"))
-          .toLocaleDateString("en-GB")
-          .replace(/\//g, ".")}
-        &nbsp;
-        <span>
-          {new Date(row.getValue("created_at")).toLocaleTimeString("en-GB", {
-            hour12: false,
-          })}
-        </span>
-      </span>
-    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("created_at"));
+      return (
+        <div className="text-center w-full px-2 py-1">
+          {date.toLocaleDateString("en-GB").replace(/\//g, ".")}
+        </div>
+      );
+    },
   },
   {
     header: "Actions",

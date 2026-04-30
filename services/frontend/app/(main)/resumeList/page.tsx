@@ -1,9 +1,11 @@
 import AddResumeButton from "@/components/resumes/AddResumeButton";
 import ResumeTable from "@/components/resumes/ResumeTable";
+import { getResumes } from "@/lib/resumeList/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
+  const resumes = await getResumes();
   return (
     <div>
       <div className="flex items-center justify-between border p-4 rounded-lg mt-2">
@@ -11,7 +13,7 @@ export default async function Page() {
         <AddResumeButton />
       </div>
 
-      <ResumeTable />
+      <ResumeTable resumes={resumes} />
     </div>
   );
 }

@@ -1,10 +1,12 @@
 import { AddJobButton } from "@/components/jobs/AddJobButton";
 import JobTable from "@/components/jobs/JobTable";
+import { getJob } from "@/lib/jobs/data";
 
 
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
+  const data = await getJob();
   return (
     <div>
       <div className="flex items-center justify-between border p-4 rounded-lg mt-2">
@@ -13,7 +15,7 @@ export default async function Page() {
           <AddJobButton/>
         </div>
       </div>
-      <JobTable/>
+      <JobTable data={data}/>
     </div>
   );
 }

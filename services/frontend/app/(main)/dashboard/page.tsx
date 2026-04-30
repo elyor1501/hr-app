@@ -1,7 +1,12 @@
 import DashboardDetail from "@/components/dashboard/Dashboard";
 import { Sparkles } from "lucide-react";
+import { getStats } from "@/lib/dashboard/data";
 
-export default function Dashboard() {
+export const dynamic = "force-dynamic";
+
+export default async function Dashboard() {
+  const stats = await getStats();
+
   return (
     <div className="space-y-10">
       <div className="relative overflow-hidden rounded-3xl bg-primary px-8 py-10 text-primary-foreground shadow-2xl shadow-primary/20">
@@ -22,7 +27,7 @@ export default function Dashboard() {
       </div>
       
       <div className="animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-        <DashboardDetail />
+        <DashboardDetail initialStats={stats} />
       </div>
     </div>
   );

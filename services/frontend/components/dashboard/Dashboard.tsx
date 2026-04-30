@@ -39,9 +39,9 @@ interface StatsData {
 let statsCache: { data: StatsData; timestamp: number } | null = null;
 const CACHE_TTL = 30000;
 
-export default function DashboardDetail() {
-  const [stats, setStats] = useState<StatsData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function DashboardDetail({ initialStats }: { initialStats: StatsData | null }) {
+  const [stats, setStats] = useState<StatsData | null>(initialStats);
+  const [loading, setLoading] = useState(!initialStats);
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = useCallback(async () => {
@@ -77,10 +77,12 @@ export default function DashboardDetail() {
   }, []);
 
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    if (!initialStats) {
+      fetchStats();
+    }
+  }, [fetchStats, initialStats]);
 
-  if (loading) {
+  if (loading && !stats) {
     return (
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-3">
@@ -136,7 +138,7 @@ export default function DashboardDetail() {
               {stats.requests.total_active_requests}
             </p>
 
-            <div className="mt-3 flex items-center gap-4 text-xs font-medium">
+            {/* <div className="mt-3 flex items-center gap-4 text-xs font-medium">
               <span className="px-2 py-1 rounded-full bg-green-100 text-green-700">
                 Open: {stats.requests.open_requests}
               </span>
@@ -144,7 +146,7 @@ export default function DashboardDetail() {
               <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">
                 In Progress: {stats.requests.in_progress_requests}
               </span>
-            </div>
+            </div> */}
 
             <div className="mt-4 flex items-center text-xs text-green-600 font-medium">
               <span>Active staffing demand</span>
