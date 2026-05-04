@@ -82,11 +82,11 @@ const ActionCell = ({ resume }: { resume: ResumeList }) => {
 };
 
 export const columns_resume_list: ColumnDef<ResumeList>[] = [
-  {
-    accessorKey: "id",
-    header: "Id",
-    cell: ({ row }) => <span>{row.getValue("id") || "NA"}</span>,
-  },
+  // {
+  //   accessorKey: "id",
+  //   header: "Id",
+  //   cell: ({ row }) => <span>{row.getValue("id") || "NA"}</span>,
+  // },
   {
     accessorKey: "file_name",
     header: "File Name",
@@ -105,7 +105,7 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
           className="flex items-center gap-1 px-2 py-1"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <span>Created At</span>
+          <span>Uploaded At</span>
           <ArrowUpDown className="h-3 w-3" />
         </Button>
       </div>

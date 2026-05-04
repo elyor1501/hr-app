@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: PageProps) {
         <h1 className="font-semibold">Candidate List</h1>
       </div>
 
-      <div className="py-4 mt-2 mb-2 bg-gray-50 rounded-lg">
+      <div className="py-4 mt-2 mb-2 rounded-lg">
         <CandidateFilters />
       </div>
 
