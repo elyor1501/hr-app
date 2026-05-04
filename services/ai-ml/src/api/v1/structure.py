@@ -212,6 +212,7 @@ def _local_structure(resume_id: str, raw_text: str) -> dict:
     latency = round(time.time() - t0, 3)
     has_skills = len(result.skills) > 0
     candidate_data = StructuredData(
+        full_name=result.full_name,
         email=result.email,
         phone=result.phone,
         summary=result.raw_sections.get("summary"),
@@ -219,6 +220,7 @@ def _local_structure(resume_id: str, raw_text: str) -> dict:
         education=[],
         experience=[],
         confidence_scores=ConfidenceScores(
+            full_name=0.85 if result.full_name else 0.0,
             email=0.95 if result.email else 0.0,
             phone=0.95 if result.phone else 0.0,
             skills=0.90 if has_skills else 0.0,

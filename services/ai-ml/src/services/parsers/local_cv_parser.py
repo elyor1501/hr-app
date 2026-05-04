@@ -15,6 +15,7 @@ class ParsedSkill:
 @dataclass
 class ParseResult:
     skills: list[ParsedSkill] = field(default_factory=list)
+    full_name: str | None = None
     email: str | None = None
     phone: str | None = None
     raw_sections: dict[str, str] = field(default_factory=dict)
@@ -22,8 +23,68 @@ class ParseResult:
 _EMAIL_RE = re.compile(r"[\w.+\-]+@[\w\-]+\.[a-zA-Z]{2,7}")
 _PHONE_RE = re.compile(r"(?:\+?\d[\d\s()\-\.]{6,}\d)")
 
+# "Name: <value>" pattern used in tabular / German-style CVs
+_NAME_LABEL_RE = re.compile(
+    r"(?:full\s+)?name\s*[:\-]\s*([^\d\n@/:;|\\]{2,60})",
+    re.IGNORECASE,
+)
+
+# Words that appear in section headings rather than person names
+_HEADING_WORDS = frozenset({
+    "curriculum", "vitae", "resume", "profile", "contact",
+    "summary", "education", "experience", "skills", "objective",
+    "about", "personal", "general", "information", "details",
+    "training", "attendance", "confirmation", "page", "address",
+    "references", "declaration", "overview", "introduction",
+    "employment", "professional", "academic", "achievements",
+    "certifications", "hobbies", "interests", "languages",
+    "nationality", "marital", "status", "gender", "dob", "birth",
+    "date", "born", "photograph", "photo", "signature",
+})
+
+
+def _is_name_word(w: str) -> bool:
+    # Strip name-valid non-letter chars; remainder must be Unicode letters
+    stripped = w.replace("-", "").replace("'", "").replace(".", "")
+    return bool(stripped) and stripped.isalpha()
+
+
+def _extract_name(text: str) -> str | None:
+    # Primary pass: standalone name line in first 15 lines
+    for line in text.splitlines()[:15]:
+        line = line.strip()
+        if not line:
+            continue
+        if re.search(r'[\d@/:;|\\+_=<>(){}[\]]', line):
+            continue
+        words = line.split()
+        if not (2 <= len(words) <= 4):
+            continue
+        # Unicode-aware letter check — covers umlauts, accented chars, etc.
+        if not all(_is_name_word(w) for w in words):
+            continue
+        if not words[0][0].isupper():
+            continue
+        if any(w.lower() in _HEADING_WORDS for w in words):
+            continue
+        return line
+
+    # Fallback: "Name: <value>" label pattern (tabular / German-format CVs)
+    label_match = _NAME_LABEL_RE.search(text[:2000])
+    if label_match:
+        candidate = label_match.group(1).strip()
+        words = candidate.split()[:4]
+        if len(words) >= 2 and all(_is_name_word(w) for w in words) and not any(
+            w.lower() in _HEADING_WORDS for w in words
+        ):
+            return " ".join(words)
+
+    return None
+
 def parse_cv(text: str) -> ParseResult:
     result = ParseResult()
+
+    result.full_name = _extract_name(text)
 
     # Contact extraction — regex only, no NLP needed for these fields
     email_match = _EMAIL_RE.search(text)

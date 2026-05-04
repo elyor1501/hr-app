@@ -5,12 +5,11 @@ import logging
 
 from .cache import EmbeddingCache
 from .rate_limiter import RateLimiter
-from .exceptions import GeminiEmbeddingError
-from .gemini_client import GeminiEmbeddingClient
+from .local_client import LocalEmbeddingClient
 
 logger = logging.getLogger(__name__)
 
-EXPECTED_DIMENSION = 3072
+EXPECTED_DIMENSION = 768
 MAX_BATCH_SIZE = 100
 
 
@@ -19,13 +18,10 @@ class EmbeddingService:
         self,
         cache: EmbeddingCache | None = None,
         rate_limiter: RateLimiter | None = None,
-        gemini_client: GeminiEmbeddingClient | None = None,
     ):
         self.cache = cache or EmbeddingCache()
         self.rate_limiter = rate_limiter or RateLimiter()
-
-        # ✅ Gemini ONLY (fallback temporarily disabled)
-        self.primary = gemini_client or GeminiEmbeddingClient()
+        self.primary = LocalEmbeddingClient()
 
     def get_embedding(self, text: str) -> List[float]:
         cached = self.cache.get(text)
@@ -34,7 +30,6 @@ class EmbeddingService:
 
         self.rate_limiter.check("embedding_service")
 
-        # 🚫 No fallback — Gemini must succeed
         embedding = self.primary.embed_text(text)
 
         self._validate_embedding(embedding)

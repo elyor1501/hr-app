@@ -110,7 +110,7 @@ jobs:
             
             echo '=== Starting Backend ==='
             docker run -d \
-              --name backend \
+              --name hr-backend \
               --network hr-network \
               --restart unless-stopped \
               -p 8000:8000 \
@@ -124,7 +124,7 @@ jobs:
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
               -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
-              -e HR_APP_VECTOR_DIMENSION=3072 \
+              -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_backend: \
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
@@ -156,6 +156,7 @@ jobs:
               -e DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" \
               -e PYTHONPATH=/app/src \
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+              -e USE_LOCAL_PARSER=true \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             
             echo '=== Starting Worker ==='
@@ -172,7 +173,7 @@ jobs:
               -e HR_APP_REDIS_PORT=6379 \
               -e HR_APP_REDIS_DB=0 \
               -e HR_APP_AI_SERVICE_URL=http://ai-ml-service:8001 \
-              -e HR_APP_VECTOR_DIMENSION=3072 \
+              -e HR_APP_VECTOR_DIMENSION=768 \
               -e HR_APP_CACHE_PREFIX=hr_worker \
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \

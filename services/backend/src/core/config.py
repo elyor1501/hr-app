@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     redis_port: int = Field(default=6379)
     redis_db: int = Field(default=0)
 
-    vector_dimension: int = Field(default=3072)
+    vector_dimension: int = Field(default=768)
 
     rate_limit_enabled: bool = Field(default=True)
     rate_limit_auth_requests: int = Field(default=10)

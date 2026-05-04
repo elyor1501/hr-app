@@ -16,7 +16,12 @@ RUN apt-get update && apt-get install -y \
 
 COPY requirements.txt .
 
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Cache the embedding model in the image so startup is instant and offline-safe
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-base-en')"
 
 COPY src ./src
 

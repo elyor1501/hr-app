@@ -8,9 +8,8 @@ MAX_BATCH_SIZE = 100
 
 class LocalEmbeddingClient:
     """
-    Local fallback embedding provider.
-    Uses BAAI/bge-base-en (768-dim).
-    Singleton pattern ensures model loads only once.
+    Local embedding provider using BAAI/bge-base-en (768-dim).
+    Singleton pattern ensures model loads only once per process.
     """
 
     _instance = None

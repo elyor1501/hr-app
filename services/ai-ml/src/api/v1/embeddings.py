@@ -12,7 +12,7 @@ router = APIRouter(prefix="/embeddings", tags=["Embeddings"])
 embedding_service = EmbeddingService()
 rate_limiter = RateLimiter()
 
-EXPECTED_DIMENSION = 3072   # Updated to match Gemini model
+EXPECTED_DIMENSION = 768
 MAX_BATCH_SIZE = 100
 
 @router.post("/embed", response_model=EmbeddingResponse)
@@ -40,7 +40,7 @@ async def embed_text(request: Request, body: EmbeddingRequest):
         return EmbeddingResponse(
             dimension=len(embedding),
             embedding=embedding,
-            provider="gemini"
+            provider="local"
         )
 
     except Exception as e:
@@ -86,7 +86,7 @@ async def embed_batch(request: Request, body: BatchEmbeddingRequest):
             dimension=EXPECTED_DIMENSION,
             count=len(embeddings),
             embeddings=embeddings,
-            providers=["gemini"] * len(embeddings)
+            providers=["local"] * len(embeddings)
         )
 
     except Exception as e:
