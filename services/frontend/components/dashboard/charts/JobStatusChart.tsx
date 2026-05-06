@@ -72,7 +72,18 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
                 <Cell key={index} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip
+              position={{ x: 200, y: 10 }}
+              contentStyle={{
+                borderRadius: "8px",
+                border: "1px solid hsl(var(--border))",
+                background: "hsl(var(--card))",
+                color: "hsl(var(--foreground))",
+                fontSize: "12px",
+              }}
+              labelStyle={{ color: "hsl(var(--foreground))" }}
+              itemStyle={{ color: "hsl(var(--foreground))" }}
+            />
           </PieChart>
 
           <div className="absolute text-center">
