@@ -39,7 +39,11 @@ interface StatsData {
 let statsCache: { data: StatsData; timestamp: number } | null = null;
 const CACHE_TTL = 30000;
 
-export default function DashboardDetail({ initialStats }: { initialStats: StatsData | null }) {
+export default function DashboardDetail({
+  initialStats,
+}: {
+  initialStats: StatsData | null;
+}) {
   const [stats, setStats] = useState<StatsData | null>(initialStats);
   const [loading, setLoading] = useState(!initialStats);
   const [error, setError] = useState<string | null>(null);
@@ -95,10 +99,22 @@ export default function DashboardDetail({ initialStats }: { initialStats: StatsD
     );
   }
 
+  const {
+    open_requests = 0,
+    in_progress_requests = 0,
+    signed_requests = 0,
+    closed_requests = 0,
+  } = stats.requests || {};
+
+  const totalJobs =
+    open_requests + in_progress_requests + signed_requests + closed_requests;
+
   if (error || !stats) {
     return (
       <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
-        <p className="text-destructive font-medium">{error || "No data available"}</p>
+        <p className="text-destructive font-medium">
+          {error || "No data available"}
+        </p>
         <button
           onClick={() => {
             statsCache = null;
@@ -124,7 +140,7 @@ export default function DashboardDetail({ initialStats }: { initialStats: StatsD
           </div>
           <h2 className="text-xl font-semibold">Overview</h2>
         </div>
-        
+
         <div className="grid gap-6 md:grid-cols-3">
           <div className="bg-card border rounded-xl p-6 shadow-sm card-hover relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -134,9 +150,7 @@ export default function DashboardDetail({ initialStats }: { initialStats: StatsD
               Open Requests
             </h3>
 
-            <p className="text-3xl font-bold mt-2">
-              {stats.requests.total_active_requests}
-            </p>
+            <p className="text-3xl font-bold mt-2">{totalJobs}</p>
 
             {/* <div className="mt-3 flex items-center gap-4 text-xs font-medium">
               <span className="px-2 py-1 rounded-full bg-green-100 text-green-700">
@@ -157,7 +171,9 @@ export default function DashboardDetail({ initialStats }: { initialStats: StatsD
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
               <Users className="w-12 h-12" />
             </div>
-            <h3 className="text-sm font-medium text-muted-foreground">Total Candidates</h3>
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Total Candidates
+            </h3>
             <p className="text-3xl font-bold mt-2">{stats.total_employees}</p>
             <div className="mt-4 flex items-center text-xs text-blue-600 font-medium">
               <span>Managed profiles</span>
@@ -168,7 +184,9 @@ export default function DashboardDetail({ initialStats }: { initialStats: StatsD
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
               <FileText className="w-12 h-12" />
             </div>
-            <h3 className="text-sm font-medium text-muted-foreground">Total Resumes</h3>
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Total Resumes
+            </h3>
             <p className="text-3xl font-bold mt-2">{stats.total_resumes}</p>
             <div className="mt-4 flex items-center text-xs text-purple-600 font-medium">
               <span>Processed documents</span>
@@ -187,13 +205,10 @@ export default function DashboardDetail({ initialStats }: { initialStats: StatsD
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="card-hover">
-            <JobStatusChart stats={stats.jobs_by_status} totalJobs={stats.total_jobs} />
+          <div className="card-hover h-85">
+            <JobStatusChart stats={stats.requests} />
           </div>
-          <div className="card-hover">
-            <JobTypeChart stats={stats.jobs_by_type} />
-          </div>
-          <div className="card-hover lg:col-span-2">
+          <div className="card-hover h-85">
             <EmployeeStatusChart stats={stats.candidates_by_status} />
           </div>
         </div>

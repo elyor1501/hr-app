@@ -145,7 +145,7 @@
           const accepted = (result as any)?.accepted ?? (Array.isArray(result) ? result.length : uploads.length);
 
           setUploadStatus(`${accepted} files accepted! Appearing shortly...`);
-          toast.success(`${accepted} resumes accepted for processing`);
+          toast.success(`${accepted} resumes uploaded successfully and started processing`);
 
           setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
 

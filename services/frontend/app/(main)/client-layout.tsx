@@ -58,12 +58,6 @@ export default function ClientLayout({ children, user }: Props) {
               </div>
 
               <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-                <div className="hidden lg:flex items-center bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10 shadow-inner">
-                  <div className="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_8px_rgba(34,197,94,0.6)] shrink-0" />
-                  <span className="text-xs font-semibold text-primary tracking-widest uppercase whitespace-nowrap">
-                    System Online
-                  </span>
-                </div>
                 <ThemeSwitcher />
                 <Separator orientation="vertical" className="h-6 hidden sm:block shrink-0" />
                 <UserNav user={user} />

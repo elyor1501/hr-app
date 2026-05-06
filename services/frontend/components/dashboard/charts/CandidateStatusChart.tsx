@@ -1,6 +1,13 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, XAxis, YAxis, Cell, ResponsiveContainer } from "recharts"
+import {
+  Bar,
+  BarChart,
+  XAxis,
+  YAxis,
+  Cell,
+  ResponsiveContainer,
+} from "recharts";
 
 import {
   Card,
@@ -8,18 +15,18 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 type Employee = {
-  candidate_status?: string
-}
+  candidate_status?: string;
+};
 
 type EmployeeStatusChartProps = {
   employees?: Employee[];
@@ -27,9 +34,12 @@ type EmployeeStatusChartProps = {
     active: number;
     inactive: number;
   };
-}
+};
 
-export function EmployeeStatusChart({ employees, stats }: EmployeeStatusChartProps) {
+export function EmployeeStatusChart({
+  employees,
+  stats,
+}: EmployeeStatusChartProps) {
   let chartData;
 
   if (stats) {
@@ -39,7 +49,7 @@ export function EmployeeStatusChart({ employees, stats }: EmployeeStatusChartPro
     ];
   } else if (employees) {
     const activeCount = employees.filter(
-      emp => emp.candidate_status?.toLowerCase() === "active"
+      (emp) => emp.candidate_status?.toLowerCase() === "active",
     ).length;
     const inactiveCount = employees.length - activeCount;
 
@@ -105,28 +115,36 @@ export function EmployeeStatusChart({ employees, stats }: EmployeeStatusChartPro
                     key={`cell-${index}`}
                     fill={
                       entry.status === "Active"
-                        ? "hsl(var(--primary))"
-                        : "hsl(var(--muted-foreground)/0.3)"
+                        ? "#2563EB" 
+                        : "#BFDBFE" 
                     }
-                    className="transition-all duration-500 hover:opacity-80"
+                    className="transition-all duration-300 hover:opacity-90"
                   />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
-        
+
         <div className="mt-6 grid grid-cols-2 gap-4 border-t border-border/50 pt-4">
           <div className="space-y-1">
-             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active</p>
-             <p className="text-2xl font-bold text-primary">{stats?.active || 0}</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Active
+            </p>
+            <p className="text-2xl font-bold">
+              {stats?.active || 0}
+            </p>
           </div>
           <div className="space-y-1">
-             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Inactive</p>
-             <p className="text-2xl font-bold text-foreground/70">{stats?.inactive || 0}</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Inactive
+            </p>
+            <p className="text-2xl font-bold">
+              {stats?.inactive || 0}
+            </p>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
