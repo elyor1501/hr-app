@@ -99,6 +99,10 @@ export default function DashboardDetail({
     );
   }
 
+  if (error || !stats) {
+    return <div>...</div>;
+  }
+
   const {
     open_requests = 0,
     in_progress_requests = 0,
