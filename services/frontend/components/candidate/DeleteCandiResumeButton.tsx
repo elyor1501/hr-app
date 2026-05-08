@@ -55,11 +55,11 @@ export function DeleteResumeButton({
           className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           title="Delete Resume"
         >
-          <Trash2 className="w-5 h-5" />
+          <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-lg mx-auto rounded-xl sm:rounded-lg">
         <DialogHeader>
           <DialogTitle>Delete Resume</DialogTitle>
           <DialogDescription>
@@ -67,11 +67,12 @@ export function DeleteResumeButton({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={isPending}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
@@ -80,6 +81,7 @@ export function DeleteResumeButton({
             variant="destructive"
             onClick={handleDelete}
             disabled={isPending}
+            className="w-full sm:w-auto"
           >
             {isPending ? "Deleting..." : "Delete"}
           </Button>

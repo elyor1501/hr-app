@@ -2,8 +2,8 @@
 
 export const Loader = () => {
   return (
-    <div className="flex items-center justify-center min-h-[400px] w-full">
-      <div className="relative w-16 h-16">
+    <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px] w-full">
+      <div className="relative w-12 h-12 sm:w-16 sm:h-16">
         <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
         <div className="absolute inset-0 border-4 border-t-primary rounded-full animate-spin shadow-[0_0_15px_rgba(var(--primary),0.3)]" />
         
@@ -15,8 +15,8 @@ export const Loader = () => {
 };
 
 export const SkeletonCard = () => (
-  <div className="bg-card border rounded-xl p-6 animate-pulse space-y-4 shadow-sm border-border/50">
-    <div className="h-4 bg-muted rounded w-24"></div>
-    <div className="h-8 bg-muted rounded w-16"></div>
+  <div className="bg-card border rounded-xl p-4 sm:p-6 animate-pulse space-y-3 sm:space-y-4 shadow-sm border-border/50">
+    <div className="h-3 sm:h-4 bg-muted rounded w-20 sm:w-24"></div>
+    <div className="h-6 sm:h-8 bg-muted rounded w-12 sm:w-16"></div>
   </div>
 );

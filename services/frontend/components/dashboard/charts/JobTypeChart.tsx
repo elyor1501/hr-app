@@ -36,7 +36,6 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
       { type: "Entry Level", count: stats.entry_level, fill: "hsl(var(--chart-5))" },
     ];
   } else if (jobs) {
-    // ... logic for jobs array remains similar but with theme colors
     const counts: Record<string, number> = {
       "Full Time": 0,
       "Part Time": 0,
@@ -72,7 +71,13 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
       fill: getHslColor(type),
     }));
   } else {
-    return <div>Loading chart...</div>;
+    return (
+      <Card className="h-full">
+        <CardContent className="flex items-center justify-center h-[300px]">
+          <p className="text-muted-foreground text-sm">Loading chart...</p>
+        </CardContent>
+      </Card>
+    );
   }
 
   const chartConfig = {
@@ -81,25 +86,29 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
 
   return (
     <Card className="h-full">
-      <CardHeader>
-        <CardTitle>Job Type Distribution</CardTitle>
-        <CardDescription>Breakdown by employment type</CardDescription>
+      <CardHeader className="pb-2 sm:pb-4">
+        <CardTitle className="text-base sm:text-lg">Job Type Distribution</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">Breakdown by employment type</CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="pt-2 sm:pt-4">
         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
           <ResponsiveContainer width="100%" height={250}>
             <BarChart
               data={chartData}
-              margin={{ top: 20, right: 20, left: -20, bottom: 5 }}
+              margin={{ top: 10, right: 10, left: -10, bottom: 5 }}
             >
               <XAxis
                 dataKey="type"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
-                fontSize={12}
+                tickMargin={8}
+                fontSize={10}
                 className="fill-muted-foreground"
+                interval={0}
+                angle={-15}
+                textAnchor="end"
+                height={60}
               />
               <YAxis
                 type="number"
@@ -107,15 +116,16 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
                 axisLine={false}
                 allowDecimals={false}
                 domain={[0, "auto"]}
-                tickCount={6}
-                fontSize={12}
+                tickCount={5}
+                fontSize={10}
                 className="fill-muted-foreground"
+                width={30}
               />
               <ChartTooltip
                 cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={40}>
+              <Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={35}>
                 {chartData.map((entry, index) => (
                   <Cell key={index} fill={entry.fill} />
                 ))}

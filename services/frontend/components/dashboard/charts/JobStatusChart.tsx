@@ -50,36 +50,36 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
 
   return (
     <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle>Request Jobs Overview</CardTitle>
-        <CardDescription>Real-time status of request postings</CardDescription>
+      <CardHeader className="pb-2 sm:pb-4">
+        <CardTitle className="text-base sm:text-lg">Request Jobs Overview</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">Real-time status of request postings</CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-6">
+      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6">
         <div className="relative flex items-center justify-center">
-          <PieChart width={220} height={220}>
+          <PieChart width={180} height={180}>
             <Pie
               data={chartData}
               dataKey="value"
               nameKey="name"
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={90}
-              paddingAngle={3}
+              innerRadius={50}
+              outerRadius={75}
+              paddingAngle={2}
             >
               {chartData.map((entry, index) => (
                 <Cell key={index} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip
-              position={{ x: 200, y: 10 }}
+              position={{ x: 160, y: 10 }}
               contentStyle={{
                 borderRadius: "8px",
                 border: "1px solid hsl(var(--border))",
                 background: "hsl(var(--card))",
                 color: "hsl(var(--foreground))",
-                fontSize: "12px",
+                fontSize: "11px",
               }}
               labelStyle={{ color: "hsl(var(--foreground))" }}
               itemStyle={{ color: "hsl(var(--foreground))" }}
@@ -87,24 +87,24 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
           </PieChart>
 
           <div className="absolute text-center">
-            <p className="text-3xl font-bold text-foreground">{totalJobs}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">{totalJobs}</p>
             <p className="text-xs text-muted-foreground">Total Requests</p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 w-full sm:w-52">
+        <div className="flex flex-col gap-3 sm:gap-4 w-full sm:w-52">
           {chartData.map((item) => (
-            <div key={item.name} className="space-y-2">
-              <div className="flex justify-between text-sm">
+            <div key={item.name} className="space-y-1 sm:space-y-2">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span className="font-medium text-muted-foreground">
                   {item.name}
                 </span>
                 <span className="font-bold">{item.value}</span>
               </div>
 
-              <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-secondary h-1.5 sm:h-2 rounded-full overflow-hidden">
                 <div
-                  className="h-2 rounded-full transition-all duration-500"
+                  className="h-1.5 sm:h-2 rounded-full transition-all duration-500"
                   style={{
                     width: totalJobs
                       ? `${(item.value / totalJobs) * 100}%`
