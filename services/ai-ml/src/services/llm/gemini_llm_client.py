@@ -10,22 +10,27 @@ from google import genai
 
 logger = logging.getLogger(__name__)
 
+# Gemini 2.5 Flash pricing with thinking disabled (thinking_budget=0), as of 2025
+# Source: https://ai.google.dev/pricing
+_INPUT_COST_PER_TOKEN  = 0.075  / 1_000_000   # $0.075 per 1M input tokens
+_OUTPUT_COST_PER_TOKEN = 0.300  / 1_000_000   # $0.300 per 1M output tokens
+
 
 class GeminiLLMClient:
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
 
-        # Retained for local diagnostics; not suitable for production logging
-        # print("===== GEMINI CLIENT INIT =====")
-        # print("API KEY PRESENT:", bool(self.api_key))
-        # print("==============================")
-
         if not self.api_key:
             raise RuntimeError("GEMINI_API_KEY not set")
 
         self.client = genai.Client(api_key=self.api_key)
         self.model_name = "gemini-2.5-flash"
+
+        # Accumulated since last consume_session_cost() call.
+        # Not thread-safe for concurrent batch processing — use per-call logs for accuracy there.
+        self._session_input_tokens: int = 0
+        self._session_output_tokens: int = 0
 
     def _clean_json_string(self, raw: str) -> str:
         raw = raw.strip()
@@ -98,6 +103,22 @@ class GeminiLLMClient:
         if not response.text:
             raise RuntimeError("Gemini response.text is empty")
 
+        # Extract usage metadata and log cost for every call
+        usage = getattr(response, "usage_metadata", None)
+        input_tokens  = int(getattr(usage, "prompt_token_count",     0) or 0)
+        output_tokens = int(getattr(usage, "candidates_token_count", 0) or 0)
+        call_cost_usd = (input_tokens * _INPUT_COST_PER_TOKEN
+                         + output_tokens * _OUTPUT_COST_PER_TOKEN)
+
+        self._session_input_tokens  += input_tokens
+        self._session_output_tokens += output_tokens
+
+        logger.info("gemini_call_tokens", extra={
+            "input_tokens":   input_tokens,
+            "output_tokens":  output_tokens,
+            "call_cost_usd":  round(call_cost_usd, 6),
+        })
+
         return response.text
 
     def generate_json(self, prompt: str) -> Dict[str, Any]:
@@ -127,6 +148,23 @@ class GeminiLLMClient:
 
         logger.error("Both Gemini attempts returned invalid JSON, returning empty fallback")
         return {}
+
+    def consume_session_cost(self) -> dict:
+        """
+        Returns the accumulated token counts and cost since the last call, then resets.
+        Call this once per CV at the end of _local_structure() to get per-CV spend.
+        """
+        input_t  = self._session_input_tokens
+        output_t = self._session_output_tokens
+        total_cost_usd = (input_t * _INPUT_COST_PER_TOKEN
+                          + output_t * _OUTPUT_COST_PER_TOKEN)
+        self._session_input_tokens  = 0
+        self._session_output_tokens = 0
+        return {
+            "input_tokens":    input_t,
+            "output_tokens":   output_t,
+            "total_cost_usd":  round(total_cost_usd, 6),
+        }
 
     async def generate_json_async(self, prompt: str) -> Dict[str, Any]:
         return await asyncio.to_thread(self.generate_json, prompt)

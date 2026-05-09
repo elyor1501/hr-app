@@ -1,5 +1,6 @@
 # Application entry point for AI/ML microservice
 
+import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -10,6 +11,15 @@ from api.router import api_router
 
 # Initialize structured logging before anything else
 configure_logging()
+
+# Load full ESCO skills vocabulary if CSV is available.
+# CSV is downloaded at Docker build time; path can be overridden via ESCO_CSV_PATH.
+_esco_csv = os.getenv("ESCO_CSV_PATH", "/app/data/skills_en.csv")
+try:
+    from services.parsers.esco_matcher import load_esco_csv
+    load_esco_csv(_esco_csv)
+except Exception:
+    pass  # built-in 400-skill vocabulary remains active
 
 # Create FastAPI application
 app = FastAPI(

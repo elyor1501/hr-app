@@ -12,16 +12,18 @@ class DependencyMatch:
 _SKILL_TERM = r"[\w][\w+#.\-/ ]{0,38}[\w+#.\-/]"
 
 _PATTERNS: list[re.Pattern] = [
-    # "proficient/skilled/experienced/expert/fluent in X"
-    re.compile(rf"(?:proficient|skilled|experienced|expert|fluent)\s+in\s+({_SKILL_TERM})", re.I),
+    # "proficient/skilled/experienced/expert/fluent/trained/certified in/with X"
+    re.compile(rf"(?:proficient|skilled|experienced|expert|fluent|trained|certified|specialised|specialized|versed)\s+(?:in|with)\s+({_SKILL_TERM})", re.I),
     # "X developer / engineer / architect / programmer / specialist"
     re.compile(rf"({_SKILL_TERM})\s+(?:developer|engineer|architect|programmer|specialist)\b", re.I),
     # "N years of X" / "N years experience in X"
     re.compile(rf"\d+\+?\s+years?\s+(?:of\s+)?(?:experience\s+(?:in|with)\s+)?({_SKILL_TERM})", re.I),
-    # "experience/knowledge/expertise/familiarity with/in/of X"
-    re.compile(rf"(?:experience|knowledge|expertise|familiarity|understanding)\s+(?:with|in|of)\s+({_SKILL_TERM})", re.I),
-    # "worked with / built with / built using / developed using / using X"
-    re.compile(rf"(?:worked?\s+with|working\s+with|built\s+(?:with|using)|developed\s+(?:with|using)|implemented\s+(?:with|using)|using)\s+({_SKILL_TERM})", re.I),
+    # "experience/knowledge/expertise/exposure/proficiency/background with/in/of/on/across/via X"
+    re.compile(rf"(?:experience|knowledge|expertise|familiarity|understanding|exposure|proficiency|background|grounding)\s+(?:with|in|of|on|across|using|around|about|via|through)\s+({_SKILL_TERM})", re.I),
+    # "worked with/on / built with/using / developed using / using X"
+    re.compile(rf"(?:worked?\s+(?:with|on|using)|working\s+(?:with|on)|built\s+(?:with|using)|developed\s+(?:with|using)|implemented\s+(?:with|using)|using)\s+({_SKILL_TERM})", re.I),
+    # "hands-on / hands on [experience in/with/on] X"
+    re.compile(rf"hands[- ]on\s+(?:\w+\s+)?(?:in|with|on|of|using)\s+({_SKILL_TERM})", re.I),
 ]
 
 _STOPWORDS: frozenset[str] = frozenset({
@@ -39,6 +41,8 @@ def _is_valid(candidate: str) -> bool:
     s = candidate.strip()
     if len(s) < 2 or len(s) > 45:
         return False
+    if len(s.split()) > 5:
+        return False
     if s.lower() in _STOPWORDS:
         return False
     if not re.search(r"[a-zA-Z]", s):
@@ -46,10 +50,6 @@ def _is_valid(candidate: str) -> bool:
     return True
 
 def extract_dependency_skills(text: str) -> list[DependencyMatch]:
-    """
-    Scan full CV text for linguistic skill-claim patterns.
-    Returns deduplicated list of skill candidates at 0.75 confidence.
-    """
     seen: set[str] = set()
     results: list[DependencyMatch] = []
     for pattern in _PATTERNS:

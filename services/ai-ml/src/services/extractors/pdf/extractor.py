@@ -5,6 +5,7 @@ from pathlib import Path
 from .text_extractor import TextPDFExtractor
 from .structured_text_extractor import StructuredTextPDFExtractor
 from .ocr_extractor import OCRPDFExtractor
+from .pymupdf_extractor import PyMuPDFExtractor
 from .confidence import compute_overall_confidence
 from .models import PDFExtractionResult
 from .exceptions import PDFExtractionError
@@ -44,7 +45,30 @@ class PDFExtractor:
             path = str(path)
 
             # ----------------------------------------
-            # STEP 1 — Structured extraction
+            # STEP 0 — PyMuPDF (handles complex layouts / multi-column)
+            # ----------------------------------------
+
+            pymupdf_pages = PyMuPDFExtractor().extract(path)
+            has_pymupdf_text = any(
+                (p.text or "").strip() for p in pymupdf_pages
+            )
+
+            if has_pymupdf_text:
+                final_pages = [p for p in pymupdf_pages if (p.text or "").strip()]
+                full_text = "\n\n".join(p.text for p in final_pages)
+                confidence = compute_overall_confidence(final_pages)
+                # Skip pdfplumber / pypdf / OCR — PyMuPDF succeeded
+                return PDFExtractionResult(
+                    text=full_text,
+                    pages=final_pages,
+                    confidence=confidence,
+                    time_taken=round(time.time() - start, 2),
+                    memory_mb=0.0,
+                    error=None,
+                )
+
+            # ----------------------------------------
+            # STEP 1 — Structured extraction (pdfplumber)
             # ----------------------------------------
 
             structured_pages = StructuredTextPDFExtractor().extract(path)
