@@ -68,14 +68,15 @@ export const columns_request_list: ColumnDef<Request>[] = [
         </Button>
       </div>
     ),
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
-      return (
-        <div className="text-center w-full px-2 py-1">
-          {date.toLocaleDateString("en-GB").replace(/\//g, ".")}
-        </div>
-      );
+    accessorFn: (row) => {
+      const date = new Date(row.created_at);
+      return date.toLocaleDateString("en-GB").replace(/\//g, ".");
     },
+    cell: ({ getValue }) => (
+      <div className="text-center w-full px-2 py-1">
+        {getValue() as string}
+      </div>
+    ),
   },
   {
     header: "Actions",

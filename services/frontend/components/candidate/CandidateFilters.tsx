@@ -15,9 +15,9 @@ export interface FilterState {
   jobTitle: string;
   name: string;
   location: string;
-  experienceLevel: string;
+  experienceLevel: string[];
   skills: string[];
-  availability: string;
+  availability: string[];
 }
 
 const EXPERIENCE_LEVELS = ["Junior", "Mid", "Senior", "Lead"];
@@ -32,9 +32,9 @@ export default function CandidateFilters() {
     jobTitle: searchParams.get("jobTitle") || "",
     name: searchParams.get("name") || "",
     location: searchParams.get("location") || "",
-    experienceLevel: searchParams.get("experienceLevel") || "",
+    experienceLevel: searchParams.getAll("experienceLevel") || [],
     skills: searchParams.getAll("skills") || [],
-    availability: searchParams.get("availability") || "",
+    availability: searchParams.getAll("availability") || [],
   });
 
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(
@@ -46,14 +46,24 @@ export default function CandidateFilters() {
     setFilters(prev => ({ ...prev, [field]: value }));
   };
 
+  const toggleMultiSelect = (field: "experienceLevel" | "availability", value: string) => {
+    setFilters(prev => {
+      const current = prev[field] as string[];
+      const next = current.includes(value)
+        ? current.filter(v => v !== value)
+        : [...current, value];
+      return { ...prev, [field]: next };
+    });
+  };
+
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (filters.q) params.set("q", filters.q);
     if (filters.jobTitle) params.set("jobTitle", filters.jobTitle);
     if (filters.name) params.set("name", filters.name);
     if (filters.location) params.set("location", filters.location);
-    if (filters.experienceLevel) params.set("experienceLevel", filters.experienceLevel);
-    if (filters.availability) params.set("availability", filters.availability);
+    filters.experienceLevel.forEach(level => params.append("experienceLevel", level));
+    filters.availability.forEach(opt => params.append("availability", opt));
     filters.skills.forEach(skill => params.append("skills", skill));
 
     router.push(`/candidates?${params.toString()}`);
@@ -65,9 +75,9 @@ export default function CandidateFilters() {
       jobTitle: "",
       name: "",
       location: "",
-      experienceLevel: "",
+      experienceLevel: [],
       skills: [],
-      availability: "",
+      availability: [],
     });
     router.push("/candidates");
   };
@@ -176,9 +186,9 @@ export default function CandidateFilters() {
                   {EXPERIENCE_LEVELS.map((level) => (
                     <Badge
                       key={level}
-                      variant={filters.experienceLevel === level ? "default" : "outline"}
+                      variant={filters.experienceLevel.includes(level) ? "default" : "outline"}
                       className="cursor-pointer px-3 py-1"
-                      onClick={() => handleChange("experienceLevel", filters.experienceLevel === level ? "" : level)}
+                      onClick={() => toggleMultiSelect("experienceLevel", level)}
                     >
                       {level}
                     </Badge>
@@ -192,9 +202,9 @@ export default function CandidateFilters() {
                   {AVAILABILITY_OPTIONS.map((opt) => (
                     <Badge
                       key={opt}
-                      variant={filters.availability === opt ? "default" : "outline"}
+                      variant={filters.availability.includes(opt) ? "default" : "outline"}
                       className="cursor-pointer px-3 py-1"
-                      onClick={() => handleChange("availability", filters.availability === opt ? "" : opt)}
+                      onClick={() => toggleMultiSelect("availability", opt)}
                     >
                       {opt}
                     </Badge>

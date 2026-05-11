@@ -560,9 +560,10 @@ async def list_requests(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     state: Optional[str] = Query(default=None),
+    q: Optional[str] = Query(default=None),
     session: AsyncSession = Depends(get_db_session)
 ):
-    cache_key = f"hr_app:requests:list:{skip}:{limit}:{state}"
+    cache_key = f"hr_app:requests:list:{skip}:{limit}:{state}:{q or ''}"
 
     try:
         redis = await get_redis_pool()
@@ -586,6 +587,15 @@ async def list_requests(
 
     if state:
         stmt = stmt.where(StaffingRequest.state == state)
+        
+    if q:
+        stmt = stmt.where(
+            or_(
+                StaffingRequest.company_name.ilike(f"%{q}%"),
+                StaffingRequest.request_title.ilike(f"%{q}%"),
+                StaffingRequest.request_number.ilike(f"%{q}%")
+            )
+        )
 
     result = await session.execute(stmt)
     rows = result.fetchall()

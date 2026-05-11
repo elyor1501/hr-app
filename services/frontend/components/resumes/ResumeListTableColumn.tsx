@@ -112,14 +112,15 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
         </Button>
       </div>
     ),
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
-      return (
-        <div className="text-center w-full px-2 py-1">
-          {date.toLocaleDateString("en-GB").replace(/\//g, ".")}
-        </div>
-      );
+    accessorFn: (row) => {
+      const date = new Date(row.created_at);
+      return date.toLocaleDateString("en-GB").replace(/\//g, ".");
     },
+    cell: ({ getValue }) => (
+      <div className="text-center w-full px-2 py-1">
+        {getValue() as string}
+      </div>
+    ),
   },
   {
     id: "actions",
