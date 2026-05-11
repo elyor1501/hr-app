@@ -1,13 +1,19 @@
 export const getApiUrl = (): string => {
-  if (typeof window === 'undefined') {
-    return 'http://hr-backend:8000';
+  if (typeof window === "undefined") {
+    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   }
   
+
   const url = process.env.NEXT_PUBLIC_API_URL;
   if (!url || url === 'undefined' || url.trim() === '') {
     return '';
   }
-  
+
+  if (url.startsWith("http://") && window.location.protocol === "https:") {
+    console.error("Insecure API URL blocked:", url);
+    return url.replace("http://", "https://");
+  }
+
   return url;
 };
 

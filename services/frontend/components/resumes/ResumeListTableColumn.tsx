@@ -4,7 +4,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Download, EyeIcon, Loader2 } from "lucide-react";
 import { DeleteResumeButton } from "./DeleteResumeButton";
-import { downloadResume, viewResume } from "@/lib/resumeList/action";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -18,49 +17,52 @@ export type ResumeList = {
 
 const ActionCell = ({ resume }: { resume: ResumeList }) => {
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isViewing, setIsViewing] = useState(false);
 
   const onDownload = async () => {
+    const fileUrl = resume.file_url;
+    if (!fileUrl) {
+      toast.error("File URL not available");
+      return;
+    }
     setIsDownloading(true);
     try {
-      await downloadResume(resume.id, resume.file_name, resume.file_url);
+      const res = await fetch(fileUrl);
+      if (!res.ok) throw new Error("Download failed");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = resume.file_name || "resume.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
       toast.success("Downloaded successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to download");
     } finally {
       setIsDownloading(false);
     }
   };
 
-  const onView = async () => {
-    setIsViewing(true);
-    try {
-      const fileUrl = resume.file_url;
-
-      const extension = fileUrl.split(".").pop()?.toLowerCase();
-
-      if (extension === "pdf") {
-        window.open(fileUrl, "_blank");
-      } else {
-        const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-        window.open(viewerUrl, "_blank");
-      }
-    } catch (error) {
-      toast.error("Failed to view");
-    } finally {
-      setIsViewing(false);
+  const onView = () => {
+    const fileUrl = resume.file_url;
+    if (!fileUrl) {
+      toast.error("File URL not available");
+      return;
+    }
+    const extension = fileUrl.split(".").pop()?.toLowerCase();
+    if (extension === "pdf") {
+      window.open(fileUrl, "_blank");
+    } else {
+      const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+      window.open(viewerUrl, "_blank");
     }
   };
 
   return (
     <div className="flex gap-2">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onView}
-        disabled={isViewing}
-        title="View Resume"
-      >
+      <Button variant="ghost" size="icon" onClick={onView} title="View Resume">
         <EyeIcon className="w-4 h-4" />
       </Button>
       <DeleteResumeButton id={resume.id} />

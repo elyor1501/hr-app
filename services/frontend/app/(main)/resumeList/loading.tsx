@@ -1,6 +1,12 @@
+import { Loader2 } from "lucide-react";
+
 export default function Loading() {
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
+       <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground font-medium">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Loading data, please wait...
+      </div>
       {/* Header skeleton */}
       <div className="flex items-center justify-between border p-4 rounded-lg mt-2">
         <div className="h-5 w-28 bg-muted animate-pulse rounded" />
