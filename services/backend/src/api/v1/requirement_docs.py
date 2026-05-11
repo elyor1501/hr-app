@@ -47,6 +47,7 @@ class RequirementDocDetailResponse(BaseModel):
     employment_type: Optional[str] = None
     work_mode: Optional[str] = None
     processing_status: Optional[str] = None
+    staffing_request_id: Optional[str] = None
     task_id: Optional[str] = None
     created_at: Optional[str]
     updated_at: Optional[str]
@@ -190,6 +191,7 @@ async def get_requirement_document(
                    job_title, required_skills, preferred_skills,
                    tools_and_technologies, experience_required,
                    employment_type, work_mode, processing_status,
+                   staffing_request_id,
                    created_at, updated_at
             FROM requirement_documents
             WHERE id = :id
@@ -215,6 +217,7 @@ async def get_requirement_document(
         "employment_type": row.employment_type,
         "work_mode": row.work_mode,
         "processing_status": row.processing_status,
+        "staffing_request_id": str(row.staffing_request_id) if row.staffing_request_id else None,
         "task_id": None,
         "created_at": row.created_at.isoformat() if row.created_at else None,
         "updated_at": row.updated_at.isoformat() if row.updated_at else None,

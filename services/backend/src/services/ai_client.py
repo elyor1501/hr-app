@@ -137,6 +137,12 @@ class AIClient:
             "recommendations": []
         }
 
+    async def match_candidates(self, job_description: str, top_k: int = 10) -> Dict[str, Any]:
+        return await self._request("POST", "/match-candidates", {
+            "job_description": job_description,
+            "top_k": top_k,
+        })
+
     async def semantic_search(self, query_text: str = None, query_embedding: List[float] = None, top_k: int = 5, min_score: float = 0.0) -> Dict[str, Any]:
         payload = {"top_k": top_k, "min_score": min_score}
         if query_text:

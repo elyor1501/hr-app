@@ -1,5 +1,7 @@
 import asyncio
 import json
+import os
+import re
 import uuid as uuid_module
 from datetime import datetime, date
 from typing import Any, Dict, List, Optional
@@ -250,27 +252,31 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
     await _link_cv_to_candidate(session, new_candidate, resume)
 
 
-async def _auto_create_staffing_request(session, doc_id: str, structured_data: dict, raw_text: str):
+def _filename_to_title(file_name: str) -> str:
+    # JD filenames follow the "JD_<title>_<audience>.docx" template; strip the
+    # template framing so the form lands on a human-readable title.
+    base = os.path.splitext(file_name or "")[0]
+    base = re.sub(r"^JD[_\-\s]+", "", base, flags=re.IGNORECASE)
+    base = re.sub(r"[_\-\s]+(Partner|Internal|Client|External)\s*$", "", base, flags=re.IGNORECASE)
+    base = re.sub(r"[_\s]+", " ", base).strip()
+    return base or "Untitled Position"
+
+
+async def _auto_create_staffing_request(session, doc_id: str, raw_text: str):
     try:
-        existing = await session.execute(
-            select(StaffingRequest).where(
-                StaffingRequest.request_number.like(f"%{doc_id[:8]}%")
-            )
-        )
-        if existing.scalar_one_or_none():
+        from sqlalchemy import text
+
+        existing_doc = (await session.execute(
+            text("SELECT staffing_request_id, file_name FROM requirement_documents WHERE id = :doc_id"),
+            {"doc_id": doc_id}
+        )).fetchone()
+
+        if existing_doc and existing_doc.staffing_request_id:
             return
 
-        job_title = structured_data.get("job_title") or "Untitled Position"
-        company_name = structured_data.get("company_name") or "Unknown Company"
-        summary = structured_data.get("summary") or ""
-        responsibilities = structured_data.get("responsibilities", [])
-
-        if summary:
-            job_description = summary
-        elif responsibilities:
-            job_description = "\n".join(responsibilities)
-        else:
-            job_description = raw_text[:2000] if raw_text else "No description available"
+        file_name = existing_doc.file_name if existing_doc else ""
+        job_title = _filename_to_title(file_name)
+        job_description = raw_text if raw_text and raw_text.strip() else "No description available"
 
         unique_suffix = uuid_module.uuid4().hex[:6].upper()
         year = datetime.now().year
@@ -278,7 +284,7 @@ async def _auto_create_staffing_request(session, doc_id: str, structured_data: d
 
         staffing_req = StaffingRequest(
             request_number=request_number,
-            company_name=company_name,
+            company_name="Unknown Company",
             request_title=job_title,
             job_description=job_description,
             prepared_rate=None,
@@ -301,7 +307,6 @@ async def _auto_create_staffing_request(session, doc_id: str, structured_data: d
         )
         session.add(audit)
 
-        from sqlalchemy import text
         await session.execute(
             text("UPDATE requirement_documents SET staffing_request_id = :req_id WHERE id = :doc_id"),
             {"req_id": str(staffing_req.id), "doc_id": doc_id}
@@ -507,56 +512,40 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
         if not raw_text:
             raise Exception("No text extracted from requirement document")
 
-        await update_job_status(ctx, job_id, "in_progress", progress=40)
-
-        embedding, structured_res = await asyncio.gather(
-            ai_client.get_embeddings(raw_text),
-            ai_client.structure_requirement_doc(raw_text, doc_id)
-        )
-
-        structured_data = structured_res.get("structured_data", {})
-
         await update_job_status(ctx, job_id, "in_progress", progress=75)
 
-        embedding_str = "[" + ",".join(str(x) for x in embedding) + "]"
-
+        # JD embedding is computed on-demand by the match-candidates endpoint from the
+        # current Job Description textarea, so no embedding is stored on the document
+        # row. This also avoids a schema mismatch (the legacy column was sized for the
+        # Gemini 3072-dim model while the active embedding pipeline returns 768-dim
+        # local vectors).
         async with async_session_maker() as session:
             from sqlalchemy import text
             await session.execute(
                 text("""
                     UPDATE requirement_documents SET
                         raw_text = :raw_text,
-                        structured_data = CAST(:structured_data AS jsonb),
-                        embedding = CAST(:embedding AS vector),
-                        job_title = :job_title,
-                        required_skills = :required_skills,
-                        preferred_skills = :preferred_skills,
-                        tools_and_technologies = :tools_and_technologies,
-                        experience_required = :experience_required,
-                        employment_type = :employment_type,
-                        work_mode = :work_mode,
+                        structured_data = '{}'::jsonb,
+                        job_title = NULL,
+                        required_skills = NULL,
+                        preferred_skills = NULL,
+                        tools_and_technologies = NULL,
+                        experience_required = NULL,
+                        employment_type = NULL,
+                        work_mode = NULL,
                         processing_status = 'completed',
                         updated_at = NOW()
                     WHERE id = :doc_id
                 """),
                 {
                     "raw_text": raw_text,
-                    "structured_data": json.dumps(structured_data),
-                    "embedding": embedding_str,
-                    "job_title": structured_data.get("job_title"),
-                    "required_skills": structured_data.get("required_skills", []),
-                    "preferred_skills": structured_data.get("preferred_skills", []),
-                    "tools_and_technologies": structured_data.get("tools_and_technologies", []),
-                    "experience_required": structured_data.get("experience_required"),
-                    "employment_type": structured_data.get("employment_type"),
-                    "work_mode": structured_data.get("work_mode"),
                     "doc_id": doc_id,
                 }
             )
             await session.commit()
 
         async with async_session_maker() as session:
-            await _auto_create_staffing_request(session, doc_id, structured_data, raw_text)
+            await _auto_create_staffing_request(session, doc_id, raw_text)
             await session.commit()
 
         try:

@@ -6,6 +6,37 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { uploadJobDescriptions } from "@/lib/jobs/action";
+import { getApiUrl, getAuthToken } from "@/lib/api-config";
+
+// Worker pipeline takes ~10–20s end-to-end (extract + embed + auto-create request).
+// We poll the document until staffing_request_id is populated, then redirect.
+const POLL_INTERVAL_MS = 1500;
+const POLL_TIMEOUT_MS = 60_000;
+
+async function waitForStaffingRequest(docId: string): Promise<string | null> {
+  const apiUrl = getApiUrl();
+  const token = getAuthToken();
+  const deadline = Date.now() + POLL_TIMEOUT_MS;
+
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(`${apiUrl}/api/v1/requirement-docs/${docId}`, {
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.staffing_request_id) {
+          return data.staffing_request_id as string;
+        }
+      }
+    } catch {
+      // Transient network errors are tolerated; the poll loop retries until the deadline.
+    }
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+  }
+  return null;
+}
 
 type UploadFile = {
   file: File;
@@ -148,17 +179,30 @@ export function FileUpload({
       setIsUploading(true);
       setError(null);
       setUploadStatus(`Uploading ${uploads.length} files...`);
-      
-      const filesToUpload = uploads.map(u => u.file);
+
+      const filesToUpload = uploads.map((u) => u.file);
       const result = await uploadJobDescriptions(filesToUpload);
 
-      if (Array.isArray(result)) {
-        setUploadStatus(`${result.length} files uploaded! Processing started.`);
-        toast.success(`${result.length} files uploaded successfully`);
+      if (Array.isArray(result) && result.length > 0) {
+        toast.success(`${result.length} file(s) uploaded`);
+        setUploadStatus("Extracting text and creating request...");
+
+        const firstDocId = result[0]?.id;
+        if (firstDocId) {
+          const requestId = await waitForStaffingRequest(firstDocId);
+          if (requestId) {
+            onClose();
+            setUploads([]);
+            router.push(`/requests/${requestId}`);
+            return;
+          }
+          toast.error(
+            "Request did not finish processing in time. Refresh the requests list.",
+          );
+        }
       }
 
       setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
-
       onClose();
       router.refresh();
       setUploads([]);

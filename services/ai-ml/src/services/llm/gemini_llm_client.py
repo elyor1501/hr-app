@@ -10,10 +10,11 @@ from google import genai
 
 logger = logging.getLogger(__name__)
 
-# Gemini 2.5 Flash pricing with thinking disabled (thinking_budget=0), as of 2025
-# Source: https://ai.google.dev/pricing
-_INPUT_COST_PER_TOKEN  = 0.075  / 1_000_000   # $0.075 per 1M input tokens
-_OUTPUT_COST_PER_TOKEN = 0.300  / 1_000_000   # $0.300 per 1M output tokens
+# Gemini 2.5 Flash standard tier — https://ai.google.dev/gemini-api/docs/pricing
+# Output rate is identical whether thinking is enabled or disabled; this path runs with
+# thinking_budget=0 (configured below) so output reflects only the JSON payload.
+_INPUT_COST_PER_TOKEN  = 0.30 / 1_000_000   # $0.30 per 1M input tokens
+_OUTPUT_COST_PER_TOKEN = 2.50 / 1_000_000   # $2.50 per 1M output tokens
 
 
 class GeminiLLMClient:
