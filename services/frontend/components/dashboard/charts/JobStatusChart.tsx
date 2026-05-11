@@ -51,8 +51,12 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="pb-2 sm:pb-4">
-        <CardTitle className="text-base sm:text-lg">Request Jobs Overview</CardTitle>
-        <CardDescription className="text-xs sm:text-sm">Real-time status of request postings</CardDescription>
+        <CardTitle className="text-base sm:text-lg">
+          Request Jobs Overview
+        </CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
+          Real-time status of request postings
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6">
@@ -73,21 +77,28 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
               ))}
             </Pie>
             <Tooltip
-              position={{ x: 160, y: 10 }}
+              wrapperStyle={{
+                pointerEvents: "none",
+                zIndex: 9999,
+              }}
               contentStyle={{
                 borderRadius: "8px",
                 border: "1px solid hsl(var(--border))",
-                background: "hsl(var(--card))",
+                backgroundColor: "hsl(var(--card))",
                 color: "hsl(var(--foreground))",
-                fontSize: "11px",
+                fontSize: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
               }}
-              labelStyle={{ color: "hsl(var(--foreground))" }}
-              itemStyle={{ color: "hsl(var(--foreground))" }}
+              itemStyle={{
+                color: "hsl(var(--foreground))",
+              }}
+              cursor={{ fill: "transparent" }}
+              offset={25}
             />
           </PieChart>
 
-          <div className="absolute text-center">
-            <p className="text-2xl sm:text-3xl font-bold text-foreground">{totalJobs}</p>
+          <div className="absolute text-center pointer-events-none z-0">
+            <p className="text-3xl font-bold text-foreground">{totalJobs}</p>
             <p className="text-xs text-muted-foreground">Total Requests</p>
           </div>
         </div>

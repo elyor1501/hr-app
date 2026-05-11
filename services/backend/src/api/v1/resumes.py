@@ -76,6 +76,16 @@ class BulkUploadAccepted(BaseModel):
     batch_id: str
 
 
+class BulkDeleteRequest(BaseModel):
+    ids: List[UUID]
+
+
+class BulkDeleteResponse(BaseModel):
+    deleted: int
+    failed: int
+    message: str
+
+
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepository[Resume]:
     return BaseRepository(Resume, session)
 
@@ -197,13 +207,54 @@ async def bulk_upload_resumes(
     )
 
 
+@router.delete("/bulk", response_model=BulkDeleteResponse)
+async def bulk_delete_resumes(
+    data: BulkDeleteRequest,
+    session: AsyncSession = Depends(get_db_session),
+):
+    if not data.ids:
+        raise HTTPException(status_code=400, detail="No IDs provided")
+
+    deleted = 0
+    failed = 0
+
+    for resume_id in data.ids:
+        try:
+            result = await session.execute(
+                select(Resume).where(Resume.id == resume_id)
+            )
+            resume = result.scalar_one_or_none()
+            if not resume:
+                failed += 1
+                continue
+            try:
+                await delete_file_from_storage(resume.file_url)
+            except Exception:
+                pass
+            await session.delete(resume)
+            deleted += 1
+        except Exception:
+            failed += 1
+            continue
+
+    await session.commit()
+    await invalidate_resumes_cache()
+
+    return BulkDeleteResponse(
+        deleted=deleted,
+        failed=failed,
+        message=f"Deleted {deleted} resumes successfully"
+    )
+
+
 @router.get("/", response_model=PaginatedResumesResponse)
 async def list_resumes(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
+    q: Optional[str] = Query(None),
     session: AsyncSession = Depends(get_db_session)
 ):
-    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}"
+    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}:{q or ''}"
 
     try:
         redis = await get_redis_pool()
@@ -213,20 +264,28 @@ async def list_resumes(
     except Exception:
         pass
 
-    count_result = await session.execute(text("SELECT COUNT(*) FROM resumes"))
+    where_clause = ""
+    params = {"skip": (page - 1) * page_size, "limit": page_size}
+    if q:
+        where_clause = "WHERE file_name ILIKE :q"
+        params["q"] = f"%{q}%"
+
+    count_query = text(f"SELECT COUNT(*) FROM resumes {where_clause}")
+    count_result = await session.execute(count_query, {"q": params.get("q")} if q else {})
     total = count_result.scalar() or 0
 
     offset = (page - 1) * page_size
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
-    query = text("""
+    query = text(f"""
         SELECT id, file_name, file_url, raw_text, created_at, updated_at
         FROM resumes
+        {where_clause}
         ORDER BY created_at DESC
         OFFSET :skip LIMIT :limit
     """)
 
-    result = await session.execute(query, {"skip": offset, "limit": page_size})
+    result = await session.execute(query, params)
     rows = result.fetchall()
 
     resumes = [

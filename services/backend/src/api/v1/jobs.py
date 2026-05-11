@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select, func, text
@@ -59,9 +59,10 @@ async def create_job(job_in: JobCreate, repo: BaseRepository[Job] = Depends(get_
 async def list_jobs(
     page: int = Query(1, ge=1, description="Page number (starts from 1)"),
     page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
+    q: Optional[str] = Query(None),
     session: AsyncSession = Depends(get_db_session),
 ):
-    cache_key = f"{JOBS_CACHE_KEY}:{page}:{page_size}"
+    cache_key = f"{JOBS_CACHE_KEY}:{page}:{page_size}:{q or ''}"
     
     try:
         redis = await get_redis_pool()
@@ -71,23 +72,30 @@ async def list_jobs(
     except Exception:
         pass
 
-    count_query = text("SELECT COUNT(*) FROM jobs")
-    count_result = await session.execute(count_query)
+    where_clause = ""
+    params = {"offset": (page - 1) * page_size, "limit": page_size}
+    if q:
+        where_clause = "WHERE title ILIKE :q OR department ILIKE :q"
+        params["q"] = f"%{q}%"
+
+    count_query = text(f"SELECT COUNT(*) FROM jobs {where_clause}")
+    count_result = await session.execute(count_query, {"q": params.get("q")} if q else {})
     total = count_result.scalar() or 0
     
     offset = (page - 1) * page_size
     
-    query = text("""
+    query = text(f"""
         SELECT id, title, department, employment_type, work_mode, location,
                description, responsibilities, required_skills, preferred_skills,
                experience_required, education, salary_range, openings, hiring_manager,
                application_posted, application_deadline, status, created_at, updated_at
         FROM jobs
+        {where_clause}
         ORDER BY created_at DESC
         OFFSET :offset LIMIT :limit
     """)
     
-    result = await session.execute(query, {"offset": offset, "limit": page_size})
+    result = await session.execute(query, params)
     rows = result.fetchall()
     
     items = []
