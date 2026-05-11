@@ -7,7 +7,7 @@ import asyncio
 import structlog
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select, and_, or_
+from sqlalchemy import func, select, and_, or_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.session import get_db_session, async_session_maker
@@ -796,11 +796,36 @@ async def auto_match_candidates(
         logger.error("ai_match_call_failed", request_id=str(request_id), error=str(exc))
         raise HTTPException(status_code=502, detail=f"Matching service unavailable: {exc}")
 
-    similarity_by_id = {
-        m["candidate_id"]: float(m.get("similarity", 0.0))
-        for m in match_payload.get("matches", [])
-    }
-    total_evaluated = int(match_payload.get("total_evaluated", 0))
+    jd_embedding = match_payload.get("embedding") or []
+    if not jd_embedding:
+        logger.error("ai_match_empty_embedding", request_id=str(request_id))
+        raise HTTPException(status_code=502, detail="Matching service returned no embedding")
+
+    # pgvector requires the literal as a bracketed string when cast to vector type.
+    vec_literal = "[" + ",".join(f"{float(x):.8f}" for x in jd_embedding) + "]"
+
+    # `<=>` is cosine distance (0 = identical). Convert to similarity in the SELECT.
+    sim_rows = (await session.execute(
+        text(
+            """
+            SELECT id, 1 - (embedding <=> CAST(:jd_vec AS vector)) AS similarity
+            FROM candidates
+            WHERE embedding IS NOT NULL AND status = 'active'
+            ORDER BY embedding <=> CAST(:jd_vec AS vector)
+            LIMIT :top_k
+            """
+        ),
+        {"jd_vec": vec_literal, "top_k": data.top_k},
+    )).fetchall()
+
+    total_evaluated = (await session.execute(
+        text(
+            "SELECT COUNT(*) FROM candidates "
+            "WHERE embedding IS NOT NULL AND status = 'active'"
+        )
+    )).scalar() or 0
+
+    similarity_by_id = {str(row.id): float(row.similarity) for row in sim_rows}
 
     candidate_ids = [UUID(cid) for cid in similarity_by_id.keys()]
     candidates: List[Candidate] = []

@@ -23,7 +23,7 @@ class CandidateBase(BaseSchema):
     current_company: Optional[str] = Field(default=None, max_length=200)
     years_of_experience: Optional[int] = Field(default=None, ge=0, le=50)
     skills: Optional[List[str]] = Field(default=None)
-    resume_text: Optional[str] = Field(default=None, max_length=50000)
+    resume_text: Optional[str] = Field(default=None)
     location: Optional[str] = Field(default=None, max_length=200)
     linkedin_url: Optional[str] = Field(default=None, max_length=500)
     resume: Optional[str] = Field(default=None)
