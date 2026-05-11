@@ -76,6 +76,16 @@ class BulkUploadAccepted(BaseModel):
     batch_id: str
 
 
+class BulkDeleteRequest(BaseModel):
+    ids: List[UUID]
+
+
+class BulkDeleteResponse(BaseModel):
+    deleted: int
+    failed: int
+    message: str
+
+
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepository[Resume]:
     return BaseRepository(Resume, session)
 
@@ -194,6 +204,46 @@ async def bulk_upload_resumes(
         accepted=len(valid_files),
         message=f"{len(valid_files)} files accepted for processing",
         batch_id=batch_id,
+    )
+
+
+@router.delete("/bulk", response_model=BulkDeleteResponse)
+async def bulk_delete_resumes(
+    data: BulkDeleteRequest,
+    session: AsyncSession = Depends(get_db_session),
+):
+    if not data.ids:
+        raise HTTPException(status_code=400, detail="No IDs provided")
+
+    deleted = 0
+    failed = 0
+
+    for resume_id in data.ids:
+        try:
+            result = await session.execute(
+                select(Resume).where(Resume.id == resume_id)
+            )
+            resume = result.scalar_one_or_none()
+            if not resume:
+                failed += 1
+                continue
+            try:
+                await delete_file_from_storage(resume.file_url)
+            except Exception:
+                pass
+            await session.delete(resume)
+            deleted += 1
+        except Exception:
+            failed += 1
+            continue
+
+    await session.commit()
+    await invalidate_resumes_cache()
+
+    return BulkDeleteResponse(
+        deleted=deleted,
+        failed=failed,
+        message=f"Deleted {deleted} resumes successfully"
     )
 
 
