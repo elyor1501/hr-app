@@ -10,8 +10,9 @@ interface PageProps {
 export default async function Page({ searchParams }: PageProps) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
+  const q = params.q as string | undefined;
 
-  const result = await getResumes(page, 10);
+  const result = await getResumes(page, 10, q);
   const resumes = result.items;
   const totalPages = result.total_pages;
 
@@ -27,4 +28,4 @@ export default async function Page({ searchParams }: PageProps) {
       <ServerPagination currentPage={page} totalPages={totalPages} />
     </div>
   );
-}
+}

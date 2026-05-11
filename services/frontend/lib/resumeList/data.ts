@@ -24,7 +24,8 @@ let resumeCache: { data: PaginatedResumes; timestamp: number } | null = null;
 
 export async function getResumes(
   page: number = 1,
-  page_size: number = 10
+  page_size: number = 10,
+  q?: string
 ): Promise<PaginatedResumes> {
   const isServer = typeof window === "undefined";
 
@@ -45,9 +46,15 @@ export async function getResumes(
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    page_size: page_size.toString(),
+  });
+  if (q) queryParams.set("q", q);
+
   const fullUrl = apiUrl
-    ? `${apiUrl}/api/v1/resumes/?page=${page}&page_size=${page_size}`
-    : `/api/v1/resumes/?page=${page}&page_size=${page_size}`;
+    ? `${apiUrl}/api/v1/resumes/?${queryParams.toString()}`
+    : `/api/v1/resumes/?${queryParams.toString()}`;
 
   const empty: PaginatedResumes = {
     items: [],

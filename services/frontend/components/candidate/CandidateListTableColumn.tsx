@@ -65,28 +65,29 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     size: 80,
   },
   {
-  accessorKey: "created_at",
-  header: ({ column }) => (
-    <div className="flex items-center justify-center w-full">
-      <Button
-        variant="ghost"
-        className="flex items-center gap-1 px-2 py-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        <span>Created At</span>
-        <ArrowUpDown className="h-3 w-3" />
-      </Button>
-    </div>
-  ),
-  cell: ({ row }) => {
-    const date = new Date(row.getValue("created_at"));
-    return (
-      <div className="text-center w-full px-2 py-1">
-        {date.toLocaleDateString("en-GB").replace(/\//g, ".")}
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <div className="flex items-center justify-center w-full">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-1 px-2 py-1"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span>Created At</span>
+          <ArrowUpDown className="h-3 w-3" />
+        </Button>
       </div>
-    );
+    ),
+    accessorFn: (row) => {
+      const date = new Date(row.created_at);
+      return date.toLocaleDateString("en-GB").replace(/\//g, ".");
+    },
+    cell: ({ getValue }) => (
+      <div className="text-center w-full px-2 py-1">
+        {getValue() as string}
+      </div>
+    ),
   },
-},
   {
     header: "Actions",
     cell: ({ row }) => {

@@ -22,6 +22,7 @@ export type CandidateList = {
   certifications?: any[];
   candidate_status?: "active" | "inactive";
   status?: "processing" | "completed" | "error";
+  created_at: string;
 };
 
 export type PaginatedCandidates = {
@@ -201,8 +202,14 @@ export async function searchCandidates(params: any): Promise<CandidateList[]> {
     if (params.name) queryParams.set("name", params.name as string);
     if (params.jobTitle) queryParams.set("job_title", params.jobTitle as string);
     if (params.location) queryParams.set("location", params.location as string);
-    if (params.experienceLevel) queryParams.set("experience_level", params.experienceLevel as string);
-    if (params.availability) queryParams.set("availability", params.availability as string);
+    if (params.experienceLevel) {
+      const levels = Array.isArray(params.experienceLevel) ? params.experienceLevel.join(",") : params.experienceLevel;
+      queryParams.set("experience_level", levels);
+    }
+    if (params.availability) {
+      const opts = Array.isArray(params.availability) ? params.availability.join(",") : params.availability;
+      queryParams.set("availability", opts);
+    }
     
     if (params.skills) {
       const skills = Array.isArray(params.skills) ? params.skills.join(",") : params.skills;

@@ -40,6 +40,9 @@ interface DataTableProps<TData, TValue> {
   showPagination?: boolean;
   showSearch?: boolean;
   showColumns?: boolean;
+  searchPlaceholder?: string;
+  globalFilterValue?: string;
+  onGlobalFilterChange?: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,6 +53,9 @@ export function DataTable<TData, TValue>({
   showPagination = true,
   showSearch = true,
   showColumns = true,
+  searchPlaceholder = "Search...",
+  globalFilterValue,
+  onGlobalFilterChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     {
@@ -68,7 +74,26 @@ export function DataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: 10,
   });
-  const [globalFilter, setGlobalFilter] = React.useState("");
+  
+  const [globalFilter, setGlobalFilter] = React.useState(globalFilterValue || "");
+
+  // Update internal state when prop changes
+  React.useEffect(() => {
+    if (globalFilterValue !== undefined) {
+      setGlobalFilter(globalFilterValue);
+    }
+  }, [globalFilterValue]);
+
+  // Debounce search changes
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (onGlobalFilterChange && globalFilter !== globalFilterValue) {
+        onGlobalFilterChange(globalFilter);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [globalFilter, onGlobalFilterChange, globalFilterValue]);
 
   const table = useReactTable({
     data,
@@ -97,7 +122,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center py-4">
           {showSearch && (
             <Input
-              placeholder={`Search...`}
+              placeholder={searchPlaceholder}
               value={globalFilter ?? ""}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className="w-32 md:w-64"

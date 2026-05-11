@@ -21,16 +21,22 @@ export type RequestItem = {
 
 export async function getRequests(
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  q?: string
 ): Promise<RequestItem[]> {
   const apiUrl = getApiUrl();
   const token = getAuthToken();
 
   const skip = (page - 1) * limit;
+  const queryParams = new URLSearchParams({
+    skip: skip.toString(),
+    limit: limit.toString(),
+  });
+  if (q) queryParams.set("q", q);
 
   try {
     const res = await fetch(
-      `${apiUrl}/api/v1/requests?skip=${skip}&limit=${limit}`,
+      `${apiUrl}/api/v1/requests?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {

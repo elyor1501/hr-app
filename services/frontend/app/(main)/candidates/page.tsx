@@ -1,6 +1,6 @@
 import CandidatesTable from "@/components/candidate/CandidateTable";
 import { CompareBar } from "@/components/candidate/CompareBar";
-import { getCandidates } from "@/lib/candidates/data";
+import { getCandidates, searchCandidates, PaginatedCandidates } from "@/lib/candidates/data";
 import { getResumes } from "@/lib/resumeList/data";
 import ServerPagination from "@/components/ServerPagination";
 import CandidateFilters from "@/components/candidate/CandidateFilters";
@@ -14,8 +14,26 @@ export default async function Page({ searchParams }: PageProps) {
   const page = Number(params.page) || 1;
   const pageSize = 10;
 
-  const [candidateResult, resumeResult] = await Promise.all([
-    getCandidates(page, pageSize),
+  const hasFilters = params.q || params.name || params.jobTitle || params.location || params.experienceLevel || params.availability || params.skills;
+
+  let candidateResult: PaginatedCandidates;
+  
+  if (hasFilters) {
+    const items = await searchCandidates(params);
+    candidateResult = {
+      items,
+      total: items.length,
+      page: 1,
+      page_size: 100,
+      total_pages: 1,
+      has_next: false,
+      has_previous: false
+    };
+  } else {
+    candidateResult = await getCandidates(page, pageSize);
+  }
+
+  const [resumeResult] = await Promise.all([
     getResumes(1, pageSize),
   ]);
 

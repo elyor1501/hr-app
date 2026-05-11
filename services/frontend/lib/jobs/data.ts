@@ -24,20 +24,26 @@ export type JobList = {
 let jobCache: { data: JobList[]; timestamp: number } | null = null;
 const CACHE_TTL = 30000;
 
-export async function getJob(): Promise<JobList[]> {
+export async function getJob(
+  page: number = 1,
+  page_size: number = 10,
+  q?: string
+): Promise<{ items: JobList[]; total_pages: number }> {
   try {
-    if (jobCache && Date.now() - jobCache.timestamp < CACHE_TTL) {
-      return jobCache.data;
-    }
-
     const apiUrl = getApiUrl();
     const token = getAuthToken();
     const headers: HeadersInit = {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     };
 
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      page_size: page_size.toString(),
+    });
+    if (q) queryParams.set("q", q);
+
     const res = await fetch(
-      `${apiUrl}/api/v1/jobs/?page=1&page_size=100`,
+      `${apiUrl}/api/v1/jobs/?${queryParams.toString()}`,
       {
         headers,
         next: { revalidate: 30 },
@@ -47,23 +53,25 @@ export async function getJob(): Promise<JobList[]> {
     if (!res.ok) {
       const text = await res.text().catch(() => "Unable to read response");
       console.error("Failed to fetch jobs:", res.status, text);
-      return [];
+      return { items: [], total_pages: 1 };
     }
 
     const data = await res.json();
 
     let items: JobList[] = [];
+    let total_pages = 1;
     if (data && data.items && Array.isArray(data.items)) {
       items = data.items;
+      total_pages = data.total_pages ?? 1;
     } else if (Array.isArray(data)) {
       items = data;
     }
 
     jobCache = { data: items, timestamp: Date.now() };
-    return items;
+    return { items, total_pages };
   } catch (err) {
     console.error("Fetch error:", err);
-    return [];
+    return { items: [], total_pages: 1 };
   }
 }
 

@@ -251,9 +251,10 @@ async def bulk_delete_resumes(
 async def list_resumes(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
+    q: Optional[str] = Query(None),
     session: AsyncSession = Depends(get_db_session)
 ):
-    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}"
+    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}:{q or ''}"
 
     try:
         redis = await get_redis_pool()
@@ -263,20 +264,28 @@ async def list_resumes(
     except Exception:
         pass
 
-    count_result = await session.execute(text("SELECT COUNT(*) FROM resumes"))
+    where_clause = ""
+    params = {"skip": (page - 1) * page_size, "limit": page_size}
+    if q:
+        where_clause = "WHERE file_name ILIKE :q"
+        params["q"] = f"%{q}%"
+
+    count_query = text(f"SELECT COUNT(*) FROM resumes {where_clause}")
+    count_result = await session.execute(count_query, {"q": params.get("q")} if q else {})
     total = count_result.scalar() or 0
 
     offset = (page - 1) * page_size
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
-    query = text("""
+    query = text(f"""
         SELECT id, file_name, file_url, raw_text, created_at, updated_at
         FROM resumes
+        {where_clause}
         ORDER BY created_at DESC
         OFFSET :skip LIMIT :limit
     """)
 
-    result = await session.execute(query, {"skip": offset, "limit": page_size})
+    result = await session.execute(query, params)
     rows = result.fetchall()
 
     resumes = [
