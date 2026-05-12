@@ -78,15 +78,15 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
         </Button>
       </div>
     ),
-    accessorFn: (row) => {
-      const date = new Date(row.created_at);
-      return date.toLocaleDateString("en-GB").replace(/\//g, ".");
+    cell: ({ row }) => {
+      const date = new Date(row.original.created_at);
+      const formatted = date.toLocaleDateString("en-GB").replace(/\//g, ".");
+      return (
+        <div className="text-center w-full px-2 py-1">
+          {formatted}
+        </div>
+      );
     },
-    cell: ({ getValue }) => (
-      <div className="text-center w-full px-2 py-1">
-        {getValue() as string}
-      </div>
-    ),
   },
   {
     header: "Actions",

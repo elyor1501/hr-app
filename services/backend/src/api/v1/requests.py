@@ -7,7 +7,7 @@ import asyncio
 import structlog
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select, and_, or_
+from sqlalchemy import func, select, and_, or_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.session import get_db_session, async_session_maker
@@ -686,6 +686,8 @@ async def update_request(
                 detail="Contract can only be set when request is signed"
             )
 
+    jd_changed = "job_description" in update_data and update_data["job_description"] != req.job_description
+
     for field, value in update_data.items():
         setattr(req, field, value)
 
@@ -693,6 +695,14 @@ async def update_request(
     await session.refresh(req)
 
     await _invalidate_requests_cache()
+
+    # Cached match results are tied to the JD text; clear them so the next match click re-embeds.
+    if jd_changed:
+        try:
+            redis = await get_redis_pool()
+            await redis.delete(f"hr_app:match_result:{request_id}")
+        except Exception:
+            pass
 
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
@@ -761,12 +771,10 @@ async def auto_match_candidates(
         raise HTTPException(status_code=422, detail="Request has no job description to match against")
 
     cache_key = f"hr_app:match_result:{request_id}"
-    lock_key = f"hr_app:match_lock:{request_id}"
 
-    try:
-        redis = await get_redis_pool()
-
-        if not data.force_refresh:
+    if not data.force_refresh:
+        try:
+            redis = await get_redis_pool()
             cached = await redis.get(cache_key)
             if cached:
                 cached_result = AutoMatchResponse(**json.loads(cached))
@@ -776,101 +784,125 @@ async def auto_match_candidates(
                     message=f"Found {cached_result.total_matches} matches (cached)",
                     result=cached_result,
                 )
+        except Exception:
+            pass
 
-        is_processing = await redis.get(lock_key)
-        if is_processing:
-            return MatchStatusResponse(
-                status="processing",
-                request_id=str(request_id),
-                message="Matching in progress. Please wait...",
-                result=None,
-            )
-
-        if data.force_refresh:
-            await redis.delete(cache_key)
-
-    except Exception:
-        pass
-
-    jd_lower = req.job_description.lower()
-    jd_words = [w.strip() for w in jd_lower.split() if len(w.strip()) >= 4][:15]
-
-    skill_conditions = []
-    for word in jd_words[:8]:
-        skill_conditions.append(
-            func.lower(func.array_to_string(Candidate.skills, ' ')).contains(word)
+    try:
+        match_payload = await ai_client.match_candidates(
+            job_description=req.job_description,
+            top_k=data.top_k,
         )
-        skill_conditions.append(
-            func.lower(func.coalesce(Candidate.current_title, '')).contains(word)
-        )
-        skill_conditions.append(
-            func.lower(func.coalesce(Candidate.resume_text, '')).contains(word)
-        )
+    except Exception as exc:
+        logger.error("ai_match_call_failed", request_id=str(request_id), error=str(exc))
+        raise HTTPException(status_code=502, detail=f"Matching service unavailable: {exc}")
 
-    if skill_conditions:
-        filtered_result = await session.execute(
-            select(Candidate)
-            .where(Candidate.status == "active")
-            .where(or_(*skill_conditions))
-            .order_by(Candidate.created_at.desc())
-            .limit(20)
-        )
-        candidates = filtered_result.scalars().all()
+    jd_embedding = match_payload.get("embedding") or []
+    if not jd_embedding:
+        logger.error("ai_match_empty_embedding", request_id=str(request_id))
+        raise HTTPException(status_code=502, detail="Matching service returned no embedding")
 
-        if len(candidates) < 5:
-            fallback_result = await session.execute(
-                select(Candidate)
-                .where(Candidate.status == "active")
-                .order_by(Candidate.created_at.desc())
-                .limit(20)
-            )
-            candidates = fallback_result.scalars().all()
-    else:
-        fallback_result = await session.execute(
-            select(Candidate)
-            .where(Candidate.status == "active")
-            .order_by(Candidate.created_at.desc())
-            .limit(20)
-        )
-        candidates = fallback_result.scalars().all()
+    # pgvector requires the literal as a bracketed string when cast to vector type.
+    vec_literal = "[" + ",".join(f"{float(x):.8f}" for x in jd_embedding) + "]"
 
-    preliminary = []
+    # `<=>` is cosine distance (0 = identical). Convert to similarity in the SELECT.
+    sim_rows = (await session.execute(
+        text(
+            """
+            SELECT id, 1 - (embedding <=> CAST(:jd_vec AS vector)) AS similarity
+            FROM candidates
+            WHERE embedding IS NOT NULL AND status = 'active'
+            ORDER BY embedding <=> CAST(:jd_vec AS vector)
+            LIMIT :top_k
+            """
+        ),
+        {"jd_vec": vec_literal, "top_k": data.top_k},
+    )).fetchall()
+
+    total_evaluated = (await session.execute(
+        text(
+            "SELECT COUNT(*) FROM candidates "
+            "WHERE embedding IS NOT NULL AND status = 'active'"
+        )
+    )).scalar() or 0
+
+    similarity_by_id = {str(row.id): float(row.similarity) for row in sim_rows}
+
+    candidate_ids = [UUID(cid) for cid in similarity_by_id.keys()]
+    candidates: List[Candidate] = []
+    if candidate_ids:
+        cand_result = await session.execute(
+            select(Candidate).where(Candidate.id.in_(candidate_ids))
+        )
+        candidates = list(cand_result.scalars().all())
+
+    matches: List[CandidateMatchResult] = []
     for candidate in candidates:
-        structured_cv = await _get_structured_cv_cached(candidate)
-        preliminary.append(_build_preliminary_candidate_match(candidate, req.job_description, structured_cv))
+        similarity = similarity_by_id.get(str(candidate.id), 0.0)
+        score = max(0, min(100, round(similarity * 100)))
 
-    preliminary.sort(key=lambda x: x.match_score, reverse=True)
-    preliminary = preliminary[:data.top_k]
+        if score < data.min_score:
+            continue
 
-    candidate_ids = [m.candidate_id for m in preliminary]
+        clean_email = candidate.email
+        if clean_email and (
+            "@placeholder.com" in clean_email
+            or "@noemail.vaspp.com" in clean_email
+            or clean_email.startswith("unknown_")
+        ):
+            clean_email = None
 
-    background_tasks.add_task(
-        _run_matching_background,
-        str(request_id),
-        req.job_description,
-        req.request_number,
-        req.request_title,
-        data.top_k,
-        data.min_score,
-        candidate_ids,
-    )
+        matches.append(
+            CandidateMatchResult(
+                candidate_id=str(candidate.id),
+                first_name=candidate.first_name,
+                last_name=candidate.last_name,
+                email=clean_email,
+                current_title=candidate.current_title,
+                current_company=candidate.current_company,
+                location=candidate.location,
+                years_of_experience=candidate.years_of_experience,
+                match_score=score,
+                reasoning="",
+                strengths=[],
+                gaps=[],
+                recommendations=[],
+                skills_comparison=SkillsComparison(
+                    job_required_skills=[],
+                    candidate_skills=(candidate.skills or [])[:30],
+                    matching_skills=[],
+                    missing_skills=[],
+                ),
+                hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
+                availability=candidate.availability,
+            )
+        )
 
-    preliminary_response = AutoMatchResponse(
+    matches.sort(key=lambda m: m.match_score, reverse=True)
+
+    response = AutoMatchResponse(
         request_id=str(request_id),
         request_number=req.request_number,
         request_title=req.request_title,
-        job_description_preview=req.job_description[:200] + "..." if len(req.job_description) > 200 else req.job_description,
-        total_candidates_evaluated=len(candidates),
-        total_matches=len(preliminary),
+        job_description_preview=(
+            req.job_description[:200] + "..." if len(req.job_description) > 200 else req.job_description
+        ),
+        total_candidates_evaluated=total_evaluated,
+        total_matches=len(matches),
         auto_proposed=False,
-        matches=preliminary,
+        matches=matches,
     )
 
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(cache_key, MATCH_CACHE_TTL, json.dumps(response.model_dump(), default=str))
+    except Exception:
+        pass
+
     return MatchStatusResponse(
-        status="processing",
+        status="completed",
         request_id=str(request_id),
-        message="Preliminary matches ready. AI validation is running in background.",
-        result=preliminary_response,
+        message=f"Found {len(matches)} matching candidates",
+        result=response,
     )
 
 

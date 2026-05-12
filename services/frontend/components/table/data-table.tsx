@@ -43,6 +43,9 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string;
   globalFilterValue?: string;
   onGlobalFilterChange?: (value: string) => void;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionChange?: (updaterOrValue: any) => void;
+  renderBulkActions?: (table: any) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -56,6 +59,9 @@ export function DataTable<TData, TValue>({
   searchPlaceholder = "Search...",
   globalFilterValue,
   onGlobalFilterChange,
+  rowSelection = {},
+  onRowSelectionChange,
+  renderBulkActions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     {
@@ -107,19 +113,21 @@ export function DataTable<TData, TValue>({
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
     onGlobalFilterChange: setGlobalFilter,
+    onRowSelectionChange: onRowSelectionChange,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       pagination,
       globalFilter,
+      rowSelection,
     },
   });
 
   return (
     <>
-      {(showSearch || showColumns) && (
-        <div className="flex items-center py-4">
+      {(showSearch || showColumns || renderBulkActions) && (
+        <div className="flex items-center py-4 gap-2">
           {showSearch && (
             <Input
               placeholder={searchPlaceholder}
@@ -128,6 +136,7 @@ export function DataTable<TData, TValue>({
               className="w-32 md:w-64"
             />
           )}
+          {renderBulkActions && renderBulkActions(table)}
           {showColumns && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

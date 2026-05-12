@@ -65,19 +65,18 @@ export const columns_job_list: ColumnDef<JobList>[] = [
         <ArrowUpDown className="ml-2 h-3 w-3" />
       </Button>
     ),
-    cell: ({ row }) => (
-      <span>
-        {new Date(row.getValue("created_at"))
-          .toLocaleDateString("en-GB")
-          .replace(/\//g, ".")}
-        &nbsp;
+    cell: ({ row }) => {
+      const date = new Date(row.original.created_at);
+      const datePart = date.toLocaleDateString("en-GB").replace(/\//g, ".");
+      const timePart = date.toLocaleTimeString("en-GB", { hour12: false });
+      return (
         <span>
-          {new Date(row.getValue("created_at")).toLocaleTimeString("en-GB", {
-            hour12: false,
-          })}
+          {datePart}
+          &nbsp;
+          <span>{timePart}</span>
         </span>
-      </span>
-    ),
+      );
+    },
   },
   {
     header: "Actions",
