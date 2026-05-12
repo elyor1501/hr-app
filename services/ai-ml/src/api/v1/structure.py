@@ -15,10 +15,6 @@ router = APIRouter(prefix="/structure", tags=["Structured Extraction"])
 logger = logging.getLogger(__name__)
 
 
-def _use_local_parser() -> bool:
-    return os.getenv("USE_LOCAL_PARSER", "false").lower() == "true"
-
-
 class StructureRequest(BaseModel):
     resume_id: str
     raw_text: str = Field(..., min_length=1)
@@ -556,54 +552,137 @@ async def _noop():
     return None
 
 
-async def _structure_one(resume_id: str, raw_text: str) -> dict:
-    if _use_local_parser():
-        return await _local_structure(resume_id, raw_text)
-    prompt = RESUME_PROMPT_TEMPLATE.format(raw_text=raw_text)
+async def _llm_primary_structure(resume_id: str, raw_text: str) -> dict:
+    """
+    LLM-first structuring. One Gemini call extracts skills, experience, education,
+    projects, certifications, summary, and location. Local regex still wins on
+    full_name, email, and phone when it finds them; the LLM values fill in only
+    when regex came up empty for those three fields. On hard LLM failure
+    (exception, empty response after retry) falls back to _local_structure so
+    we never produce a fully blank candidate.
+    """
+    t0 = time.time()
+
+    # Regex pass for contact fields only. sections={} skips the section detector
+    # so this call returns fast and doesn't make any LLM calls of its own.
+    regex_name: str | None = None
+    regex_email: str | None = None
+    regex_phone: str | None = None
     try:
-        structured = await llm.generate_json_async(prompt)
-        if not isinstance(structured, dict):
-            structured = {}
-        candidate_data = StructuredData(**structured)
-        logger.info("structured_resume", extra={"resume_id": resume_id})
-        return {
-            "source_file": resume_id,
-            "structured_data": candidate_data.model_dump(),
-        }
-    except Exception as e:
-        logger.error("structure_one_failed", extra={"resume_id": resume_id, "error": str(e), "error_type": type(e).__name__})
-        return {
-            "source_file": resume_id,
-            "structured_data": StructuredData().model_dump(),
-        }
+        regex_result = parse_cv(raw_text, sections={})
+        regex_name = regex_result.full_name
+        regex_email = regex_result.email
+        regex_phone = regex_result.phone
+    except Exception as exc:
+        logger.warning("regex_contact_parse_failed: %s", exc)
+
+    try:
+        prompt = RESUME_PROMPT_TEMPLATE.format(raw_text=raw_text)
+        llm_result = await llm.generate_json_async(prompt)
+        if not isinstance(llm_result, dict) or not llm_result:
+            raise RuntimeError("LLM returned empty structured data")
+        merged = StructuredData(**llm_result)
+    except Exception as exc:
+        logger.warning(
+            "llm_primary_failed_using_local_fallback",
+            extra={"resume_id": resume_id, "error": str(exc)},
+        )
+        return await _local_structure(resume_id, raw_text)
+
+    # Serialise the validated model to a dict ONCE here. Subsequent overrides
+    # operate on this dict directly so we never re-enter StructuredData's
+    # `mode="before"` validators (which drop ExperienceItem/EducationItem
+    # instances because they're neither dicts nor strings).
+    structured_dict = merged.model_dump()
+
+    # Targeted-fallback retries for the two fields most often missed by the broad
+    # JSON-schema prompt. These use aggressive single-purpose prompts. They only
+    # fire when the main call returned empty AND the CV body looks substantial,
+    # so cost stays bounded.
+    raw_text_substantial = bool(raw_text and len(raw_text.strip()) >= 200)
+    needs_exp_retry = raw_text_substantial and not structured_dict.get("experience")
+    needs_edu_retry = raw_text_substantial and not structured_dict.get("education")
+
+    if needs_exp_retry or needs_edu_retry:
+        logger.info(
+            "llm_primary_targeted_retry",
+            extra={
+                "resume_id": resume_id,
+                "retry_experience": needs_exp_retry,
+                "retry_education":  needs_edu_retry,
+                "llm_keys_returned": sorted(list(llm_result.keys())),
+            },
+        )
+        retry_tasks = [
+            _llm_extract_experience(raw_text) if needs_exp_retry else _noop(),
+            _llm_extract_education(raw_text)  if needs_edu_retry  else _noop(),
+        ]
+        retry_results = await asyncio.gather(*retry_tasks, return_exceptions=True)
+        retry_exp, retry_edu = retry_results
+
+        if needs_exp_retry and isinstance(retry_exp, list) and retry_exp:
+            structured_dict["experience"] = retry_exp
+            logger.info("llm_primary_experience_recovered",
+                        extra={"resume_id": resume_id, "entries": len(retry_exp)})
+        if needs_edu_retry and isinstance(retry_edu, list) and retry_edu:
+            structured_dict["education"] = retry_edu
+            logger.info("llm_primary_education_recovered",
+                        extra={"resume_id": resume_id, "entries": len(retry_edu)})
+
+    # Apply regex-preferred contact overrides. Regex wins where it found something;
+    # the LLM value (already in structured_dict) stays where regex came up empty.
+    if regex_name:
+        structured_dict["full_name"] = regex_name
+    if regex_email:
+        structured_dict["email"] = regex_email
+    if regex_phone:
+        structured_dict["phone"] = regex_phone
+
+    if not structured_dict.get("confidence_score"):
+        structured_dict["confidence_score"] = 0.88
+    structured_dict["extraction_latency"] = round(time.time() - t0, 3)
+
+    cv_cost = llm.consume_session_cost()
+    logger.info("llm_primary_structure_complete", extra={
+        "resume_id":          resume_id,
+        "skills_found":       len(structured_dict.get("skills") or []),
+        "experience_entries": len(structured_dict.get("experience") or []),
+        "education_entries":  len(structured_dict.get("education") or []),
+        "input_tokens":       cv_cost["input_tokens"],
+        "output_tokens":      cv_cost["output_tokens"],
+        "cost_usd":           cv_cost["total_cost_usd"],
+    })
+
+    return {
+        "source_file": resume_id,
+        "structured_data": structured_dict,
+        "_pipeline_info": {
+            "llm_path": "llm_primary",
+            "input_tokens":  cv_cost["input_tokens"],
+            "output_tokens": cv_cost["output_tokens"],
+            "cost_usd":      cv_cost["total_cost_usd"],
+            "regex_caught": {
+                "full_name": bool(regex_name),
+                "email":     bool(regex_email),
+                "phone":     bool(regex_phone),
+            },
+        },
+    }
+
+
+async def _structure_one(resume_id: str, raw_text: str) -> dict:
+    return await _llm_primary_structure(resume_id, raw_text)
 
 
 @router.post("")
 async def structure_resume(payload: StructureRequest):
-    if _use_local_parser():
-        return await _local_structure(payload.resume_id, payload.raw_text)
+    logger.info("structuring_resume", extra={"resume_id": payload.resume_id})
     try:
-        prompt = RESUME_PROMPT_TEMPLATE.format(raw_text=payload.raw_text)
-        logger.info("structuring_resume", extra={"resume_id": payload.resume_id})
-        structured = await llm.generate_json_async(prompt)
-        if not isinstance(structured, dict):
-            structured = {}
-        candidate_data = StructuredData(**structured)
-        logger.info("structured_resume_complete", extra={"resume_id": payload.resume_id})
-        return {
-            "source_file": payload.resume_id,
-            "structured_data": candidate_data.model_dump(),
-        }
+        return await _llm_primary_structure(payload.resume_id, payload.raw_text)
     except Exception as e:
         error_details = traceback.format_exc()
         logger.error("structure_failed", extra={"resume_id": payload.resume_id, "error": str(e), "traceback": error_details})
-        try:
-            return {
-                "source_file": payload.resume_id,
-                "structured_data": StructuredData().model_dump(),
-            }
-        except Exception:
-            raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"AI Error: {str(e)}")
 
 
 @router.post("/batch")

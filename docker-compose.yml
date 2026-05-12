@@ -89,7 +89,6 @@ services:
       REDIS_PREFIX: "aiml:"
       DATABASE_URL: ${DATABASE_URL}
       PYTHONPATH: /app/src
-      USE_LOCAL_PARSER: "true"
     depends_on:
       redis:
         condition: service_healthy
