@@ -230,18 +230,24 @@ async def list_candidates(
 
 @router.get("/search", response_model=PaginatedCandidatesResponse)
 async def search_candidates(
-    q: Optional[str] = Query(default=None, min_length=1),
+    q: Optional[str] = Query(default=None),
+    name: Optional[str] = Query(default=None),
+    location: Optional[str] = Query(default=None),
+    currentTitle: Optional[str] = Query(default=None),
+    currentCompany: Optional[str] = Query(default=None),
+    experienceMin: Optional[int] = Query(default=None, ge=0),
+    experienceMax: Optional[int] = Query(default=None, ge=0),
+    skills: Optional[str] = Query(default=None),
+    candidateStatus: Optional[str] = Query(default=None),
     experience_level: Optional[str] = Query(default=None),
     availability: Optional[str] = Query(default=None),
-    location: Optional[str] = Query(default=None),
-    skills: Optional[str] = Query(default=None),
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
 ):
     import hashlib
     skills_list = [s.strip().lower() for s in skills.split(",") if s.strip()] if skills else []
-    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{experience_level}{availability}{location}{skills}{page}{page_size}'.encode()).hexdigest()}"
+    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{name}{location}{currentTitle}{currentCompany}{experienceMin}{experienceMax}{skills}{candidateStatus}{experience_level}{availability}{page}{page_size}'.encode()).hexdigest()}"
 
     try:
         redis = await get_redis_pool()
@@ -254,7 +260,6 @@ async def search_candidates(
     filters = []
 
     if q:
-        search_term = f"%{q.lower()}%"
         filters.append(
             or_(
                 Candidate.first_name.ilike(f"%{q}%"),
@@ -268,20 +273,45 @@ async def search_candidates(
                 ).contains(q.lower()),
             )
         )
-    if experience_level:
-        filters.append(Candidate.experience_level == experience_level)
 
-    if availability:
-        filters.append(Candidate.availability == availability)
+    if name:
+        filters.append(
+            or_(
+                Candidate.first_name.ilike(f"%{name}%"),
+                Candidate.last_name.ilike(f"%{name}%"),
+                func.concat(Candidate.first_name, ' ', Candidate.last_name).ilike(f"%{name}%"),
+            )
+        )
 
     if location:
         filters.append(Candidate.location.ilike(f"%{location}%"))
+
+    if currentTitle:
+        filters.append(Candidate.current_title.ilike(f"%{currentTitle}%"))
+
+    if currentCompany:
+        filters.append(Candidate.current_company.ilike(f"%{currentCompany}%"))
+
+    if experienceMin is not None:
+        filters.append(Candidate.years_of_experience >= experienceMin)
+
+    if experienceMax is not None:
+        filters.append(Candidate.years_of_experience <= experienceMax)
 
     if skills_list:
         for skill in skills_list:
             filters.append(
                 func.lower(func.array_to_string(Candidate.skills, ' ')).contains(skill)
             )
+
+    if candidateStatus:
+        filters.append(Candidate.status == candidateStatus)
+
+    if experience_level:
+        filters.append(Candidate.experience_level == experience_level)
+
+    if availability:
+        filters.append(Candidate.availability == availability)
 
     base_query = select(Candidate)
     count_query = select(func.count(Candidate.id))
@@ -322,7 +352,6 @@ async def search_candidates(
         pass
 
     return response
-
 
 @router.get("/{id}", response_model=CandidateResponse)
 async def get_candidate(
