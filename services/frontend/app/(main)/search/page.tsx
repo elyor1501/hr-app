@@ -4,8 +4,8 @@ import CandidateSearch from "@/components/search/CandidateSearch";
 export default function CandidatesPage() {
   return (
     <div>
-      <CandidateFilters/>
-      {/* <CandidateSearch /> */}
+      {/* <CandidateFilters/> */}
+      <CandidateSearch />
     </div>
   );
 }
