@@ -3,7 +3,7 @@ import { CompareBar } from "@/components/candidate/CompareBar";
 import { getCandidates, searchCandidates, PaginatedCandidates } from "@/lib/candidates/data";
 import { getResumes } from "@/lib/resumeList/data";
 import ServerPagination from "@/components/ServerPagination";
-import CandidateFilters from "@/components/candidate/CandidateFilters";
+import CandidateFilters from "@/components/search/CandidateFilters";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

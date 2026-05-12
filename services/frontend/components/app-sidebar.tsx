@@ -27,7 +27,7 @@ const items = [
   { title: "Candidates", url: "/candidates", icon: Users },
   // { title: "Jobs", url: "/jobs", icon: Briefcase },
   { title: "Request", url: "/requests", icon: NotebookPen },
-  { title: "Search", url: "/search", icon: Search },
+  { title: "Search & Filter", url: "/search", icon: Search },
 ];
 
 export function AppSidebar() {
