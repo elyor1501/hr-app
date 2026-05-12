@@ -22,7 +22,9 @@ export default function AddResumeButton() {
         });
         if (!res.ok) throw new Error("Failed to fetch resumes");
         const data = await res.json();
-        const fileNames = data.map((r: any) => r.file_name);
+        const items = Array.isArray(data) ? data : (data?.items ?? []);
+        const fileNames = items.map((r: any) => r.file_name);
+
         setExistingFiles(fileNames);
       } catch (err) {
         console.error("Error fetching existing resumes:", err);
