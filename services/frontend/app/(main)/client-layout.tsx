@@ -73,7 +73,7 @@ export default function ClientLayout({ children, user }: Props) {
         </SidebarInset>
       </SidebarProvider>
 
-      <ChatButton />
+      {/* <ChatButton /> */}
       <ChatInterface />
     </ChatProvider>
   );
