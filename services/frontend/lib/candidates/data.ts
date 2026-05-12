@@ -41,7 +41,8 @@ let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map(
 
 export async function getCandidates(
   page: number = 1,
-  page_size: number = 10
+  page_size: number = 10,
+  q?: string
 ): Promise<PaginatedCandidates> {
   const isServer = typeof window === "undefined";
 
@@ -57,9 +58,15 @@ export async function getCandidates(
 
   const apiUrl = getApiUrl();
   const token = getAuthToken();
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    page_size: page_size.toString(),
+  });
+  if (q) queryParams.set("q", q);
+
   const fetchUrl = apiUrl
-    ? `${apiUrl}/api/v1/candidates?page=${page}&page_size=${page_size}`
-    : `/api/v1/candidates?page=${page}&page_size=${page_size}`;
+    ? `${apiUrl}/api/v1/candidates?${queryParams.toString()}`
+    : `/api/v1/candidates?${queryParams.toString()}`;
 
   const headers: HeadersInit = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -192,11 +199,14 @@ export async function matchJobs(resumeId: string) {
   }
 }
 
-export async function searchCandidates(params: any): Promise<CandidateList[]> {
+export async function searchCandidates(params: any): Promise<PaginatedCandidates> {
   try {
     const apiUrl = getApiUrl();
     const token = getAuthToken();
     
+    const page = params.page ? Number(params.page) : 1;
+    const page_size = params.page_size ? Number(params.page_size) : 10;
+
     const queryParams = new URLSearchParams();
     if (params.q) queryParams.set("q", params.q);
     if (params.name) queryParams.set("name", params.name as string);
@@ -216,8 +226,8 @@ export async function searchCandidates(params: any): Promise<CandidateList[]> {
       queryParams.set("skills", skills);
     }
     
-    queryParams.set("page", "1");
-    queryParams.set("page_size", "100");
+    queryParams.set("page", page.toString());
+    queryParams.set("page_size", page_size.toString());
 
     const fetchUrl = apiUrl 
       ? `${apiUrl}/api/v1/candidates/search?${queryParams.toString()}` 
@@ -225,6 +235,16 @@ export async function searchCandidates(params: any): Promise<CandidateList[]> {
 
     const headers: HeadersInit = {
       ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+
+    const empty: PaginatedCandidates = {
+      items: [],
+      total: 0,
+      page,
+      page_size,
+      total_pages: 1,
+      has_next: false,
+      has_previous: false,
     };
 
     const res = await fetch(fetchUrl, {
@@ -236,22 +256,30 @@ export async function searchCandidates(params: any): Promise<CandidateList[]> {
     if (!res.ok) {
       const text = await res.text();
       console.error("Search failed:", res.status, text);
-      return [];
+      return empty;
     }
 
     const data = await res.json();
     
-    // Support both {items: []} and direct array responses
-    let items: CandidateList[] = [];
-    if (data && data.items && Array.isArray(data.items)) {
-      items = data.items;
-    } else if (Array.isArray(data)) {
-      items = data;
-    }
-
-    return items;
+    return {
+      items: data.items ?? [],
+      total: data.total ?? 0,
+      page: data.page ?? page,
+      page_size: data.page_size ?? page_size,
+      total_pages: data.total_pages ?? 1,
+      has_next: data.has_next ?? false,
+      has_previous: data.has_previous ?? false,
+    };
   } catch (err) {
     console.error("Search fetch error:", err);
-    return [];
+    return {
+      items: [],
+      total: 0,
+      page: 1,
+      page_size: 10,
+      total_pages: 1,
+      has_next: false,
+      has_previous: false,
+    };
   }
 }

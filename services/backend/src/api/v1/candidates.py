@@ -160,9 +160,10 @@ async def create_candidate(
 async def list_candidates(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
+    q: Optional[str] = Query(None),
     session: AsyncSession = Depends(get_db_session),
 ):
-    cache_key = f"{CANDIDATES_CACHE_KEY}:{page}:{page_size}"
+    cache_key = f"{CANDIDATES_CACHE_KEY}:{page}:{page_size}:{q or ''}"
 
     try:
         redis = await get_redis_pool()
@@ -172,13 +173,35 @@ async def list_candidates(
     except Exception:
         pass
 
-    total_result = await session.execute(select(func.count(Candidate.id)))
+    filters = []
+    if q:
+        filters.append(
+            or_(
+                Candidate.first_name.ilike(f"%{q}%"),
+                Candidate.last_name.ilike(f"%{q}%"),
+                Candidate.current_title.ilike(f"%{q}%"),
+                Candidate.location.ilike(f"%{q}%"),
+                Candidate.email.ilike(f"%{q}%"),
+                Candidate.resume_text.ilike(f"%{q}%"),
+                func.lower(
+                    func.array_to_string(Candidate.skills, ' ')
+                ).contains(q.lower()),
+            )
+        )
+
+    count_stmt = select(func.count(Candidate.id))
+    select_stmt = select(Candidate).order_by(Candidate.created_at.desc())
+
+    if filters:
+        count_stmt = count_stmt.where(and_(*filters))
+        select_stmt = select_stmt.where(and_(*filters))
+
+    total_result = await session.execute(count_stmt)
     total = total_result.scalar() or 0
 
     offset = (page - 1) * page_size
     result = await session.execute(
-        select(Candidate)
-        .order_by(Candidate.created_at.desc())
+        select_stmt
         .offset(offset)
         .limit(page_size)
     )
