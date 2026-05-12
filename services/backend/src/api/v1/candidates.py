@@ -8,7 +8,6 @@ from sqlalchemy import select, func, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
-from src.core.config import settings
 from src.core.cache import cache
 from src.core.redis import get_redis_pool
 from src.db.session import get_db_session
@@ -352,6 +351,7 @@ async def search_candidates(
         pass
 
     return response
+
 
 @router.get("/{id}", response_model=CandidateResponse)
 async def get_candidate(
