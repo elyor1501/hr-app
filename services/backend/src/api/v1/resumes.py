@@ -6,11 +6,11 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, text
+from sqlalchemy import delete, select, text
 
 from src.db.session import get_db_session, async_session_maker
 from src.repositories.base import BaseRepository
-from src.db.models import Resume, ParsedResume
+from src.db.models import Resume, ParsedResume, Candidate, CandidateCV
 from src.services.storage import upload_file_bytes, delete_file_from_storage
 from src.services.task_queue import get_task_queue
 from src.models.base import IDSchema, TimestampSchema
@@ -215,36 +215,68 @@ async def bulk_delete_resumes(
     if not data.ids:
         raise HTTPException(status_code=400, detail="No IDs provided")
 
-    deleted = 0
-    failed = 0
+    try:
+        result = await session.execute(
+            select(Resume.id, Resume.file_url).where(Resume.id.in_(data.ids))
+        )
+        resume_rows = result.all()
 
-    for resume_id in data.ids:
-        try:
-            result = await session.execute(
-                select(Resume).where(Resume.id == resume_id)
+        if not resume_rows:
+            return BulkDeleteResponse(
+                deleted=0,
+                failed=len(data.ids),
+                message=f"Deleted 0 resumes. {len(data.ids)} failed."
             )
-            resume = result.scalar_one_or_none()
-            if not resume:
-                failed += 1
-                continue
+
+        resume_ids = [row.id for row in resume_rows]
+        file_urls = list({row.file_url for row in resume_rows if row.file_url})
+
+        candidate_ids = []
+        if file_urls:
+            result = await session.execute(
+                select(CandidateCV.candidate_id).where(CandidateCV.file_url.in_(file_urls))
+            )
+            candidate_ids = list(set(result.scalars().all()))
+
+            await session.execute(
+                delete(CandidateCV).where(CandidateCV.file_url.in_(file_urls))
+            )
+
+            for candidate_id in candidate_ids:
+                remaining_result = await session.execute(
+                    select(CandidateCV.id).where(CandidateCV.candidate_id == candidate_id).limit(1)
+                )
+                remaining_cv_id = remaining_result.scalar_one_or_none()
+                if remaining_cv_id is None:
+                    await session.execute(
+                        delete(Candidate).where(Candidate.id == candidate_id)
+                    )
+
+        delete_result = await session.execute(
+            delete(Resume).where(Resume.id.in_(resume_ids))
+        )
+        deleted_count = delete_result.rowcount or 0
+
+        await session.commit()
+        await invalidate_resumes_cache()
+
+        for url in file_urls:
             try:
-                await delete_file_from_storage(resume.file_url)
+                await delete_file_from_storage(url)
             except Exception:
                 pass
-            await session.delete(resume)
-            deleted += 1
-        except Exception:
-            failed += 1
-            continue
 
-    await session.commit()
-    await invalidate_resumes_cache()
+        failed_count = len(data.ids) - deleted_count
 
-    return BulkDeleteResponse(
-        deleted=deleted,
-        failed=failed,
-        message=f"Deleted {deleted} resumes successfully"
-    )
+        return BulkDeleteResponse(
+            deleted=deleted_count,
+            failed=failed_count,
+            message=f"Deleted {deleted_count} resumes. {failed_count} failed." if failed_count > 0 else f"Successfully deleted {deleted_count} resumes."
+        )
+
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Bulk delete failed: {str(e)}")
 
 
 @router.get("/", response_model=PaginatedResumesResponse)
@@ -410,13 +442,42 @@ async def download_resume(id: UUID, repo: BaseRepository[Resume] = Depends(get_r
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_resume(id: UUID, repo: BaseRepository[Resume] = Depends(get_repository)):
-    resume = await repo.get_by_id(id)
+async def delete_resume(id: UUID, session: AsyncSession = Depends(get_db_session)):
+    result = await session.execute(select(Resume).where(Resume.id == id))
+    resume = result.scalar_one_or_none()
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
+
+    file_url = resume.file_url
+
+    result = await session.execute(
+        select(CandidateCV.candidate_id).where(CandidateCV.file_url == file_url)
+    )
+    candidate_ids = list(set(result.scalars().all()))
+
+    await session.execute(
+        delete(CandidateCV).where(CandidateCV.file_url == file_url)
+    )
+
+    for candidate_id in candidate_ids:
+        remaining_result = await session.execute(
+            select(CandidateCV.id).where(CandidateCV.candidate_id == candidate_id).limit(1)
+        )
+        remaining_cv_id = remaining_result.scalar_one_or_none()
+        if remaining_cv_id is None:
+            await session.execute(
+                delete(Candidate).where(Candidate.id == candidate_id)
+            )
+
+    await session.execute(
+        delete(Resume).where(Resume.id == id)
+    )
+
+    await session.commit()
+
     try:
-        await delete_file_from_storage(resume.file_url)
+        await delete_file_from_storage(file_url)
     except Exception:
         pass
-    await repo.delete(id)
+
     await invalidate_resumes_cache()

@@ -15,17 +15,17 @@ from src.models.enums import CandidateStatus
 
 
 class CandidateBase(BaseSchema):
-    first_name: str = Field(..., min_length=1, max_length=100)
-    last_name: str = Field(..., min_length=1, max_length=100)
+    first_name: str = Field(..., min_length=1)
+    last_name: str = Field(..., min_length=1)
     email: Optional[str] = Field(default=None)
     phone: Optional[str] = Field(default=None)
-    current_title: Optional[str] = Field(default=None, max_length=200)
-    current_company: Optional[str] = Field(default=None, max_length=200)
+    current_title: Optional[str] = Field(default=None)
+    current_company: Optional[str] = Field(default=None)
     years_of_experience: Optional[int] = Field(default=None, ge=0)
     skills: Optional[List[str]] = Field(default=None)
     resume_text: Optional[str] = Field(default=None)
-    location: Optional[str] = Field(default=None, max_length=200)
-    linkedin_url: Optional[str] = Field(default=None, max_length=500)
+    location: Optional[str] = Field(default=None)
+    linkedin_url: Optional[str] = Field(default=None)
     resume: Optional[str] = Field(default=None)
     json_data: Optional[Dict[str, Any]] = Field(default=None)
 
@@ -62,7 +62,7 @@ class CandidateBase(BaseSchema):
         if not v:
             return None
         if v.startswith("http") and "linkedin.com" not in v:
-            raise ValueError("Invalid LinkedIn URL format")
+            return v
         return v
 
     @model_validator(mode="after")

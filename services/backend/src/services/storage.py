@@ -135,6 +135,21 @@ async def delete_file_from_storage(file_url: str) -> bool:
         return False
 
 
+async def delete_any_file_from_storage(file_url: str) -> bool:
+    if not SUPABASE_URL or not SUPABASE_KEY or not file_url:
+        return False
+    try:
+        for bucket in [BUCKET_NAME, CANDIDATE_CVS_BUCKET, REQUIREMENT_DOCS_BUCKET, CANDIDATE_ATTACHMENTS_BUCKET]:
+            if f"/{bucket}/" in file_url:
+                file_path = file_url.split(f"/{bucket}/")[-1].split("?")[0]
+                await _delete_async(bucket, file_path)
+                return True
+        return False
+    except Exception as e:
+        print(f"Delete failed: {e}")
+        return False
+
+
 async def delete_requirement_doc_from_storage(file_url: str) -> bool:
     if not SUPABASE_URL or not SUPABASE_KEY or not file_url:
         return False

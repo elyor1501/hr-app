@@ -3,7 +3,7 @@ import { CompareBar } from "@/components/candidate/CompareBar";
 import { getCandidates, searchCandidates, PaginatedCandidates } from "@/lib/candidates/data";
 import { getResumes } from "@/lib/resumeList/data";
 import ServerPagination from "@/components/ServerPagination";
-import CandidateFilters from "@/components/candidate/CandidateFilters";
+import CandidateFilters from "@/components/search/CandidateFilters";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -14,23 +14,17 @@ export default async function Page({ searchParams }: PageProps) {
   const page = Number(params.page) || 1;
   const pageSize = 10;
 
-  const hasFilters = params.q || params.name || params.jobTitle || params.location || params.experienceLevel || params.availability || params.skills;
+  const q = params.q as string | undefined;
+  const hasFilters = params.name || params.jobTitle || params.location || params.experienceLevel || params.availability || params.skills;
 
   let candidateResult: PaginatedCandidates;
   
   if (hasFilters) {
-    const items = await searchCandidates(params);
-    candidateResult = {
-      items,
-      total: items.length,
-      page: 1,
-      page_size: 100,
-      total_pages: 1,
-      has_next: false,
-      has_previous: false
-    };
+    // Other specific filters use the /search endpoint
+    candidateResult = await searchCandidates({ ...params, page, page_size: pageSize });
   } else {
-    candidateResult = await getCandidates(page, pageSize);
+    // Standard list and global search 'q' use the main listing endpoint
+    candidateResult = await getCandidates(page, pageSize, q);
   }
 
   const [resumeResult] = await Promise.all([
@@ -47,9 +41,9 @@ export default async function Page({ searchParams }: PageProps) {
         <h1 className="font-semibold">Candidate List</h1>
       </div>
 
-      <div className="py-4 mt-2 mb-2 rounded-lg">
+      {/* <div className="py-4 mt-2 mb-2 rounded-lg">
         <CandidateFilters />
-      </div>
+      </div> */}
 
       <CandidatesTable data={data} resumes={resumes} />
 

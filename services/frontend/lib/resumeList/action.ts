@@ -130,6 +130,28 @@ export async function deleteResume(id: string) {
   return true;
 }
 
+export async function bulkDeleteResumes(ids: string[]) {
+  const token = getAuthToken();
+
+  const response = await fetch(`${getApi}/api/v1/resumes/bulk`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ ids }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData?.detail || "Failed to delete resumes");
+  }
+
+  const result = await response.json();
+  await revalidateResumes();
+  return result;
+}
+
 export async function downloadResume(id: string, fileName?: string, fallbackFileUrl?: string) {
   const token = getAuthToken();
 
