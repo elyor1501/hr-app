@@ -19,6 +19,8 @@ export type JobList = {
   hiring_manager?: string;
   application_deadline?: string;
   status: string;
+  created_at: string;
+  updated_at: string;
 };
 
 let jobCache: { data: JobList[]; timestamp: number } | null = null;

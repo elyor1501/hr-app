@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, text
+from sqlalchemy import delete, select, text
 
 from src.db.session import get_db_session, async_session_maker
 from src.repositories.base import BaseRepository
@@ -215,36 +215,41 @@ async def bulk_delete_resumes(
     if not data.ids:
         raise HTTPException(status_code=400, detail="No IDs provided")
 
-    deleted = 0
-    failed = 0
+    try:
+        # Get file URLs first to delete from storage later
+        result = await session.execute(
+            select(Resume.file_url).where(Resume.id.in_(data.ids))
+        )
+        file_urls = result.scalars().all()
+        found_count = len(file_urls)
 
-    for resume_id in data.ids:
-        try:
-            result = await session.execute(
-                select(Resume).where(Resume.id == resume_id)
-            )
-            resume = result.scalar_one_or_none()
-            if not resume:
-                failed += 1
-                continue
+        # Batch delete from DB
+        # Note: ParsedResume has ondelete="CASCADE", so they will be deleted automatically by DB
+        delete_stmt = delete(Resume).where(Resume.id.in_(data.ids))
+        result = await session.execute(delete_stmt)
+        deleted_count = result.rowcount
+
+        await session.commit()
+        await invalidate_resumes_cache()
+
+        # Delete from storage
+        for url in file_urls:
             try:
-                await delete_file_from_storage(resume.file_url)
+                await delete_file_from_storage(url)
             except Exception:
                 pass
-            await session.delete(resume)
-            deleted += 1
-        except Exception:
-            failed += 1
-            continue
 
-    await session.commit()
-    await invalidate_resumes_cache()
+        failed_count = len(data.ids) - deleted_count
 
-    return BulkDeleteResponse(
-        deleted=deleted,
-        failed=failed,
-        message=f"Deleted {deleted} resumes successfully"
-    )
+        return BulkDeleteResponse(
+            deleted=deleted_count,
+            failed=failed_count,
+            message=f"Deleted {deleted_count} resumes. {failed_count} failed." if failed_count > 0 else f"Successfully deleted {deleted_count} resumes."
+        )
+
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Bulk delete failed: {str(e)}")
 
 
 @router.get("/", response_model=PaginatedResumesResponse)

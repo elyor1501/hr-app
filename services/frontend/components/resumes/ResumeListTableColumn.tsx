@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Download, EyeIcon, Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteResumeButton } from "./DeleteResumeButton";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -84,6 +85,28 @@ const ActionCell = ({ resume }: { resume: ResumeList }) => {
 };
 
 export const columns_resume_list: ColumnDef<ResumeList>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   // {
   //   accessorKey: "id",
   //   header: "Id",
@@ -112,15 +135,15 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
         </Button>
       </div>
     ),
-    accessorFn: (row) => {
-      const date = new Date(row.created_at);
-      return date.toLocaleDateString("en-GB").replace(/\//g, ".");
+    cell: ({ row }) => {
+      const date = new Date(row.original.created_at);
+      const formatted = date.toLocaleDateString("en-GB").replace(/\//g, ".");
+      return (
+        <div className="text-center w-full px-2 py-1">
+          {formatted}
+        </div>
+      );
     },
-    cell: ({ getValue }) => (
-      <div className="text-center w-full px-2 py-1">
-        {getValue() as string}
-      </div>
-    ),
   },
   {
     id: "actions",
