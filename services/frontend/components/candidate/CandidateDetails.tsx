@@ -348,7 +348,7 @@ export default function CandidateDetails({ id, empData }: Props) {
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 <h2 className="text-base sm:text-lg font-semibold text-foreground">
-                  Matching Jobs ({matches.length})
+                  Matching Requests ({matches.length})
                 </h2>
                 <button
                   type="button"
@@ -358,17 +358,17 @@ export default function CandidateDetails({ id, empData }: Props) {
                   }}
                   className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50 hover:bg-blue-700 transition-colors w-full sm:w-auto"
                 >
-                  {matching ? "Matching..." : "Find Matching Jobs"}
+                  {matching ? "Matching..." : "Find Matching Requests"}
                 </button>
               </div>
 
               {matching ? (
                 <p className="text-muted-foreground text-sm">
-                  Finding matching jobs...
+                  Finding matching requests...
                 </p>
               ) : matches.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
-                  No matching jobs found. Click the button above to run the
+                  No matching request found. Click the button above to run the
                   matching process.
                 </p>
               ) : (
@@ -380,7 +380,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                         <h3 className="font-semibold text-foreground">
-                          {job.job_title || "Job"}
+                          {job.job_title || "Request"}
                         </h3>
 
                         <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs sm:text-sm">
