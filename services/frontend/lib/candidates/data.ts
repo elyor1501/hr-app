@@ -35,8 +35,8 @@ export type PaginatedCandidates = {
   has_previous: boolean;
 };
 
-const CACHE_TTL = 30000;
-let candidatesCache: { data: PaginatedCandidates; timestamp: number } | null = null;
+const CACHE_TTL = 0;
+let candidatesCache: { data: PaginatedCandidates; timestamp: number; q?: string } | null = null;
 let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
 
 export async function getCandidates(
@@ -51,6 +51,7 @@ export async function getCandidates(
     candidatesCache &&
     candidatesCache.data.page === page &&
     candidatesCache.data.page_size === page_size &&
+    candidatesCache.q === (q || "") &&
     Date.now() - candidatesCache.timestamp < CACHE_TTL
   ) {
     return candidatesCache.data;
@@ -85,7 +86,7 @@ export async function getCandidates(
   try {
     const res = await fetch(fetchUrl, {
       headers,
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
 
     if (!res.ok) {
@@ -107,7 +108,7 @@ export async function getCandidates(
     };
 
     if (!isServer) {
-      candidatesCache = { data: result, timestamp: Date.now() };
+      candidatesCache = { data: result, timestamp: Date.now(), q: q || "" };
     }
 
     return result;
@@ -119,6 +120,7 @@ export async function getCandidates(
 
 export function invalidateCandidatesCache() {
   candidatesCache = null;
+  candidateByIdCache.clear();
 }
 
 export async function getCandidateById(id: string) {
@@ -141,7 +143,7 @@ export async function getCandidateById(id: string) {
     const res = await fetch(fetchUrl, {
       method: "GET",
       headers,
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
 
     if (res.status === 404) {
@@ -203,7 +205,7 @@ export async function searchCandidates(params: any): Promise<PaginatedCandidates
   try {
     const apiUrl = getApiUrl();
     const token = getAuthToken();
-    
+
     const page = params.page ? Number(params.page) : 1;
     const page_size = params.page_size ? Number(params.page_size) : 10;
 
@@ -213,28 +215,33 @@ export async function searchCandidates(params: any): Promise<PaginatedCandidates
     if (params.jobTitle) queryParams.set("job_title", params.jobTitle as string);
     if (params.location) queryParams.set("location", params.location as string);
     if (params.experienceLevel) {
-      const levels = Array.isArray(params.experienceLevel) ? params.experienceLevel.join(",") : params.experienceLevel;
+      const levels = Array.isArray(params.experienceLevel)
+        ? params.experienceLevel.join(",")
+        : params.experienceLevel;
       queryParams.set("experience_level", levels);
     }
     if (params.availability) {
-      const opts = Array.isArray(params.availability) ? params.availability.join(",") : params.availability;
+      const opts = Array.isArray(params.availability)
+        ? params.availability.join(",")
+        : params.availability;
       queryParams.set("availability", opts);
     }
-    
     if (params.skills) {
-      const skills = Array.isArray(params.skills) ? params.skills.join(",") : params.skills;
+      const skills = Array.isArray(params.skills)
+        ? params.skills.join(",")
+        : params.skills;
       queryParams.set("skills", skills);
     }
-    
+
     queryParams.set("page", page.toString());
     queryParams.set("page_size", page_size.toString());
 
-    const fetchUrl = apiUrl 
-      ? `${apiUrl}/api/v1/candidates/search?${queryParams.toString()}` 
+    const fetchUrl = apiUrl
+      ? `${apiUrl}/api/v1/candidates/search?${queryParams.toString()}`
       : `/api/v1/candidates/search?${queryParams.toString()}`;
 
     const headers: HeadersInit = {
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
     const empty: PaginatedCandidates = {
@@ -250,7 +257,7 @@ export async function searchCandidates(params: any): Promise<PaginatedCandidates
     const res = await fetch(fetchUrl, {
       method: "GET",
       headers,
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
 
     if (!res.ok) {
@@ -260,7 +267,7 @@ export async function searchCandidates(params: any): Promise<PaginatedCandidates
     }
 
     const data = await res.json();
-    
+
     return {
       items: data.items ?? [],
       total: data.total ?? 0,

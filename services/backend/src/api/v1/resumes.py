@@ -96,6 +96,12 @@ async def invalidate_resumes_cache():
         keys = await redis.keys("hr_app:resumes:*")
         if keys:
             await redis.delete(*keys)
+        candidate_keys = await redis.keys("hr_app:candidates:*")
+        if candidate_keys:
+            await redis.delete(*candidate_keys)
+        search_keys = await redis.keys("hr_backend:search:*")
+        if search_keys:
+            await redis.delete(*search_keys)
     except Exception:
         pass
 

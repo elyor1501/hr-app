@@ -1,4 +1,5 @@
 import { getApiUrl, getAuthToken } from "../api-config";
+import { invalidateCandidatesCache } from "../candidates/data";
 
 export type Resume = {
   id: string;
@@ -19,7 +20,7 @@ export type PaginatedResumes = {
   has_previous: boolean;
 };
 
-const CACHE_TTL = 30000;
+const CACHE_TTL = 0;
 let resumeCache: { data: PaginatedResumes; timestamp: number } | null = null;
 
 export async function getResumes(
@@ -70,7 +71,7 @@ export async function getResumes(
     const res = await fetch(fullUrl, {
       method: "GET",
       headers,
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
 
     if (!res.ok) {
@@ -103,4 +104,5 @@ export async function getResumes(
 
 export function invalidateResumeCache() {
   resumeCache = null;
+  invalidateCandidatesCache();
 }
