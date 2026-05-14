@@ -1,10 +1,11 @@
 import random
 import json
+import hashlib
 from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
-from sqlalchemy import select, func, or_, and_
+from sqlalchemy import select, func, or_, and_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
@@ -24,7 +25,8 @@ from src.services.background_jobs import job_service
 router = APIRouter()
 
 CANDIDATES_CACHE_KEY = "hr_app:candidates:list"
-CANDIDATES_CACHE_TTL = 60
+CANDIDATES_CACHE_TTL = 120
+SEARCH_CACHE_TTL = 120
 
 ALLOWED_CONTENT_TYPES = [
     "application/pdf",
@@ -34,6 +36,28 @@ ALLOWED_CONTENT_TYPES = [
 
 VALID_EXPERIENCE_LEVELS = ["Junior", "Mid", "Senior", "Lead"]
 VALID_AVAILABILITY = ["Immediate", "2 weeks", "1 month", "3 months", "Not Available"]
+
+CANDIDATE_LIST_COLUMNS = [
+    Candidate.id,
+    Candidate.first_name,
+    Candidate.last_name,
+    Candidate.email,
+    Candidate.phone,
+    Candidate.current_title,
+    Candidate.current_company,
+    Candidate.years_of_experience,
+    Candidate.skills,
+    Candidate.location,
+    Candidate.status,
+    Candidate.linkedin_url,
+    Candidate.experience_level,
+    Candidate.hourly_rate,
+    Candidate.availability,
+    Candidate.resume,
+    Candidate.json_data,
+    Candidate.created_at,
+    Candidate.updated_at,
+]
 
 
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> CandidateRepository:
@@ -181,15 +205,11 @@ async def list_candidates(
                 Candidate.current_title.ilike(f"%{q}%"),
                 Candidate.location.ilike(f"%{q}%"),
                 Candidate.email.ilike(f"%{q}%"),
-                Candidate.resume_text.ilike(f"%{q}%"),
-                func.lower(
-                    func.array_to_string(Candidate.skills, ' ')
-                ).contains(q.lower()),
             )
         )
 
     count_stmt = select(func.count(Candidate.id))
-    select_stmt = select(Candidate).order_by(Candidate.created_at.desc())
+    select_stmt = select(*CANDIDATE_LIST_COLUMNS).order_by(Candidate.created_at.desc())
 
     if filters:
         count_stmt = count_stmt.where(and_(*filters))
@@ -204,12 +224,13 @@ async def list_candidates(
         .offset(offset)
         .limit(page_size)
     )
-    items = result.scalars().all()
+    rows = result.mappings().all()
+    items = [dict(row) for row in rows]
 
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
     response_data = {
-        "items": [item.to_dict() for item in items],
+        "items": items,
         "total": total,
         "page": page,
         "page_size": page_size,
@@ -233,6 +254,7 @@ async def search_candidates(
     name: Optional[str] = Query(default=None),
     location: Optional[str] = Query(default=None),
     currentTitle: Optional[str] = Query(default=None),
+    job_title: Optional[str] = Query(default=None),
     currentCompany: Optional[str] = Query(default=None),
     experienceMin: Optional[int] = Query(default=None, ge=0),
     experienceMax: Optional[int] = Query(default=None, ge=0),
@@ -244,9 +266,9 @@ async def search_candidates(
     page_size: int = Query(10, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
 ):
-    import hashlib
-    skills_list = [s.strip().lower() for s in skills.split(",") if s.strip()] if skills else []
-    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{name}{location}{currentTitle}{currentCompany}{experienceMin}{experienceMax}{skills}{candidateStatus}{experience_level}{availability}{page}{page_size}'.encode()).hexdigest()}"
+    resolved_title = currentTitle or job_title
+
+    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{name}{location}{resolved_title}{currentCompany}{experienceMin}{experienceMax}{skills}{candidateStatus}{experience_level}{availability}{page}{page_size}'.encode()).hexdigest()}"
 
     try:
         redis = await get_redis_pool()
@@ -266,10 +288,6 @@ async def search_candidates(
                 Candidate.current_title.ilike(f"%{q}%"),
                 Candidate.location.ilike(f"%{q}%"),
                 Candidate.email.ilike(f"%{q}%"),
-                Candidate.resume_text.ilike(f"%{q}%"),
-                func.lower(
-                    func.array_to_string(Candidate.skills, ' ')
-                ).contains(q.lower()),
             )
         )
 
@@ -285,8 +303,8 @@ async def search_candidates(
     if location:
         filters.append(Candidate.location.ilike(f"%{location}%"))
 
-    if currentTitle:
-        filters.append(Candidate.current_title.ilike(f"%{currentTitle}%"))
+    if resolved_title:
+        filters.append(Candidate.current_title.ilike(f"%{resolved_title}%"))
 
     if currentCompany:
         filters.append(Candidate.current_company.ilike(f"%{currentCompany}%"))
@@ -297,11 +315,14 @@ async def search_candidates(
     if experienceMax is not None:
         filters.append(Candidate.years_of_experience <= experienceMax)
 
-    if skills_list:
-        for skill in skills_list:
-            filters.append(
+    if skills:
+        skills_list = [s.strip().lower() for s in skills.split(",") if s.strip()]
+        if skills_list:
+            skills_filters = [
                 func.lower(func.array_to_string(Candidate.skills, ' ')).contains(skill)
-            )
+                for skill in skills_list
+            ]
+            filters.append(or_(*skills_filters))
 
     if candidateStatus:
         filters.append(Candidate.status == candidateStatus)
@@ -312,8 +333,8 @@ async def search_candidates(
     if availability:
         filters.append(Candidate.availability == availability)
 
-    base_query = select(Candidate)
     count_query = select(func.count(Candidate.id))
+    base_query = select(*CANDIDATE_LIST_COLUMNS).order_by(Candidate.created_at.desc())
 
     if filters:
         combined = and_(*filters)
@@ -326,16 +347,16 @@ async def search_candidates(
     offset = (page - 1) * page_size
     result = await session.execute(
         base_query
-        .order_by(Candidate.created_at.desc())
         .offset(offset)
         .limit(page_size)
     )
-    items = result.scalars().all()
+    rows = result.mappings().all()
+    items = [dict(row) for row in rows]
 
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
     response = PaginatedCandidatesResponse(
-        items=[item.to_dict() for item in items],
+        items=items,
         total=total,
         page=page,
         page_size=page_size,
@@ -346,7 +367,7 @@ async def search_candidates(
 
     try:
         redis = await get_redis_pool()
-        await redis.setex(cache_key, 60, json.dumps(response.model_dump(), default=str))
+        await redis.setex(cache_key, SEARCH_CACHE_TTL, json.dumps(response.model_dump(), default=str))
     except Exception:
         pass
 

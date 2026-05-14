@@ -16,7 +16,7 @@ from src.models.enums import CandidateStatus
 
 class CandidateBase(BaseSchema):
     first_name: str = Field(..., min_length=1)
-    last_name: str = Field(..., min_length=1)
+    last_name: Optional[str] = Field(default="")
     email: Optional[str] = Field(default=None)
     phone: Optional[str] = Field(default=None)
     current_title: Optional[str] = Field(default=None)
@@ -68,7 +68,10 @@ class CandidateBase(BaseSchema):
     @model_validator(mode="after")
     def validate_names(self) -> CandidateBase:
         self.first_name = self.first_name.strip().title()
-        self.last_name = self.last_name.strip().title()
+        if self.last_name:
+            self.last_name = self.last_name.strip().title()
+        else:
+            self.last_name = ""
         return self
 
 
