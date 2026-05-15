@@ -124,14 +124,16 @@ export function UploadAttachmentDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm w-full sm:w-auto">
+        <button className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white transition-all duration-300 hover:shadow-lg w-full sm:w-auto" style={{ backgroundColor: '#429ABD' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}>
           Upload Attachment
         </button>
       </DialogTrigger>
 
       <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-md mx-auto rounded-xl sm:rounded-lg">
         <DialogHeader>
-          <DialogTitle>Upload Attachment</DialogTitle>
+          <DialogTitle style={{ color: '#429ABD' }}>Upload Attachment</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
@@ -140,7 +142,7 @@ export function UploadAttachmentDialog({
     Attachment Type
   </label>
   <Select value={docType} onValueChange={setDocType}>
-    <SelectTrigger className="w-full border rounded-lg px-3 py-2 text-sm">
+    <SelectTrigger className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-[#429ABD] focus:border-[#429ABD]">
       <SelectValue placeholder="Select attachment type" />
     </SelectTrigger>
     <SelectContent>
@@ -164,7 +166,7 @@ export function UploadAttachmentDialog({
               type="file"
               onChange={handleFileChange}
               accept=".pdf,.jpeg,.jpg,.png,.svg,.doc,.docx,.ppt,.pptx,application/pdf,image/jpeg,image/jpg,image/png,image/svg+xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-              className="w-full text-sm border rounded-lg px-3 py-2"
+              className="w-full text-sm border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]"
             />
           
           </div>
@@ -175,12 +177,19 @@ export function UploadAttachmentDialog({
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={isPending}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto transition-all duration-300 hover:border-[#429ABD] hover:text-[#429ABD]"
           >
             Cancel
           </Button>
 
-          <Button onClick={handleUpload} disabled={isPending} className="w-full sm:w-auto">
+          <Button 
+            onClick={handleUpload} 
+            disabled={isPending} 
+            className="w-full sm:w-auto transition-all duration-300 hover:shadow-lg"
+            style={{ backgroundColor: '#429ABD' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+          >
             {isPending ? "Uploading..." : "Upload"}
           </Button>
         </div>

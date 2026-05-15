@@ -37,8 +37,8 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <div className="pb-20">
-      <div className="flex items-center justify-between border p-4 rounded-lg mt-2">
-        <h1 className="font-semibold">Candidate List</h1>
+      <div className="flex items-center justify-between border p-4 rounded-lg mt-2" style={{ borderColor: '#429ABD20' }}>
+        <h1 className="font-semibold" style={{ color: '#429ABD' }}>Candidate List</h1>
       </div>
 
       {/* <div className="py-4 mt-2 mb-2 rounded-lg">

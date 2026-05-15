@@ -52,7 +52,7 @@ export function DeleteResumeButton({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="p-2 text-gray-400 hover:text-[#F5A623] hover:bg-[#F5A62320] rounded-lg transition-all duration-300"
           title="Delete Resume"
         >
           <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -61,7 +61,7 @@ export function DeleteResumeButton({
 
       <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-lg mx-auto rounded-xl sm:rounded-lg">
         <DialogHeader>
-          <DialogTitle>Delete Resume</DialogTitle>
+          <DialogTitle style={{ color: '#429ABD' }}>Delete Resume</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete this resume?
           </DialogDescription>
@@ -72,7 +72,7 @@ export function DeleteResumeButton({
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={isPending}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto transition-all duration-300 hover:border-[#429ABD] hover:text-[#429ABD]"
           >
             Cancel
           </Button>
@@ -81,7 +81,7 @@ export function DeleteResumeButton({
             variant="destructive"
             onClick={handleDelete}
             disabled={isPending}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto transition-all duration-300 hover:bg-[#F5A623] hover:border-[#F5A623] bg-red-600"
           >
             {isPending ? "Deleting..." : "Delete"}
           </Button>

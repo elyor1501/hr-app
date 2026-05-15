@@ -29,11 +29,11 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
 
   if (stats) {
     chartData = [
-      { type: "Full Time", count: stats.full_time, fill: "hsl(var(--chart-1))" },
-      { type: "Part Time", count: stats.part_time, fill: "hsl(var(--chart-2))" },
-      { type: "Contract", count: stats.contract, fill: "hsl(var(--chart-3))" },
-      { type: "Internship", count: stats.internship, fill: "hsl(var(--chart-4))" },
-      { type: "Entry Level", count: stats.entry_level, fill: "hsl(var(--chart-5))" },
+      { type: "Full Time", count: stats.full_time, fill: "#429ABD" },
+      { type: "Part Time", count: stats.part_time, fill: "#5ba3c4" },
+      { type: "Contract", count: stats.contract, fill: "#F5A623" },
+      { type: "Internship", count: stats.internship, fill: "#f7b952" },
+      { type: "Entry Level", count: stats.entry_level, fill: "#429ABD" },
     ];
   } else if (jobs) {
     const counts: Record<string, number> = {
@@ -54,21 +54,21 @@ export function JobTypeChart({ jobs, stats }: JobTypeChartProps) {
       else counts["Full Time"]++;
     });
 
-    const getHslColor = (type: string) => {
+    const getColor = (type: string) => {
       switch (type) {
-        case "Full Time": return "hsl(var(--chart-1))";
-        case "Part Time": return "hsl(var(--chart-2))";
-        case "Contract": return "hsl(var(--chart-3))";
-        case "Internship": return "hsl(var(--chart-4))";
-        case "Entry Level": return "hsl(var(--chart-5))";
-        default: return "hsl(var(--chart-1))";
+        case "Full Time": return "#429ABD";
+        case "Part Time": return "#5ba3c4";
+        case "Contract": return "#F5A623";
+        case "Internship": return "#f7b952";
+        case "Entry Level": return "#429ABD";
+        default: return "#429ABD";
       }
     };
 
     chartData = Object.keys(counts).map((type) => ({
       type,
       count: counts[type],
-      fill: getHslColor(type),
+      fill: getColor(type),
     }));
   } else {
     return (

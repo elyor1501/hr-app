@@ -15,11 +15,12 @@ import {
   LayoutDashboard,
   Search,
   Users,
-  Sparkles,
   NotebookPen,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Logo from "@/app/(main)/VASPP_logo_black_text.png";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -42,16 +43,22 @@ export function AppSidebar() {
     >
       <SidebarHeader className="h-20 flex items-center justify-center border-b border-border/40 mb-4 px-4 bg-background/50">
         <div className="flex items-center gap-3 w-full overflow-hidden">
-          <div className="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg transition-transform hover:scale-105">
-            <Sparkles className="text-white w-6 h-6" />
+          <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center shadow-lg transition-transform hover:scale-105 overflow-hidden bg-white p-1">
+            <Image
+              src={Logo}
+              alt="VASPP Logo"
+              width={44}
+              height={44}
+              className="object-contain"
+            />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col animate-in fade-in slide-in-from-left-3 duration-300">
-              <span className="font-extrabold text-xl leading-none tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Smart HR
+              <span className="font-extrabold text-xl leading-none tracking-tight" style={{ color: '#429ABD' }}>
+                VASPP
               </span>
-              <span className="text-[10px] text-muted-foreground font-bold mt-1 uppercase tracking-tighter">
-                Management System
+              <span className="text-[10px] font-bold mt-1 uppercase tracking-tighter" style={{ color: '#F5A623' }}>
+                HR Management System
               </span>
             </div>
           )}
@@ -77,15 +84,20 @@ export function AppSidebar() {
                     className={cn(
                       "flex items-center gap-3 rounded-xl px-3 py-6 transition-all duration-200 group relative overflow-hidden",
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-sm translate-x-1"
+                        ? "shadow-sm translate-x-1"
                         : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground hover:translate-x-1"
                     )}
+                    style={isActive ? { 
+                      backgroundColor: '#F5A62320',
+                      color: '#F5A623'
+                    } : {}}
                   >
                     <item.icon
                       className={cn(
                         "h-5 w-5 shrink-0 transition-all duration-200",
                         isActive ? "scale-110" : "group-hover:scale-110"
                       )}
+                      style={!isActive ? { color: '#429ABD' } : isActive ? { color: '#F5A623' } : {}}
                     />
                     {!isCollapsed && (
                       <span className="font-semibold tracking-wide flex-1">
@@ -93,7 +105,7 @@ export function AppSidebar() {
                       </span>
                     )}
                     {isActive && !isCollapsed && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground ml-2" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F5A623] ml-2" />
                     )}
                   </Link>
                 </SidebarMenuButton>

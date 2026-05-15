@@ -30,10 +30,11 @@ export default function ServerPagination({
         size="sm"
         onClick={() => goToPage(currentPage - 1)}
         disabled={currentPage <= 1}
+        className="hover:border-[#429ABD] hover:text-[#429ABD] transition-colors duration-300"
       >
-        <ArrowLeft />
+        <ArrowLeft className="group-hover:text-[#429ABD]" />
       </Button>
-      <span className="text-sm">
+      <span className="text-sm" style={{ color: '#429ABD' }}>
         Page {currentPage} of {totalPages}
       </span>
       <Button
@@ -41,8 +42,9 @@ export default function ServerPagination({
         size="sm"
         onClick={() => goToPage(currentPage + 1)}
         disabled={currentPage >= totalPages}
+        className="hover:border-[#429ABD] hover:text-[#429ABD] transition-colors duration-300"
       >
-        <ArrowRight />
+        <ArrowRight className="group-hover:text-[#429ABD]" />
       </Button>
     </div>
   );

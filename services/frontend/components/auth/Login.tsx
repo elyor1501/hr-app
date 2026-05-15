@@ -83,7 +83,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-sm shadow-2xl">
       <CardHeader>
-        <CardTitle className="text-center text-2xl">Welcome Back</CardTitle>
+        <CardTitle className="text-center text-2xl" style={{ color: '#429ABD' }}>Welcome Back</CardTitle>
         <CardDescription className="text-center">
           Sign in to continue
         </CardDescription>
@@ -103,14 +103,14 @@ export function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel style={{ color: '#429ABD' }}>Email</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#429ABD' }} />
                       <Input
                         type="email"
                         placeholder="Enter your email"
-                        className="pl-10"
+                        className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
                         {...field}
                       />
                     </div>
@@ -125,14 +125,14 @@ export function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel style={{ color: '#429ABD' }}>Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#429ABD' }} />
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
-                        className="pl-10 pr-10"
+                        className="pl-10 pr-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
                         {...field}
                       />
                       <button
@@ -141,9 +141,9 @@ export function LoginForm() {
                         className="absolute right-3 top-1/2 -translate-y-1/2"
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          <EyeOff className="h-4 w-4" style={{ color: '#429ABD' }} />
                         ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
+                          <Eye className="h-4 w-4" style={{ color: '#429ABD' }} />
                         )}
                       </button>
                     </div>
@@ -157,6 +157,9 @@ export function LoginForm() {
               type="submit"
               disabled={isSubmitting}
               className="w-full h-11"
+              style={{ backgroundColor: '#429ABD' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
             >
               {isSubmitting ? (
                 <>
@@ -177,7 +180,10 @@ export function LoginForm() {
           Don't have an account?{" "}
           <span
             onClick={() => router.push("/signup")}
-            className="cursor-pointer hover:underline text-blue-600"
+            className="cursor-pointer font-medium"
+            style={{ color: '#429ABD' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#F5A623'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#429ABD'}
           >
             Create new one
           </span>

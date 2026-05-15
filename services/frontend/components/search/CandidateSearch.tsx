@@ -175,7 +175,7 @@ export default function CandidateSearch() {
 
   return (
     <div className="container mx-auto max-w-6xl space-y-5">
-      <h1 className="text-xl font-semibold">Candidate Search</h1>
+      <h1 className="text-xl font-semibold" style={{ color: '#429ABD' }}>Candidate Search</h1>
 
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
@@ -185,13 +185,17 @@ export default function CandidateSearch() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && runSemanticSearch()}
             placeholder="Search by skills, title, or keywords…"
-            className="pl-10"
+            className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
           />
         </div>
 
         <Button
           onClick={runSemanticSearch}
           disabled={semanticLoading || filterLoading || !query.trim()}
+          className="transition-all duration-300 hover:shadow-lg"
+          style={{ backgroundColor: '#429ABD' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
         >
           {semanticLoading ? (
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -204,19 +208,19 @@ export default function CandidateSearch() {
         <Button
           variant="outline"
           onClick={() => setShowFilters((p) => !p)}
-          className={showFilters ? "border-blue-500 text-blue-600" : ""}
+          className={`transition-all duration-300 hover:border-[#429ABD] hover:text-[#429ABD] ${showFilters ? "border-[#429ABD] text-[#429ABD]" : ""}`}
         >
           <SlidersHorizontal className="h-4 w-4 mr-2" />
           Filters
           {hasFilters && (
-            <span className="ml-2 h-2 w-2 rounded-full bg-blue-500 inline-block" />
+            <span className="ml-2 h-2 w-2 rounded-full bg-[#F5A623] inline-block" />
           )}
         </Button>
       </div>
 
       {showFilters && (
-        <div className="p-4 border rounded-xl bg-slate-50 space-y-4">
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+        <div className="p-4 border rounded-xl bg-slate-50 space-y-4 transition-all duration-300">
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide" style={{ color: '#429ABD' }}>
             Filter candidates
           </p>
 
@@ -226,7 +230,7 @@ export default function CandidateSearch() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full mt-1 border p-2 rounded text-sm bg-white"
+                className="w-full mt-1 border p-2 rounded text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD] transition-all duration-300"
               >
                 <option value="">All</option>
                 <option value="active">Active</option>
@@ -240,7 +244,7 @@ export default function CandidateSearch() {
                 placeholder="e.g. Bangalore"
                 value={filterLocation}
                 onChange={(e) => setFilterLocation(e.target.value)}
-                className="mt-1"
+                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
 
@@ -250,7 +254,7 @@ export default function CandidateSearch() {
                 placeholder="React, Node, Python"
                 value={filterSkills}
                 onChange={(e) => setFilterSkills(e.target.value)}
-                className="mt-1"
+                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
 
@@ -298,7 +302,7 @@ export default function CandidateSearch() {
                 onChange={(e) =>
                   setFilterExpMin(e.target.value ? Number(e.target.value) : "")
                 }
-                className="mt-1"
+                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
 
@@ -314,7 +318,7 @@ export default function CandidateSearch() {
                 onChange={(e) =>
                   setFilterExpMax(e.target.value ? Number(e.target.value) : "")
                 }
-                className="mt-1"
+                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
           </div>
@@ -326,6 +330,7 @@ export default function CandidateSearch() {
                 resetFilters();
               }}
               disabled={!hasFilters}
+              className="transition-all duration-300 hover:border-[#F5A623] hover:text-[#F5A623]"
             >
               <FilterX className="h-4 w-4 mr-1" />
               Reset
@@ -334,6 +339,10 @@ export default function CandidateSearch() {
             <Button
               onClick={runFilterSearch}
               disabled={semanticLoading || filterLoading}
+              className="transition-all duration-300 hover:shadow-lg"
+              style={{ backgroundColor: '#429ABD' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
             >
               {filterLoading && (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -355,16 +364,16 @@ export default function CandidateSearch() {
             {results.map((profile) => (
               <Card
                 key={profile.id}
-                className="group border shadow-sm hover:border-blue-200 transition-all duration-300"
+                className="group border shadow-sm hover:border-[#429ABD] transition-all duration-300 hover:shadow-lg"
               >
                 <CardContent className="p-6 flex flex-col md:flex-row justify-between gap-6">
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                      <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:shadow-md" style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>
                         <FileText className="h-6 w-6" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg leading-none">
+                        <h3 className="font-bold text-lg leading-none" style={{ color: '#429ABD' }}>
                           {profile.first_name} {profile.last_name}
                         </h3>
                         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
@@ -397,12 +406,12 @@ export default function CandidateSearch() {
 
                     <div className="flex flex-wrap gap-2">
                       {profile.experience_level && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs" style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>
                           {profile.experience_level}
                         </Badge>
                       )}
                       {profile.availability && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-[#F5A623] text-[#F5A623]">
                           {profile.availability}
                         </Badge>
                       )}
@@ -418,7 +427,10 @@ export default function CandidateSearch() {
                     <Button
                       variant="default"
                       onClick={() => router.push(`/candidates/${profile.id}`)}
-                      className="h-8 w-8 p-0 flex items-center justify-center bg-blue-600 hover:bg-blue-700"
+                      className="h-8 w-8 p-0 flex items-center justify-center transition-all duration-300 hover:shadow-lg"
+                      style={{ backgroundColor: '#429ABD' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -426,7 +438,8 @@ export default function CandidateSearch() {
                     {profile.similarity_score > 0 && (
                       <Badge
                         variant="outline"
-                        className="h-fit mt-4 bg-blue-50 text-blue-700 border-blue-100 font-bold px-3 py-1"
+                        className="h-fit mt-4 font-bold px-3 py-1 transition-all duration-300"
+                        style={{ backgroundColor: '#F5A62320', color: '#F5A623', borderColor: '#F5A62330' }}
                       >
                         {(profile.similarity_score * 100).toFixed(1)}% Match
                       </Badge>
@@ -439,17 +452,17 @@ export default function CandidateSearch() {
         ) : searched ? (
           <div className="text-center py-20 border border-dashed rounded-[2rem] bg-slate-50/50">
             <FilterX className="h-12 w-12 mx-auto text-slate-200 mb-4" />
-            <h3 className="font-semibold text-lg">No Results Found</h3>
+            <h3 className="font-semibold text-lg" style={{ color: '#429ABD' }}>No Results Found</h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto mt-1">
               Try adjusting your query or filters to broaden your results.
             </p>
           </div>
         ) : (
           <div className="text-center py-24 text-muted-foreground">
-            <div className="bg-blue-50 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="h-10 w-10 text-blue-200" />
+            <div className="h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-6 transition-all duration-300" style={{ backgroundColor: '#429ABD20' }}>
+              <Search className="h-10 w-10" style={{ color: '#429ABD' }} />
             </div>
-            <p className="text-lg font-medium">Search or filter candidates</p>
+            <p className="text-lg font-medium" style={{ color: '#429ABD' }}>Search or filter candidates</p>
             <p className="text-sm opacity-70 mt-1">
               Use the search bar or open Filters to browse by criteria.
             </p>

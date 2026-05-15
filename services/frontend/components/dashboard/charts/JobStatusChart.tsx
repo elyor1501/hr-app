@@ -29,22 +29,22 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
     {
       name: "Open",
       value: stats.open_requests,
-      color: "#2563EB",
+      color: "#429ABD",
     },
     {
       name: "In Progress",
       value: stats.in_progress_requests,
-      color: "#5c8cf5",
+      color: "#5ba3c4",
     },
     {
       name: "Signed",
       value: stats.signed_requests,
-      color: "#60A5FA",
+      color: "#F5A623",
     },
     {
       name: "Closed",
       value: stats.closed_requests,
-      color: "#BFDBFE",
+      color: "#f7b952",
     },
   ];
 

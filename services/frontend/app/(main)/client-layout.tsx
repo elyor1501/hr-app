@@ -14,6 +14,8 @@ import { ChatProvider } from "@/app/contexts/ChatContext";
 import { ChatButton } from "@/components/chats/ChatButton";
 import { ChatInterface } from "@/components/chats/ChatInterface";
 import { Separator } from "@/components/ui/separator";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -24,7 +26,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard Overview",
   "/resumeList": "Resume Management",
   "/candidates": "Candidate Directory",
-  "/requests": "Requests",
+  "/requests": "Requests Management",
   "/search": "Smart Search",
   "/jobs": "Job Postings",
 };
@@ -39,6 +41,14 @@ function getPageTitle(pathname: string): string {
 
 export default function ClientLayout({ children, user }: Props) {
   const pathname = usePathname();
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const titleColor = mounted && theme === "dark" ? "#F5A623" : "#429ABD";
 
   return (
     <ChatProvider>
@@ -52,7 +62,10 @@ export default function ClientLayout({ children, user }: Props) {
                 <SidebarTrigger className="md:hidden shrink-0 h-8 w-8" />
                 <Separator orientation="vertical" className="h-5 hidden md:block shrink-0" />
                 <BackButton />
-                <h1 className="text-base sm:text-xl font-bold tracking-tight text-foreground/90 truncate animate-in fade-in slide-in-from-left-4 duration-300">
+                <h1 
+                  className="text-base sm:text-xl font-bold tracking-tight truncate animate-in fade-in slide-in-from-left-4 duration-300"
+                  style={{ color: titleColor }}
+                >
                   {getPageTitle(pathname)}
                 </h1>
               </div>

@@ -68,7 +68,7 @@ export function EmployeeStatusChart({
   const chartConfig = {
     total: {
       label: "Candidates",
-      color: "hsl(var(--chart-1))",
+      color: "#429ABD",
     },
   } satisfies ChartConfig;
 
@@ -115,8 +115,8 @@ export function EmployeeStatusChart({
                     key={`cell-${index}`}
                     fill={
                       entry.status === "Active"
-                        ? "#2563EB" 
-                        : "#BFDBFE" 
+                        ? "#429ABD" 
+                        : "#F5A623" 
                     }
                     className="transition-all duration-300 hover:opacity-90"
                   />
@@ -131,7 +131,7 @@ export function EmployeeStatusChart({
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Active
             </p>
-            <p className="text-xl sm:text-2xl font-bold">
+            <p className="text-xl sm:text-2xl font-bold" style={{ color: '#429ABD' }}>
               {stats?.active || 0}
             </p>
           </div>
@@ -139,7 +139,7 @@ export function EmployeeStatusChart({
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Inactive
             </p>
-            <p className="text-xl sm:text-2xl font-bold">
+            <p className="text-xl sm:text-2xl font-bold" style={{ color: '#F5A623' }}>
               {stats?.inactive || 0}
             </p>
           </div>

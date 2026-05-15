@@ -18,8 +18,8 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between border p-4 rounded-lg mt-2">
-        <h1 className="font-semibold">List</h1>
+      <div className="flex items-center justify-between border p-4 rounded-lg mt-2" style={{ borderColor: '#429ABD20' }}>
+        <h1 className="font-semibold" style={{ color: '#429ABD' }}>Requests List</h1>
         <div className="flex items-center gap-2">
           <ImportJobButton />
         </div>

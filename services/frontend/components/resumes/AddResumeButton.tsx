@@ -39,7 +39,13 @@ export default function AddResumeButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="bg-primary text-primary-foreground text-sm px-3 py-1.5 rounded-md hover:bg-primary/90 transition"
+        className="text-sm px-3 py-1.5 rounded-md transition-all duration-300 hover:shadow-lg"
+        style={{ 
+          backgroundColor: '#429ABD',
+          color: 'white'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
       >
         Add Resume
       </button>
@@ -49,12 +55,13 @@ export default function AddResumeButton() {
           <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-xl p-6 relative shadow-lg">
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+              className="absolute top-3 right-3 text-gray-500 hover:text-black transition-colors duration-300"
+              style={{ hover: { color: '#F5A623' } }}
             >
               ✕
             </button>
 
-            <h2 className="text-lg font-semibold mb-4">Upload Resume</h2>
+            <h2 className="text-lg font-semibold mb-4" style={{ color: '#429ABD' }}>Upload Resume</h2>
 
             <ResumeUpload
               onClose={() => setOpen(false)}

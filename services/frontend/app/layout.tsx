@@ -11,7 +11,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Smart HR",
+  title: "VASPP-HR Management System",
   description: "AI Powered HR Management System",
 };
 

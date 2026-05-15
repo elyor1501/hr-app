@@ -108,7 +108,7 @@ export function SignUpForm() {
   return (
     <Card className="w-full max-w-md shadow-2xl m-2">
       <CardHeader>
-        <CardTitle className="text-center text-2xl">Get Started</CardTitle>
+        <CardTitle className="text-center text-2xl" style={{ color: '#429ABD' }}>Get Started</CardTitle>
         <CardDescription className="text-center">
           Please create your account to continue.
         </CardDescription>
@@ -125,13 +125,13 @@ export function SignUpForm() {
               name="full_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel style={{ color: '#429ABD' }}>Full Name</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
                       <Input
                         placeholder="Enter your full name"
-                        className="pl-10"
+                        className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
                         {...field}
                       />
                     </div>
@@ -146,14 +146,14 @@ export function SignUpForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email Address</FormLabel>
+                  <FormLabel style={{ color: '#429ABD' }}>Email Address</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
                       <Input
                         type="email"
                         placeholder="Enter your email"
-                        className="pl-10"
+                        className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
                         {...field}
                       />
                     </div>
@@ -168,14 +168,14 @@ export function SignUpForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel style={{ color: '#429ABD' }}>Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="Create password"
-                        className="pl-10 pr-10"
+                        className="pl-10 pr-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
                         {...field}
                       />
                       <button
@@ -184,9 +184,9 @@ export function SignUpForm() {
                         className="absolute right-3 top-1/2 -translate-y-1/2"
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
+                          <EyeOff className="h-4 w-4" style={{ color: '#429ABD' }} />
                         ) : (
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-4 w-4" style={{ color: '#429ABD' }} />
                         )}
                       </button>
                     </div>
@@ -201,14 +201,14 @@ export function SignUpForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel style={{ color: '#429ABD' }}>Confirm Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
                       <Input
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirm password"
-                        className="pl-10 pr-10"
+                        className="pl-10 pr-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
                         {...field}
                       />
                       <button
@@ -219,9 +219,9 @@ export function SignUpForm() {
                         className="absolute right-3 top-1/2 -translate-y-1/2"
                       >
                         {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
+                          <EyeOff className="h-4 w-4" style={{ color: '#429ABD' }} />
                         ) : (
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-4 w-4" style={{ color: '#429ABD' }} />
                         )}
                       </button>
                     </div>
@@ -232,10 +232,8 @@ export function SignUpForm() {
                     <div className="flex items-center gap-2 text-xs">
                       {form.watch("password") === field.value ? (
                         <>
-                          <CheckCircle className="h-3 w-3 text-green-500" />
-                          <span className="text-green-500">
-                            Passwords match
-                          </span>
+                          <CheckCircle className="h-3 w-3" style={{ color: '#429ABD' }} />
+                          <span style={{ color: '#429ABD' }}>Passwords match</span>
                         </>
                       ) : (
                         <>
@@ -257,13 +255,21 @@ export function SignUpForm() {
                 onCheckedChange={(checked) =>
                   setAcceptTerms(checked as boolean)
                 }
+                className="border-[#429ABD] data-[state=checked]:bg-[#429ABD] data-[state=checked]:border-[#429ABD]"
               />
               <span className="text-sm text-muted-foreground">
                 I agree to the Terms and Privacy Policy
               </span>
             </div>
 
-            <Button type="submit" disabled={isLoading} className="w-full">
+            <Button 
+              type="submit" 
+              disabled={isLoading} 
+              className="w-full"
+              style={{ backgroundColor: '#429ABD' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+            >
               {isLoading ? "Creating..." : "Create Account"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -272,7 +278,10 @@ export function SignUpForm() {
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-blue-600 font-medium hover:underline"
+                className="font-medium"
+                style={{ color: '#429ABD' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#F5A623'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#429ABD'}
               >
                 Sign in
               </Link>

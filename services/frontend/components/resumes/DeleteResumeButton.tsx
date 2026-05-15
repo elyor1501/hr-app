@@ -41,7 +41,7 @@ export function DeleteResumeButton({ id }: { id: string }) {
         <Button
           variant="ghost"
           size="icon"
-          className="text-red-500 hover:text-red-600"
+          className="transition-all duration-300 hover:bg-[#F5A62320] hover:text-[#F5A623]"
           title="Delete Resume"
         >
           <Trash className="w-4 h-4" />
@@ -50,7 +50,7 @@ export function DeleteResumeButton({ id }: { id: string }) {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Resume</DialogTitle>
+          <DialogTitle style={{ color: '#429ABD' }}>Delete Resume</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete this resume?
           </DialogDescription>
@@ -61,6 +61,7 @@ export function DeleteResumeButton({ id }: { id: string }) {
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={loading}
+            className="transition-all duration-300 hover:border-[#429ABD] hover:text-[#429ABD]"
           >
             Cancel
           </Button>
@@ -69,6 +70,7 @@ export function DeleteResumeButton({ id }: { id: string }) {
             variant="destructive"
             onClick={handleDelete}
             disabled={loading}
+            className="transition-all duration-300 hover:bg-[#F5A623] hover:border-[#F5A623] bg-red-600"
           >
             {loading ? "Deleting..." : "Delete"}
           </Button>

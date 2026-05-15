@@ -34,14 +34,19 @@ export function DeleteCandidateButton({ candidateId }: { candidateId: string }) 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600" title="Delete Candidate" >
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="transition-all duration-300 hover:bg-[#F5A62320] hover:text-[#F5A623]" 
+          title="Delete Candidate"
+        >
           <Trash className="w-4 h-4" />
         </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Candidate</DialogTitle>
+          <DialogTitle style={{ color: '#429ABD' }}>Delete Candidate</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete this Candidate?
           </DialogDescription>
@@ -52,6 +57,7 @@ export function DeleteCandidateButton({ candidateId }: { candidateId: string }) 
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={isPending}
+            className="transition-all duration-300 hover:border-[#429ABD] hover:text-[#429ABD]"
           >
             Cancel
           </Button>
@@ -60,6 +66,7 @@ export function DeleteCandidateButton({ candidateId }: { candidateId: string }) 
             variant="destructive"
             onClick={handleDelete}
             disabled={isPending}
+            className="transition-all duration-300 hover:bg-[#F5A623] hover:border-[#F5A623] bg-red-600"
           >
             {isPending ? "Deleting..." : "Delete"}
           </Button>

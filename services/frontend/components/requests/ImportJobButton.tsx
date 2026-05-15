@@ -38,7 +38,10 @@ export function ImportJobButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-primary text-primary-foreground text-sm px-3 py-1.5 rounded-md hover:bg-primary/90 transition font-medium"
+        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md transition-all duration-300 hover:shadow-lg font-medium"
+        style={{ backgroundColor: '#429ABD', color: 'white' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
       >
         <Upload className="w-4 h-4" />
         Import
@@ -49,12 +52,12 @@ export function ImportJobButton() {
           <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-xl p-6 relative shadow-lg my-8">
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black dark:hover:text-white"
+              className="absolute top-3 right-3 text-gray-500 hover:text-[#F5A623] dark:hover:text-[#F5A623] transition-colors duration-300"
             >
               ✕
             </button>
 
-            <h2 className="text-lg font-semibold mb-4">Import Job Description</h2>
+            <h2 className="text-lg font-semibold mb-4" style={{ color: '#429ABD' }}>Import Job Description</h2>
 
             <FileUpload
               onClose={() => setOpen(false)}

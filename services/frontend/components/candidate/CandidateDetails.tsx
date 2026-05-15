@@ -95,7 +95,7 @@ export default function CandidateDetails({ id, empData }: Props) {
   if (loading || !candidate) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#429ABD] border-t-transparent rounded-full animate-spin" />
         <p className="text-muted-foreground font-medium">
           Loading candidate profile...
         </p>
@@ -114,21 +114,21 @@ export default function CandidateDetails({ id, empData }: Props) {
   ];
 
   const fieldClass =
-    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
+    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]";
 
   return (
     <div className="max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-sm border border-border p-4 sm:p-6 md:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
-        <h2 className="text-lg sm:text-xl font-bold">Candidate Details</h2>
+        <h2 className="text-lg sm:text-xl font-bold" style={{ color: '#429ABD' }}>Candidate Details</h2>
       
       </div>
       <Tabs defaultValue="basic" className="w-full">
   <div className="overflow-x-auto pb-2 sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
     <TabsList className="inline-flex w-full sm:grid sm:grid-cols-4 min-w-max sm:min-w-0 gap-1">
-      <TabsTrigger value="basic" className="text-xs sm:text-sm px-3 sm:px-4">Basic Info</TabsTrigger>
-      <TabsTrigger value="experience" className="text-xs sm:text-sm px-3 sm:px-4">Experience</TabsTrigger>
-      <TabsTrigger value="resume" className="text-xs sm:text-sm px-3 sm:px-4">Resumes</TabsTrigger>
-      <TabsTrigger value="attachments" className="text-xs sm:text-sm px-3 sm:px-4">Attachments</TabsTrigger>
+      <TabsTrigger value="basic" className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300">Basic Info</TabsTrigger>
+      <TabsTrigger value="experience" className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300">Experience</TabsTrigger>
+      <TabsTrigger value="resume" className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300">Resumes</TabsTrigger>
+      <TabsTrigger value="attachments" className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300">Attachments</TabsTrigger>
     </TabsList>
         </div>
 
@@ -146,7 +146,10 @@ export default function CandidateDetails({ id, empData }: Props) {
     <button
       type="button"
       onClick={() => setIsEditing(true)}
-      className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-colors w-full sm:w-auto"
+      className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
+      style={{ backgroundColor: '#429ABD', color: 'white' }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
     >
       Update Status
     </button>
@@ -163,7 +166,10 @@ export default function CandidateDetails({ id, empData }: Props) {
         form="candidate-form"
         type="submit"
         disabled={loading}
-        className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 transition-colors flex-1 sm:flex-none"
+        className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-60 transition-all duration-300 hover:shadow-lg flex-1 sm:flex-none"
+        style={{ backgroundColor: '#F5A623' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
       >
         {loading ? "Saving..." : "Save Changes"}
       </button>
@@ -310,7 +316,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
-            <h2 className="text-base sm:text-lg font-semibold text-foreground">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: '#429ABD' }}>
               Educational Details
             </h2>
             {(candidate.education || []).map((edu: any, index: number) => (
@@ -347,7 +353,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                <h2 className="text-base sm:text-lg font-semibold text-foreground">
+                <h2 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: '#F5A623' }}>
                   Matching Requests ({matches.length})
                 </h2>
                 <button
@@ -356,7 +362,10 @@ export default function CandidateDetails({ id, empData }: Props) {
                     e.preventDefault();
                     runJobMatching(candidate);
                   }}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50 hover:bg-blue-700 transition-colors w-full sm:w-auto"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-50 transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
+                  style={{ backgroundColor: '#429ABD' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
                 >
                   {matching ? "Matching..." : "Find Matching Requests"}
                 </button>
@@ -376,14 +385,14 @@ export default function CandidateDetails({ id, empData }: Props) {
                   {matches.map((job) => (
                     <div
                       key={job.job_id}
-                      className="border border-border rounded-lg p-4 shadow-sm bg-card"
+                      className="border border-border rounded-lg p-4 shadow-sm bg-card hover:border-[#429ABD]/30 transition-all duration-300"
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                         <h3 className="font-semibold text-foreground">
                           {job.job_title || "Request"}
                         </h3>
 
-                        <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs sm:text-sm">
+                        <span className="px-2 py-1 rounded text-xs sm:text-sm font-semibold" style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>
                           {Number(job.match_score).toFixed(2)}%
                         </span>
                       </div>
@@ -423,7 +432,7 @@ export default function CandidateDetails({ id, empData }: Props) {
             {(candidate.experience || []).map((exp: any, index: number) => (
               <div
                 key={index}
-                className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2"
+                className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2 hover:border-[#429ABD]/30 transition-all duration-300"
               >
                 <div className="flex flex-col sm:flex-row justify-between gap-2 text-base sm:text-lg font-semibold text-foreground">
                   <span>{exp.job_title}</span>
@@ -457,7 +466,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
           <TabsContent value="resume" className="space-y-4 sm:space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">
+              <h3 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: '#429ABD' }}>
                 Manage Resumes
               </h3>
             </div>
@@ -475,10 +484,10 @@ export default function CandidateDetails({ id, empData }: Props) {
                   <div
                     key={resume.id}
                     className={cn(
-                      "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border transition-all gap-3 sm:gap-0",
+                      "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border transition-all duration-300 gap-3 sm:gap-0",
                       resume.is_primary
-                        ? "bg-blue-50/50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700 ring-1 ring-blue-200 dark:ring-blue-700"
-                        : "bg-card border-border hover:border-primary/40 shadow-sm",
+                        ? "border-[#429ABD] ring-1 ring-[#429ABD] shadow-sm"
+                        : "bg-card border-border hover:border-[#429ABD]/40 shadow-sm",
                     )}
                   >
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
@@ -486,7 +495,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                         className={cn(
                           "p-2 rounded-lg",
                           resume.is_primary
-                            ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
+                            ? "bg-[#429ABD20] text-[#429ABD]"
                             : "bg-muted text-muted-foreground",
                         )}
                       >
@@ -498,7 +507,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                             {resume.file_name || "Resume"}
                           </span>
                           {resume.is_primary && (
-                            <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider rounded-full">
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full" style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>
                               Primary
                             </span>
                           )}
@@ -516,7 +525,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                           type="button"
                           onClick={() => handleSetPrimary(resume.id)}
                           disabled={uploading}
-                          className="p-2 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors disabled:opacity-50"
+                          className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300 disabled:opacity-50"
                           title="Set as Primary"
                         >
                           <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -527,7 +536,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                         href={resume.file_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
                         title="View Resume"
                       >
                         <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -549,7 +558,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
           <TabsContent value="attachments" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">
+              <h3 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: '#429ABD' }}>
                 Miscellaneous Documents
               </h3>
               <UploadAttachmentDialog
@@ -569,10 +578,10 @@ export default function CandidateDetails({ id, empData }: Props) {
                 candidate.attachments.map((attachment: any) => (
                   <div
                     key={attachment.id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-primary/40 transition-all gap-3 sm:gap-0"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-[#429ABD]/40 transition-all duration-300 gap-3 sm:gap-0"
                   >
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                      <div className="p-2 bg-muted text-muted-foreground rounded-lg">
+                      <div className="p-2 bg-[#429ABD10] text-[#429ABD] rounded-lg">
                         <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       <div>
@@ -580,7 +589,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                           <span className="font-medium text-sm text-foreground">
                             {attachment.file_name || attachment.filename}
                           </span>
-                          <span className="px-2 py-0.5 bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-wider rounded-full">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#F5A62320', color: '#F5A623' }}>
                             {attachment.document_type}
                           </span>
                         </div>
@@ -599,7 +608,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                         target="_blank"
                         rel="noopener noreferrer"
                         title="View Attachment"
-                        className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                        className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
                       >
                         <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </a>

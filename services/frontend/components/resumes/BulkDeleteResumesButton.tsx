@@ -51,7 +51,7 @@ export function BulkDeleteResumesButton({ selectedIds, onSuccessAction }: BulkDe
         <Button
           variant="destructive"
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 transition-all duration-300 hover:bg-[#F5A623] hover:border-[#F5A623]"
           disabled={isDeleting}
         >
           <Trash2 className="h-4 w-4" />
@@ -60,7 +60,7 @@ export function BulkDeleteResumesButton({ selectedIds, onSuccessAction }: BulkDe
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Resumes</DialogTitle>
+          <DialogTitle style={{ color: '#429ABD' }}>Delete Resumes</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete {selectedIds.length} selected resumes?
           </DialogDescription>
@@ -70,6 +70,7 @@ export function BulkDeleteResumesButton({ selectedIds, onSuccessAction }: BulkDe
             variant="outline"
             onClick={() => setIsConfirmOpen(false)}
             disabled={isDeleting}
+            className="hover:border-[#429ABD] hover:text-[#429ABD] transition-all duration-300"
           >
             Cancel
           </Button>
@@ -77,6 +78,7 @@ export function BulkDeleteResumesButton({ selectedIds, onSuccessAction }: BulkDe
             variant="destructive"
             onClick={handleBulkDelete}
             disabled={isDeleting}
+            className="transition-all duration-300 hover:bg-[#F5A623] hover:border-[#F5A623]"
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </Button>
