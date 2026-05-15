@@ -9,42 +9,26 @@ import { CompareCheckbox } from "./CompareCheckbox";
 import { DeleteCandidateButton } from "./DeleteCandidateButton";
 
 export const columns_candidate_list: ColumnDef<CandidateList>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <div className="flex justify-center w-full">
-  //       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter"></span>
-  //     </div>
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="flex justify-center w-full">
-  //       <CompareCheckbox candidate={row.original} />
-  //     </div>
-  //   ),
-  //   size: 40,
-  // },
   {
-  accessorKey: "first_name",
-  header: "Name and Email",
-  cell: ({ row }) => {
-    const first = row.original.first_name || "";
-    const last = row.original.last_name || "";
-    const email = row.original.email || "NA";
-
-    const fullName = `${first} ${last}`.trim();
-
-    return (
-      <div className="flex flex-col">
-        <span className="font-medium">
-          {fullName || "NA"}
-        </span>
-        <span className="text-sm text-gray-500 break-all">
-          {email}
-        </span>
-      </div>
-    );
+    accessorKey: "first_name",
+    header: "Name and Email",
+    cell: ({ row }) => {
+      const first = row.original.first_name || "";
+      const last = row.original.last_name || "";
+      const email = row.original.email || "NA";
+      const fullName = `${first} ${last}`.trim();
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {fullName || "NA"}
+          </span>
+          <span className="text-sm text-gray-500 break-all">
+            {email}
+          </span>
+        </div>
+      );
+    },
   },
-},
   {
     accessorKey: "current_title",
     header: "Role",
@@ -57,11 +41,14 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   {
     accessorKey: "years_of_experience",
     header: () => <div className="text-center w-full">Year of experience</div>,
-    cell: ({ row }) => (
-      <div className="text-center w-full">
-        {row.getValue("years_of_experience") || "NA"} yrs
-      </div>
-    ),
+    cell: ({ row }) => {
+      const years = row.original.years_of_experience;
+      return (
+        <div className="text-center w-full">
+          {years ?? "NA"} yrs
+        </div>
+      );
+    },
     size: 80,
   },
   {
@@ -100,7 +87,7 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
             size="icon"
             onClick={() => router.push(`/candidates/${candidate.id}`)}
             className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
-             title="View Candidate" 
+            title="View Candidate"
           >
             <Eye className="w-4 h-4" />
           </Button>
@@ -109,4 +96,4 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
       );
     },
   },
-];
+];	

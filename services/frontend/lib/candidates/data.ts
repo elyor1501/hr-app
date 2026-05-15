@@ -133,8 +133,8 @@ export async function getCandidateById(id: string) {
     const apiUrl = getApiUrl();
     const token = getAuthToken();
     const fetchUrl = apiUrl
-      ? `${apiUrl}/api/v1/candidates/${id}/profile`
-      : `/api/v1/candidates/${id}/profile`;
+      ? `${apiUrl}/api/v1/candidates/${id}`
+      : `/api/v1/candidates/${id}`;
 
     const headers: HeadersInit = {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
