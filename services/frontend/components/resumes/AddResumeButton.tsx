@@ -40,7 +40,7 @@ export default function AddResumeButton() {
       <button
         onClick={() => setOpen(true)}
         className="text-sm px-3 py-1.5 rounded-md transition-all duration-300 hover:shadow-lg"
-        style={{ 
+        style={{
           backgroundColor: '#429ABD',
           color: 'white'
         }}
@@ -55,8 +55,9 @@ export default function AddResumeButton() {
           <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-xl p-6 relative shadow-lg">
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black transition-colors duration-300"
-              style={{ hover: { color: '#F5A623' } }}
+              className="absolute top-3 right-3 text-gray-500 transition-colors duration-300"
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#F5A623")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "")}
             >
               ✕
             </button>
