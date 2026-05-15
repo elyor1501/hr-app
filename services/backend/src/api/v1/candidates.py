@@ -57,6 +57,14 @@ CANDIDATE_LIST_COLUMNS = [
     Candidate.json_data,
     Candidate.created_at,
     Candidate.updated_at,
+    Candidate.daily_rate,
+    Candidate.rate_type,
+    Candidate.currency,
+    Candidate.vendor,
+    Candidate.proposed_rate,
+    Candidate.proposed_rate_type,
+    Candidate.proposed_daily_rate,
+    Candidate.proposed_currency,
 ]
 
 
@@ -414,6 +422,38 @@ async def update_candidate(
         raise HTTPException(status_code=404, detail="Candidate not found")
 
     update_dict = update_data.model_dump(exclude_unset=True)
+
+    if "hourly_rate" in update_dict or "rate_type" in update_dict:
+        rate = update_dict.get("hourly_rate")
+        if rate is None:
+            existing = await repo.get_by_id(id)
+            rate = existing.hourly_rate if existing else None
+        rate_type = update_dict.get("rate_type", "hourly")
+        if rate:
+            if rate_type == "hourly":
+                update_dict["daily_rate"] = round(float(rate) * 8, 2)
+            elif rate_type == "daily":
+                update_dict["daily_rate"] = round(float(rate), 2)
+            elif rate_type == "weekly":
+                update_dict["daily_rate"] = round(float(rate) / 5, 2)
+            elif rate_type == "monthly":
+                update_dict["daily_rate"] = round(float(rate) / 22, 2)
+
+    if "proposed_rate" in update_dict or "proposed_rate_type" in update_dict:
+        p_rate = update_dict.get("proposed_rate")
+        if p_rate is None:
+            existing = await repo.get_by_id(id)
+            p_rate = existing.proposed_rate if existing else None
+        p_rate_type = update_dict.get("proposed_rate_type", "hourly")
+        if p_rate:
+            if p_rate_type == "hourly":
+                update_dict["proposed_daily_rate"] = round(float(p_rate) * 8, 2)
+            elif p_rate_type == "daily":
+                update_dict["proposed_daily_rate"] = round(float(p_rate), 2)
+            elif p_rate_type == "weekly":
+                update_dict["proposed_daily_rate"] = round(float(p_rate) / 5, 2)
+            elif p_rate_type == "monthly":
+                update_dict["proposed_daily_rate"] = round(float(p_rate) / 22, 2)
 
     if "status" in update_dict:
         if update_dict["status"] not in ["active", "inactive"]:

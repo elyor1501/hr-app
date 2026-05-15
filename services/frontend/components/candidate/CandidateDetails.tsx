@@ -137,7 +137,18 @@ export default function CandidateDetails({ id, empData }: Props) {
     );
   }
 
-  const attachmentTypes = ["Certification", "Portfolio", "Qualification", "License", "Cover Letter", "Reference Letter", "Other"];
+  const experience = candidate.experience?.length
+    ? candidate.experience
+    : candidate.json_data?.experience ?? [];
+
+  const education = candidate.education?.length
+    ? candidate.education
+    : candidate.json_data?.education ?? [];
+
+  const attachmentTypes = [
+    "Certification", "Portfolio", "Qualification", "License",
+    "Cover Letter", "Reference Letter", "Other",
+  ];
 
   const fieldClass = "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]";
 
@@ -159,7 +170,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     dailyRate: any,
     dailyCurrency: string
   ) => (
-    <div className={`border-2 rounded-xl p-4 sm:p-5 space-y-4`} style={{ borderColor }}>
+    <div className="border-2 rounded-xl p-4 sm:p-5 space-y-4" style={{ borderColor }}>
       <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: borderColor }}>{title}</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -267,10 +278,13 @@ export default function CandidateDetails({ id, empData }: Props) {
                   <Select name="status" value={candidate?.status ?? "active"}
                     onValueChange={(value) => setCandidate((prev: any) => ({ ...prev, status: value }))}>
                     <SelectTrigger className={fieldClass}><SelectValue placeholder="Select status" /></SelectTrigger>
-                    <SelectContent><SelectGroup><SelectLabel>Candidate Status</SelectLabel>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectGroup></SelectContent>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Candidate Status</SelectLabel>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
                   </Select>
                 ) : (
                   <input name="status" value={candidate?.status === "active" ? "Active" : "Inactive"} disabled className={fieldClass} />
@@ -279,24 +293,36 @@ export default function CandidateDetails({ id, empData }: Props) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <div><label className="block text-sm font-medium mb-1 text-foreground">Email</label>
-                <input name="email" defaultValue={candidate.email ?? "NA"} disabled className={fieldClass} /></div>
-              <div><label className="block text-sm font-medium mb-1 text-foreground">Phone</label>
-                <input name="phone" defaultValue={candidate.phone ?? "NA"} disabled className={fieldClass} /></div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">Email</label>
+                <input name="email" defaultValue={candidate.email ?? "NA"} disabled className={fieldClass} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">Phone</label>
+                <input name="phone" defaultValue={candidate.phone ?? "NA"} disabled className={fieldClass} />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <div><label className="block text-sm font-medium mb-1 text-foreground">Location</label>
-                <input name="location" defaultValue={candidate.location ?? "NA"} disabled className={fieldClass} /></div>
-              <div><label className="block text-sm font-medium mb-1 text-foreground">Github Link</label>
-                <input name="github" defaultValue={candidate.github ?? "NA"} disabled className={fieldClass} /></div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">Location</label>
+                <input name="location" defaultValue={candidate.location ?? "NA"} disabled className={fieldClass} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">Github Link</label>
+                <input name="github" defaultValue={candidate.github ?? "NA"} disabled className={fieldClass} />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <div><label className="block text-sm font-medium mb-1 text-foreground">LinkedIn URL</label>
-                <input name="linkedin_url" defaultValue={candidate.linkedin_url ?? "NA"} disabled className={fieldClass} /></div>
-              <div><label className="block text-sm font-medium mb-1 text-foreground">Portfolio link</label>
-                <input name="portfolio" defaultValue={candidate.portfolio ?? "NA"} disabled className={fieldClass} /></div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">LinkedIn URL</label>
+                <input name="linkedin_url" defaultValue={candidate.linkedin_url ?? "NA"} disabled className={fieldClass} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">Portfolio link</label>
+                <input name="portfolio" defaultValue={candidate.portfolio ?? "NA"} disabled className={fieldClass} />
+              </div>
             </div>
 
             <div>
@@ -308,8 +334,13 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">Vendor</label>
-              <input name="vendor" defaultValue={candidate.vendor ?? ""} disabled={!isEditing}
-                placeholder={isEditing ? "Enter vendor name" : "Not set"} className={fieldClass} />
+              <input
+                name="vendor"
+                defaultValue={candidate.vendor ?? ""}
+                disabled={!isEditing}
+                placeholder={isEditing ? "Enter vendor name" : "Not set"}
+                className={fieldClass}
+              />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -345,13 +376,15 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             {sectionHeader("Educational Details")}
 
-            {(candidate.education || []).map((edu: any, index: number) => (
+            {education.map((edu: any, index: number) => (
               <div key={index} className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2">
                 <div className="font-semibold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-foreground">
                   <span>{edu.degree}{edu.field_of_study ? ` in ${edu.field_of_study}` : ""}</span>
                   {(edu.start_date || edu.end_date) && (
                     <span className="text-muted-foreground text-xs sm:text-sm">
-                      {edu.start_date && edu.end_date ? `${edu.start_date} - ${edu.end_date}` : edu.start_date ? edu.start_date : edu.end_date}
+                      {edu.start_date && edu.end_date
+                        ? `${edu.start_date} - ${edu.end_date}`
+                        : edu.start_date ? edu.start_date : edu.end_date}
                     </span>
                   )}
                 </div>
@@ -363,7 +396,8 @@ export default function CandidateDetails({ id, empData }: Props) {
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 {sectionHeader(`Matching Requests (${matches.length})`, '#F5A623')}
-                <button type="button" onClick={(e) => { e.preventDefault(); runJobMatching(candidate); }}
+                <button type="button"
+                  onClick={(e) => { e.preventDefault(); runJobMatching(candidate); }}
                   className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-50 transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
                   style={{ backgroundColor: '#429ABD' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
@@ -374,7 +408,9 @@ export default function CandidateDetails({ id, empData }: Props) {
               {matching ? (
                 <p className="text-muted-foreground text-sm">Finding matching requests...</p>
               ) : matches.length === 0 ? (
-                <p className="text-muted-foreground text-sm">No matching request found. Click the button above to run the matching process.</p>
+                <p className="text-muted-foreground text-sm">
+                  No matching request found. Click the button above to run the matching process.
+                </p>
               ) : (
                 <div className="grid gap-4">
                   {matches.map((job) => (
@@ -385,9 +421,19 @@ export default function CandidateDetails({ id, empData }: Props) {
                           {Number(job.match_score).toFixed(2)}%
                         </span>
                       </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-2"><span className="font-bold text-foreground">Reasoning:</span> {job.reasoning}</p>
-                      {job.strengths?.length > 0 && <div className="text-xs sm:text-sm text-muted-foreground mb-2"><span className="font-bold text-foreground">Strengths:</span> {job.strengths.join(", ")}</div>}
-                      {job.gaps?.length > 0 && <div className="text-xs sm:text-sm text-muted-foreground mb-2"><span className="font-bold text-foreground">Gaps:</span> {job.gaps.join(", ")}</div>}
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2">
+                        <span className="font-bold text-foreground">Reasoning:</span> {job.reasoning}
+                      </p>
+                      {job.strengths?.length > 0 && (
+                        <div className="text-xs sm:text-sm text-muted-foreground mb-2">
+                          <span className="font-bold text-foreground">Strengths:</span> {job.strengths.join(", ")}
+                        </div>
+                      )}
+                      {job.gaps?.length > 0 && (
+                        <div className="text-xs sm:text-sm text-muted-foreground mb-2">
+                          <span className="font-bold text-foreground">Gaps:</span> {job.gaps.join(", ")}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -396,22 +442,41 @@ export default function CandidateDetails({ id, empData }: Props) {
           </TabsContent>
 
           <TabsContent value="experience" className="space-y-4 sm:space-y-6">
-            {(candidate.experience || []).map((exp: any, index: number) => (
-              <div key={index} className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2 hover:border-[#429ABD]/30 transition-all duration-300">
-                <div className="flex flex-col sm:flex-row justify-between gap-2 text-base sm:text-lg font-semibold text-foreground">
-                  <span>{exp.job_title}</span>
-                  <span className="text-xs sm:text-sm text-muted-foreground">
-                    {(exp.start_date || exp.end_date) && <span>{exp.start_date && exp.end_date ? `${exp.start_date} - ${exp.end_date}` : exp.start_date ? exp.start_date : exp.end_date}</span>}
-                  </span>
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">{exp.company} {exp.location ? `- ${exp.location}` : ""}</div>
-                {exp.responsibilities && exp.responsibilities.length > 0 && (
-                  <ul className="list-disc pl-5 text-xs sm:text-sm text-muted-foreground space-y-1">
-                    {exp.responsibilities.map((resp: string, i: number) => <li key={i}>{resp}</li>)}
-                  </ul>
-                )}
+            {experience.length === 0 ? (
+              <div className="text-center py-12 border-2 border-dashed border-border rounded-xl bg-muted/30">
+                <p className="text-sm text-muted-foreground">No experience data found</p>
               </div>
-            ))}
+            ) : (
+              experience.map((exp: any, index: number) => (
+                <div key={index} className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2 hover:border-[#429ABD]/30 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row justify-between gap-2 text-base sm:text-lg font-semibold text-foreground">
+                    <span>{exp.job_title}</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">
+                      {(exp.start_date || exp.end_date) && (
+                        <span>
+                          {exp.start_date && exp.end_date
+                            ? `${exp.start_date} - ${exp.end_date}`
+                            : exp.start_date ? exp.start_date : exp.end_date}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">
+                    {exp.company} {exp.location ? `- ${exp.location}` : ""}
+                  </div>
+                  {exp.responsibilities && (
+                    <ul className="list-disc pl-5 text-xs sm:text-sm text-muted-foreground space-y-1">
+                      {Array.isArray(exp.responsibilities)
+                        ? exp.responsibilities.map((resp: string, i: number) => (
+                            <li key={i}>{resp}</li>
+                          ))
+                        : <li>{exp.responsibilities}</li>
+                      }
+                    </ul>
+                  )}
+                </div>
+              ))
+            )}
           </TabsContent>
 
           <TabsContent value="resume" className="space-y-4 sm:space-y-6">
@@ -426,8 +491,13 @@ export default function CandidateDetails({ id, empData }: Props) {
                 </div>
               ) : (
                 candidate.cvs.map((resume: any) => (
-                  <div key={resume.id} className={cn("flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border transition-all duration-300 gap-3 sm:gap-0",
-                    resume.is_primary ? "border-[#429ABD] ring-1 ring-[#429ABD] shadow-sm" : "bg-card border-border hover:border-[#429ABD]/40 shadow-sm")}>
+                  <div key={resume.id}
+                    className={cn(
+                      "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border transition-all duration-300 gap-3 sm:gap-0",
+                      resume.is_primary
+                        ? "border-[#429ABD] ring-1 ring-[#429ABD] shadow-sm"
+                        : "bg-card border-border hover:border-[#429ABD]/40 shadow-sm"
+                    )}>
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                       <div className={cn("p-2 rounded-lg", resume.is_primary ? "bg-[#429ABD20] text-[#429ABD]" : "bg-muted text-muted-foreground")}>
                         <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -435,16 +505,32 @@ export default function CandidateDetails({ id, empData }: Props) {
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-medium text-sm text-foreground">{resume.file_name || "Resume"}</span>
-                          {resume.is_primary && <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full" style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>Primary</span>}
+                          {resume.is_primary && (
+                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full"
+                              style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>Primary</span>
+                          )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">Uploaded on {new Date(resume.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Uploaded on {new Date(resume.created_at).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                      {!resume.is_primary && <button type="button" onClick={() => handleSetPrimary(resume.id)} disabled={uploading}
-                        className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300 disabled:opacity-50" title="Set as Primary"><CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" /></button>}
-                      <a href={resume.file_url} target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300" title="View Resume"><EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" /></a>
-                      {(candidate.cvs || []).length > 1 && <DeleteResumeButton candidateId={id} resumeId={resume.id} onSuccess={(updated) => setCandidate(updated)} />}
+                      {!resume.is_primary && (
+                        <button type="button" onClick={() => handleSetPrimary(resume.id)} disabled={uploading}
+                          className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300 disabled:opacity-50"
+                          title="Set as Primary">
+                          <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </button>
+                      )}
+                      <a href={resume.file_url} target="_blank" rel="noopener noreferrer"
+                        className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
+                        title="View Resume">
+                        <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+                      {(candidate.cvs || []).length > 1 && (
+                        <DeleteResumeButton candidateId={id} resumeId={resume.id} onSuccess={(updated) => setCandidate(updated)} />
+                      )}
                     </div>
                   </div>
                 ))
@@ -454,8 +540,14 @@ export default function CandidateDetails({ id, empData }: Props) {
 
           <TabsContent value="attachments" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h3 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: '#429ABD' }}>Miscellaneous Documents</h3>
-              <UploadAttachmentDialog candidateId={id} attachmentTypes={attachmentTypes} onSuccess={(updated) => setCandidate(updated)} />
+              <h3 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: '#429ABD' }}>
+                Miscellaneous Documents
+              </h3>
+              <UploadAttachmentDialog
+                candidateId={id}
+                attachmentTypes={attachmentTypes}
+                onSuccess={(updated) => setCandidate(updated)}
+              />
             </div>
             <div className="grid gap-3 sm:gap-4">
               {(candidate.attachments || []).length === 0 ? (
@@ -465,20 +557,38 @@ export default function CandidateDetails({ id, empData }: Props) {
                 </div>
               ) : (
                 candidate.attachments.map((attachment: any) => (
-                  <div key={attachment.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-[#429ABD]/40 transition-all duration-300 gap-3 sm:gap-0">
+                  <div key={attachment.id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-[#429ABD]/40 transition-all duration-300 gap-3 sm:gap-0">
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                      <div className="p-2 bg-[#429ABD10] text-[#429ABD] rounded-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5" /></div>
+                      <div className="p-2 bg-[#429ABD10] text-[#429ABD] rounded-lg">
+                        <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium text-sm text-foreground">{attachment.file_name || attachment.filename}</span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#F5A62320', color: '#F5A623' }}>{attachment.document_type}</span>
+                          <span className="font-medium text-sm text-foreground">
+                            {attachment.file_name || attachment.filename}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                            style={{ backgroundColor: '#F5A62320', color: '#F5A623' }}>
+                            {attachment.document_type}
+                          </span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">Uploaded on {new Date(attachment.created_at).toLocaleDateString("en-GB").replace(/\//g, ".")}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Uploaded on {new Date(attachment.created_at).toLocaleDateString("en-GB").replace(/\//g, ".")}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                      <a href={attachment.file_url} target="_blank" rel="noopener noreferrer" title="View Attachment" className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"><EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" /></a>
-                      <DeleteAttachmentButton candidateId={id} attachmentId={attachment.id} onSuccess={(updated) => setCandidate(updated)} />
+                      <a href={attachment.file_url} target="_blank" rel="noopener noreferrer"
+                        title="View Attachment"
+                        className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300">
+                        <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+                      <DeleteAttachmentButton
+                        candidateId={id}
+                        attachmentId={attachment.id}
+                        onSuccess={(updated) => setCandidate(updated)}
+                      />
                     </div>
                   </div>
                 ))
