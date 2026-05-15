@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Dict, Any, List, Optional, Union
 from services.llm.gemini_llm_client import GeminiLLMClient
 from services.parsers import parse_cv, detect_sections_llm_first
+from services.validation import validate_structured_cv
 
 llm = GeminiLLMClient()
 
@@ -140,7 +141,104 @@ class StructuredData(BaseModel):
 
 
 # Nested types must be fully defined in the schema; empty arrays cause the model to return empty arrays verbatim
-RESUME_PROMPT_TEMPLATE = """Extract structured resume data in JSON format strictly adhering to the following structure. Return ONLY valid JSON, no markdown.
+RESUME_PROMPT_TEMPLATE = """You are extracting structured data from a resume. Return ONLY valid JSON — no markdown, no code fences, no commentary.
+
+═══ LAYOUT DETECTION — APPLY BEFORE EXTRACTING ANYTHING ═══
+
+CVs use many different visual formats. The PDF-to-text conversion that produced this
+text may have flattened a multi-column or table layout into a linear stream. Before
+extracting any field, identify which layout pattern each section uses:
+
+PATTERN A — TWO-COLUMN BLOCK (common in contact headers and skills tables):
+  Left and right column content is interleaved line by line. Adjacent lines that
+  are logically unrelated (e.g. a name on the left and a phone number on the right)
+  will appear on the same or consecutive lines with no clear separator.
+  Detection signal: short lines alternating between different types of information
+  (name/title on one, phone/email on next, city/URL after that).
+  Action: read ALL lines in such a block before deciding what each field is.
+
+PATTERN B — TABLE ROW (common in experience and skills sections):
+  A table row collapses into a single line or small group of lines where the
+  logical columns are separated by large whitespace, tab characters, or a pipe/dash.
+  Example (experience table):
+    "2022 – 2024    Senior SAP Consultant    Accenture    Frankfurt"
+  Example (skills table):
+    "SAP Modules      FI  CO  MM  SD  WM  PP"
+    "Programming      ABAP  Python  SQL  Java"
+  Detection signal: repeated lines with the same number of whitespace-separated
+  segments, or lines where the left part is a label and the right is a list.
+  Action for experience rows: extract each row as one experience entry with
+  whatever fields are present (date, title, company, location — any may be absent).
+  Action for skills rows: extract ONLY the right-column values as individual skills;
+  do NOT include the left-column category label as a skill.
+
+PATTERN C — LABELED FIELDS (common in German CVs and structured templates):
+  Each field is on its own line with a label prefix:
+    "Rolle: Senior Berater"
+    "Unternehmen: SAP SE"
+    "Zeitraum: 03/2021 – 09/2023"
+  Action: map each label to the appropriate output field.
+  Accepted German labels → output field:
+    Rolle / Position / Bezeichnung / Funktion → job_title
+    Unternehmen / Arbeitgeber / Kunde / Firma → company
+    Zeitraum / Dauer / Von–Bis / Laufzeit    → start_date + end_date
+    Ort / Standort                            → location
+    Aufgaben / Tätigkeiten / Beschreibung    → responsibilities
+
+ANY SECTION can use ANY of these patterns independently. Do not assume the skills
+section uses a specific layout just because the experience section does.
+
+═══ FIELD EXTRACTION RULES ═══
+
+FULL NAME:
+  Extract the person's full name (first name + last name ± middle name/initial).
+  The name may appear anywhere in the CV — at the top, after a photo placeholder,
+  after a label, or embedded in a contact block.
+  It may or may not be preceded by a label such as "Name:", "Vorname:", "Vor- und Nachname:".
+  A person name: consists only of letters (including accented/umlauted characters),
+  spaces, hyphens, apostrophes, or dots; has 1–5 words; contains no digits.
+  Do NOT extract as the name:
+    — Job titles or seniority levels ("Senior Consultant", "Lead Developer")
+    — Availability text ("Verfügbar ab sofort", "Available from March 2024")
+    — Section headings ("Curriculum Vitae", "Lebenslauf", "Profil")
+    — Company names, locations, email addresses, or URLs
+  If you cannot identify a clear person name with high confidence, return null.
+
+PHONE:
+  Include the country code whenever it is present (+49, +91, etc.).
+  If the number appears without a country code, copy it exactly as written — do not
+  fabricate a country code.
+  If no phone is found, return null.
+
+SKILLS:
+  Extract every distinct technology, tool, framework, programming language,
+  SAP module or transaction, database, cloud platform, API, protocol, or
+  methodology that appears in ANY section of the CV.
+  When the CV has a dedicated skills section (any heading containing "Skills",
+  "Kenntnisse", "Kompetenzen", "Technology", "Technologie", or similar),
+  extract ALL items from that section first, then supplement with skills found
+  in experience bullet points.
+  For two-column skills tables: extract ONLY the right-column (value) items —
+  not the left-column category labels.
+  Copy each skill EXACTLY as written in the source text — do not normalise,
+  expand, abbreviate, or change spelling.
+  Exclude: dates, city/country names, company names, project deliverable names
+  ("BRD", "Test Plan", "Blueprint"), and generic soft skills
+  ("Teamwork", "Communication", "Leadership").
+
+EXPERIENCE:
+  Extract every distinct work engagement, project, or role.
+  When the CV has multiple work-related sections (e.g. both a summary table
+  and a detailed project list), prefer the section with the most structured
+  detail (date ranges + company + responsibilities). If entries from a summary
+  section duplicate entries in the detailed section, extract ONLY the detailed ones.
+  For each entry, extract whatever fields are present — some CVs omit certain
+  fields (no company, no location, no explicit date). Set those to null; do not
+  fabricate missing values.
+  responsibilities: copy EVERY bullet point, task, and achievement VERBATIM as
+  individual array items. Do NOT summarise, merge, or paraphrase.
+
+═══ JSON SCHEMA ═══
 
 {{
   "full_name": string or null,
@@ -175,12 +273,12 @@ RESUME_PROMPT_TEMPLATE = """Extract structured resume data in JSON format strict
     }}
   ],
   "projects": [
-  {{
-  "name": string or null,
-  "description": string or null,
-  "technologies":[string],
-  "url": string or null
-  }}
+    {{
+      "name": string or null,
+      "description": string or null,
+      "technologies": [string],
+      "url": string or null
+    }}
   ],
   "confidence_scores": {{
     "full_name": float,
@@ -205,17 +303,32 @@ _SKILL_EXTRACTION_PROMPT = """Extract all technical skill names from the resume 
 Already found: {existing_skills}
 Return ONLY items NOT in the above list.
 
+LAYOUT — TWO-COLUMN SKILLS TABLES:
+  This text may come from a table where the left column is a category label and
+  the right column holds a comma- or space-separated list of tools.
+  Example:
+    "SAP Modules      FI  CO  MM  SD  WM"
+    "Programming      ABAP  Python  SQL"
+  Extract ONLY the right-column values as individual skills.
+  Do NOT include the left-column label ("SAP Modules", "Programming") as a skill.
+  Recognised section headings to search for skills (English and German):
+    Technical Skills, IT Skills, Technology Summary, Tech Stack, Core Competencies,
+    IT-Kenntnisse, EDV-Kenntnisse, Technische Kenntnisse, Kenntnisse,
+    Kompetenzen, Fachkenntnisse, Qualifikationen, Technologie-Profil
+
 What to INCLUDE:
-  Technology names, tools, frameworks, programming languages, SAP modules and transactions,
-  certifications, methodologies, cloud platforms, databases, APIs, protocols.
+  Technology names, tools, frameworks, programming languages, SAP modules and
+  transactions, certifications, methodologies, cloud platforms, databases,
+  APIs, protocols.
 
 What to EXCLUDE — do not extract these even if they appear in a list:
-  Dates or year strings (e.g. "2021", "Jan 2023", "06/2025-10/2025")
+  Dates or year strings (e.g. "2021", "Jan 2023", "06/2025–10/2025", "Stand 09 7")
+  Status or date-stamp lines (e.g. "Stand: März 2024", "As of 2024", "Seit 2020")
   City, country, or region names (e.g. "Hessen", "Bayern", "India", "Bangalore")
   Client or company names (e.g. "Vodafone", "Accenture", "Kunde: IT Dienstleister")
-  OS/GUI environment strings listed as deployment platforms (e.g. "Windows8", "Windows10", "SAP GUI")
   Project deliverable names (e.g. "BRDs", "Blueprint", "Solution Design", "Test Plan")
-  Generic management activities (e.g. "Team Management", "Client Management", "Resource Planning")
+  Generic soft skills (e.g. "Teamwork", "Communication", "Leadership", "Analytical")
+  Generic management phrases (e.g. "Team Management", "Client Management", "Resource Planning")
   Industry descriptions or company profiles
 
 Copy each skill EXACTLY as written in the source text.
@@ -224,7 +337,7 @@ Do NOT normalise, expand, abbreviate, or change any spelling.
   "S4HANA 2021" stays "S4HANA 2021"  — do not change to "SAP S/4HANA"
   "ABAP/4" stays "ABAP/4"
 
-Acceptable item length: 1–6 words.
+Acceptable item length: 1–6 words, 2–60 characters.
 Return ONLY valid JSON: {{"skills": ["skill1", "skill2"]}}
 
 Text:
@@ -240,28 +353,64 @@ Text:
 
 _EXPERIENCE_EXTRACTION_PROMPT = """Extract every work experience entry from the resume text below.
 
-Entries may appear in ANY format: bullet lists, labeled fields (Role:, Organization:,
-Duration:, Responsibilities:), numbered projects ("Project 10: Apple"), table summaries,
-or free-form paragraphs.
+═══ LAYOUT DETECTION ═══
+
+Entries may appear in any visual format. Detect the format from context before extracting:
+
+FORMAT A — TABLE ROW:
+  Each row is one experience entry. Columns may be separated by large whitespace,
+  tabs, or pipe characters. The columns may represent: date range, job title,
+  company, location — in any order. Example:
+    "2022 – 2024    Senior Consultant    Accenture    Frankfurt"
+    "03/2019–08/2022  SAP FI Lead         Deloitte      Munich"
+  Extract each row as one entry. Set fields to null if a column is missing or
+  cannot be determined — do not fabricate values.
+
+FORMAT B — LABELED FIELDS:
+  Each field on its own line with a label prefix (English or German). Example:
+    "Rolle: Senior SAP Berater"
+    "Unternehmen: SAP SE / Kunde: Volkswagen AG"
+    "Zeitraum: 03/2021 – 09/2023"
+    "Aufgaben: Customizing FI-GL, Durchführung von Workshops..."
+  Accepted German label → output field mapping:
+    Rolle / Position / Bezeichnung / Funktion / Titel → job_title
+    Unternehmen / Arbeitgeber / Kunde / Firma / Client → company
+    Zeitraum / Dauer / Von / Bis / Laufzeit            → start_date / end_date
+    Ort / Standort / Location                          → location
+    Aufgaben / Tätigkeiten / Beschreibung / Leistungen → responsibilities
+
+FORMAT C — BULLET LIST OR FREE-FORM:
+  Entries appear as blocks of bullets beneath a header line that names the role
+  and/or company. The header may contain the date range as well.
+
+FORMAT D — NUMBERED PROJECTS:
+  "Project 10: ClientName" or "Projekt 3: Aufgabe – Rolle"
+  Treat each numbered project as one entry.
+
+═══ EXTRACTION RULES ═══
 
 Return ONE entry per PROJECT or ENGAGEMENT — not one per employer.
-If an employer has multiple separate projects, return each project as its own entry.
+If an employer has multiple separate projects, return each as its own entry.
 
-If the same role information appears both as a brief one-line summary AND as a detailed
-block with responsibilities listed beneath it, extract ONLY from the detailed block.
+When the CV has BOTH a brief summary table AND a detailed project section:
+  Extract ONLY from the detailed section. Omit entries that duplicate
+  information already covered in more detail by another entry.
 
-For each entry:
-  job_title       — the most specific role or position title for that project
-  company         — the employer or client organisation name
-  start_date      — copy exactly as written in the CV; null if not stated
-  end_date        — copy exactly as written in the CV; null if not stated
-  responsibilities — copy EVERY bullet point, duty, task, project detail, and achievement
-                     VERBATIM as individual array items.
+For each entry, extract whatever fields are present in the source:
+  job_title       — most specific role or position title; null if not stated
+  company         — employer or client organisation name; null if not stated
+  location        — city or country; null if not stated
+  start_date      — copy EXACTLY as written in the CV; null if not stated
+  end_date        — copy EXACTLY as written in the CV; null if not stated
+  responsibilities — copy EVERY bullet point, task, duty, achievement, and
+                     project detail VERBATIM as individual array items.
                      Do NOT summarise, merge, paraphrase, or omit any item.
-                     Each bullet point or sentence = one separate string in the array.
+                     Each bullet or sentence = one separate string in the array.
+
+Do NOT fabricate or infer any field that is not explicitly present in the text.
 
 Return ONLY valid JSON, no markdown, no code blocks:
-{{"experience": [{{"job_title": "string or null", "company": "string or null", "start_date": "string or null", "end_date": "string or null", "responsibilities": ["string"]}}]}}
+{{"experience": [{{"job_title": "string or null", "company": "string or null", "location": "string or null", "start_date": "string or null", "end_date": "string or null", "responsibilities": ["string"]}}]}}
 
 Return {{"experience": []}} if no experience found.
 
@@ -641,6 +790,16 @@ async def _llm_primary_structure(resume_id: str, raw_text: str) -> dict:
     if not structured_dict.get("confidence_score"):
         structured_dict["confidence_score"] = 0.88
     structured_dict["extraction_latency"] = round(time.time() - t0, 3)
+
+    # Deterministic local validation: rejects invalid names/phones, filters
+    # garbage skills, removes bare experience entries, and normalises None → "NA".
+    validation = validate_structured_cv(structured_dict, raw_text)
+    structured_dict = validation.data
+    if validation.warnings:
+        logger.warning(
+            "cv_validation_corrections",
+            extra={"resume_id": resume_id, "corrections": validation.warnings},
+        )
 
     cv_cost = llm.consume_session_cost()
     logger.info("llm_primary_structure_complete", extra={

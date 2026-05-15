@@ -51,3 +51,5 @@ rapidfuzz>=3.0.0
 sentence-transformers>=2.7.0
 
 spacy>=3.7.0
+
+phonenumbers>=8.13.0

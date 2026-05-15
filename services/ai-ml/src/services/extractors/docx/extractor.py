@@ -115,8 +115,10 @@ class DOCXExtractor:
                         )
                     )
 
+            # Footers contain document-template boilerplate (agency contact info,
+            # legal text, page numbers) — never candidate-owned data.
             full_text = "\n\n".join(
-                b.text for b in blocks if b.text
+                b.text for b in blocks if b.text and b.type != "footer"
             )
 
         except Exception as exc:

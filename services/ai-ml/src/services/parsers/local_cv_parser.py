@@ -34,10 +34,21 @@ _EMAIL_RE = re.compile(r"[\w.+\-]+@[\w\-]+\.[a-zA-Z]{2,7}")
 _PHONE_RE = re.compile(r"(?:\+?\d[\d \t()\-\.]{6,}\d)")
 _MIN_PHONE_DIGITS = 10  # year ranges (2012–2020) have 8 digits; real phones have ≥ 10
 
+# Covers English and German name field labels across CV templates.
+# Line-start anchor (MULTILINE) prevents matching "Skill Name:" inside prose.
 _NAME_LABEL_RE = re.compile(
-    r"(?:full\s+)?name\s*[:\-]\s*([^\d\n@/:;|\\]{2,60})",
-    re.IGNORECASE,
+    r"^[\s]*"
+    r"(?:(?:full\s+)?name|"
+    r"vor(?:\s*-?\s*und\s+nach)?name|"
+    r"name\s+des\s+bewerbers?|"
+    r"familienname|nachname|surname|"
+    r"kandidat(?:en)?name)\s*[:\-]\s*"
+    r"([^\d\n@/:;|\\]{2,60})",
+    re.IGNORECASE | re.MULTILINE,
 )
+
+# Initials-only names: "GF", "G.F.", "EF", "M.K." — valid single-identity tokens
+_INITIALS_RE = re.compile(r"^([A-Z]\.?){2,4}$")
 
 _HEADING_WORDS = frozenset({
     "curriculum", "vitae", "resume", "profile", "contact",
@@ -202,7 +213,8 @@ def _is_name_word(w: str) -> bool:
 
 
 def _extract_name(text: str) -> str | None:
-    # "Profil von Marc Schrod" / "Lebenslauf von X" → extract the real name after the prefix
+    # Priority 1 — document-title prefix: "Profil von X", "Lebenslauf von X"
+    # Scoped to 5 lines because this pattern only appears at the very top.
     for line in text.splitlines()[:5]:
         m = _DOC_PREFIX_RE.match(line.strip())
         if m:
@@ -213,7 +225,25 @@ def _extract_name(text: str) -> str | None:
                     and not any(w.lower() in _HEADING_WORDS for w in words)):
                 return " ".join(words)
 
-    for line in text.splitlines()[:15]:
+    # Priority 2 — labeled field search (entire document).
+    # "Name:", "Vorname:", "Vor- und Nachname:", etc. are explicit structural
+    # anchors — more reliable than positional guessing. Searched before the
+    # positional scan so that availability text or role descriptions near the
+    # top of the document cannot win over a clearly labelled name field.
+    label_match = _NAME_LABEL_RE.search(text)
+    if label_match:
+        candidate = label_match.group(1).strip()
+        words = candidate.split()[:4]
+        # Allow initials-only values from labeled fields (e.g. "Name: GF")
+        if len(words) == 1 and _INITIALS_RE.match(words[0]):
+            return words[0]
+        if len(words) >= 1 and all(_is_name_word(w) for w in words):
+            return " ".join(words)
+
+    # Priority 3 — positional scan (first 25 lines).
+    # Fallback for CVs with no labeled name field. More lines than before (25
+    # vs 15) to handle cover-page paragraphs before the personal data block.
+    for line in text.splitlines()[:25]:
         line = line.strip()
         if not line:
             continue
@@ -224,20 +254,11 @@ def _extract_name(text: str) -> str | None:
             continue
         if not all(_is_name_word(w) for w in words):
             continue
-        if not words[0][0].isupper():
+        if not all(w[0].isupper() for w in words):
             continue
         if any(w.lower() in _HEADING_WORDS for w in words):
             continue
         return line
-
-    label_match = _NAME_LABEL_RE.search(text[:2000])
-    if label_match:
-        candidate = label_match.group(1).strip()
-        words = candidate.split()[:4]
-        if len(words) >= 2 and all(_is_name_word(w) for w in words) and not any(
-            w.lower() in _HEADING_WORDS for w in words
-        ):
-            return " ".join(words)
 
     return None
 
