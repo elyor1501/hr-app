@@ -174,7 +174,7 @@ export default function CandidateSearch() {
     filterExpMax !== "";
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-5">
+    <div className="space-y-5">
       <h1 className="text-xl font-semibold" style={{ color: '#429ABD' }}>Candidate Search</h1>
 
       <div className="flex items-center gap-2">
@@ -219,18 +219,18 @@ export default function CandidateSearch() {
       </div>
 
       {showFilters && (
-        <div className="p-4 border rounded-xl bg-slate-50 space-y-4 transition-all duration-300">
+        <div className="p-4 border rounded-xl bg-slate-50 dark:bg-slate-900/50 space-y-4 transition-all duration-300">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide" style={{ color: '#429ABD' }}>
             Filter candidates
           </p>
 
           <div className="grid md:grid-cols-4 gap-4">
             <div>
-              <label className="text-xs font-medium">Status</label>
+              <label className="text-xs font-medium text-foreground">Status</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full mt-1 border p-2 rounded text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD] transition-all duration-300"
+                className="w-full mt-1 border border-border rounded-lg p-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD] transition-all duration-300"
               >
                 <option value="">All</option>
                 <option value="active">Active</option>
@@ -239,59 +239,59 @@ export default function CandidateSearch() {
             </div>
 
             <div>
-              <label className="text-xs font-medium">Location</label>
+              <label className="text-xs font-medium text-foreground">Location</label>
               <Input
                 placeholder="e.g. Bangalore"
                 value={filterLocation}
                 onChange={(e) => setFilterLocation(e.target.value)}
-                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
+                className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium">Skills</label>
+              <label className="text-xs font-medium text-foreground">Skills</label>
               <Input
                 placeholder="React, Node, Python"
                 value={filterSkills}
                 onChange={(e) => setFilterSkills(e.target.value)}
-                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
+                className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
 
             {/* <div>
-              <label className="text-xs font-medium">Experience Level</label>
-              <select
-                value={filterExperienceLevel}
-                onChange={(e) => setFilterExperienceLevel(e.target.value)}
-                className="w-full mt-1 border p-2 rounded text-sm bg-white"
-              >
-                <option value="">All</option>
-                {EXPERIENCE_LEVELS.map((lvl) => (
-                  <option key={lvl} value={lvl}>
-                    {lvl}
-                  </option>
-                ))}
-              </select>
-            </div> */}
+        <label className="text-xs font-medium">Experience Level</label>
+        <select
+          value={filterExperienceLevel}
+          onChange={(e) => setFilterExperienceLevel(e.target.value)}
+          className="w-full mt-1 border p-2 rounded text-sm bg-white"
+        >
+          <option value="">All</option>
+          {EXPERIENCE_LEVELS.map((lvl) => (
+            <option key={lvl} value={lvl}>
+              {lvl}
+            </option>
+          ))}
+        </select>
+      </div> */}
 
             {/* <div>
-              <label className="text-xs font-medium">Availability</label>
-              <select
-                value={filterAvailability}
-                onChange={(e) => setFilterAvailability(e.target.value)}
-                className="w-full mt-1 border p-2 rounded text-sm bg-white"
-              >
-                <option value="">All</option>
-                {AVAILABILITY_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div> */}
+        <label className="text-xs font-medium">Availability</label>
+        <select
+          value={filterAvailability}
+          onChange={(e) => setFilterAvailability(e.target.value)}
+          className="w-full mt-1 border p-2 rounded text-sm bg-white"
+        >
+          <option value="">All</option>
+          {AVAILABILITY_OPTIONS.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </div> */}
 
             <div>
-              <label className="text-xs font-medium">
+              <label className="text-xs font-medium text-foreground">
                 Min Experience (yrs)
               </label>
               <Input
@@ -302,12 +302,12 @@ export default function CandidateSearch() {
                 onChange={(e) =>
                   setFilterExpMin(e.target.value ? Number(e.target.value) : "")
                 }
-                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
+                className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium">
+              <label className="text-xs font-medium text-foreground">
                 Max Experience (yrs)
               </label>
               <Input
@@ -318,7 +318,7 @@ export default function CandidateSearch() {
                 onChange={(e) =>
                   setFilterExpMax(e.target.value ? Number(e.target.value) : "")
                 }
-                className="mt-1 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
+                className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
           </div>
