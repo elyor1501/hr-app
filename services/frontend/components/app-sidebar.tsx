@@ -23,11 +23,11 @@ import Image from "next/image";
 import Logo from "@/app/(main)/VASPP_logo_black_text.png";
 
 const items = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Resumes", url: "/resumeList", icon: FileText },
   { title: "Candidates", url: "/candidates", icon: Users },
-  // { title: "Jobs", url: "/jobs", icon: Briefcase },
+  { title: "Resumes", url: "/resumeList", icon: FileText },
   { title: "Request", url: "/requests", icon: NotebookPen },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  // { title: "Jobs", url: "/jobs", icon: Briefcase }, 
   { title: "Search & Filter", url: "/search", icon: Search },
 ];
 

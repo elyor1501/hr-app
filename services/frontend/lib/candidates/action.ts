@@ -35,11 +35,35 @@ export async function updateCandidate(formData: FormData): Promise<void> {
   const token = getAuthToken();
   const apiUrl = getApiUrl();
 
-  const payload = {
-    status: formData.get("status") as string,
-  };
+  const payload: Record<string, any> = {};
 
-  const updateUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${id}` : `/api/v1/candidates/${id}`;
+  const status = formData.get("status");
+  if (status) payload.status = status;
+
+  const hourly_rate = formData.get("hourly_rate");
+  if (hourly_rate !== null && hourly_rate !== "") payload.hourly_rate = parseFloat(hourly_rate as string);
+
+  const rate_type = formData.get("rate_type");
+  if (rate_type) payload.rate_type = rate_type;
+
+  const currency = formData.get("currency");
+  if (currency) payload.currency = currency;
+
+  const vendor = formData.get("vendor");
+  if (vendor !== null && vendor !== "") payload.vendor = vendor as string;
+
+  const proposed_rate = formData.get("proposed_rate");
+  if (proposed_rate !== null && proposed_rate !== "") payload.proposed_rate = parseFloat(proposed_rate as string);
+
+  const proposed_rate_type = formData.get("proposed_rate_type");
+  if (proposed_rate_type) payload.proposed_rate_type = proposed_rate_type;
+
+  const proposed_currency = formData.get("proposed_currency");
+  if (proposed_currency) payload.proposed_currency = proposed_currency;
+
+  const updateUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${id}`
+    : `/api/v1/candidates/${id}`;
 
   const res = await fetch(updateUrl, {
     method: "PATCH",

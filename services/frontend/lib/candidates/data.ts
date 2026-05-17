@@ -125,39 +125,52 @@ export function invalidateCandidatesCache() {
 
 export async function getCandidateById(id: string) {
   try {
-    const cached = candidateByIdCache.get(id);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      return cached.data;
-    }
-
     const apiUrl = getApiUrl();
     const token = getAuthToken();
-    const fetchUrl = apiUrl
-      ? `${apiUrl}/api/v1/candidates/${id}/profile`
-      : `/api/v1/candidates/${id}/profile`;
 
     const headers: HeadersInit = {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
-    const res = await fetch(fetchUrl, {
-      method: "GET",
-      headers,
-      cache: "no-store",
-    });
+    const mainUrl = apiUrl
+      ? `${apiUrl}/api/v1/candidates/${id}`
+      : `/api/v1/candidates/${id}`;
 
-    if (res.status === 404) {
+    const profileUrl = apiUrl
+      ? `${apiUrl}/api/v1/candidates/${id}/profile`
+      : `/api/v1/candidates/${id}/profile`;
+
+    const [mainRes, profileRes] = await Promise.all([
+      fetch(mainUrl, { method: "GET", headers, cache: "no-store" }),
+      fetch(profileUrl, { method: "GET", headers, cache: "no-store" }),
+    ]);
+
+    if (mainRes.status === 404) {
       return { status: "processing" };
     }
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("Fetch candidate failed:", res.status, text);
+    if (!mainRes.ok) {
+      const text = await mainRes.text();
+      console.error("Fetch candidate failed:", mainRes.status, text);
       return null;
     }
 
-    const data = await res.json();
-    const result = Array.isArray(data) ? data[0] : data;
+    const mainData = await mainRes.json();
+    const main = Array.isArray(mainData) ? mainData[0] : mainData;
+
+    let profile: any = {};
+    if (profileRes.ok) {
+      const profileData = await profileRes.json();
+      profile = Array.isArray(profileData) ? profileData[0] : profileData;
+    }
+
+    const result = {
+      ...main,
+      cvs: profile.cvs ?? main.cvs ?? [],
+      attachments: profile.attachments ?? main.attachments ?? [],
+      experience: main.experience ?? profile.experience ?? [],
+      education: main.education ?? profile.education ?? [],
+    };
 
     candidateByIdCache.set(id, { data: result, timestamp: Date.now() });
 

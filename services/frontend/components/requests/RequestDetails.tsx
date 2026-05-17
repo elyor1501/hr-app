@@ -158,10 +158,10 @@ export default function RequestDetails({
     return <p className="text-muted-foreground">Loading request details...</p>;
 
   const fieldClass =
-    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]";
+    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 
   return (
-    <div className="w-full bg-card text-card-foreground rounded-xl shadow-sm border border-border p-8">
+    <div className="max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-sm border border-border p-8">
       <form
         id="request-form"
         onSubmit={(e) => {
@@ -182,10 +182,7 @@ export default function RequestDetails({
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="px-4 py-2 rounded-lg text-sm transition-all duration-300"
-                style={{ backgroundColor: '#429ABD', color: 'white' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-colors"
               >
                 Edit
               </button>
@@ -276,7 +273,7 @@ export default function RequestDetails({
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
-                Prepared Rate
+                Proposed Rate
               </label>
               <input
                 type="number"
@@ -368,10 +365,7 @@ export default function RequestDetails({
             form="request-form"
             type="submit"
             disabled={saving}
-            className="px-4 py-2 rounded-lg text-sm transition-all duration-300"
-            style={{ backgroundColor: '#429ABD', color: 'white' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+            className={`px-4 py-2 rounded-lg text-sm transition-colors ${saving ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
           >
             {saving ? "Updating..." : "Update"}
           </button>
@@ -387,10 +381,7 @@ export default function RequestDetails({
             <button
               onClick={() => runCandidateMatching(false)}
               disabled={matching}
-              className="px-4 py-2 rounded-lg text-sm transition-all duration-300"
-              style={{ backgroundColor: '#429ABD', color: 'white' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50 hover:bg-blue-700 transition-colors"
             >
               {matching ? "Matching..." : "Find Matching Candidates"}
             </button>
@@ -407,9 +398,9 @@ export default function RequestDetails({
         </div>
 
         {matching && (
-          <div className="flex items-center gap-3 p-4 rounded-lg mb-4" style={{ backgroundColor: '#429ABD20' }}>
-            <div className="w-5 h-5 border-2 border-[#429ABD] border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm" style={{ color: '#429ABD' }}>
+          <div className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-4">
+            <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-blue-700 dark:text-blue-300">
               {matchStatus || "Matching in progress..."}
             </p>
           </div>
@@ -424,7 +415,7 @@ export default function RequestDetails({
             {matches.map((candidate) => (
               <div
                 key={candidate.candidate_id}
-                className="border border-border rounded-lg p-5 shadow-sm space-y-3 bg-card hover:border-[#429ABD]/30 transition-all duration-300"
+                className="border border-border rounded-lg p-5 shadow-sm space-y-3 bg-card"
               >
                 <div className="flex justify-between items-start">
                   <div>
@@ -494,7 +485,7 @@ export default function RequestDetails({
                     {candidate.skills_comparison.matching_skills?.length >
                       0 && (
                       <div>
-                        <p className="text-xs font-semibold mb-1" style={{ color: '#429ABD' }}>
+                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-1">
                           Matching Skills
                         </p>
                         <div className="flex flex-wrap gap-1">
@@ -502,8 +493,7 @@ export default function RequestDetails({
                             (skill: string, i: number) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded text-xs"
-                                style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}
+                                className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs"
                               >
                                 {skill}
                               </span>
@@ -545,10 +535,7 @@ export default function RequestDetails({
                     onClick={() =>
                       router.push(`/candidates/${candidate.candidate_id}`)
                     }
-                    className="px-4 py-1.5 text-sm rounded-md transition-all duration-300"
-                    style={{ backgroundColor: '#429ABD', color: 'white' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+                    className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                   >
                     <EyeIcon className="w-4 h-4" />
                   </button>

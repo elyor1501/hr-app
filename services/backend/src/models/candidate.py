@@ -97,6 +97,14 @@ class CandidateUpdate(BaseSchema):
     availability: Optional[str] = None
     resume: Optional[str] = None
     json_data: Optional[Dict[str, Any]] = None
+    daily_rate: Optional[float] = None
+    rate_type: Optional[str] = None
+    currency: Optional[str] = None
+    vendor: Optional[str] = None
+    proposed_rate: Optional[float] = None
+    proposed_rate_type: Optional[str] = None
+    proposed_daily_rate: Optional[float] = None
+    proposed_currency: Optional[str] = None
 
     @field_validator("status", mode="before")
     @classmethod
@@ -112,12 +120,30 @@ class CandidateUpdate(BaseSchema):
     def validate_phone(cls, v: Optional[str]) -> Optional[str]:
         return validate_phone_number(v)
 
+    @field_validator("rate_type", "proposed_rate_type", mode="before")
+    @classmethod
+    def validate_rate_type(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        allowed = ["hourly", "daily", "weekly", "monthly"]
+        if v.lower() not in allowed:
+            return None
+        return v.lower()
+
 
 class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     status: CandidateStatus = Field(...)
     experience_level: Optional[str] = None
     hourly_rate: Optional[float] = None
     availability: Optional[str] = None
+    daily_rate: Optional[float] = None
+    rate_type: Optional[str] = None
+    currency: Optional[str] = None
+    vendor: Optional[str] = None
+    proposed_rate: Optional[float] = None
+    proposed_rate_type: Optional[str] = None
+    proposed_daily_rate: Optional[float] = None
+    proposed_currency: Optional[str] = None
 
 
 class CandidateInDB(CandidateResponse, EmbeddingMixin):

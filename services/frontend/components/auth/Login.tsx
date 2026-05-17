@@ -73,7 +73,7 @@ export function LoginForm() {
 
       await refreshUser();
 
-      router.push("/dashboard");
+      router.push("/candidates");
     } catch (error) {
       console.error("Login error:", error);
       setError("Something went wrong. Please try again.");
