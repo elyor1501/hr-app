@@ -86,7 +86,7 @@ class GeminiLLMClient:
                 contents=prompt,
                 config={
                     "temperature": 0,
-                    "max_output_tokens": 8192,
+                    "max_output_tokens": 32768,
                     "response_mime_type": "application/json",
                     # thinking_budget=0 disables extended reasoning; adds 3-8s latency per call
                     # with no accuracy benefit for deterministic JSON extraction tasks

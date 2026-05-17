@@ -156,8 +156,10 @@ def _passes(value: str, raw_text: str) -> bool:
     if any(w.lower() in _HEADING_WORDS for w in words):
         return False
 
-    # Final gate: candidate must match a PERSON entity found in document context
-    return _ner_is_person(value, raw_text)
+    # Structural gates (title-case + heading-word) are sufficient to reject
+    # section-heading bleed. NER is not used as a hard gate — en_core_web_sm
+    # misses non-English names and causes valid candidates to be rejected.
+    return True
 
 
 def _is_from_labeled_field(name: str, raw_text: str) -> bool:
