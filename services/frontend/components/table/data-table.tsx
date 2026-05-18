@@ -129,12 +129,27 @@ export function DataTable<TData, TValue>({
       {(showSearch || showColumns || renderBulkActions) && (
         <div className="flex items-center py-4 gap-2">
           {showSearch && (
-            <Input
-              placeholder={searchPlaceholder}
-              value={globalFilter ?? ""}
-              onChange={(event) => setGlobalFilter(event.target.value)}
-              className="w-32 md:w-64"
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder={searchPlaceholder}
+                value={globalFilter ?? ""}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="w-32 md:w-64"
+              />
+
+              {globalFilter && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setGlobalFilter("");
+                    onGlobalFilterChange?.("");
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
           )}
           {renderBulkActions && renderBulkActions(table)}
           {showColumns && (
