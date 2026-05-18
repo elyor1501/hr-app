@@ -429,7 +429,7 @@ async def update_candidate(
             existing = await repo.get_by_id(id)
             rate = existing.hourly_rate if existing else None
         rate_type = update_dict.get("rate_type", "hourly")
-        if rate:
+        if rate is not None:
             if rate_type == "hourly":
                 update_dict["daily_rate"] = round(float(rate) * 8, 2)
             elif rate_type == "daily":
@@ -444,8 +444,8 @@ async def update_candidate(
         if p_rate is None:
             existing = await repo.get_by_id(id)
             p_rate = existing.proposed_rate if existing else None
-        p_rate_type = update_dict.get("proposed_rate_type", "hourly")
-        if p_rate:
+        p_rate_type = update_dict.get("proposed_rate_type", "daily")
+        if p_rate is not None:   
             if p_rate_type == "hourly":
                 update_dict["proposed_daily_rate"] = round(float(p_rate) * 8, 2)
             elif p_rate_type == "daily":
