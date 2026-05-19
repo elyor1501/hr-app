@@ -54,9 +54,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          
+
           ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
-          
+
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Cleaning up disk space ==='
             docker stop \$(docker ps -aq) 2>/dev/null || true
@@ -72,7 +72,7 @@ jobs:
             df -h
             echo '=== Cleanup complete ==='
           "
-          
+
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Configuring firewall ==='
             sudo systemctl stop nginx 2>/dev/null || true
@@ -89,17 +89,17 @@ jobs:
             sudo ufw reload 2>/dev/null || true
             echo '=== Firewall configured ==='
           "
-          
+
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Creating network ==='
             docker network create hr-network 2>/dev/null || true
-            
+
             echo '=== Pulling latest images ==='
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest
-            
+
             echo '=== Starting Redis ==='
             docker run -d \
               --name redis \
@@ -107,7 +107,7 @@ jobs:
               --restart unless-stopped \
               -p 127.0.0.1:6379:6379 \
               redis:7-alpine
-            
+
             echo '=== Starting Backend ==='
             docker run -d \
               --name hr-backend \
@@ -129,11 +129,18 @@ jobs:
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
+              -e HR_APP_SMTP_HOST=${{ secrets.SMTP_HOST }} \
+              -e HR_APP_SMTP_PORT=${{ secrets.SMTP_PORT }} \
+              -e HR_APP_SMTP_USER=${{ secrets.SMTP_USER }} \
+              -e HR_APP_SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} \
+              -e HR_APP_SMTP_FROM=${{ secrets.SMTP_FROM }} \
+              -e HR_APP_FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
+              -e HR_APP_RESET_TOKEN_EXPIRE_MINUTES=30 \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
-            
+
             echo '=== Waiting for backend to start ==='
             sleep 10
-            
+
             for i in {1..30}; do
               if curl -f http://127.0.0.1:8000/health 2>/dev/null; then
                 echo '✅ Backend is healthy'
@@ -142,7 +149,7 @@ jobs:
               echo \"Attempt \$i/30: Backend not ready yet...\"
               sleep 2
             done
-            
+
             echo '=== Starting AI-ML Service ==='
             docker run -d \
               --name ai-ml-service \
@@ -158,7 +165,7 @@ jobs:
               -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
               -e USE_LOCAL_PARSER=true \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:ai-ml-latest
-            
+
             echo '=== Starting Worker ==='
             docker run -d \
               --name worker \
@@ -180,7 +187,7 @@ jobs:
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
-            
+
             echo '=== Starting Frontend ==='
             docker run -d \
               --name frontend \
@@ -191,34 +198,34 @@ jobs:
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
-            
+
             echo '=== Waiting for all services ==='
             sleep 10
-            
+
             echo ''
             echo '=== Running Containers ==='
             docker ps --format 'table {{.Names}}\t{{.Status}}'
             echo ''
-            
+
             echo '=== Health Check Results ==='
             if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
               echo '✅ Backend: OK'
             else
               echo '❌ Backend: FAILED'
             fi
-            
+
             if curl -f http://127.0.0.1:8001/health > /dev/null 2>&1; then
               echo '✅ AI-ML: OK'
             else
               echo '⚠️ AI-ML: No health endpoint'
             fi
-            
+
             if curl -f http://localhost:80 > /dev/null 2>&1; then
               echo '✅ Frontend: OK'
             else
               echo '❌ Frontend: FAILED'
             fi
-            
+
             echo ''
             echo '=== Port Security Verification ==='
             if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
@@ -226,19 +233,19 @@ jobs:
             else
               echo '⚠️ Backend: Not accessible'
             fi
-            
+
             if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8001/health > /dev/null 2>&1; then
               echo '⚠️ AI-ML exposed!'
             else
               echo '✅ AI-ML: Localhost only (Secure)'
             fi
-            
+
             if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
               echo '✅ Frontend: Public'
             else
               echo '❌ Frontend: Not accessible'
             fi
-            
+
             echo ''
             echo '=== Deployment Complete ==='
             echo 'Frontend: http://${{ secrets.DEPLOY_HOST }}'
