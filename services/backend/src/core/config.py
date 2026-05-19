@@ -2,7 +2,7 @@ from functools import lru_cache
 from typing import List, Optional
 from urllib.parse import quote_plus
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -74,6 +74,16 @@ class Settings(BaseSettings):
     smtp_from: str = Field(default="")
     frontend_url: str = Field(default="http://localhost")
     reset_token_expire_minutes: int = Field(default=30)
+
+    @field_validator("smtp_port", mode="before")
+    @classmethod
+    def parse_smtp_port(cls, v):
+        if v == "" or v is None:
+            return 587
+        try:
+            return int(v)
+        except (ValueError, TypeError):
+            return 587
 
     def get_database_url(self) -> str:
         if self.database_url:
