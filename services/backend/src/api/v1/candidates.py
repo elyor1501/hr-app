@@ -25,8 +25,8 @@ from src.services.background_jobs import job_service
 router = APIRouter()
 
 CANDIDATES_CACHE_KEY = "hr_app:candidates:list"
-CANDIDATES_CACHE_TTL = 120
-SEARCH_CACHE_TTL = 120
+CANDIDATES_CACHE_TTL = 10
+SEARCH_CACHE_TTL = 10
 
 ALLOWED_CONTENT_TYPES = [
     "application/pdf",

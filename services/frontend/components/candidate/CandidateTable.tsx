@@ -2,16 +2,7 @@
 
 import { DataTable } from "@/components/table/data-table";
 import { columns_candidate_list } from "@/components/candidate/CandidateListTableColumn";
-import { ResumeExtractionToast } from "./ExtractionMsg";
 import { useRouter, useSearchParams } from "next/navigation";
-
-function CandidateStatusTracker({ resumes }: { resumes: any[] }) {
-  return (
-    <>
-      <ResumeExtractionToast resumes={resumes} />
-    </>
-  );
-}
 
 export default function CandidatesTable({ data, resumes }: { data: any[], resumes: any[] }) {
   const router = useRouter();
@@ -31,8 +22,6 @@ export default function CandidatesTable({ data, resumes }: { data: any[], resume
 
   return (
     <div className="space-y-4">
-      <CandidateStatusTracker resumes={resumes} />
-
       <div className="animate-in fade-in duration-500">
         <DataTable
           columns={columns_candidate_list}

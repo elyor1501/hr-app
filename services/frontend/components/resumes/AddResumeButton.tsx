@@ -3,49 +3,95 @@
 import { useState, useEffect } from "react";
 import ResumeUpload from "./ResumeUpload";
 import { getApiUrl, getAuthToken } from "@/lib/api-config";
+import { CandidateCreationTracker } from "@/components/candidate/ExtractionMsg";
+import { useRouter } from "next/navigation";
+
+async function getCurrentCandidateCount(): Promise<number> {
+  try {
+    const apiUrl = getApiUrl();
+    const token = getAuthToken();
+    const url = apiUrl
+      ? `${apiUrl}/api/v1/candidates/?page=1&page_size=1`
+      : `/api/v1/candidates/?page=1&page_size=1`;
+    const res = await fetch(url, {
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.total || 0;
+  } catch {
+    return 0;
+  }
+}
 
 export default function AddResumeButton() {
   const [open, setOpen] = useState(false);
   const [existingFiles, setExistingFiles] = useState<string[]>([]);
+  const [uploadedCount, setUploadedCount] = useState(0);
+  const [baselineCount, setBaselineCount] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!open) return;
 
-    const fetchExistingFiles = async () => {
+    const init = async () => {
       try {
         const token = getAuthToken();
         const apiUrl = getApiUrl();
+
+        const count = await getCurrentCandidateCount();
+        setBaselineCount(count);
+
         const res = await fetch(`${apiUrl}/api/v1/resumes/`, {
           headers: {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          }
+          },
+          cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch resumes");
         const data = await res.json();
         const items = Array.isArray(data) ? data : (data?.items ?? []);
-        const fileNames = items.map((r: any) => r.file_name);
-
-        setExistingFiles(fileNames);
+        setExistingFiles(items.map((r: any) => r.file_name));
       } catch (err) {
-        console.error("Error fetching existing resumes:", err);
+        console.error("Error during init:", err);
         setExistingFiles([]);
       }
     };
 
-    fetchExistingFiles();
+    init();
   }, [open]);
+
+  const handleFinished = () => {
+    router.refresh();
+    setUploadedCount(0);
+    setBaselineCount(null);
+  };
+
+  const handleUploaded = async (count: number) => {
+    const currentBase = await getCurrentCandidateCount();
+    setBaselineCount(currentBase);
+    setUploadedCount(count);
+    setTimeout(() => {
+      router.refresh();
+    }, 1500);
+  };
 
   return (
     <>
+      <CandidateCreationTracker
+        uploadedCount={uploadedCount}
+        baselineCount={baselineCount}
+        onNewCandidates={() => {}}
+        onFinished={handleFinished}
+      />
+
       <button
         onClick={() => setOpen(true)}
         className="text-sm px-3 py-1.5 rounded-md transition-all duration-300 hover:shadow-lg"
-        style={{
-          backgroundColor: '#429ABD',
-          color: 'white'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+        style={{ backgroundColor: "#429ABD", color: "white" }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#F5A623")}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#429ABD")}
       >
         Add Resume
       </button>
@@ -61,12 +107,13 @@ export default function AddResumeButton() {
             >
               ✕
             </button>
-
-            <h2 className="text-lg font-semibold mb-4" style={{ color: '#429ABD' }}>Upload Resume</h2>
-
+            <h2 className="text-lg font-semibold mb-4" style={{ color: "#429ABD" }}>
+              Upload Resume
+            </h2>
             <ResumeUpload
               onClose={() => setOpen(false)}
               existingFiles={existingFiles}
+              onUploaded={handleUploaded}
             />
           </div>
         </div>

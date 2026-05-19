@@ -198,10 +198,34 @@ async def _link_cv_to_candidate(session, candidate: Candidate, resume: Resume) -
 
 
 async def _auto_create_or_link_candidate(session, resume, structured_data, first_name, last_name, years_exp, raw_text, embedding, parsed):
-    if first_name == "Unknown":
+    candidate_email = structured_data.get("email")
+    has_valid_email = bool(
+        candidate_email and
+        "@" in candidate_email and
+        "@placeholder" not in candidate_email and
+        "@noemail" not in candidate_email and
+        candidate_email.strip()
+    )
+
+    if first_name == "Unknown" and not has_valid_email:
+        logger.info("skipping_candidate_no_name_no_email", resume_id=str(resume.id) if resume else "unknown")
         return
 
-    candidate_email = structured_data.get("email")
+    if first_name == "Unknown" and has_valid_email:
+        email_local = candidate_email.split("@")[0]
+        email_local = re.sub(r'[0-9]+', '', email_local)
+        parts = [p for p in email_local.replace(".", " ").replace("_", " ").replace("-", " ").split() if p]
+        if len(parts) >= 2:
+            first_name = parts[0].strip().title()
+            last_name = " ".join(parts[1:]).strip().title()
+        elif len(parts) == 1:
+            first_name = parts[0].strip().title()
+            last_name = ""
+        else:
+            first_name = "Candidate"
+            last_name = ""
+        logger.info("name_derived_from_email", first_name=first_name, last_name=last_name, email=candidate_email)
+
     if not candidate_email or not candidate_email.strip() or "@" not in candidate_email:
         name_slug = f"{first_name.lower()}_{last_name.lower()}".replace(" ", "_")
         generated_email = f"{name_slug}@noemail.vaspp.com"
@@ -226,9 +250,6 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
 
         await _link_cv_to_candidate(session, existing_candidate, resume)
         return
-
-    if generated_email != candidate_email:
-        logger.info("creating_candidate_without_email", first_name=first_name, last_name=last_name)
 
     new_candidate = Candidate(
         first_name=first_name,
@@ -433,6 +454,18 @@ async def _save_resume_result(result: dict) -> bool:
                         await session2.commit()
                     return True
                 raise
+
+        try:
+            from src.core.redis import get_redis_pool
+            redis = await get_redis_pool()
+            keys = await redis.keys("hr_app:candidates:*")
+            if keys:
+                await redis.delete(*keys)
+            search_keys = await redis.keys("hr_backend:search:*")
+            if search_keys:
+                await redis.delete(*search_keys)
+        except Exception:
+            pass
 
         logger.info("resume_saved", resume_id=resume_id, name=f"{first_name} {last_name}")
         return True
