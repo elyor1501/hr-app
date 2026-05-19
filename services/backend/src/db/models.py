@@ -45,11 +45,9 @@ class Candidate(BaseModel):
     experience_level: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
     hourly_rate: Mapped[Optional[float]] = mapped_column(Numeric(10, 2), nullable=True)
     availability: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    availability: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     daily_rate: Mapped[Optional[float]] = mapped_column(Numeric(10, 2), nullable=True)
     rate_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     currency: Mapped[Optional[str]] = mapped_column(String(10), nullable=True, default="EUR")
-    vendor: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     vendor: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     proposed_rate: Mapped[Optional[float]] = mapped_column(Numeric(10, 2), nullable=True)
     proposed_rate_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
@@ -66,6 +64,7 @@ class Candidate(BaseModel):
         Index("idx_candidates_location", "location"),
         Index("idx_candidates_current_title", "current_title"),
         Index("idx_candidates_name", "first_name", "last_name"),
+        Index("idx_candidates_skills_gin", "skills", postgresql_using="gin"),
     )
 
     def to_dict(self):
@@ -268,4 +267,18 @@ class RequestAuditLog(BaseModel):
     __table_args__ = (
         Index("idx_request_audit_request_id", "request_id"),
         Index("idx_request_audit_created_at", "created_at"),
+    )
+
+
+class PasswordResetToken(BaseModel):
+    __tablename__ = "password_reset_tokens"
+
+    email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    token: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    used: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    __table_args__ = (
+        Index("idx_password_reset_tokens_token", "token"),
+        Index("idx_password_reset_tokens_email", "email"),
     )

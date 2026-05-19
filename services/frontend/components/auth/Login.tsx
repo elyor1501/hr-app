@@ -176,7 +176,19 @@ export function LoginForm() {
           </form>
         </Form>
 
-        <div className="mt-6 text-center text-sm">
+        <div className="mt-4 text-center text-sm">
+          <span
+            onClick={() => router.push("/forgot-password")}
+            className="cursor-pointer font-medium"
+            style={{ color: '#429ABD' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#F5A623'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#429ABD'}
+          >
+            Forgot Password?
+          </span>
+        </div>
+
+        <div className="mt-2 text-center text-sm">
           Don't have an account?{" "}
           <span
             onClick={() => router.push("/signup")}

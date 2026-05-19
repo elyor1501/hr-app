@@ -216,6 +216,57 @@ async def search_candidates(request: SearchRequest):
                 pid = str(pr.id)
                 if pid in results_map:
                     continue
+
+                pr_email = (pr.email or "").strip().lower()
+                pr_first = (pr.first_name or "").strip().lower()
+                pr_last = (pr.last_name or "").strip().lower()
+
+                already_exists = False
+                for existing in results_map.values():
+                    ex_email = (existing.get("email") or "").strip().lower()
+                    ex_first = (existing.get("first_name") or "").strip().lower()
+                    ex_last = (existing.get("last_name") or "").strip().lower()
+
+                    if pr_email and ex_email and pr_email == ex_email:
+                        already_exists = True
+                        break
+                    if pr_first and ex_first and pr_first == ex_first and pr_last == ex_last:
+                        already_exists = True
+                        break
+
+                if already_exists:
+                    continue
+
+                jd = pr.json_data or {}
+                row_data = {
+                    "first_name": pr.first_name,
+                    "last_name": pr.last_name,
+                    "current_title": pr.current_title or jd.get("current_title"),
+                    "current_company": pr.current_company or jd.get("current_company"),
+                    "location": pr.location or jd.get("location"),
+                    "skills": _parse_skills(pr.skills) or _parse_skills(jd.get("skills")) or [],
+                    "summary": pr.summary or jd.get("summary"),
+                }
+                score = _score_text_match(row_data, query_words)
+                results_map[pid] = {
+                    "id": pid,
+                    "resume_id": str(pr.resume_id) if pr.resume_id else None,
+                    "first_name": pr.first_name,
+                    "last_name": pr.last_name,
+                    "email": pr.email or jd.get("email"),
+                    "phone": pr.phone or jd.get("phone"),
+                    "skills": row_data["skills"],
+                    "current_title": row_data["current_title"],
+                    "current_company": row_data["current_company"],
+                    "location": row_data["location"],
+                    "years_of_experience": pr.years_of_experience,
+                    "summary": row_data["summary"],
+                    "experience_level": None,
+                    "availability": None,
+                    "hourly_rate": None,
+                    "candidate_status": pr.candidate_status,
+                    "score": score,
+                }
                 jd = pr.json_data or {}
                 row_data = {
                     "first_name": pr.first_name,

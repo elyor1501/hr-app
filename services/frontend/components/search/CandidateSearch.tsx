@@ -96,9 +96,12 @@ export default function CandidateSearch() {
         availability: c.availability ?? "",
         years_of_experience: c.years_of_experience,
       }));
-      setResults(
-        mapped.sort((a, b) => b.similarity_score - a.similarity_score),
-      );
+
+      const unique = Array.from(
+        new Map(mapped.map((c) => [c.id, c])).values()
+      ).sort((a, b) => b.similarity_score - a.similarity_score);
+
+      setResults(unique);
     } catch (err) {
       console.error("Semantic search error:", err);
       setResults([]);
@@ -117,17 +120,12 @@ export default function CandidateSearch() {
       if (filterStatus) params.set("candidateStatus", filterStatus);
       if (filterLocation) params.set("location", filterLocation);
       if (filterSkills) params.set("skills", filterSkills);
-      if (filterExperienceLevel)
-        params.set("experience_level", filterExperienceLevel);
+      if (filterExperienceLevel) params.set("experience_level", filterExperienceLevel);
       if (filterAvailability) params.set("availability", filterAvailability);
-      if (filterExpMin !== "")
-        params.set("experienceMin", String(filterExpMin));
-      if (filterExpMax !== "")
-        params.set("experienceMax", String(filterExpMax));
+      if (filterExpMin !== "") params.set("experienceMin", String(filterExpMin));
+      if (filterExpMax !== "") params.set("experienceMax", String(filterExpMax));
 
-      const res = await fetch(
-        `${apiBase}/api/v1/candidates/search?${params.toString()}`,
-      );
+      const res = await fetch(`${apiBase}/api/v1/candidates/search?${params.toString()}`);
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       const mapped: Candidate[] = (data.items || []).map((c: any) => ({
@@ -145,7 +143,12 @@ export default function CandidateSearch() {
         availability: c.availability ?? "",
         years_of_experience: c.years_of_experience,
       }));
-      setResults(mapped);
+
+      const unique = Array.from(
+        new Map(mapped.map((c) => [c.id, c])).values()
+      );
+
+      setResults(unique);
     } catch (err) {
       console.error("Filter search error:", err);
       setResults([]);
@@ -184,7 +187,7 @@ export default function CandidateSearch() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && runSemanticSearch()}
-            placeholder="Search by skills, title, or keywords…"
+            placeholder="Search by skills, title, or keywords..."
             className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
           />
         </div>
@@ -258,38 +261,6 @@ export default function CandidateSearch() {
               />
             </div>
 
-            {/* <div>
-        <label className="text-xs font-medium">Experience Level</label>
-        <select
-          value={filterExperienceLevel}
-          onChange={(e) => setFilterExperienceLevel(e.target.value)}
-          className="w-full mt-1 border p-2 rounded text-sm bg-white"
-        >
-          <option value="">All</option>
-          {EXPERIENCE_LEVELS.map((lvl) => (
-            <option key={lvl} value={lvl}>
-              {lvl}
-            </option>
-          ))}
-        </select>
-      </div> */}
-
-            {/* <div>
-        <label className="text-xs font-medium">Availability</label>
-        <select
-          value={filterAvailability}
-          onChange={(e) => setFilterAvailability(e.target.value)}
-          className="w-full mt-1 border p-2 rounded text-sm bg-white"
-        >
-          <option value="">All</option>
-          {AVAILABILITY_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      </div> */}
-
             <div>
               <label className="text-xs font-medium text-foreground">
                 Min Experience (yrs)
@@ -299,9 +270,7 @@ export default function CandidateSearch() {
                 placeholder="0"
                 min={0}
                 value={filterExpMin}
-                onChange={(e) =>
-                  setFilterExpMin(e.target.value ? Number(e.target.value) : "")
-                }
+                onChange={(e) => setFilterExpMin(e.target.value ? Number(e.target.value) : "")}
                 className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
@@ -315,9 +284,7 @@ export default function CandidateSearch() {
                 placeholder="20"
                 min={0}
                 value={filterExpMax}
-                onChange={(e) =>
-                  setFilterExpMax(e.target.value ? Number(e.target.value) : "")
-                }
+                onChange={(e) => setFilterExpMax(e.target.value ? Number(e.target.value) : "")}
                 className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
@@ -326,9 +293,7 @@ export default function CandidateSearch() {
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
-              onClick={() => {
-                resetFilters();
-              }}
+              onClick={resetFilters}
               disabled={!hasFilters}
               className="transition-all duration-300 hover:border-[#F5A623] hover:text-[#F5A623]"
             >
@@ -344,9 +309,7 @@ export default function CandidateSearch() {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
             >
-              {filterLoading && (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              )}
+              {filterLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Apply Filters
             </Button>
           </div>
@@ -355,7 +318,7 @@ export default function CandidateSearch() {
 
       <div className="space-y-4">
         {semanticLoading || filterLoading ? (
-          <p className="text-center text-muted-foreground py-12">Searching…</p>
+          <p className="text-center text-muted-foreground py-12">Searching...</p>
         ) : results.length > 0 ? (
           <>
             <p className="text-sm text-muted-foreground">

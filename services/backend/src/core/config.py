@@ -67,6 +67,14 @@ class Settings(BaseSettings):
     supabase_service_key: Optional[str] = Field(default=None)
     database_url: Optional[str] = Field(default=None)
 
+    smtp_host: str = Field(default="smtp.gmail.com")
+    smtp_port: int = Field(default=587)
+    smtp_user: str = Field(default="")
+    smtp_password: str = Field(default="")
+    smtp_from: str = Field(default="")
+    frontend_url: str = Field(default="http://localhost")
+    reset_token_expire_minutes: int = Field(default=30)
+
     def get_database_url(self) -> str:
         if self.database_url:
             return self.database_url
