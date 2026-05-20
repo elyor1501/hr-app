@@ -63,14 +63,25 @@ const ActionCell = ({ resume }: { resume: ResumeList }) => {
 
   return (
     <div className="flex gap-2">
-      <Button variant="ghost" size="icon" onClick={onView} title="View Resume">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={(e) => {
+          e.stopPropagation();
+          onView();
+        }}
+        title="View Resume"
+      >
         <EyeIcon className="w-4 h-4" />
       </Button>
       <DeleteResumeButton id={resume.id} />
       <Button
         variant="ghost"
         size="icon"
-        onClick={onDownload}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDownload();
+        }}
         disabled={isDownloading}
         title="Download Resume"
       >
@@ -138,11 +149,7 @@ export const columns_resume_list: ColumnDef<ResumeList>[] = [
     cell: ({ row }) => {
       const date = new Date(row.original.created_at);
       const formatted = date.toLocaleDateString("en-GB").replace(/\//g, ".");
-      return (
-        <div className="text-center w-full px-2 py-1">
-          {formatted}
-        </div>
-      );
+      return <div className="text-center w-full px-2 py-1">{formatted}</div>;
     },
   },
   {

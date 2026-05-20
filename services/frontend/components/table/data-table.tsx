@@ -46,6 +46,7 @@ interface DataTableProps<TData, TValue> {
   rowSelection?: Record<string, boolean>;
   onRowSelectionChange?: (updaterOrValue: any) => void;
   renderBulkActions?: (table: any) => React.ReactNode;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -62,6 +63,7 @@ export function DataTable<TData, TValue>({
   rowSelection = {},
   onRowSelectionChange,
   renderBulkActions,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     {
@@ -70,7 +72,7 @@ export function DataTable<TData, TValue>({
     },
   ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
@@ -80,8 +82,10 @@ export function DataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: 10,
   });
-  
-  const [globalFilter, setGlobalFilter] = React.useState(globalFilterValue || "");
+
+  const [globalFilter, setGlobalFilter] = React.useState(
+    globalFilterValue || "",
+  );
 
   // Update internal state when prop changes
   React.useEffect(() => {
@@ -223,9 +227,12 @@ export function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  className="border-b hover:bg-muted/50 dark:hover:bg-neutral-800/60 border-neutral-200 dark:border-neutral-800 whitespace-nowrap"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={`border-b hover:bg-muted/50 dark:hover:bg-neutral-800/60 border-neutral-200 dark:border-neutral-800 whitespace-nowrap ${
+                    onRowClick ? "cursor-pointer" : ""
+                  }`}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -239,7 +246,7 @@ export function DataTable<TData, TValue>({
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

@@ -19,12 +19,8 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
       const fullName = `${first} ${last}`.trim();
       return (
         <div className="flex flex-col">
-          <span className="font-medium">
-            {fullName || "NA"}
-          </span>
-          <span className="text-sm text-gray-500 break-all">
-            {email}
-          </span>
+          <span className="font-medium">{fullName || "NA"}</span>
+          <span className="text-sm text-gray-500 break-all">{email}</span>
         </div>
       );
     },
@@ -43,11 +39,7 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     header: () => <div className="text-center w-full">Year of experience</div>,
     cell: ({ row }) => {
       const years = row.original.years_of_experience;
-      return (
-        <div className="text-center w-full">
-          {years ?? "NA"} yrs
-        </div>
-      );
+      return <div className="text-center w-full">{years ?? "NA"} yrs</div>;
     },
     size: 80,
   },
@@ -68,11 +60,7 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     cell: ({ row }) => {
       const date = new Date(row.original.created_at);
       const formatted = date.toLocaleDateString("en-GB").replace(/\//g, ".");
-      return (
-        <div className="text-center w-full px-2 py-1">
-          {formatted}
-        </div>
-      );
+      return <div className="text-center w-full px-2 py-1">{formatted}</div>;
     },
   },
   {
@@ -85,15 +73,20 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push(`/candidates/${candidate.id}`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/candidates/${candidate.id}`);
+            }}
             className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
             title="View Candidate"
           >
             <Eye className="w-4 h-4" />
           </Button>
-          <DeleteCandidateButton candidateId={candidate.id} />
+          <div onClick={(e) => e.stopPropagation()}>
+            <DeleteCandidateButton candidateId={candidate.id} />
+          </div>
         </div>
       );
     },
   },
-];	
+];

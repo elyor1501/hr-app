@@ -19,7 +19,7 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
     } else {
       params.delete("q");
     }
-    params.set("page", "1"); 
+    params.set("page", "1");
     router.push(`/resumeList?${params.toString()}`);
   };
 
@@ -43,15 +43,27 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
       renderBulkActions={(table) => {
         const selectedRows = table.getFilteredSelectedRowModel().rows;
         const selectedIds = selectedRows.map((row: any) => row.original.id);
-        
+
         if (selectedIds.length === 0) return null;
 
         return (
-          <BulkDeleteResumesButton 
-            selectedIds={selectedIds} 
-            onSuccessAction={onBulkDeleteSuccess} 
+          <BulkDeleteResumesButton
+            selectedIds={selectedIds}
+            onSuccessAction={onBulkDeleteSuccess}
           />
         );
+      }}
+      onRowClick={(row) => {
+        if (!row.file_url) return;
+
+        const ext = row.file_url.split(".").pop()?.toLowerCase();
+
+        if (ext === "pdf") {
+          window.open(row.file_url, "_blank");
+        } else {
+          const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(row.file_url)}&embedded=true`;
+          window.open(viewerUrl, "_blank");
+        }
       }}
     />
   );

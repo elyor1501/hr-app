@@ -32,6 +32,9 @@ export default function CandidatesTable({ data, resumes }: { data: any[], resume
           globalFilterValue={q}
           onGlobalFilterChange={handleSearch}
           searchPlaceholder="Search candidates..."
+          onRowClick={(row) => {
+            router.push(`/candidates/${row.id}`);
+          }}
         />
       </div>
     </div>

@@ -71,11 +71,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
     cell: ({ row }) => {
       const date = new Date(row.original.created_at);
       const formatted = date.toLocaleDateString("en-GB").replace(/\//g, ".");
-      return (
-        <div className="text-center w-full px-2 py-1">
-          {formatted}
-        </div>
-      );
+      return <div className="text-center w-full px-2 py-1">{formatted}</div>;
     },
   },
   {
@@ -89,12 +85,17 @@ export const columns_request_list: ColumnDef<Request>[] = [
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push(`/requests/${request.id}`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/requests/${request.id}`);
+            }}
             className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
           >
             <Eye className="w-4 h-4" />
           </Button>
-          <DeleteRequestButton requestId={request.id} />
+          <div onClick={(e) => e.stopPropagation()}>
+            <DeleteRequestButton requestId={request.id} />
+          </div>
         </div>
       );
     },

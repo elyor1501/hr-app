@@ -30,6 +30,7 @@ export default function RequestTable({ data }: { data: any[] }) {
       globalFilterValue={q}
       onGlobalFilterChange={handleSearch}
       searchPlaceholder="Search requests..."
+      onRowClick={(row) => router.push(`/requests/${row.id}`)}
     />
   );
 }
