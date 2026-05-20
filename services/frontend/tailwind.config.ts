@@ -10,7 +10,18 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    // we can increase Font size 
     extend: {
+      fontSize: {
+        xs: ["0.875rem", { lineHeight: "1.25rem" }],
+        sm: ["1rem", { lineHeight: "1.5rem" }],
+        base: ["1.125rem", { lineHeight: "1.75rem" }],
+        lg: ["1.25rem", { lineHeight: "1.75rem" }],
+        xl: ["1.375rem", { lineHeight: "1.875rem" }],
+        "2xl": ["1.625rem", { lineHeight: "2rem" }],
+        "3xl": ["2rem", { lineHeight: "2.25rem" }],
+        "4xl": ["2.375rem", { lineHeight: "2.5rem" }],
+      },
       fontFamily: {
         sans: ["var(--font-montserrat)", "sans-serif"],
       },
