@@ -20,6 +20,7 @@ interface UserContextType {
   user: User | null;
   loading: boolean;
   clearUser: () => void;
+  setUser: (user: User | null) => void;
   refreshUser: () => Promise<void>;
 }
 
@@ -40,11 +41,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+    }
     refreshUser();
   }, [refreshUser]);
 
   return (
-    <UserContext.Provider value={{ user, loading, clearUser, refreshUser }}>
+    <UserContext.Provider value={{ user, loading, clearUser, setUser, refreshUser }}>
       {children}
     </UserContext.Provider>
   );

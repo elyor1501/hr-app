@@ -19,7 +19,7 @@ def get_database_url_direct():
     if db_url:
         logger.info("using_database_url_from_env")
         return db_url
-    
+
     from src.core.config import settings
     url = settings.get_database_url()
     logger.info("using_database_url_from_settings")

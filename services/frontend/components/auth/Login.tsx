@@ -29,7 +29,7 @@ import { useUser } from "@/app/contexts/UserContext";
 
 export function LoginForm() {
   const router = useRouter();
-  const { refreshUser } = useUser();
+  const { setUser } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,9 +70,7 @@ export function LoginForm() {
       }
 
       localStorage.setItem("access_token", data.access_token);
-
-      await refreshUser();
-
+      setUser({ id: "", email: values.email });
       router.push("/candidates");
     } catch (error) {
       console.error("Login error:", error);
