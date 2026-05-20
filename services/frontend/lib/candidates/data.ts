@@ -35,7 +35,7 @@ export type PaginatedCandidates = {
   has_previous: boolean;
 };
 
-const CACHE_TTL = 0;
+const CACHE_TTL = 60000;
 let candidatesCache: { data: PaginatedCandidates; timestamp: number; q?: string } | null = null;
 let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
 

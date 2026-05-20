@@ -1,3 +1,4 @@
+import asyncio
 import random
 import json
 import hashlib
@@ -25,8 +26,8 @@ from src.services.background_jobs import job_service
 router = APIRouter()
 
 CANDIDATES_CACHE_KEY = "hr_app:candidates:list"
-CANDIDATES_CACHE_TTL = 10
-SEARCH_CACHE_TTL = 10
+CANDIDATES_CACHE_TTL = 300
+SEARCH_CACHE_TTL = 120
 
 ALLOWED_CONTENT_TYPES = [
     "application/pdf",
@@ -75,9 +76,15 @@ def get_repository(session: AsyncSession = Depends(get_db_session)) -> Candidate
 async def invalidate_candidates_cache():
     try:
         redis = await get_redis_pool()
-        keys = await redis.keys("hr_app:candidates:*")
-        if keys:
-            await redis.delete(*keys)
+        cursor = 0
+        keys_to_delete = []
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:candidates:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        if keys_to_delete:
+            await redis.delete(*keys_to_delete)
     except Exception:
         pass
 
@@ -216,22 +223,19 @@ async def list_candidates(
             )
         )
 
-    count_stmt = select(func.count(Candidate.id))
-    select_stmt = select(*CANDIDATE_LIST_COLUMNS).order_by(Candidate.created_at.desc())
+    base_query = select(*CANDIDATE_LIST_COLUMNS).order_by(Candidate.created_at.desc())
+    count_stmt = select(func.count()).select_from(base_query.subquery())
 
     if filters:
-        count_stmt = count_stmt.where(and_(*filters))
-        select_stmt = select_stmt.where(and_(*filters))
+        filtered_query = base_query.where(and_(*filters))
+        count_stmt = select(func.count()).select_from(filtered_query.subquery())
+    else:
+        filtered_query = base_query
 
     total_result = await session.execute(count_stmt)
-    total = total_result.scalar() or 0
+    result = await session.execute(filtered_query.offset((page - 1) * page_size).limit(page_size))
 
-    offset = (page - 1) * page_size
-    result = await session.execute(
-        select_stmt
-        .offset(offset)
-        .limit(page_size)
-    )
+    total = total_result.scalar() or 0
     rows = result.mappings().all()
     items = [dict(row) for row in rows]
 
@@ -341,23 +345,20 @@ async def search_candidates(
     if availability:
         filters.append(Candidate.availability == availability)
 
-    count_query = select(func.count(Candidate.id))
     base_query = select(*CANDIDATE_LIST_COLUMNS).order_by(Candidate.created_at.desc())
 
     if filters:
         combined = and_(*filters)
-        base_query = base_query.where(combined)
-        count_query = count_query.where(combined)
+        filtered_query = base_query.where(combined)
+        count_query = select(func.count()).select_from(filtered_query.subquery())
+    else:
+        filtered_query = base_query
+        count_query = select(func.count()).select_from(filtered_query.subquery())
 
     total_result = await session.execute(count_query)
-    total = total_result.scalar() or 0
+    result = await session.execute(filtered_query.offset((page - 1) * page_size).limit(page_size))
 
-    offset = (page - 1) * page_size
-    result = await session.execute(
-        base_query
-        .offset(offset)
-        .limit(page_size)
-    )
+    total = total_result.scalar() or 0
     rows = result.mappings().all()
     items = [dict(row) for row in rows]
 
@@ -445,7 +446,7 @@ async def update_candidate(
             existing = await repo.get_by_id(id)
             p_rate = existing.proposed_rate if existing else None
         p_rate_type = update_dict.get("proposed_rate_type", "daily")
-        if p_rate is not None:   
+        if p_rate is not None:
             if p_rate_type == "hourly":
                 update_dict["proposed_daily_rate"] = round(float(p_rate) * 8, 2)
             elif p_rate_type == "daily":
@@ -469,12 +470,15 @@ async def update_candidate(
     try:
         redis = await get_redis_pool()
         await redis.delete(f"hr_app:candidate:{id}")
-        keys = await redis.keys(f"hr_app:candidates:*")
-        if keys:
-            await redis.delete(*keys)
-        search_keys = await redis.keys(f"hr_backend:search:*")
-        if search_keys:
-            await redis.delete(*search_keys)
+        cursor = 0
+        keys_to_delete = []
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_backend:search:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        if keys_to_delete:
+            await redis.delete(*keys_to_delete)
     except Exception:
         pass
 
