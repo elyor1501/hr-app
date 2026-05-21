@@ -71,7 +71,7 @@ export function LoginForm() {
 
       localStorage.setItem("access_token", data.access_token);
       setUser({ id: "", email: values.email });
-      router.push("/candidates");
+      router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
       setError("Something went wrong. Please try again.");

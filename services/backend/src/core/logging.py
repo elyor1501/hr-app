@@ -1,33 +1,31 @@
-# src/core/logging.py
-"""Enhanced structured logging with request ID and data masking."""
-
 import logging
-import re
+import logging.handlers
+import os
 import sys
+import time
 from contextvars import ContextVar
 from typing import Any, Dict, List, Optional
 
 import structlog
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
 from src.core.config import settings
 
-# Context variable for request ID propagation
 request_id_ctx: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
+
+logger = structlog.get_logger()
 
 
 def get_request_id() -> Optional[str]:
-    """Get current request ID from context."""
     return request_id_ctx.get()
 
 
 def set_request_id(request_id: str) -> None:
-    """Set request ID in context."""
     request_id_ctx.set(request_id)
 
 
 class SensitiveDataMasker:
-    """Mask sensitive data in logs using simple string matching."""
-
     SENSITIVE_KEYWORDS = [
         "password", "token", "secret", "bearer", "api_key", "apikey",
         "authorization", "credential", "private_key",
@@ -35,32 +33,20 @@ class SensitiveDataMasker:
 
     @classmethod
     def mask_string(cls, value: str) -> str:
-        """Mask sensitive patterns in a string."""
         if not isinstance(value, str):
             return value
-        
         masked = value
         lower = masked.lower()
-        
-        # Mask bearer tokens
         if "bearer " in lower:
             import re as re_mod
-            masked = re_mod.sub(
-                r'(?i)(bearer\s+)\S+',
-                r'\1****',
-                masked,
-            )
-        
+            masked = re_mod.sub(r'(?i)(bearer\s+)\S+', r'\1****', masked)
         return masked
 
     @classmethod
     def mask_dict(cls, data: Dict[str, Any], sensitive_keys: List[str]) -> Dict[str, Any]:
-        """Recursively mask sensitive fields in a dictionary."""
         masked = {}
         for key, value in data.items():
             key_lower = key.lower()
-            
-            # Check if key matches any sensitive keyword
             if any(s in key_lower for s in sensitive_keys):
                 masked[key] = "****"
             elif isinstance(value, dict):
@@ -78,7 +64,6 @@ class SensitiveDataMasker:
 
 
 def add_request_id(logger, method_name, event_dict):
-    """Add request ID to log entry."""
     request_id = get_request_id()
     if request_id:
         event_dict["request_id"] = request_id
@@ -86,39 +71,112 @@ def add_request_id(logger, method_name, event_dict):
 
 
 def mask_sensitive_data(logger, method_name, event_dict):
-    """Mask sensitive data in log entry."""
     try:
         return SensitiveDataMasker.mask_dict(event_dict, settings.log_sensitive_fields)
     except Exception:
-        # Never let masking break logging
         return event_dict
 
 
 def add_service_context(logger, method_name, event_dict):
-    """Add service context to log entry."""
     event_dict["service"] = settings.app_name
     event_dict["environment"] = settings.environment
     return event_dict
 
 
+def _setup_file_logging(log_level: int) -> None:
+    log_dir = "/app/logs"
+    os.makedirs(log_dir, exist_ok=True)
+
+    log_file = os.path.join(log_dir, "backend.log")
+
+    file_handler = logging.handlers.TimedRotatingFileHandler(
+        filename=log_file,
+        when="midnight",
+        interval=1,
+        backupCount=15,
+        encoding="utf-8",
+        utc=True,
+    )
+    file_handler.setLevel(log_level)
+    file_handler.setFormatter(logging.Formatter("%(message)s"))
+    file_handler.suffix = "%Y-%m-%d"
+
+    root_logger = logging.getLogger()
+    root_logger.addHandler(file_handler)
+
+
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        import uuid
+        request_id = str(uuid.uuid4())
+        request_id_ctx.set(request_id)
+
+        start_time = time.time()
+
+        skip_paths = {"/health", "/metrics", "/favicon.ico"}
+        if request.url.path in skip_paths:
+            return await call_next(request)
+
+        await logger.ainfo(
+            "request_started",
+            method=request.method,
+            path=request.url.path,
+            query=str(request.url.query) if request.url.query else None,
+            client_ip=request.client.host if request.client else None,
+            request_id=request_id,
+        ) if hasattr(logger, 'ainfo') else logger.info(
+            "request_started",
+            method=request.method,
+            path=request.url.path,
+            query=str(request.url.query) if request.url.query else None,
+            client_ip=request.client.host if request.client else None,
+            request_id=request_id,
+        )
+
+        try:
+            response = await call_next(request)
+            duration_ms = round((time.time() - start_time) * 1000, 2)
+
+            logger.info(
+                "request_completed",
+                method=request.method,
+                path=request.url.path,
+                status_code=response.status_code,
+                duration_ms=duration_ms,
+                request_id=request_id,
+            )
+
+            return response
+
+        except Exception as e:
+            duration_ms = round((time.time() - start_time) * 1000, 2)
+            logger.error(
+                "request_failed",
+                method=request.method,
+                path=request.url.path,
+                error=str(e),
+                duration_ms=duration_ms,
+                request_id=request_id,
+            )
+            raise
+
+
 def configure_logging() -> None:
-    """Configure structured logging using structlog."""
     log_level = getattr(logging, settings.log_level.upper(), logging.INFO)
 
-    # Configure root logger
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
         level=log_level,
     )
 
-    # Reduce noise from third-party libraries
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
     logging.getLogger("asyncio").setLevel(logging.WARNING)
 
-    # Build processor chain
+    _setup_file_logging(log_level)
+
     processors = [
         structlog.contextvars.merge_contextvars,
         structlog.processors.TimeStamper(fmt="iso"),
@@ -128,17 +186,8 @@ def configure_logging() -> None:
         mask_sensitive_data,
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(),
     ]
-
-    # Use JSON in production, pretty print in development
-    if settings.environment == "production":
-        processors.append(structlog.processors.JSONRenderer())
-    else:
-        processors.append(
-            structlog.dev.ConsoleRenderer(colors=True)
-            if sys.stdout.isatty()
-            else structlog.processors.JSONRenderer()
-        )
 
     structlog.configure(
         processors=processors,

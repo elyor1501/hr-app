@@ -17,6 +17,7 @@ from src.api.v1.parsed_resumes import router as parsed_resumes_router
 from src.api.v1.stats import router as stats_router
 from src.api.v1.requests import router as requests_router
 from src.api.v1.requirement_docs import router as requirement_docs_router
+from src.core.logging import configure_logging, RequestLoggingMiddleware
 
 from src.core.config import settings
 from src.core.logging import configure_logging
@@ -53,6 +54,7 @@ def create_app() -> FastAPI:
         title=settings.app_name,
         lifespan=lifespan,
     )
+    app.add_middleware(RequestLoggingMiddleware)
 
     app.add_middleware(
         CORSMiddleware,

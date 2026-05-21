@@ -75,6 +75,21 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [currency, setCurrency] = useState<string>(empData?.currency ?? "EUR");
   const [proposedRateType, setProposedRateType] = useState<string>(empData?.proposed_rate_type ?? "daily");
   const [proposedCurrency, setProposedCurrency] = useState<string>(empData?.proposed_currency ?? "EUR");
+  const [requestedRateAmount, setRequestedRateAmount] = useState<string>(empData?.hourly_rate?.toString() ?? "");
+  const [proposedRateAmount, setProposedRateAmount] = useState<string>(empData?.proposed_rate?.toString() ?? "");
+
+  const calculateDailyRate = (amount: string, type: string): number | null => {
+    const val = parseFloat(amount);
+    if (isNaN(val) || val <= 0) return null;
+    if (type === "hourly") return val * 8;
+    if (type === "daily") return val;
+    if (type === "weekly") return val / 5;
+    if (type === "monthly") return val / 22;
+    return null;
+  };
+
+  const liveDailyRate = calculateDailyRate(requestedRateAmount, rateType);
+  const liveProposedDailyRate = calculateDailyRate(proposedRateAmount, proposedRateType);
 
   const router = useRouter();
 
@@ -160,15 +175,15 @@ export default function CandidateDetails({ id, empData }: Props) {
     title: string,
     borderColor: string,
     rateFieldName: string,
-    rateValue: any,
+    rateValue: string,
+    setRateValue: (v: string) => void,
     typeValue: string,
     setType: (v: string) => void,
     typeFieldName: string,
     currValue: string,
     setCurr: (v: string) => void,
     currFieldName: string,
-    dailyRate: any,
-    dailyCurrency: string
+    liveDailyRateValue: number | null,
   ) => (
     <div className="border-2 rounded-xl p-4 sm:p-5 space-y-4" style={{ borderColor }}>
       <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: borderColor }}>{title}</h3>
@@ -179,7 +194,8 @@ export default function CandidateDetails({ id, empData }: Props) {
             name={rateFieldName}
             type="number"
             step="0.01"
-            defaultValue={rateValue ?? ""}
+            value={rateValue}
+            onChange={(e) => setRateValue(e.target.value)}
             disabled={!isEditing}
             placeholder={isEditing ? "Enter amount" : "Not set"}
             className={fieldClass}
@@ -208,7 +224,7 @@ export default function CandidateDetails({ id, empData }: Props) {
         <div>
           <label className="block text-xs font-medium mb-1 text-muted-foreground">Daily Rate (auto)</label>
           <input
-            value={dailyRate ? `${getCurrencySymbol(dailyCurrency)} ${Number(dailyRate).toFixed(2)}` : "Not set"}
+            value={liveDailyRateValue !== null ? `${getCurrencySymbol(currValue)} ${liveDailyRateValue.toFixed(2)}` : "Not set"}
             disabled
             className={`${fieldClass} font-semibold`}
           />
@@ -216,7 +232,6 @@ export default function CandidateDetails({ id, empData }: Props) {
       </div>
     </div>
   );
-
   return (
     <div className="max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-sm border border-border p-4 sm:p-6 md:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
@@ -348,29 +363,29 @@ export default function CandidateDetails({ id, empData }: Props) {
                 "Requested Rate",
                 "#429ABD",
                 "hourly_rate",
-                candidate.hourly_rate,
+                requestedRateAmount,
+                setRequestedRateAmount,
                 rateType,
                 setRateType,
                 "rate_type",
                 currency,
                 setCurrency,
                 "currency",
-                candidate.daily_rate,
-                candidate.currency ?? "EUR"
+                liveDailyRate,
               )}
               {rateCard(
                 "Proposed Rate",
                 "#F5A623",
                 "proposed_rate",
-                candidate.proposed_rate,
+                proposedRateAmount,
+                setProposedRateAmount,
                 proposedRateType,
                 setProposedRateType,
                 "proposed_rate_type",
                 proposedCurrency,
                 setProposedCurrency,
                 "proposed_currency",
-                candidate.proposed_daily_rate,
-                candidate.proposed_currency ?? "EUR"
+                liveProposedDailyRate,
               )}
             </div>
 
@@ -523,11 +538,20 @@ export default function CandidateDetails({ id, empData }: Props) {
                           <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                       )}
-                      <a href={resume.file_url} target="_blank" rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const ext = resume.file_url?.split(".").pop()?.toLowerCase();
+                          if (ext === "pdf") {
+                            window.open(resume.file_url, "_blank");
+                          } else {
+                            window.open(`https://docs.google.com/gview?url=${encodeURIComponent(resume.file_url)}&embedded=true`, "_blank");
+                          }
+                        }}
                         className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
                         title="View Resume">
                         <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </a>
+                      </button>
                       {(candidate.cvs || []).length > 1 && (
                         <DeleteResumeButton candidateId={id} resumeId={resume.id} onSuccess={(updated) => setCandidate(updated)} />
                       )}
@@ -579,11 +603,20 @@ export default function CandidateDetails({ id, empData }: Props) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                      <a href={attachment.file_url} target="_blank" rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const ext = attachment.file_url?.split(".").pop()?.toLowerCase();
+                          if (ext === "pdf") {
+                            window.open(attachment.file_url, "_blank");
+                          } else {
+                            window.open(`https://docs.google.com/gview?url=${encodeURIComponent(attachment.file_url)}&embedded=true`, "_blank");
+                          }
+                        }}
                         title="View Attachment"
                         className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300">
                         <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </a>
+                      </button>
                       <DeleteAttachmentButton
                         candidateId={id}
                         attachmentId={attachment.id}

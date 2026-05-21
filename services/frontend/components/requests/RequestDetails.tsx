@@ -26,6 +26,25 @@ export default function RequestDetails({
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const [requestedRate, setRequestedRate] = useState<string>(request?.prepared_rate?.toString() ?? "");
+  const [requestedRateType, setRequestedRateType] = useState<string>("hourly");
+  const [requestedCurrency, setRequestedCurrency] = useState<string>("EUR");
+  const [proposedRate, setProposedRate] = useState<string>(request?.final_rate?.toString() ?? "");
+  const [proposedRateType, setProposedRateType] = useState<string>("daily");
+  const [proposedCurrency, setProposedCurrency] = useState<string>("EUR");
+
+  const calculateDailyRate = (amount: string, rateType: string): number | null => {
+    const val = parseFloat(amount);
+    if (isNaN(val) || val <= 0) return null;
+    if (rateType === "hourly") return val * 8;
+    if (rateType === "daily") return val;
+    if (rateType === "weekly") return val / 5;
+    if (rateType === "monthly") return val / 22;
+    return null;
+  };
+
+  const requestedDailyRate = calculateDailyRate(requestedRate, requestedRateType);
+  const proposedDailyRate = calculateDailyRate(proposedRate, proposedRateType);
 
   const router = useRouter();
 
@@ -271,29 +290,122 @@ export default function RequestDetails({
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-1 text-foreground">
-                Proposed Rate
-              </label>
-              <input
-                type="number"
-                name="prepared_rate"
-                defaultValue={request.prepared_rate ?? ""}
-                disabled={!isEditing}
-                className={fieldClass}
-              />
+            <div className="space-y-3 border border-border rounded-lg p-4">
+              <p className="text-sm font-semibold text-foreground">Requested Rate</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Amount</label>
+                  <input
+                    type="number"
+                    name="prepared_rate"
+                    value={requestedRate}
+                    onChange={(e) => setRequestedRate(e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Not set"
+                    className={fieldClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Type</label>
+                  <select
+                    name="requested_rate_type"
+                    value={requestedRateType}
+                    onChange={(e) => setRequestedRateType(e.target.value)}
+                    disabled={!isEditing}
+                    className={fieldClass}
+                  >
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Currency</label>
+                  <select
+                    name="requested_currency"
+                    value={requestedCurrency}
+                    onChange={(e) => setRequestedCurrency(e.target.value)}
+                    disabled={!isEditing}
+                    className={fieldClass}
+                  >
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                    <option value="INR">INR</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Daily Rate (auto)</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={requestedDailyRate !== null ? `${requestedCurrency} ${requestedDailyRate.toFixed(2)}` : "Not set"}
+                    className={fieldClass}
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1 text-foreground">
-                Final Rate
-              </label>
-              <input
-                type="number"
-                name="final_rate"
-                defaultValue={request.final_rate ?? ""}
-                disabled={!isEditing}
-                className={fieldClass}
-              />
+
+            <div className="space-y-3 border border-border rounded-lg p-4">
+              <p className="text-sm font-semibold text-foreground">Proposed Rate</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Amount</label>
+                  <input
+                    type="number"
+                    name="final_rate"
+                    value={proposedRate}
+                    onChange={(e) => setProposedRate(e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Not set"
+                    className={fieldClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Type</label>
+                  <select
+                    name="proposed_rate_type"
+                    value={proposedRateType}
+                    onChange={(e) => setProposedRateType(e.target.value)}
+                    disabled={!isEditing}
+                    className={fieldClass}
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="hourly">Hourly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Currency</label>
+                  <select
+                    name="proposed_currency"
+                    value={proposedCurrency}
+                    onChange={(e) => setProposedCurrency(e.target.value)}
+                    disabled={!isEditing}
+                    className={fieldClass}
+                  >
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                    <option value="INR">INR</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Daily Rate (auto)</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={proposedDailyRate !== null ? `${proposedCurrency} ${proposedDailyRate.toFixed(2)}` : "Not set"}
+                    className={fieldClass}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

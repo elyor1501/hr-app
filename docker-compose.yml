@@ -42,6 +42,7 @@ services:
     volumes:
       - ./services/backend/src:/app/src
       - upload_data:/app/uploads
+      - ./logs/backend:/app/logs
     restart: always
     networks:
       - hr-network

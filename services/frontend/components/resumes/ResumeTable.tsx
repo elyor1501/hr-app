@@ -32,7 +32,7 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
     <DataTable
       columns={columns_resume_list}
       data={resumes}
-      filter={"name"}
+      filter={""}
       sort={""}
       showPagination={false}
       globalFilterValue={q}
@@ -52,18 +52,6 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
             onSuccessAction={onBulkDeleteSuccess}
           />
         );
-      }}
-      onRowClick={(row) => {
-        if (!row.file_url) return;
-
-        const ext = row.file_url.split(".").pop()?.toLowerCase();
-
-        if (ext === "pdf") {
-          window.open(row.file_url, "_blank");
-        } else {
-          const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(row.file_url)}&embedded=true`;
-          window.open(viewerUrl, "_blank");
-        }
       }}
     />
   );
