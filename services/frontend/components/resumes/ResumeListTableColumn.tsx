@@ -74,7 +74,9 @@ const ActionCell = ({ resume }: { resume: ResumeList }) => {
       >
         <EyeIcon className="w-4 h-4" />
       </Button>
-      <DeleteResumeButton id={resume.id} />
+      <div onClick={(e) => e.stopPropagation()}>
+        <DeleteResumeButton id={resume.id} />
+      </div>
       <Button
         variant="ghost"
         size="icon"
