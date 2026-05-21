@@ -36,6 +36,8 @@ ALLOWED_ATTACHMENT_TYPES = [
     "Other",
 ]
 
+PROFILE_CACHE_TTL = 300
+
 
 def _clean_email(email: Optional[str]) -> Optional[str]:
     if not email:
@@ -171,9 +173,21 @@ async def get_candidate_profile(
     candidate_id: UUID,
     session: AsyncSession = Depends(get_db_session),
 ):
-    candidate = await _get_candidate_or_404(session, candidate_id)
+    from src.core.redis import get_redis_pool
+    import json
 
-    parsed_resume = await _get_parsed_resume_for_candidate(session, candidate)
+    cache_key = f"hr_app:candidate_profile:{candidate_id}"
+    try:
+        redis = await get_redis_pool()
+        cached = await redis.get(cache_key)
+        if cached:
+            return CandidateProfileResponse(**json.loads(cached))
+    except Exception:
+        pass
+
+    candidate = await session.get(Candidate, candidate_id)
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
 
     cvs_result = await session.execute(
         select(CandidateCV)
@@ -189,41 +203,17 @@ async def get_candidate_profile(
     )
     attachments = attachments_result.scalars().all()
 
-    github = None
-    portfolio = None
-    summary = None
-    education = None
-    experience = None
-    projects = None
-    certifications = None
-    candidate_status = None
+    parsed_resume = await _get_parsed_resume_for_candidate(session, candidate)
 
-    if parsed_resume:
-        github = parsed_resume.github
-        portfolio = parsed_resume.portfolio
-        summary = parsed_resume.summary
-        education = parsed_resume.education
-        experience = parsed_resume.experience
-        projects = parsed_resume.projects
-        certifications = parsed_resume.certifications
-        candidate_status = parsed_resume.candidate_status
+    github = parsed_resume.github if parsed_resume else (candidate.json_data.get("github") if candidate.json_data else None)
+    portfolio = parsed_resume.portfolio if parsed_resume else (candidate.json_data.get("portfolio") if candidate.json_data else None)
+    summary = parsed_resume.summary if parsed_resume else (candidate.json_data.get("summary") if candidate.json_data else None)
+    education = parsed_resume.education if parsed_resume else (candidate.json_data.get("education") if candidate.json_data else None)
+    experience = parsed_resume.experience if parsed_resume else (candidate.json_data.get("experience") if candidate.json_data else None)
+    projects = parsed_resume.projects if parsed_resume else (candidate.json_data.get("projects") if candidate.json_data else None)
+    certifications = parsed_resume.certifications if parsed_resume else (candidate.json_data.get("certifications") if candidate.json_data else None)
 
-    if not github and candidate.json_data:
-        github = candidate.json_data.get("github")
-    if not portfolio and candidate.json_data:
-        portfolio = candidate.json_data.get("portfolio")
-    if not summary and candidate.json_data:
-        summary = candidate.json_data.get("summary")
-    if not education and candidate.json_data:
-        education = candidate.json_data.get("education")
-    if not experience and candidate.json_data:
-        experience = candidate.json_data.get("experience")
-    if not projects and candidate.json_data:
-        projects = candidate.json_data.get("projects")
-    if not certifications and candidate.json_data:
-        certifications = candidate.json_data.get("certifications")
-
-    return CandidateProfileResponse(
+    response = CandidateProfileResponse(
         id=str(candidate.id),
         first_name=candidate.first_name,
         last_name=candidate.last_name,
@@ -246,12 +236,20 @@ async def get_candidate_profile(
         hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
         availability=candidate.availability,
         status=candidate.status,
-        candidate_status=candidate_status,
+        candidate_status=parsed_resume.candidate_status if parsed_resume else None,
         cvs=[_cv_to_response(cv) for cv in cvs],
         attachments=[_attachment_to_response(att) for att in attachments],
         created_at=candidate.created_at.isoformat(),
         updated_at=candidate.updated_at.isoformat() if candidate.updated_at else None,
     )
+
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(cache_key, PROFILE_CACHE_TTL, json.dumps(response.model_dump(), default=str))
+    except Exception:
+        pass
+
+    return response
 
 
 @router.get("/{candidate_id}/cvs", response_model=List[CVResponse])
@@ -326,6 +324,13 @@ async def upload_cv(
     await session.commit()
     await session.refresh(cv)
 
+    try:
+        from src.core.redis import get_redis_pool
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:candidate_profile:{candidate_id}")
+    except Exception:
+        pass
+
     return _cv_to_response(cv, attachment_type)
 
 
@@ -355,6 +360,13 @@ async def set_primary_cv(
 
     await session.commit()
     await session.refresh(cv)
+
+    try:
+        from src.core.redis import get_redis_pool
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:candidate_profile:{candidate_id}")
+    except Exception:
+        pass
 
     return _cv_to_response(cv)
 
@@ -411,6 +423,13 @@ async def delete_cv(
 
     await session.commit()
 
+    try:
+        from src.core.redis import get_redis_pool
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:candidate_profile:{candidate_id}")
+    except Exception:
+        pass
+
 
 @router.get("/{candidate_id}/attachments", response_model=List[AttachmentResponse])
 async def list_attachments(
@@ -461,6 +480,13 @@ async def upload_attachment(
     await session.commit()
     await session.refresh(attachment)
 
+    try:
+        from src.core.redis import get_redis_pool
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:candidate_profile:{candidate_id}")
+    except Exception:
+        pass
+
     return _attachment_to_response(attachment)
 
 
@@ -492,3 +518,10 @@ async def delete_attachment(
 
     await session.delete(attachment)
     await session.commit()
+
+    try:
+        from src.core.redis import get_redis_pool
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:candidate_profile:{candidate_id}")
+    except Exception:
+        pass

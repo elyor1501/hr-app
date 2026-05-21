@@ -5,24 +5,22 @@ from typing import List, Optional
 import structlog
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import select, or_, func, text, and_
+from sqlalchemy import select, or_, func, and_
 
 from src.core.redis import get_redis_pool
 from src.db.session import async_session_maker
 from src.db.models import Candidate, ParsedResume
-from src.services.ai_client import AIClient
 
 logger = structlog.get_logger()
 router = APIRouter()
-ai_client = AIClient()
 
-SEARCH_CACHE_TTL = 60
+SEARCH_CACHE_TTL = 120
 
 
 class SearchRequest(BaseModel):
     query_text: str = Field(..., min_length=1)
     top_k: int = Field(default=10, ge=1, le=50)
-    min_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    min_score: float = Field(default=0.05, ge=0.0, le=1.0)
     status: Optional[str] = Field(default=None, pattern="^(active|inactive)$")
     experience_level: Optional[str] = Field(default=None)
     availability: Optional[str] = Field(default=None)
@@ -61,8 +59,7 @@ def _parse_skills(raw) -> Optional[List[str]]:
         return raw
     if isinstance(raw, str):
         try:
-            import json as _json
-            parsed = _json.loads(raw)
+            parsed = json.loads(raw)
             return parsed if isinstance(parsed, list) else None
         except Exception:
             return None
@@ -70,36 +67,69 @@ def _parse_skills(raw) -> Optional[List[str]]:
 
 
 def _score_text_match(row_data: dict, query_words: List[str]) -> float:
-    skills_text = " ".join(row_data.get("skills") or []).lower()
+    skills_list = row_data.get("skills") or []
+    skills_text = " ".join(skills_list).lower()
     title_text = (row_data.get("current_title") or "").lower()
     company_text = (row_data.get("current_company") or "").lower()
     summary_text = (row_data.get("summary") or "").lower()
     location_text = (row_data.get("location") or "").lower()
     name_text = f"{row_data.get('first_name') or ''} {row_data.get('last_name') or ''}".lower()
 
-    total = 0.0
+    def word_match(text: str, word: str) -> bool:
+        if not text or not word:
+            return False
+        import re
+        pattern = r'\b' + re.escape(word) + r'\b'
+        return bool(re.search(pattern, text))
+
+    def partial_match(text: str, word: str) -> bool:
+        return word in text
+
+    matched_words = 0
+    total_score = 0.0
+
     for word in query_words:
         w = word.lower()
-        if w in skills_text:
-            total += 0.30
-        if w in title_text:
-            total += 0.20
-        if w in name_text:
-            total += 0.15
-        if w in company_text:
-            total += 0.10
-        if w in summary_text:
-            total += 0.15
-        if w in location_text:
-            total += 0.10
+        word_score = 0.0
 
-    max_possible = len(query_words) * 1.0
-    return min(total / max_possible, 1.0) if max_possible > 0 else 0.0
+        skills_words = [s.lower() for s in skills_list]
+        if any(word_match(s, w) or s == w or s.startswith(w) for s in skills_words):
+            word_score += 0.40
+        elif partial_match(skills_text, w) and len(w) >= 5:
+            word_score += 0.15
 
+        if word_match(title_text, w):
+            word_score += 0.25
+        elif partial_match(title_text, w) and len(w) >= 5:
+            word_score += 0.10
+
+        if word_match(name_text, w):
+            word_score += 0.30
+        elif partial_match(name_text, w) and len(w) >= 4:
+            word_score += 0.15
+
+        if word_match(company_text, w):
+            word_score += 0.10
+        if word_match(location_text, w):
+            word_score += 0.10
+
+        if word_match(summary_text, w) and word_score == 0:
+            word_score += 0.05
+
+        if word_score > 0:
+            matched_words += 1
+        total_score += min(word_score, 1.0)
+
+    if not query_words:
+        return 0.0
+
+    base_score = total_score / len(query_words)
+    word_coverage = matched_words / len(query_words)
+    return round(min(base_score * word_coverage, 1.0), 4)
 
 def _build_cache_key(request: SearchRequest) -> str:
     raw = f"{request.query_text}|{request.top_k}|{request.min_score}|{request.status}|{request.experience_level}|{request.availability}|{request.location}|{sorted(request.skills or [])}"
-    return f"hr_app:search:v2:{hashlib.md5(raw.encode()).hexdigest()}"
+    return f"hr_app:search:v3:{hashlib.md5(raw.encode()).hexdigest()}"
 
 
 @router.post("", response_model=SearchResponse)
@@ -146,19 +176,30 @@ async def search_candidates(request: SearchRequest):
 
             text_conditions_candidate = []
             text_conditions_parsed = []
+
             for word in query_words:
                 w = f"%{word}%"
                 text_conditions_candidate.append(Candidate.first_name.ilike(w))
                 text_conditions_candidate.append(Candidate.last_name.ilike(w))
+                text_conditions_candidate.append(func.concat(Candidate.first_name, ' ', Candidate.last_name).ilike(w))
                 text_conditions_candidate.append(Candidate.current_title.ilike(w))
+                text_conditions_candidate.append(Candidate.current_company.ilike(w))
                 text_conditions_candidate.append(Candidate.location.ilike(w))
                 text_conditions_candidate.append(Candidate.email.ilike(w))
+                text_conditions_candidate.append(
+                    func.lower(func.array_to_string(Candidate.skills, ' ')).contains(word.lower())
+                )
 
                 text_conditions_parsed.append(ParsedResume.first_name.ilike(w))
                 text_conditions_parsed.append(ParsedResume.last_name.ilike(w))
+                text_conditions_parsed.append(func.concat(ParsedResume.first_name, ' ', ParsedResume.last_name).ilike(w))
                 text_conditions_parsed.append(ParsedResume.current_title.ilike(w))
+                text_conditions_parsed.append(ParsedResume.current_company.ilike(w))
                 text_conditions_parsed.append(ParsedResume.location.ilike(w))
                 text_conditions_parsed.append(ParsedResume.summary.ilike(w))
+                text_conditions_parsed.append(
+                    func.lower(func.array_to_string(ParsedResume.skills, ' ')).contains(word.lower())
+                )
 
             candidate_query = select(Candidate).where(or_(*text_conditions_candidate))
             if candidate_filters:
@@ -214,8 +255,6 @@ async def search_candidates(request: SearchRequest):
 
             for pr in parsed_resumes:
                 pid = str(pr.id)
-                if pid in results_map:
-                    continue
 
                 pr_email = (pr.email or "").strip().lower()
                 pr_first = (pr.first_name or "").strip().lower()
@@ -248,36 +287,7 @@ async def search_candidates(request: SearchRequest):
                     "summary": pr.summary or jd.get("summary"),
                 }
                 score = _score_text_match(row_data, query_words)
-                results_map[pid] = {
-                    "id": pid,
-                    "resume_id": str(pr.resume_id) if pr.resume_id else None,
-                    "first_name": pr.first_name,
-                    "last_name": pr.last_name,
-                    "email": pr.email or jd.get("email"),
-                    "phone": pr.phone or jd.get("phone"),
-                    "skills": row_data["skills"],
-                    "current_title": row_data["current_title"],
-                    "current_company": row_data["current_company"],
-                    "location": row_data["location"],
-                    "years_of_experience": pr.years_of_experience,
-                    "summary": row_data["summary"],
-                    "experience_level": None,
-                    "availability": None,
-                    "hourly_rate": None,
-                    "candidate_status": pr.candidate_status,
-                    "score": score,
-                }
-                jd = pr.json_data or {}
-                row_data = {
-                    "first_name": pr.first_name,
-                    "last_name": pr.last_name,
-                    "current_title": pr.current_title or jd.get("current_title"),
-                    "current_company": pr.current_company or jd.get("current_company"),
-                    "location": pr.location or jd.get("location"),
-                    "skills": _parse_skills(pr.skills) or _parse_skills(jd.get("skills")) or [],
-                    "summary": pr.summary or jd.get("summary"),
-                }
-                score = _score_text_match(row_data, query_words)
+
                 results_map[pid] = {
                     "id": pid,
                     "resume_id": str(pr.resume_id) if pr.resume_id else None,

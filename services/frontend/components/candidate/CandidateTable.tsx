@@ -26,13 +26,13 @@ export default function CandidatesTable({ data, resumes }: { data: any[], resume
         <DataTable
           columns={columns_candidate_list}
           data={data}
-          filter={"first_name"}
+          filter={""}
           sort={""}
           showPagination={false}
           globalFilterValue={q}
           onGlobalFilterChange={handleSearch}
           searchPlaceholder="Search candidates..."
-          onRowClick={(row) => {
+          onRowClick={(row: any) => {
             router.push(`/candidates/${row.id}`);
           }}
         />

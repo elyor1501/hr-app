@@ -36,6 +36,7 @@ export type PaginatedCandidates = {
 };
 
 const CACHE_TTL = 60000;
+const DETAIL_CACHE_TTL = 300000;
 let candidatesCache: { data: PaginatedCandidates; timestamp: number; q?: string } | null = null;
 let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
 
@@ -124,6 +125,15 @@ export function invalidateCandidatesCache() {
 }
 
 export async function getCandidateById(id: string) {
+  const isServer = typeof window === "undefined";
+
+  if (!isServer && candidateByIdCache.has(id)) {
+    const cached = candidateByIdCache.get(id)!;
+    if (Date.now() - cached.timestamp < DETAIL_CACHE_TTL) {
+      return cached.data;
+    }
+  }
+
   try {
     const apiUrl = getApiUrl();
     const token = getAuthToken();
@@ -132,47 +142,27 @@ export async function getCandidateById(id: string) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
-    const mainUrl = apiUrl
-      ? `${apiUrl}/api/v1/candidates/${id}`
-      : `/api/v1/candidates/${id}`;
-
     const profileUrl = apiUrl
       ? `${apiUrl}/api/v1/candidates/${id}/profile`
       : `/api/v1/candidates/${id}/profile`;
 
-    const [mainRes, profileRes] = await Promise.all([
-      fetch(mainUrl, { method: "GET", headers, cache: "no-store" }),
-      fetch(profileUrl, { method: "GET", headers, cache: "no-store" }),
-    ]);
+    const res = await fetch(profileUrl, { method: "GET", headers, cache: "no-store" });
 
-    if (mainRes.status === 404) {
+    if (res.status === 404) {
       return { status: "processing" };
     }
 
-    if (!mainRes.ok) {
-      const text = await mainRes.text();
-      console.error("Fetch candidate failed:", mainRes.status, text);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Fetch candidate failed:", res.status, text);
       return null;
     }
 
-    const mainData = await mainRes.json();
-    const main = Array.isArray(mainData) ? mainData[0] : mainData;
+    const result = await res.json();
 
-    let profile: any = {};
-    if (profileRes.ok) {
-      const profileData = await profileRes.json();
-      profile = Array.isArray(profileData) ? profileData[0] : profileData;
+    if (!isServer) {
+      candidateByIdCache.set(id, { data: result, timestamp: Date.now() });
     }
-
-    const result = {
-      ...main,
-      cvs: profile.cvs ?? main.cvs ?? [],
-      attachments: profile.attachments ?? main.attachments ?? [],
-      experience: main.experience ?? profile.experience ?? [],
-      education: main.education ?? profile.education ?? [],
-    };
-
-    candidateByIdCache.set(id, { data: result, timestamp: Date.now() });
 
     return result;
   } catch (error) {

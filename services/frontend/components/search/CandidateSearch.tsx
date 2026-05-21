@@ -76,7 +76,7 @@ export default function CandidateSearch() {
         body: JSON.stringify({
           query_text: query.trim(),
           top_k: 20,
-          min_score: 0.0,
+          min_score: 0.05,
         }),
       });
       if (!res.ok) throw new Error(await res.text());

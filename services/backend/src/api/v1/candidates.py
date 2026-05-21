@@ -217,6 +217,7 @@ async def list_candidates(
             or_(
                 Candidate.first_name.ilike(f"%{q}%"),
                 Candidate.last_name.ilike(f"%{q}%"),
+                func.concat(Candidate.first_name, ' ', Candidate.last_name).ilike(f"%{q}%"),
                 Candidate.current_title.ilike(f"%{q}%"),
                 Candidate.location.ilike(f"%{q}%"),
                 Candidate.email.ilike(f"%{q}%"),

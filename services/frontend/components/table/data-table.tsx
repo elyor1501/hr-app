@@ -119,13 +119,13 @@ export function DataTable<TData, TValue>({
     onGlobalFilterChange: setGlobalFilter,
     onRowSelectionChange: onRowSelectionChange,
     state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      pagination,
-      globalFilter,
-      rowSelection,
-    },
+          sorting,
+          columnFilters,
+          columnVisibility,
+          pagination,
+          globalFilter: onGlobalFilterChange ? "" : globalFilter,
+          rowSelection,
+        },
   });
 
   return (
