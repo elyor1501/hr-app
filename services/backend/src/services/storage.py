@@ -184,3 +184,28 @@ async def delete_candidate_attachment_from_storage(file_url: str) -> bool:
     except Exception as e:
         print(f"Candidate attachment delete failed: {e}")
         return False
+    
+DELOITTE_PPTX_BUCKET = "deloitte-resumes"
+
+
+async def upload_deloitte_pptx(file_content: bytes, filename: str) -> str:
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return None
+    try:
+        file_path = f"{uuid.uuid4()}.pptx"
+        return await _upload_async(DELOITTE_PPTX_BUCKET, file_path, file_content, "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+    except Exception as e:
+        print(f"Deloitte PPTX upload failed: {e}")
+        return None
+
+
+async def delete_deloitte_pptx_from_storage(file_url: str) -> bool:
+    if not SUPABASE_URL or not SUPABASE_KEY or not file_url:
+        return False
+    try:
+        file_path = file_url.split(f"/{DELOITTE_PPTX_BUCKET}/")[-1].split("?")[0]
+        await _delete_async(DELOITTE_PPTX_BUCKET, file_path)
+        return True
+    except Exception as e:
+        print(f"Deloitte PPTX delete failed: {e}")
+        return False

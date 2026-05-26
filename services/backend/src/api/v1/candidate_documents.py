@@ -59,6 +59,7 @@ class CVResponse(BaseModel):
     is_primary: bool
     file_size: Optional[int] = None
     attachment_type: Optional[str] = None
+    deloitte_pptx_url: Optional[str] = None
     created_at: str
 
     class Config:
@@ -152,6 +153,7 @@ def _cv_to_response(cv: CandidateCV, attachment_type: Optional[str] = None) -> C
         is_primary=cv.is_primary,
         file_size=cv.file_size,
         attachment_type=attachment_type,
+        deloitte_pptx_url=cv.deloitte_pptx_url,
         created_at=cv.created_at.isoformat(),
     )
 

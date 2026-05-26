@@ -134,28 +134,32 @@ export async function getCandidateById(id: string) {
     }
   }
 
+  const apiUrl = getApiUrl();
+  const token = getAuthToken();
+
+  const headers: HeadersInit = {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  const profileUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${id}/profile`
+    : `/api/v1/candidates/${id}/profile`;
+
   try {
-    const apiUrl = getApiUrl();
-    const token = getAuthToken();
-
-    const headers: HeadersInit = {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-
-    const profileUrl = apiUrl
-      ? `${apiUrl}/api/v1/candidates/${id}/profile`
-      : `/api/v1/candidates/${id}/profile`;
-
-    const res = await fetch(profileUrl, { method: "GET", headers, cache: "no-store" });
+    const res = await fetch(profileUrl, {
+      method: "GET",
+      headers,
+      cache: "no-store",
+    });
 
     if (res.status === 404) {
       return { status: "processing" };
     }
 
     if (!res.ok) {
-      const text = await res.text();
+      const text = await res.text().catch(() => "Unable to read response");
       console.error("Fetch candidate failed:", res.status, text);
-      return null;
+      return { status: "processing" };
     }
 
     const result = await res.json();
@@ -167,7 +171,7 @@ export async function getCandidateById(id: string) {
     return result;
   } catch (error) {
     console.error("getCandidateById error:", error);
-    return null;
+    return { status: "processing" };
   }
 }
 

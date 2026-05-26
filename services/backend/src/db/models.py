@@ -84,6 +84,7 @@ class CandidateCV(BaseModel):
     file_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     is_primary: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     file_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    deloitte_pptx_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     candidate: Mapped["Candidate"] = relationship("Candidate", back_populates="cvs", lazy="noload")
 
@@ -91,7 +92,6 @@ class CandidateCV(BaseModel):
         Index("idx_candidate_cvs_candidate_id", "candidate_id"),
         Index("idx_candidate_cvs_is_primary", "candidate_id", "is_primary"),
     )
-
 
 class CandidateAttachment(BaseModel):
     __tablename__ = "candidate_attachments"

@@ -136,6 +136,7 @@ jobs:
               -e HR_APP_SMTP_FROM=${{ secrets.SMTP_FROM }} \
               -e HR_APP_FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
               -e HR_APP_RESET_TOKEN_EXPIRE_MINUTES=30 \
+              -e DELOITTE_TEMPLATE_PATH=/app/Deloitte_Template.pptx \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend-latest
 
             echo '=== Waiting for backend to start ==='
@@ -185,6 +186,7 @@ jobs:
               -e PYTHONPATH=/app \
               -e SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
+              -e DELOITTE_TEMPLATE_PATH=/app/Deloitte_Template.pptx \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:worker-latest \
               python3 -m arq src.worker.WorkerSettings
 

@@ -1,11 +1,15 @@
+"use server";
 import { revalidateCandidates } from "./revalidate";
 import { getApiUrl, getAuthToken } from "../api-config";
+import { getCandidateById } from "./data";
 
 export async function deleteCandidate(candidateId: string) {
   try {
     const token = getAuthToken();
     const apiUrl = getApiUrl();
-    const deleteUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${candidateId}` : `/api/v1/candidates/${candidateId}`;
+    const deleteUrl = apiUrl
+      ? `${apiUrl}/api/v1/candidates/${candidateId}`
+      : `/api/v1/candidates/${candidateId}`;
 
     const res = await fetch(deleteUrl, {
       method: "DELETE",
@@ -93,7 +97,9 @@ export async function updateCandidate(formData: FormData): Promise<void> {
 export async function createCandidate(formData: FormData) {
   const token = getAuthToken();
   const apiUrl = getApiUrl();
-  const createUrl = apiUrl ? `${apiUrl}/api/v1/candidates/` : `/api/v1/candidates/`;
+  const createUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates/`
+    : `/api/v1/candidates/`;
 
   const res = await fetch(createUrl, {
     method: "POST",
@@ -117,7 +123,9 @@ export async function createCandidate(formData: FormData) {
 export async function setPrimaryResume(candidateId: string, resumeId: string) {
   const token = getAuthToken();
   const apiUrl = getApiUrl();
-  const primaryUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${resumeId}/set-primary` : `/api/v1/candidates/${candidateId}/cvs/${resumeId}/set-primary`;
+  const primaryUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${resumeId}/set-primary`
+    : `/api/v1/candidates/${candidateId}/cvs/${resumeId}/set-primary`;
 
   const res = await fetch(primaryUrl, {
     method: "PATCH",
@@ -139,7 +147,9 @@ export async function setPrimaryResume(candidateId: string, resumeId: string) {
 export async function deleteResume(candidateId: string, resumeId: string) {
   const token = getAuthToken();
   const apiUrl = getApiUrl();
-  const deleteUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${resumeId}` : `/api/v1/candidates/${candidateId}/cvs/${resumeId}`;
+  const deleteUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${resumeId}`
+    : `/api/v1/candidates/${candidateId}/cvs/${resumeId}`;
 
   const res = await fetch(deleteUrl, {
     method: "DELETE",
@@ -161,7 +171,9 @@ export async function deleteResume(candidateId: string, resumeId: string) {
 export async function deleteAttachment(candidateId: string, attachmentId: string) {
   const token = getAuthToken();
   const apiUrl = getApiUrl();
-  const deleteUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments/${attachmentId}` : `/api/v1/candidates/${candidateId}/attachments/${attachmentId}`;
+  const deleteUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments/${attachmentId}`
+    : `/api/v1/candidates/${candidateId}/attachments/${attachmentId}`;
 
   const res = await fetch(deleteUrl, {
     method: "DELETE",
@@ -183,7 +195,9 @@ export async function deleteAttachment(candidateId: string, attachmentId: string
 export async function uploadAttachment(candidateId: string, formData: FormData) {
   const token = getAuthToken();
   const apiUrl = getApiUrl();
-  const uploadUrl = apiUrl ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments` : `/api/v1/candidates/${candidateId}/attachments`;
+  const uploadUrl = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments`
+    : `/api/v1/candidates/${candidateId}/attachments`;
 
   const res = await fetch(uploadUrl, {
     method: "POST",
@@ -201,4 +215,60 @@ export async function uploadAttachment(candidateId: string, formData: FormData) 
 
   await revalidateCandidates();
   return await res.json();
+}
+
+export async function generateDeloitteResume(candidateId: string, cvId: string) {
+  const token = getAuthToken();
+  const apiUrl = getApiUrl();
+
+  const url = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${cvId}/generate-deloitte`
+    : `/api/v1/candidates/${candidateId}/cvs/${cvId}/generate-deloitte`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Generate Deloitte failed:", text);
+    throw new Error("Failed to generate Deloitte resume");
+  }
+
+  await revalidateCandidates();
+
+  const updatedCandidate = await getCandidateById(candidateId);
+  return updatedCandidate;
+}
+
+export async function deleteDeloitteResume(candidateId: string, cvId: string) {
+  const token = getAuthToken();
+  const apiUrl = getApiUrl();
+
+  const url = apiUrl
+    ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${cvId}/deloitte`
+    : `/api/v1/candidates/${candidateId}/cvs/${cvId}/deloitte`;
+
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Delete Deloitte failed:", text);
+    throw new Error("Failed to delete Deloitte resume");
+  }
+
+  await revalidateCandidates();
+
+  const updatedCandidate = await getCandidateById(candidateId);
+  return updatedCandidate;
 }

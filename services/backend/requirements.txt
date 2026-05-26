@@ -47,3 +47,7 @@ respx==0.21.1
 
 # Linting
 ruff==0.3.5
+lxml
+python-pptx
+pypdf
+python-docx

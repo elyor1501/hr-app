@@ -37,10 +37,12 @@ services:
       PYTHONPATH: /app
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+      DELOITTE_TEMPLATE_PATH: /app/Deloitte_Template.pptx
     ports:
       - "8000:8000"
     volumes:
       - ./services/backend/src:/app/src
+      - ./services/backend/Deloitte_Template.pptx:/app/Deloitte_Template.pptx:ro
       - upload_data:/app/uploads
       - ./logs/backend:/app/logs
     restart: always
@@ -67,8 +69,10 @@ services:
       PYTHONPATH: /app
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+      DELOITTE_TEMPLATE_PATH: /app/Deloitte_Template.pptx
     volumes:
       - ./services/backend/src:/app/src
+      - ./services/backend/Deloitte_Template.pptx:/app/Deloitte_Template.pptx:ro
       - upload_data:/app/uploads
     command: python3 -m arq src.worker.WorkerSettings
     restart: always
