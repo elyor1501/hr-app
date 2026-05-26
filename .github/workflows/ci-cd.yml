@@ -19,17 +19,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to Docker Hub
         if: github.event_name == 'push'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push ${{ matrix.service }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
           context: ${{ matrix.service == 'worker' && './services/backend' || format('./services/{0}', matrix.service) }}
           file: ${{ matrix.service == 'worker' && './services/backend/Dockerfile' || format('./services/{0}/Dockerfile', matrix.service) }}
