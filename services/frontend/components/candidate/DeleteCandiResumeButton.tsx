@@ -52,6 +52,7 @@ export function DeleteResumeButton({
       <DialogTrigger asChild>
         <button
           type="button"
+          onClick={(e) => e.stopPropagation()}
           className="p-2 text-gray-400 hover:text-[#F5A623] hover:bg-[#F5A62320] rounded-lg transition-all duration-300"
           title="Delete Resume"
         >
@@ -70,7 +71,10 @@ export function DeleteResumeButton({
         <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
           <Button
             variant="outline"
-            onClick={() => setOpen(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(false);
+            }}
             disabled={isPending}
             className="w-full sm:w-auto transition-all duration-300 hover:border-[#429ABD] hover:text-[#429ABD]"
           >

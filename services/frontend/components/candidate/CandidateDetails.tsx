@@ -785,14 +785,27 @@ export default function CandidateDetails({ id, empData }: Props) {
                 candidate.cvs.map((resume: any) => (
                   <div
                     key={resume.id}
-                    className="rounded-xl border border-border shadow-sm overflow-hidden"
+                    onClick={() => {
+                      const ext = resume.file_url
+                        ?.split(".")
+                        .pop()
+                        ?.toLowerCase();
+
+                      if (ext === "pdf") {
+                        window.open(resume.file_url, "_blank");
+                      } else {
+                        window.open(
+                          `https://docs.google.com/gview?url=${encodeURIComponent(resume.file_url)}&embedded=true`,
+                          "_blank",
+                        );
+                      }
+                    }}
+                    className="rounded-xl border border-border shadow-sm overflow-hidden transition-all duration-300"
                   >
                     <div
                       className={cn(
-                        "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0",
-                        resume.is_primary
-                          ? "border-b border-[#429ABD] bg-[#429ABD08]"
-                          : "border-b border-border",
+                        "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#429ABD08] hover:border-[#429ABD] border border-transparent transition-all duration-300",
+                        
                       )}
                     >
                       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
@@ -833,17 +846,21 @@ export default function CandidateDetails({ id, empData }: Props) {
                         {!resume.is_primary && (
                           <button
                             type="button"
-                            onClick={() => handleSetPrimary(resume.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSetPrimary(resume.id);
+                            }}
                             disabled={uploading}
-                            className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300 disabled:opacity-50"
+                            className="px-3 py-1.5 text-sm font-medium text-white bg-[#429ABD] hover:bg-[#F5A623] rounded-lg transition-all duration-300 disabled:opacity-50"
                             title="Set as Primary"
                           >
-                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                            Set as primary
                           </button>
                         )}
                         <button
                           type="button"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             const ext = resume.file_url
                               ?.split(".")
                               .pop()
@@ -874,8 +891,27 @@ export default function CandidateDetails({ id, empData }: Props) {
 
                     {resume.is_primary && (
                       <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (!resume.deloitte_pptx_url) return;
+
+                          const ext = resume.deloitte_pptx_url
+                            ?.split(".")
+                            .pop()
+                            ?.toLowerCase();
+
+                          if (ext === "pdf") {
+                            window.open(resume.deloitte_pptx_url, "_blank");
+                          } else {
+                            window.open(
+                              `https://docs.google.com/gview?url=${encodeURIComponent(resume.deloitte_pptx_url)}&embedded=true`,
+                              "_blank",
+                            );
+                          }
+                        }}
                         className={cn(
-                          "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0",
+                          "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#F5A62308] hover:border-[#F5A623] border border-transparent transition-all duration-300",
                           resume.deloitte_pptx_url
                             ? "bg-[#429ABD06]"
                             : "bg-muted/20",
