@@ -479,6 +479,21 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
 
         nsmap = "http://schemas.openxmlformats.org/drawingml/2006/main"
 
+        def _set_normAutofit(txBody):
+            """Replace noAutofit with normAutofit so text shrinks to fit rather than clipping."""
+            bodyPr = txBody.find(f'{{{nsmap}}}bodyPr')
+            if bodyPr is None:
+                return
+            for child in list(bodyPr):
+                if any(x in child.tag for x in ['noAutofit', 'normAutofit', 'spAutoFit']):
+                    bodyPr.remove(child)
+            etree.SubElement(bodyPr, f'{{{nsmap}}}normAutofit')
+
+        try:
+            _set_normAutofit(slide.placeholders[26].text_frame._txBody)
+        except KeyError:
+            pass
+
         def _get_font_size(item_count: int, base_min: int, base_max: int) -> int:
             if item_count <= 4:
                 return base_max
@@ -501,13 +516,14 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             text = _sanitize(text)
             p_el = etree.SubElement(txBody, f'{{{nsmap}}}p')
             pPr = etree.SubElement(p_el, f'{{{nsmap}}}pPr')
+            pPr.set("algn", "just")
             spcBef_el = etree.SubElement(pPr, f'{{{nsmap}}}spcBef')
             etree.SubElement(spcBef_el, f'{{{nsmap}}}spcPts').set("val", str(space_before * 100))
             spcAft_el = etree.SubElement(pPr, f'{{{nsmap}}}spcAft')
             etree.SubElement(spcAft_el, f'{{{nsmap}}}spcPts').set("val", str(space_after * 100))
             lnSpc = etree.SubElement(pPr, f'{{{nsmap}}}lnSpc')
             spcPct = etree.SubElement(lnSpc, f'{{{nsmap}}}spcPct')
-            spcPct.set("val", "85000")
+            spcPct.set("val", "92000")
             if not text:
                 return
             r_el = etree.SubElement(p_el, f'{{{nsmap}}}r')
@@ -553,34 +569,22 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
         business_skills = candidate_data.get("business_skills", [])
         tech_skills = candidate_data.get("tech_skills", [])
         total_skill_items = len(business_skills) + len(tech_skills)
-        skill_header_size = _get_font_size(total_skill_items, 8, 11)
-        skill_item_size = _get_font_size(total_skill_items, 7, 10)
+        skill_header_size = _get_font_size(total_skill_items, 9, 12)
+        skill_item_size = _get_font_size(total_skill_items, 8, 11)
 
         languages = candidate_data.get("languages", [])
         industry = candidate_data.get("industry_experience", [])
         certs = candidate_data.get("certifications", [])
         education = candidate_data.get("education", [])
         total_right_items = len(languages) + len(industry) + len(certs) + len(education)
-        right_header_size = _get_font_size(total_right_items, 8, 11)
-        right_item_size = _get_font_size(total_right_items, 7, 10)
+        right_header_size = _get_font_size(total_right_items, 9, 12)
+        right_item_size = _get_font_size(total_right_items, 8, 11)
 
         summary_paras = candidate_data.get("summary_paras", [])
-        total_summary_chars = sum(len(p) for p in summary_paras)
-        if total_summary_chars < 300:
-            summary_size = 11
-        elif total_summary_chars < 500:
-            summary_size = 10
-        else:
-            summary_size = 9
+        summary_size = 12
 
         exp_paras = [p for p in candidate_data.get("relevant_exp_paras", []) if p]
-        total_exp_chars = sum(len(p) for p in exp_paras)
-        if total_exp_chars < 400:
-            exp_size = 10
-        elif total_exp_chars < 700:
-            exp_size = 9
-        else:
-            exp_size = 8
+        exp_size = 11
 
         fill_placeholder(13, [
             (_sanitize(candidate_data.get("name_large", "")), None, 18, None),
@@ -726,6 +730,8 @@ async def generate_deloitte_resume(
                     json={
                         "cv_text": cv_text,
                         "candidate_id": str(candidate_id),
+                        "candidate_location": str(candidate.location or ""),
+                        "candidate_role": str(candidate.current_title or ""),
                     }
                 )
                 if ai_response.status_code == 200:

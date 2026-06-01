@@ -10,6 +10,7 @@ from api.v1.match import router as match_router
 from api.v1.search import router as search_router
 from api.v1.requirement_doc_structure import router as requirement_doc_structure_router
 from api.v1.match_candidates import router as match_candidates_router
+from api.v1.generate import router as generate_router
 
 api_router = APIRouter(prefix="/api")
 
@@ -23,3 +24,4 @@ api_router.include_router(match_router, prefix="/v1", tags=["match"])
 api_router.include_router(search_router, prefix="/v1", tags=["search"])
 api_router.include_router(requirement_doc_structure_router, prefix="/v1", tags=["requirement-doc-extraction"])
 api_router.include_router(match_candidates_router, prefix="/v1", tags=["matching"])
+api_router.include_router(generate_router, prefix="/v1")
