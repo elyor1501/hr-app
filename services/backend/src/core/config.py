@@ -74,6 +74,19 @@ class Settings(BaseSettings):
     smtp_from: str = Field(default="")
     frontend_url: str = Field(default="http://localhost")
     reset_token_expire_minutes: int = Field(default=30)
+    invite_token_expire_minutes: int = Field(default=5)
+
+    allowed_inviters: List[str] = Field(
+        default_factory=lambda: [
+            "elke@vaspp.com",
+            "akshay@vaspp.com",
+            "kruthika.prasad@vaspp.com",
+            "gurudarshan.bn@vaspp.com",
+            "elyor.farmonov@vaspp.com",
+            "nithin@vaspp.com",
+            "abhilash.gowda@vaspp.com",
+        ]
+    )
 
     @field_validator("smtp_port", mode="before")
     @classmethod

@@ -38,3 +38,32 @@ export const signUpSchema = z
   });
 
 export type SignUpSchemaType = z.infer<typeof signUpSchema>;
+
+export const inviteSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Enter a valid email"),
+});
+
+export type InviteSchemaType = z.infer<typeof inviteSchema>;
+
+export const registerViaInviteSchema = z
+  .object({
+    full_name: z
+      .string()
+      .min(3, "Full name is required")
+      .regex(/^[A-Za-z ]+$/, "Only letters are allowed"),
+
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Must include at least 1 uppercase letter")
+      .regex(/[0-9]/, "Must include at least 1 number")
+      .regex(/[^A-Za-z0-9]/, "Must include 1 special character"),
+
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type RegisterViaInviteSchemaType = z.infer<typeof registerViaInviteSchema>;

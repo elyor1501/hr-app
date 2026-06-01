@@ -1,43 +1,14 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { SignUpForm } from "@/components/auth/Signup";
+import { RegisterForm } from "@/components/auth/Register";
 import Image from "next/image";
 import Logo from "@/app/(main)/VASPP_logo_black_text.png";
-import { useUser } from "@/app/contexts/UserContext";
 
-const ALLOWED_INVITERS = [
-  "elke@vaspp.com",
-  "akshay@vaspp.com",
-  "kruthika.prasad@vaspp.com",
-  "gurudarshan.bn@vaspp.com",
-  "elyor.farmonov@vaspp.com",
-  "nithin@vaspp.com",
-  "abhilash.gowda@vaspp.com",
-];
+type Props = {
+  searchParams: Promise<{ token?: string }>;
+};
 
-export default function Signup() {
-  const router = useRouter();
-  const { user, loading } = useUser();
-  const [allowed, setAllowed] = useState(false);
-
-  useEffect(() => {
-    if (loading) return;
-
-    if (!user) {
-      router.replace("/login");
-      return;
-    }
-
-    if (user.email && ALLOWED_INVITERS.includes((user.email as string).toLowerCase())) {
-      setAllowed(true);
-    } else {
-      router.replace("/dashboard");
-    }
-  }, [user, loading, router]);
-
-  if (loading || !allowed) return null;
+export default async function RegisterPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const token = params?.token ?? "";
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 bg-gradient-to-br from-indigo-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
@@ -68,7 +39,7 @@ export default function Signup() {
           </div>
         </div>
       </div>
-      <SignUpForm />
+      <RegisterForm token={token} />
     </div>
   );
 }

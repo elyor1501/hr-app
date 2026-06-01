@@ -21,7 +21,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 import { LoginSchemaType, loginSchema } from "@/schemas/loginSchema";
 import { getApiUrl } from "@/lib/api-config";
@@ -73,7 +72,6 @@ export function LoginForm() {
       setUser({ id: "", email: values.email });
       router.push("/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
       setError("Something went wrong. Please try again.");
     }
   };
@@ -183,19 +181,6 @@ export function LoginForm() {
             onMouseLeave={(e) => e.currentTarget.style.color = '#429ABD'}
           >
             Forgot Password?
-          </span>
-        </div>
-
-        <div className="mt-2 text-center text-sm">
-          Don't have an account?{" "}
-          <span
-            onClick={() => router.push("/signup")}
-            className="cursor-pointer font-medium"
-            style={{ color: '#429ABD' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#F5A623'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#429ABD'}
-          >
-            Create new one
           </span>
         </div>
       </CardContent>

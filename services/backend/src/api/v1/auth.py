@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from jose import jwt, JWTError
 from src.db.session import get_db_session
 from src.core.auth import hash_password_async, verify_password_async, create_tokens
 from src.core.config import settings
@@ -13,12 +14,13 @@ from src.core.redis import get_redis_pool
 from src.repositories.user import UserRepository
 from src.models.auth import UserCreate, UserResponse, Token, TokenPayload
 from src.api.deps import get_current_user
-from src.services.email import send_reset_email
+from src.services.email import send_reset_email, send_invite_email
 from src.db.models import PasswordResetToken, User
 
 router = APIRouter()
 
 USER_CACHE_TTL = 300
+INVITE_TOKEN_PREFIX = "hr_app:invite:used:"
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -30,8 +32,26 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
+class InviteRequest(BaseModel):
+    email: EmailStr
+
+
+class InviteTokenValidateRequest(BaseModel):
+    token: str
+
+
+class RegisterViaInviteRequest(BaseModel):
+    token: str
+    full_name: str
+    password: str
+
+
 def _user_cache_key(email: str) -> str:
     return f"hr_app:user:email:{email.lower()}"
+
+
+def _invite_used_key(token: str) -> str:
+    return f"{INVITE_TOKEN_PREFIX}{token}"
 
 
 async def _get_cached_user(email: str) -> dict | None:
@@ -69,14 +89,111 @@ async def _delete_cached_user(email: str) -> None:
         pass
 
 
-@router.post("/register", response_model=UserResponse, status_code=201)
-async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db_session)):
+def _create_invite_token(email: str) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.invite_token_expire_minutes)
+    payload = {
+        "sub": email.lower(),
+        "type": "invite",
+        "exp": expire,
+    }
+    return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+
+
+def _decode_invite_token(token: str) -> str:
+    try:
+        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+        if payload.get("type") != "invite":
+            raise HTTPException(status_code=400, detail="Invalid invite token")
+        email = payload.get("sub")
+        if not email:
+            raise HTTPException(status_code=400, detail="Invalid invite token")
+        return email
+    except JWTError:
+        raise HTTPException(status_code=400, detail="Invalid or expired invite token")
+
+
+@router.post("/invite", status_code=200)
+async def invite_user(
+    data: InviteRequest,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    if current_user.sub.lower() not in [e.lower() for e in settings.allowed_inviters]:
+        raise HTTPException(status_code=403, detail="You are not allowed to invite users")
+
     repo = UserRepository(db)
-    if await repo.get_by_email(user_in.email):
-        raise HTTPException(status_code=400, detail="Email already registered")
-    user_data = user_in.model_dump()
-    user_data["hashed_password"] = await hash_password_async(user_data.pop("password"))
-    user = await repo.create(**user_data)
+    existing = await repo.get_by_email(data.email)
+    if existing:
+        raise HTTPException(status_code=400, detail="This email is already registered")
+
+    invite_token = _create_invite_token(data.email)
+    sent = await send_invite_email(data.email, invite_token)
+    if not sent:
+        raise HTTPException(status_code=500, detail="Failed to send invite email")
+
+    return {"message": "Invite sent successfully"}
+
+
+@router.post("/invite/validate", status_code=200)
+async def validate_invite_token(data: InviteTokenValidateRequest):
+    email = _decode_invite_token(data.token)
+
+    try:
+        redis = await get_redis_pool()
+        used = await redis.get(_invite_used_key(data.token))
+        if used:
+            raise HTTPException(status_code=400, detail="This invite link has already been used")
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
+    return {"email": email}
+
+
+@router.post("/register-via-invite", response_model=UserResponse, status_code=201)
+async def register_via_invite(
+    data: RegisterViaInviteRequest,
+    db: AsyncSession = Depends(get_db_session),
+):
+    email = _decode_invite_token(data.token)
+
+    try:
+        redis = await get_redis_pool()
+        used = await redis.get(_invite_used_key(data.token))
+        if used:
+            raise HTTPException(status_code=400, detail="This invite link has already been used")
+    except HTTPException:
+        raise
+    except Exception:
+        pass
+
+    if len(data.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+
+    repo = UserRepository(db)
+    existing = await repo.get_by_email(email)
+    if existing:
+        raise HTTPException(status_code=400, detail="This email is already registered")
+
+    hashed = await hash_password_async(data.password)
+    user = await repo.create(
+        email=email,
+        hashed_password=hashed,
+        full_name=data.full_name,
+        role="recruiter",
+    )
+
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(
+            _invite_used_key(data.token),
+            settings.invite_token_expire_minutes * 60,
+            "1",
+        )
+    except Exception:
+        pass
+
     await _set_cached_user(user)
     return user
 

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -22,137 +20,110 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  ArrowRight,
-  CheckCircle,
-  AlertCircle,
-  User,
-} from "lucide-react";
-import Link from "next/link";
-import { signUpSchema } from "@/schemas/loginSchema";
+import { Mail, ArrowRight, CheckCircle } from "lucide-react";
+import { inviteSchema, InviteSchemaType } from "@/schemas/loginSchema";
 import { toast } from "sonner";
-import { z } from "zod";
-
-type SignUpFormValues = z.input<typeof signUpSchema>;
 
 export function SignUpForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const router = useRouter();
-
-  const form = useForm<SignUpFormValues>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<InviteSchemaType>({
+    resolver: zodResolver(inviteSchema),
     defaultValues: {
-      full_name: "",
       email: "",
-      password: "",
-      confirmPassword: "",
-      role: "recruiter",
     },
   });
 
-  const handleSubmit = async (values: SignUpFormValues) => {
-    if (!acceptTerms) {
-      toast.info("Please accept the terms and conditions");
-      return;
-    }
+  const handleSubmit = async (values: InviteSchemaType) => {
     setIsLoading(true);
-
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch(`${apiUrl}/api/v1/auth/register`, {
+      const response = await fetch(`${apiUrl}/api/v1/auth/invite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-          full_name: values.full_name,
-          role: values.role || "recruiter",
-        }),
+        body: JSON.stringify({ email: values.email }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-
         if (typeof errorData.detail === "string") {
           toast.error(errorData.detail);
-        } else if (Array.isArray(errorData.detail)) {
-          const firstError = errorData.detail[0];
-          toast.error(firstError?.msg || "Registration failed");
         } else {
-          toast.error("Registration failed. Please check your inputs.");
+          toast.error("Failed to send invite");
         }
         return;
       }
 
-      toast.success("Account created successfully!");
-      form.reset();
-      router.replace("/login");
-    } catch (error) {
+      setSent(true);
+      toast.success("Invite sent successfully!");
+    } catch {
       toast.error("Cannot connect to server. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (sent) {
+    return (
+      <Card className="w-full max-w-md shadow-2xl m-2">
+        <CardContent className="pt-10 pb-10 flex flex-col items-center gap-4">
+          <CheckCircle className="h-12 w-12" style={{ color: "#429ABD" }} />
+          <p className="text-center text-lg font-semibold" style={{ color: "#429ABD" }}>
+            Invite sent!
+          </p>
+          <p className="text-center text-sm text-muted-foreground">
+            The invite link has been sent to the email address. It is valid for 5 minutes.
+          </p>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setSent(false);
+              form.reset();
+            }}
+            style={{ borderColor: "#429ABD", color: "#429ABD" }}
+          >
+            Send another invite
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full max-w-md shadow-2xl m-2">
       <CardHeader>
-        <CardTitle className="text-center text-2xl" style={{ color: '#429ABD' }}>Get Started</CardTitle>
+        <CardTitle className="text-center text-2xl" style={{ color: "#429ABD" }}>
+          Invite User
+        </CardTitle>
         <CardDescription className="text-center">
-          Please create your account to continue.
+          Enter the email address of the person you want to invite.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
-          >
-            <FormField
-              control={form.control}
-              name="full_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ color: '#429ABD' }}>Full Name</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
-                      <Input
-                        placeholder="Enter your full name"
-                        className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel style={{ color: '#429ABD' }}>Email Address</FormLabel>
+                  <FormLabel style={{ color: "#429ABD" }}>Email Address</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
+                      <Mail
+                        className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                        style={{ color: "#429ABD" }}
+                      />
                       <Input
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder="Enter email to invite"
                         className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
                         {...field}
                       />
@@ -163,129 +134,21 @@ export function SignUpForm() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ color: '#429ABD' }}>Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Create password"
-                        className="pl-10 pr-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" style={{ color: '#429ABD' }} />
-                        ) : (
-                          <Eye className="h-4 w-4" style={{ color: '#429ABD' }} />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ color: '#429ABD' }}>Confirm Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: '#429ABD' }} />
-                      <Input
-                        type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm password"
-                        className="pl-10 pr-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className="absolute right-3 top-1/2 -translate-y-1/2"
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" style={{ color: '#429ABD' }} />
-                        ) : (
-                          <Eye className="h-4 w-4" style={{ color: '#429ABD' }} />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-
-                  {field.value && form.watch("password") && (
-                    <div className="flex items-center gap-2 text-xs">
-                      {form.watch("password") === field.value ? (
-                        <>
-                          <CheckCircle className="h-3 w-3" style={{ color: '#429ABD' }} />
-                          <span style={{ color: '#429ABD' }}>Passwords match</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertCircle className="h-3 w-3 text-destructive" />
-                          <span className="text-destructive">
-                            Passwords do not match
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </FormItem>
-              )}
-            />
-
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                checked={acceptTerms}
-                onCheckedChange={(checked) =>
-                  setAcceptTerms(checked as boolean)
-                }
-                className="border-[#429ABD] data-[state=checked]:bg-[#429ABD] data-[state=checked]:border-[#429ABD]"
-              />
-              <span className="text-sm text-muted-foreground">
-                I agree to the Terms and Privacy Policy
-              </span>
-            </div>
-
-            <Button 
-              type="submit" 
-              disabled={isLoading} 
+            <Button
+              type="submit"
+              disabled={isLoading}
               className="w-full"
-              style={{ backgroundColor: '#429ABD' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+              style={{ backgroundColor: "#429ABD" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#F5A623")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#429ABD")
+              }
             >
-              {isLoading ? "Creating..." : "Create Account"}
+              {isLoading ? "Sending..." : "Send Invite"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-
-            <div className="text-center text-sm">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="font-medium"
-                style={{ color: '#429ABD' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#F5A623'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#429ABD'}
-              >
-                Sign in
-              </Link>
-            </div>
           </form>
         </Form>
       </CardContent>
