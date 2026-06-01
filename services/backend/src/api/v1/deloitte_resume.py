@@ -523,7 +523,7 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             etree.SubElement(spcAft_el, f'{{{nsmap}}}spcPts').set("val", str(space_after * 100))
             lnSpc = etree.SubElement(pPr, f'{{{nsmap}}}lnSpc')
             spcPct = etree.SubElement(lnSpc, f'{{{nsmap}}}spcPct')
-            spcPct.set("val", "92000")
+            spcPct.set("val", "85000")
             if not text:
                 return
             r_el = etree.SubElement(p_el, f'{{{nsmap}}}r')
@@ -569,22 +569,34 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
         business_skills = candidate_data.get("business_skills", [])
         tech_skills = candidate_data.get("tech_skills", [])
         total_skill_items = len(business_skills) + len(tech_skills)
-        skill_header_size = _get_font_size(total_skill_items, 9, 12)
-        skill_item_size = _get_font_size(total_skill_items, 8, 11)
+        skill_header_size = _get_font_size(total_skill_items, 8, 11)
+        skill_item_size = _get_font_size(total_skill_items, 7, 10)
 
         languages = candidate_data.get("languages", [])
         industry = candidate_data.get("industry_experience", [])
         certs = candidate_data.get("certifications", [])
         education = candidate_data.get("education", [])
         total_right_items = len(languages) + len(industry) + len(certs) + len(education)
-        right_header_size = _get_font_size(total_right_items, 9, 12)
-        right_item_size = _get_font_size(total_right_items, 8, 11)
+        right_header_size = _get_font_size(total_right_items, 8, 11)
+        right_item_size = _get_font_size(total_right_items, 7, 10)
 
         summary_paras = candidate_data.get("summary_paras", [])
-        summary_size = 12
+        total_summary_chars = sum(len(p) for p in summary_paras)
+        if total_summary_chars < 300:
+            summary_size = 11
+        elif total_summary_chars < 500:
+            summary_size = 10
+        else:
+            summary_size = 9
 
         exp_paras = [p for p in candidate_data.get("relevant_exp_paras", []) if p]
-        exp_size = 11
+        total_exp_chars = sum(len(p) for p in exp_paras)
+        if total_exp_chars < 400:
+            exp_size = 10
+        elif total_exp_chars < 700:
+            exp_size = 9
+        else:
+            exp_size = 8
 
         fill_placeholder(13, [
             (_sanitize(candidate_data.get("name_large", "")), None, 18, None),
