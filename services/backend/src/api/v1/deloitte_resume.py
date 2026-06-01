@@ -716,7 +716,30 @@ async def generate_deloitte_resume(
         cv_text = await _fetch_cv_text(cv.file_url)
         logger.info("cv_text_extracted", length=len(cv_text), candidate_id=str(candidate_id))
 
-        candidate_data = _parse_cv_text(cv_text, candidate, parsed)
+        candidate_data = None
+
+        try:
+            ai_ml_url = os.getenv("HR_APP_AI_SERVICE_URL", "http://ai-ml-service:8001")
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                ai_response = await client.post(
+                    f"{ai_ml_url}/api/v1/deloitte-parse",
+                    json={
+                        "cv_text": cv_text,
+                        "candidate_id": str(candidate_id),
+                    }
+                )
+                if ai_response.status_code == 200:
+                    ai_data = ai_response.json()
+                    if ai_data:
+                        candidate_data = ai_data
+                        logger.info("ai_ml_deloitte_parse_success", candidate_id=str(candidate_id))
+        except Exception as e:
+            logger.warning("ai_ml_deloitte_parse_failed", error=str(e), candidate_id=str(candidate_id))
+
+        if candidate_data is None:
+            logger.info("deloitte_regex_fallback", candidate_id=str(candidate_id))
+            candidate_data = _parse_cv_text(cv_text, candidate, parsed)
+
         logger.info("candidate_data_built",
                     name=candidate_data.get("name_large"),
                     role=candidate_data.get("role"),
