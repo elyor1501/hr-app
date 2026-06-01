@@ -46,15 +46,14 @@ location (string)
   If not found anywhere, return "Location: NA".
 
 summary_paras (array of exactly 2 strings)
-  - Each paragraph: MINIMUM 380 characters, MAXIMUM 480 characters.
-  - This is a HARD requirement, not a suggestion. Short paragraphs are unacceptable.
-  - Para 1 (380–480 chars): years of experience, primary domain, role progression,
+  - Each paragraph: MINIMUM 180 characters, MAXIMUM 250 characters.
+  - Stay within this range — paragraphs longer than 250 chars overflow the slide.
+  - Para 1 (180–250 chars): years of experience, primary domain, role progression,
     industries worked in, education context.
-  - Para 2 (380–480 chars): specific tools/platforms used, measurable achievements,
+  - Para 2 (180–250 chars): specific tools/platforms used, measurable achievements,
     secondary skills, certifications context, soft skills demonstrated.
-  - For sparse CVs: expand on every detail provided — describe context, impact,
-    scope, and depth rather than listing tersely. Never produce a short paragraph
-    just because the source is concise.
+  - For sparse CVs: cover the key points concisely. Do not pad with filler to
+    reach the maximum; aim for the minimum if source data is thin.
   - CRITICAL: Use specific tool names, platforms, company names, and measurable figures
     directly from the CV. Do not replace specific terms with generic descriptions.
     Good: "leveraging Kubernetes, Terraform, and Ansible across AWS, Azure, and OpenStack"
@@ -62,17 +61,16 @@ summary_paras (array of exactly 2 strings)
   - NEVER use generic filler text such as "A seasoned professional..."
 
 relevant_exp_paras (array of exactly 3 strings — never fewer)
-  - Each paragraph: MINIMUM 400 characters, MAXIMUM 500 characters.
-  - This is a HARD requirement. Empty or short paragraphs are unacceptable.
+  - Each paragraph: MINIMUM 200 characters, MAXIMUM 280 characters.
+  - Stay within this range — paragraphs longer than 280 chars overflow the slide.
   - Para 1 (starts "Experience includes"): describe past responsibilities, projects,
     and deliverables with specific tools, platforms, and metrics from the CV.
   - Para 2 (starts "Skilled in"): describe technical and methodological expertise
     with named technologies and concrete examples of application.
   - Para 3 (starts "Strong background in"): describe broader domain expertise,
     methodologies, and cross-functional capabilities.
-  - For sparse CVs: synthesise from every detail available — expand on context,
-    techniques applied, business impact, collaboration aspects, tools used.
-    Each paragraph must independently stand at 400+ characters even if the CV is brief.
+  - For sparse CVs: cover the key points concisely. Do not pad with filler to
+    reach the maximum; aim for the minimum if source data is thin.
   - CRITICAL: Each paragraph must name specific tools, platforms, products, and figures
     from the CV. Do not generalise — use the exact terminology from the source material.
     Good: "Experience includes deploying MinIO S3 at 100+ petabyte scale with SSL/TLS
