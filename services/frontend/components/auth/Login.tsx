@@ -69,9 +69,15 @@ export function LoginForm() {
       }
 
       localStorage.setItem("access_token", data.access_token);
+      if (data.refresh_token) {
+        localStorage.setItem("refresh_token", data.refresh_token);
+      }
+      const expiresAt = Date.now() + 25 * 60 * 1000;
+      localStorage.setItem("token_expires_at", String(expiresAt));
+
       setUser({ id: "", email: values.email });
       router.push("/dashboard");
-    } catch (error) {
+    } catch {
       setError("Something went wrong. Please try again.");
     }
   };

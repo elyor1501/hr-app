@@ -183,7 +183,7 @@ def _parse_cv_text(cv_text: str, candidate: Candidate, parsed: Optional[ParsedRe
 
     if not summary_paras:
         summary_paras = [
-            f"A seasoned professional with extensive experience across multiple technical domains.",
+            "A seasoned professional with extensive experience across multiple technical domains.",
             "Demonstrates a proven ability to deliver results and lead cross-functional teams."
         ]
 
@@ -461,6 +461,21 @@ def _parse_cv_text(cv_text: str, candidate: Candidate, parsed: Optional[ParsedRe
     }
 
 
+def _estimate_text_height_emu(texts: list, size_pt: float, box_width_emu: int) -> int:
+    EMU_PER_PT = 12700
+    chars_per_line = max(1, int(box_width_emu / (size_pt * EMU_PER_PT * 0.55)))
+    LINE_H = int(size_pt * EMU_PER_PT * 1.2)
+    PARA_GAP = int(size_pt * EMU_PER_PT * 0.4)
+    total = 0
+    for text in texts:
+        if not text or not text.strip():
+            total += PARA_GAP
+            continue
+        n_lines = max(1, -(-len(text) // chars_per_line))
+        total += n_lines * LINE_H + PARA_GAP
+    return max(total, int(0.3 * 914400))
+
+
 def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
     import shutil
     import lxml.etree as etree
@@ -477,32 +492,67 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
         prs = Presentation(out_path)
         slide = prs.slides[0]
 
+        SLIDE_HEIGHT = prs.slide_height
+
+        PH26_TOP = 1548082
+        PH26_LEFT = 6339600
+        PH26_WIDTH = 5357100
+        PH26_MIN_H = int(0.4 * 914400)
+        PH26_MAX_H = 1127242
+
+        PH16_TOP = 3081163
+        PH16_LEFT = 925888
+        PH16_WIDTH = 2304000
+        PH16_MIN_H = int(0.5 * 914400)
+
+        PH24_TOP = 3081163
+        PH24_LEFT = 3348000
+        PH24_WIDTH = 2304000
+        PH24_MIN_H = int(0.5 * 914400)
+
+        LEFT_BOTTOM_LIMIT = int(6.570 * 914400)
+
+        EXP_TB_TOP = 3036417
+        EXP_TB_LEFT = 6339600
+        EXP_TB_WIDTH = 5357100
+        EXP_TB_MAX_H = 2573514
+
+        GROUP25_HEIGHT = 367041
+        GROUP25_LEFT = 5913061
+        GROUP25_WIDTH = 5890679
+
+        CLIENTS_LEFT = 6339600
+        CLIENTS_WIDTH = 5357100
+        CLIENTS_HEIGHT = 324000
+
+        SECTION_GAP = int(0.04 * 914400)
+
+        EMU_PER_PT = 12700
+
         nsmap = "http://schemas.openxmlformats.org/drawingml/2006/main"
 
-        def _set_normAutofit(txBody):
-            """Replace noAutofit with normAutofit so text shrinks to fit rather than clipping."""
+        def _apply_normAutofit(txBody):
             bodyPr = txBody.find(f'{{{nsmap}}}bodyPr')
             if bodyPr is None:
                 return
             for child in list(bodyPr):
-                if any(x in child.tag for x in ['noAutofit', 'normAutofit', 'spAutoFit']):
+                tag = child.tag.split("}")[-1] if "}" in child.tag else child.tag
+                if tag in ("noAutofit", "normAutofit", "spAutoFit"):
                     bodyPr.remove(child)
             etree.SubElement(bodyPr, f'{{{nsmap}}}normAutofit')
 
-        try:
-            _set_normAutofit(slide.placeholders[26].text_frame._txBody)
-        except KeyError:
-            pass
-
-        def _get_font_size(item_count: int, base_min: int, base_max: int) -> int:
-            if item_count <= 4:
-                return base_max
-            elif item_count <= 8:
-                return base_max - 1
-            elif item_count <= 12:
-                return base_max - 2
-            else:
-                return base_min
+        def _estimate_h(texts: list, size_pt: float, box_width_emu: int) -> int:
+            chars_per_line = max(1, int(box_width_emu / (size_pt * EMU_PER_PT * 0.52)))
+            line_h = int(size_pt * EMU_PER_PT * 1.15)
+            gap = int(size_pt * EMU_PER_PT * 0.5)
+            total = 0
+            for text in texts:
+                if not text or not text.strip():
+                    total += gap
+                    continue
+                n = max(1, -(-len(text) // chars_per_line))
+                total += n * line_h + gap
+            return max(total, int(0.3 * 914400))
 
         def _sanitize(text) -> str:
             if text is None:
@@ -559,12 +609,34 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             except KeyError:
                 logger.warning(f"Placeholder {ph_idx} not found")
 
-        def fill_textbox(shape_name: str, shape_type_id: int, lines: list):
-            for shape in slide.shapes:
-                if shape.name == shape_name and shape.shape_type == shape_type_id:
-                    if shape.has_text_frame:
-                        _clear_and_fill(shape.text_frame._txBody, lines)
-                        return
+        def fill_placeholder_resized(ph_idx: int, lines: list, size_pt: float, top: int, left: int, width: int, min_h: int, max_h: int = 0):
+            try:
+                ph = slide.placeholders[ph_idx]
+                texts = [item[0] if isinstance(item, (list, tuple)) else "" for item in lines]
+                est_h = _estimate_h(texts, size_pt, width)
+                new_h = max(min_h, est_h)
+                if max_h:
+                    new_h = min(new_h, max_h)
+                ph.top = top
+                ph.left = left
+                ph.width = width
+                ph.height = new_h
+                _apply_normAutofit(ph.text_frame._txBody)
+                _clear_and_fill(ph.text_frame._txBody, lines)
+                return new_h
+            except KeyError:
+                logger.warning(f"Placeholder {ph_idx} not found")
+                return min_h
+
+        def _get_font_size(item_count: int, base_min: int, base_max: int) -> int:
+            if item_count <= 4:
+                return base_max
+            elif item_count <= 8:
+                return base_max - 1
+            elif item_count <= 12:
+                return base_max - 2
+            else:
+                return base_min
 
         business_skills = candidate_data.get("business_skills", [])
         tech_skills = candidate_data.get("tech_skills", [])
@@ -612,7 +684,11 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             (_sanitize(para), False, summary_size, None, 0, 0)
             for para in summary_paras
         ]
-        fill_placeholder(26, summary_lines)
+        fill_placeholder_resized(
+            26, summary_lines, summary_size,
+            PH26_TOP, PH26_LEFT, PH26_WIDTH,
+            PH26_MIN_H, PH26_MAX_H
+        )
 
         skill_lines = [("Business Skills", True, skill_header_size, None, 0, 0)]
         for s in business_skills:
@@ -626,7 +702,19 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
                 label, detail = _sanitize(item), ""
             skill_lines.append((f"{label}: {detail}", False, skill_item_size, None, 0, 0))
 
-        fill_placeholder(16, skill_lines)
+        skill_texts = [item[0] if isinstance(item, (list, tuple)) else "" for item in skill_lines]
+        skill_est_h = _estimate_h(skill_texts, skill_item_size, PH16_WIDTH)
+        skill_new_h = max(PH16_MIN_H, min(skill_est_h, LEFT_BOTTOM_LIMIT - PH16_TOP))
+        try:
+            ph16 = slide.placeholders[16]
+            ph16.top = PH16_TOP
+            ph16.left = PH16_LEFT
+            ph16.width = PH16_WIDTH
+            ph16.height = skill_new_h
+            _apply_normAutofit(ph16.text_frame._txBody)
+            _clear_and_fill(ph16.text_frame._txBody, skill_lines)
+        except KeyError:
+            pass
 
         right_lines = [("Languages", True, right_header_size, None, 0, 0)]
         for lang in languages:
@@ -645,13 +733,66 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
         for edu in education:
             right_lines.append((_sanitize(edu), False, right_item_size, None, 0, 0))
 
-        fill_placeholder(24, right_lines)
+        right_texts = [item[0] if isinstance(item, (list, tuple)) else "" for item in right_lines]
+        right_est_h = _estimate_h(right_texts, right_item_size, PH24_WIDTH)
+        right_new_h = max(PH24_MIN_H, min(right_est_h, LEFT_BOTTOM_LIMIT - PH24_TOP))
+        try:
+            ph24 = slide.placeholders[24]
+            ph24.top = PH24_TOP
+            ph24.left = PH24_LEFT
+            ph24.width = PH24_WIDTH
+            ph24.height = right_new_h
+            _apply_normAutofit(ph24.text_frame._txBody)
+            _clear_and_fill(ph24.text_frame._txBody, right_lines)
+        except KeyError:
+            pass
 
         exp_lines = [
             (_sanitize(para), False, exp_size, None, 0, 2)
             for para in exp_paras
         ]
-        fill_textbox("Text Placeholder 10", 17, exp_lines)
+
+        exp_textbox = None
+        for shape in slide.shapes:
+            if shape.name == "Text Placeholder 10" and shape.shape_type == 17:
+                exp_textbox = shape
+                break
+
+        if exp_textbox is not None:
+            text_list = [item[0] if isinstance(item, (list, tuple)) else "" for item in exp_lines]
+            estimated_h = _estimate_h(text_list, exp_size, EXP_TB_WIDTH)
+            new_exp_h = max(int(0.4 * 914400), min(estimated_h, EXP_TB_MAX_H))
+            exp_textbox.top = EXP_TB_TOP
+            exp_textbox.left = EXP_TB_LEFT
+            exp_textbox.width = EXP_TB_WIDTH
+            exp_textbox.height = new_exp_h
+            _clear_and_fill(exp_textbox.text_frame._txBody, exp_lines)
+
+            new_group25_top = EXP_TB_TOP + new_exp_h + SECTION_GAP
+            new_clients_top = new_group25_top + GROUP25_HEIGHT + SECTION_GAP
+            new_clients_bottom = new_clients_top + CLIENTS_HEIGHT
+
+            if new_clients_bottom > SLIDE_HEIGHT:
+                shift = new_clients_bottom - SLIDE_HEIGHT
+                new_group25_top = max(EXP_TB_TOP + new_exp_h + SECTION_GAP, new_group25_top - shift)
+                new_clients_top = new_group25_top + GROUP25_HEIGHT + SECTION_GAP
+
+            for shape in slide.shapes:
+                if shape.name == "Group 25" and shape.shape_type == 6:
+                    shape.top = new_group25_top
+                    shape.left = GROUP25_LEFT
+                    shape.width = GROUP25_WIDTH
+                    shape.height = GROUP25_HEIGHT
+                    break
+
+            try:
+                clients_ph = slide.placeholders[28]
+                clients_ph.top = new_clients_top
+                clients_ph.left = CLIENTS_LEFT
+                clients_ph.width = CLIENTS_WIDTH
+                clients_ph.height = CLIENTS_HEIGHT
+            except KeyError:
+                pass
 
         clients_str = _sanitize(candidate_data.get("clients", ""))
         clients_size = 8 if len(clients_str) < 80 else 7

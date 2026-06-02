@@ -46,6 +46,10 @@ class RegisterViaInviteRequest(BaseModel):
     password: str
 
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
 def _user_cache_key(email: str) -> str:
     return f"hr_app:user:email:{email.lower()}"
 
@@ -75,6 +79,8 @@ async def _set_cached_user(user: User) -> None:
             "full_name": user.full_name,
             "role": user.role,
             "is_active": user.is_active,
+            "created_at": user.created_at.isoformat() if user.created_at else None,
+            "updated_at": user.updated_at.isoformat() if user.updated_at else None,
         }
         await redis.setex(_user_cache_key(user.email), USER_CACHE_TTL, json.dumps(user_data))
     except Exception:
@@ -218,6 +224,34 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     return create_tokens(user.email, user.role)
 
 
+@router.post("/refresh", response_model=Token)
+async def refresh_token(data: RefreshTokenRequest, db: AsyncSession = Depends(get_db_session)):
+    try:
+        payload = jwt.decode(
+            data.refresh_token,
+            settings.jwt_secret_key,
+            algorithms=[settings.jwt_algorithm]
+        )
+        if payload.get("type") != "refresh":
+            raise HTTPException(status_code=401, detail="Invalid refresh token")
+        email = payload.get("sub")
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid refresh token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
+    cached = await _get_cached_user(email)
+    if cached:
+        return create_tokens(cached["email"], cached["role"])
+
+    repo = UserRepository(db)
+    user = await repo.get_by_email(email)
+    if not user or not user.is_active:
+        raise HTTPException(status_code=401, detail="User session expired. Please login again.")
+
+    await _set_cached_user(user)
+    return create_tokens(user.email, user.role)
+
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: TokenPayload = Depends(get_current_user), db: AsyncSession = Depends(get_db_session)):
     cached = await _get_cached_user(current_user.sub)
@@ -228,6 +262,8 @@ async def get_me(current_user: TokenPayload = Depends(get_current_user), db: Asy
             full_name=cached["full_name"],
             role=cached["role"],
             is_active=cached["is_active"],
+            created_at=cached.get("created_at"),
+            updated_at=cached.get("updated_at"),
         )
     repo = UserRepository(db)
     user = await repo.get_by_email(current_user.sub)

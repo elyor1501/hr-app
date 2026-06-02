@@ -40,6 +40,8 @@ export function UserNav({ user }: UserNavProps) {
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("token_expires_at");
     clearUser();
     router.push("/login");
     router.refresh();
