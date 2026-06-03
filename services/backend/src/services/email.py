@@ -14,7 +14,7 @@ async def send_reset_email(to_email: str, reset_token: str) -> bool:
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "Password Reset Request — VASPP HR System"
-        msg["From"] = f"VASPP HR System <{settings.smtp_from}>"
+        msg["From"] = settings.smtp_from
         msg["To"] = to_email
 
         text_body = f"""
@@ -100,7 +100,7 @@ async def send_invite_email(to_email: str, invite_token: str) -> bool:
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "You're Invited — VASPP HR System"
-        msg["From"] = f"VASPP HR System <{settings.smtp_from}>"
+        msg["From"] = settings.smtp_from
         msg["To"] = to_email
 
         text_body = f"""
