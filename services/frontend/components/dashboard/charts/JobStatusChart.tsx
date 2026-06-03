@@ -99,7 +99,11 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
 
           <div className="absolute text-center pointer-events-none z-0">
             <p className="text-3xl font-bold text-foreground">{totalJobs}</p>
-            <p className="text-xs text-muted-foreground">Total Requests</p>
+            <p className="text-sm text-muted-foreground leading-tight">
+              Total
+              <br />
+              Requests
+            </p>
           </div>
         </div>
 

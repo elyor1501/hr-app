@@ -5,6 +5,7 @@ import { columns_resume_list } from "@/components/resumes/ResumeListTableColumn"
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { BulkDeleteResumesButton } from "./BulkDeleteResumesButton";
+import { toast } from "sonner";
 
 export default function ResumeTable({ resumes }: { resumes: any[] }) {
   const router = useRouter();
@@ -40,6 +41,26 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
       searchPlaceholder="Search resumes..."
       rowSelection={rowSelection}
       onRowSelectionChange={setRowSelection}
+      onRowClick={(row: any) => {
+        const fileUrl = row.file_url;
+
+        if (!fileUrl) {
+          toast.error("File URL not available");
+          return;
+        }
+
+        const extension = fileUrl.split(".").pop()?.toLowerCase();
+
+        if (extension === "pdf") {
+          window.open(fileUrl, "_blank");
+        } else {
+          const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(
+            fileUrl,
+          )}&embedded=true`;
+
+          window.open(viewerUrl, "_blank");
+        }
+      }}
       renderBulkActions={(table) => {
         const selectedRows = table.getFilteredSelectedRowModel().rows;
         const selectedIds = selectedRows.map((row: any) => row.original.id);

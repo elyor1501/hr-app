@@ -26,14 +26,21 @@ export default function RequestDetails({
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
-  const [requestedRate, setRequestedRate] = useState<string>(request?.prepared_rate?.toString() ?? "");
+  const [requestedRate, setRequestedRate] = useState<string>(
+    request?.prepared_rate?.toString() ?? "",
+  );
   const [requestedRateType, setRequestedRateType] = useState<string>("hourly");
   const [requestedCurrency, setRequestedCurrency] = useState<string>("EUR");
-  const [proposedRate, setProposedRate] = useState<string>(request?.final_rate?.toString() ?? "");
+  const [proposedRate, setProposedRate] = useState<string>(
+    request?.final_rate?.toString() ?? "",
+  );
   const [proposedRateType, setProposedRateType] = useState<string>("daily");
   const [proposedCurrency, setProposedCurrency] = useState<string>("EUR");
 
-  const calculateDailyRate = (amount: string, rateType: string): number | null => {
+  const calculateDailyRate = (
+    amount: string,
+    rateType: string,
+  ): number | null => {
     const val = parseFloat(amount);
     if (isNaN(val) || val <= 0) return null;
     if (rateType === "hourly") return val * 8;
@@ -43,7 +50,10 @@ export default function RequestDetails({
     return null;
   };
 
-  const requestedDailyRate = calculateDailyRate(requestedRate, requestedRateType);
+  const requestedDailyRate = calculateDailyRate(
+    requestedRate,
+    requestedRateType,
+  );
   const proposedDailyRate = calculateDailyRate(proposedRate, proposedRateType);
 
   const router = useRouter();
@@ -201,7 +211,14 @@ export default function RequestDetails({
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-colors"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-all duration-300 hover:shadow-lg"
+                style={{ backgroundColor: "#429ABD" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#F5A623")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#429ABD")
+                }
               >
                 Edit
               </button>
@@ -291,10 +308,14 @@ export default function RequestDetails({
 
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-3 border border-border rounded-lg p-4">
-              <p className="text-sm font-semibold text-foreground">Requested Rate</p>
+              <p className="text-sm font-semibold text-foreground">
+                Requested Rate
+              </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Amount</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Rate Amount
+                  </label>
                   <input
                     type="number"
                     name="prepared_rate"
@@ -306,7 +327,9 @@ export default function RequestDetails({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Type</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Rate Type
+                  </label>
                   <select
                     name="requested_rate_type"
                     value={requestedRateType}
@@ -323,7 +346,9 @@ export default function RequestDetails({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Currency</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Currency
+                  </label>
                   <select
                     name="requested_currency"
                     value={requestedCurrency}
@@ -338,11 +363,17 @@ export default function RequestDetails({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Daily Rate (auto)</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Daily Rate (auto)
+                  </label>
                   <input
                     type="text"
                     disabled
-                    value={requestedDailyRate !== null ? `${requestedCurrency} ${requestedDailyRate.toFixed(2)}` : "Not set"}
+                    value={
+                      requestedDailyRate !== null
+                        ? `${requestedCurrency} ${requestedDailyRate.toFixed(2)}`
+                        : "Not set"
+                    }
                     className={fieldClass}
                   />
                 </div>
@@ -350,10 +381,14 @@ export default function RequestDetails({
             </div>
 
             <div className="space-y-3 border border-border rounded-lg p-4">
-              <p className="text-sm font-semibold text-foreground">Proposed Rate</p>
+              <p className="text-sm font-semibold text-foreground">
+                Proposed Rate
+              </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Amount</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Rate Amount
+                  </label>
                   <input
                     type="number"
                     name="final_rate"
@@ -365,7 +400,9 @@ export default function RequestDetails({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Type</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Rate Type
+                  </label>
                   <select
                     name="proposed_rate_type"
                     value={proposedRateType}
@@ -382,7 +419,9 @@ export default function RequestDetails({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Currency</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Currency
+                  </label>
                   <select
                     name="proposed_currency"
                     value={proposedCurrency}
@@ -397,11 +436,17 @@ export default function RequestDetails({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-muted-foreground">Daily Rate (auto)</label>
+                  <label className="block text-xs font-medium mb-1 text-muted-foreground">
+                    Daily Rate (auto)
+                  </label>
                   <input
                     type="text"
                     disabled
-                    value={proposedDailyRate !== null ? `${proposedCurrency} ${proposedDailyRate.toFixed(2)}` : "Not set"}
+                    value={
+                      proposedDailyRate !== null
+                        ? `${proposedCurrency} ${proposedDailyRate.toFixed(2)}`
+                        : "Not set"
+                    }
                     className={fieldClass}
                   />
                 </div>
@@ -469,7 +514,14 @@ export default function RequestDetails({
           <button
             type="button"
             onClick={() => setIsEditing(false)}
-            className="px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-all duration-300 hover:shadow-lg"
+            style={{ backgroundColor: "#6B7280" }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#4B5563")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#6B7280")
+            }
           >
             Cancel
           </button>
@@ -477,7 +529,20 @@ export default function RequestDetails({
             form="request-form"
             type="submit"
             disabled={saving}
-            className={`px-4 py-2 rounded-lg text-sm transition-colors ${saving ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"}`}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: saving ? "#94A3B8" : "#429ABD",
+            }}
+            onMouseEnter={(e) => {
+              if (!saving) {
+                e.currentTarget.style.backgroundColor = "#F5A623";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!saving) {
+                e.currentTarget.style.backgroundColor = "#429ABD";
+              }
+            }}
           >
             {saving ? "Updating..." : "Update"}
           </button>
@@ -493,7 +558,18 @@ export default function RequestDetails({
             <button
               onClick={() => runCandidateMatching(false)}
               disabled={matching}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm disabled:opacity-50 hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg"
+              style={{ backgroundColor: matching ? "#94A3B8" : "#429ABD" }}
+              onMouseEnter={(e) => {
+                if (!matching) {
+                  e.currentTarget.style.backgroundColor = "#F5A623";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!matching) {
+                  e.currentTarget.style.backgroundColor = "#429ABD";
+                }
+              }}
             >
               {matching ? "Matching..." : "Find Matching Candidates"}
             </button>
@@ -501,7 +577,14 @@ export default function RequestDetails({
               <button
                 onClick={() => runCandidateMatching(true)}
                 disabled={matching}
-                className="px-3 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-muted disabled:opacity-50 transition-colors"
+                className="px-3 py-2 text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg"
+                style={{ backgroundColor: "#429ABD" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#F5A623")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#429ABD")
+                }
               >
                 Refresh
               </button>
@@ -647,7 +730,14 @@ export default function RequestDetails({
                     onClick={() =>
                       router.push(`/candidates/${candidate.candidate_id}`)
                     }
-                    className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    className="px-4 py-1.5 text-sm text-white rounded-md transition-all duration-300 hover:shadow-lg"
+                    style={{ backgroundColor: "#429ABD" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#F5A623")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#429ABD")
+                    }
                   >
                     <EyeIcon className="w-4 h-4" />
                   </button>

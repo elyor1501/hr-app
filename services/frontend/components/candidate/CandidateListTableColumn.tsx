@@ -39,7 +39,11 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     header: () => <div className="text-center w-full">Year of experience</div>,
     cell: ({ row }) => {
       const years = row.original.years_of_experience;
-      return <div className="text-center w-full">{years ?? "NA"} yrs</div>;
+      return (
+        <div className="text-center w-full">
+          {years ? `${years} years` : "NA"}
+        </div>
+      );
     },
     size: 80,
   },

@@ -79,6 +79,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     empData?.status === "processing" ? null : empData,
   );
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [matching, setMatching] = useState(false);
   const [matches, setMatches] = useState<any[]>([]);
@@ -137,24 +138,33 @@ export default function CandidateDetails({ id, empData }: Props) {
   }
 
   async function handleSubmit(formData: FormData) {
-    setLoading(true);
+    if (saving) return;
+
+    setSaving(true);
+
     try {
       await updateCandidate(formData);
+
       const updatedCandidate = await getCandidateById(id);
       setCandidate(updatedCandidate);
+
       if (updatedCandidate?.rate_type) setRateType(updatedCandidate.rate_type);
+
       if (updatedCandidate?.currency) setCurrency(updatedCandidate.currency);
+
       if (updatedCandidate?.proposed_rate_type)
         setProposedRateType(updatedCandidate.proposed_rate_type);
+
       if (updatedCandidate?.proposed_currency)
         setProposedCurrency(updatedCandidate.proposed_currency);
+
       setIsEditing(false);
       toast.success("Candidate updated successfully");
     } catch (error: any) {
       console.error("Update failed:", error);
       toast.error(error?.message || "Failed to update candidate");
     } finally {
-      setLoading(false);
+      setSaving(false);
       router.refresh();
     }
   }
@@ -356,8 +366,15 @@ export default function CandidateDetails({ id, empData }: Props) {
         <form
           key={isEditing ? "edit" : "view"}
           id="candidate-form"
-          action={handleSubmit}
           className="mt-4 sm:mt-6"
+          onSubmit={async (e) => {
+            e.preventDefault();
+
+            if (loading) return;
+
+            const formData = new FormData(e.currentTarget);
+            await handleSubmit(formData);
+          }}
         >
           <input type="hidden" name="id" value={candidate.id} />
           <input type="hidden" name="rate_type" value={rateType} />
@@ -402,17 +419,24 @@ export default function CandidateDetails({ id, empData }: Props) {
                   <button
                     form="candidate-form"
                     type="submit"
-                    disabled={loading}
-                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-60 transition-all duration-300 hover:shadow-lg flex-1 sm:flex-none"
-                    style={{ backgroundColor: "#F5A623" }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.backgroundColor = "#429ABD")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.backgroundColor = "#F5A623")
-                    }
+                    disabled={saving}
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg flex-1 sm:flex-none"
+                    style={{
+                      backgroundColor: saving ? "#F5A623" : "#429ABD",
+                      pointerEvents: saving ? "none" : "auto",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!saving) {
+                        e.currentTarget.style.backgroundColor = "#F5A623";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!saving) {
+                        e.currentTarget.style.backgroundColor = "#429ABD";
+                      }
+                    }}
                   >
-                    {loading ? "Saving..." : "Save Changes"}
+                    {saving ? "Saving..." : "Save"}
                   </button>
                 </div>
               )}
@@ -602,38 +626,46 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             {sectionHeader("Educational Details")}
 
-            {education.map((edu: any, index: number) => (
-              <div
-                key={index}
-                className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2"
-              >
-                <div className="font-semibold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-foreground">
-                  <span>
-                    {edu.degree}
-                    {edu.field_of_study ? ` in ${edu.field_of_study}` : ""}
-                  </span>
-                  {(edu.start_date || edu.end_date) && (
-                    <span className="text-muted-foreground text-xs sm:text-sm">
-                      {edu.start_date && edu.end_date
-                        ? `${edu.start_date} - ${edu.end_date}`
-                        : edu.start_date
-                          ? edu.start_date
-                          : edu.end_date}
+            {education.length > 0 ? (
+              education.map((edu: any, index: number) => (
+                <div
+                  key={index}
+                  className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2"
+                >
+                  <div className="font-semibold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-foreground">
+                    <span>
+                      {edu.degree}
+                      {edu.field_of_study ? ` in ${edu.field_of_study}` : ""}
                     </span>
+                    {(edu.start_date || edu.end_date) && (
+                      <span className="text-muted-foreground text-xs sm:text-sm">
+                        {edu.start_date && edu.end_date
+                          ? `${edu.start_date} - ${edu.end_date}`
+                          : edu.start_date
+                            ? edu.start_date
+                            : edu.end_date}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <span className="text-xs sm:text-sm text-muted-foreground">
+                      {edu.institution}
+                    </span>
+                  </div>
+
+                  {edu.grade && (
+                    <div className="text-xs sm:text-sm text-muted-foreground">
+                      Grade: {edu.grade}
+                    </div>
                   )}
                 </div>
-                <div>
-                  <span className="text-xs sm:text-sm text-muted-foreground">
-                    {edu.institution}
-                  </span>
-                </div>
-                {edu.grade && (
-                  <div className="text-xs sm:text-sm text-muted-foreground">
-                    Grade : {edu.grade}
-                  </div>
-                )}
+              ))
+            ) : (
+              <div className="text-sm text-muted-foreground text-center py-4">
+                No Education Details
               </div>
-            ))}
+            )}
 
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
@@ -805,7 +837,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                     <div
                       className={cn(
                         "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#429ABD08] hover:border-[#429ABD] border border-transparent transition-all duration-300",
-                        
                       )}
                     >
                       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">

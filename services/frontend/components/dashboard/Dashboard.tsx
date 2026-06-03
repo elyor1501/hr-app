@@ -150,7 +150,7 @@ export default function DashboardDetail({
         <Briefcase className="w-8 h-8 sm:w-12 sm:h-12 transition-all duration-300" style={{ color: '#429ABD' }} />
       </div>
       <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
-        Open Requests
+        Total Requests
       </h3>
       <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{totalJobs}</p>
       <div className="mt-2 sm:mt-4 flex items-center text-xs font-semibold" style={{ color: '#F5A623' }}>
