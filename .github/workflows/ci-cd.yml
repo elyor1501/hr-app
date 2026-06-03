@@ -144,7 +144,7 @@ jobs:
 
             for i in {1..30}; do
               if curl -f http://127.0.0.1:8000/health 2>/dev/null; then
-                echo '✅ Backend is healthy'
+                echo ' Backend is healthy'
                 break
               fi
               echo \"Attempt \$i/30: Backend not ready yet...\"
