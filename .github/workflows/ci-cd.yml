@@ -75,15 +75,8 @@ jobs:
 
           ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
             echo '=== Configuring firewall ==='
-            sudo systemctl stop nginx 2>/dev/null || true
-            sudo systemctl disable nginx 2>/dev/null || true
-            docker stop nginx 2>/dev/null || true
-            docker rm nginx 2>/dev/null || true
-            sudo fuser -k 80/tcp 2>/dev/null || true
-            sudo fuser -k 8000/tcp 2>/dev/null || true
-            sudo fuser -k 8001/tcp 2>/dev/null || true
-            sudo fuser -k 6379/tcp 2>/dev/null || true
             sudo ufw allow 80/tcp 2>/dev/null || true
+            sudo ufw allow 443/tcp 2>/dev/null || true
             sudo ufw allow 8000/tcp 2>/dev/null || true
             sudo ufw delete allow 8001/tcp 2>/dev/null || true
             sudo ufw reload 2>/dev/null || true
@@ -195,11 +188,17 @@ jobs:
               --name frontend \
               --network hr-network \
               --restart unless-stopped \
-              -p 80:3000 \
+              -p 127.0.0.1:3000:3000 \
+              -e INTERNAL_API_URL=http://hr-backend:8000 \
               -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
               -e NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
               -e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:frontend-latest
+
+            echo '=== Starting Nginx ==='
+            sudo systemctl enable nginx 2>/dev/null || true
+            sudo systemctl start nginx 2>/dev/null || true
+            sudo systemctl reload nginx 2>/dev/null || true
 
             echo '=== Waiting for all services ==='
             sleep 10
@@ -222,35 +221,15 @@ jobs:
               echo '⚠️ AI-ML: No health endpoint'
             fi
 
-            if curl -f http://localhost:80 > /dev/null 2>&1; then
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
               echo '✅ Frontend: OK'
             else
               echo '❌ Frontend: FAILED'
             fi
 
             echo ''
-            echo '=== Port Security Verification ==='
-            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8000/health > /dev/null 2>&1; then
-              echo '✅ Backend: Public (Firewall controlled)'
-            else
-              echo '⚠️ Backend: Not accessible'
-            fi
-
-            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:8001/health > /dev/null 2>&1; then
-              echo '⚠️ AI-ML exposed!'
-            else
-              echo '✅ AI-ML: Localhost only (Secure)'
-            fi
-
-            if curl -f --connect-timeout 5 http://${{ secrets.DEPLOY_HOST }}:80 > /dev/null 2>&1; then
-              echo '✅ Frontend: Public'
-            else
-              echo '❌ Frontend: Not accessible'
-            fi
-
-            echo ''
             echo '=== Deployment Complete ==='
-            echo 'Frontend: http://${{ secrets.DEPLOY_HOST }}'
+            echo 'Frontend: https://hr.vaspp.com'
             echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
             echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
           "
