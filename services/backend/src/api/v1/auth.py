@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, func
 from pydantic import BaseModel, EmailStr
 from jose import jwt, JWTError
 from src.db.session import get_db_session
@@ -287,7 +287,7 @@ async def forgot_password(
 
     await db.execute(
         delete(PasswordResetToken).where(
-            PasswordResetToken.email == user.email
+            func.lower(PasswordResetToken.email) == user.email.lower()
         )
     )
 
@@ -302,7 +302,10 @@ async def forgot_password(
     db.add(reset_token)
     await db.commit()
 
-    await send_reset_email(user.email, token)
+    email_sent = await send_reset_email(user.email, token)
+
+    if not email_sent:
+        print(f"[WARN] Reset email failed to send to {user.email}")
 
     return {"message": "If this email exists, a reset link has been sent"}
 
@@ -342,7 +345,7 @@ async def reset_password(
 
     await db.execute(
         delete(PasswordResetToken).where(
-            PasswordResetToken.email == reset_token.email
+            func.lower(PasswordResetToken.email) == reset_token.email.lower()
         )
     )
 

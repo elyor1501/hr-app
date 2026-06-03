@@ -471,6 +471,7 @@ async def update_candidate(
     try:
         redis = await get_redis_pool()
         await redis.delete(f"hr_app:candidate:{id}")
+        await redis.delete(f"hr_app:candidate_profile:{id}")
         cursor = 0
         keys_to_delete = []
         while True:

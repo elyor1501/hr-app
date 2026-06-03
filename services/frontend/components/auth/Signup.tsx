@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,13 +21,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Mail, ArrowRight, CheckCircle } from "lucide-react";
+import { Mail, ArrowRight, CheckCircle, ArrowLeft } from "lucide-react";
 import { inviteSchema, InviteSchemaType } from "@/schemas/loginSchema";
 import { toast } from "sonner";
 
 export function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const router = useRouter();
 
   const form = useForm<InviteSchemaType>({
     resolver: zodResolver(inviteSchema),
@@ -96,62 +98,73 @@ export function SignUpForm() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-2xl m-2">
-      <CardHeader>
-        <CardTitle className="text-center text-2xl" style={{ color: "#429ABD" }}>
-          Invite User
-        </CardTitle>
-        <CardDescription className="text-center">
-          Enter the email address of the person you want to invite.
-        </CardDescription>
-      </CardHeader>
+    <>
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="absolute top-6 left-6 p-2 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
+        style={{ color: "#429ABD" }}
+      >
+        <ArrowLeft className="w-4 h-4" />
+      </button>
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel style={{ color: "#429ABD" }}>Email Address</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Mail
-                        className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                        style={{ color: "#429ABD" }}
-                      />
-                      <Input
-                        type="email"
-                        placeholder="Enter email to invite"
-                        className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <Card className="w-full max-w-md shadow-2xl m-2">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl" style={{ color: "#429ABD" }}>
+            Invite User
+          </CardTitle>
+          <CardDescription className="text-center">
+            Enter the email address of the person you want to invite.
+          </CardDescription>
+        </CardHeader>
 
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full"
-              style={{ backgroundColor: "#429ABD" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#F5A623")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#429ABD")
-              }
-            >
-              {isLoading ? "Sending..." : "Send Invite"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel style={{ color: "#429ABD" }}>Email Address</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail
+                          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                          style={{ color: "#429ABD" }}
+                        />
+                        <Input
+                          type="email"
+                          placeholder="Enter email to invite"
+                          className="pl-10 focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD]"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full"
+                style={{ backgroundColor: "#429ABD" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#F5A623")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#429ABD")
+                }
+              >
+                {isLoading ? "Sending..." : "Send Invite"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </>
   );
 }
