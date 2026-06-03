@@ -210,9 +210,9 @@ jobs:
 
             echo '=== Health Check Results ==='
             if curl -f http://127.0.0.1:8000/health > /dev/null 2>&1; then
-              echo '✅ Backend: OK'
+              echo 'Backend: OK'
             else
-              echo '❌ Backend: FAILED'
+              echo 'Backend: FAILED'
             fi
 
             if curl -f http://127.0.0.1:8001/health > /dev/null 2>&1; then
