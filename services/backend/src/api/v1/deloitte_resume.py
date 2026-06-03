@@ -492,6 +492,11 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
         prs = Presentation(out_path)
         slide = prs.slides[0]
 
+        for master_shape in prs.slide_master.shapes:
+            if master_shape.name == "TextBox 2" and master_shape.shape_type == 17:
+                master_shape._element.getparent().remove(master_shape._element)
+                break
+
         SLIDE_HEIGHT = prs.slide_height
 
         PH26_TOP = 1548082

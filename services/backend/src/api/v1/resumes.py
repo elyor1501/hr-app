@@ -1,5 +1,6 @@
 import asyncio
 import json
+import structlog
 from typing import List, Optional
 from uuid import UUID, uuid4
 
@@ -15,9 +16,13 @@ from src.services.storage import upload_file_bytes, delete_file_from_storage
 from src.services.task_queue import get_task_queue
 from src.models.base import IDSchema, TimestampSchema
 from src.core.redis import get_redis_pool
+from src.api.deps import get_current_user
+from src.models.auth import TokenPayload
 from pydantic import BaseModel
 
 router = APIRouter()
+
+upload_logger = structlog.get_logger()
 
 RESUMES_CACHE_KEY = "hr_app:resumes:list"
 RESUMES_CACHE_TTL = 60
@@ -135,7 +140,7 @@ async def _process_file_background(file_data: dict):
         return None
 
 
-async def _process_batch_background(files_data: List[dict]):
+async def _process_batch_background(files_data: List[dict], uploaded_by: str, batch_id: str):
     semaphore = asyncio.Semaphore(UPLOAD_CONCURRENCY)
 
     async def process_one(fd):
@@ -155,6 +160,16 @@ async def _process_batch_background(files_data: List[dict]):
             created_items.append(result)
 
     await invalidate_resumes_cache()
+
+    if created_items:
+        upload_logger.info(
+            "bulk_resumes_uploaded",
+            uploaded_by=uploaded_by,
+            batch_id=batch_id,
+            total_accepted=len(files_data),
+            total_uploaded=len(created_items),
+            file_names=[fd["filename"] for fd in files_data],
+        )
 
     if not created_items:
         return
@@ -177,6 +192,7 @@ async def _process_batch_background(files_data: List[dict]):
 async def bulk_upload_resumes(
     background_tasks: BackgroundTasks,
     files: List[UploadFile] = File(...),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     if len(files) > MAX_UPLOAD_LIMIT:
         raise HTTPException(400, f"Maximum {MAX_UPLOAD_LIMIT} files allowed")
@@ -202,9 +218,17 @@ async def bulk_upload_resumes(
 
     batch_id = str(uuid4())
 
+    upload_logger.info(
+        "bulk_resumes_upload_initiated",
+        uploaded_by=current_user.sub,
+        batch_id=batch_id,
+        file_count=len(valid_files),
+        file_names=[f["filename"] for f in valid_files],
+    )
+
     await invalidate_resumes_cache()
 
-    background_tasks.add_task(_process_batch_background, valid_files)
+    background_tasks.add_task(_process_batch_background, valid_files, current_user.sub, batch_id)
 
     return BulkUploadAccepted(
         accepted=len(valid_files),

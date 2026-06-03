@@ -16,6 +16,8 @@ from src.services.storage import (
     delete_candidate_cv_from_storage,
     delete_candidate_attachment_from_storage,
 )
+from src.api.deps import get_current_user
+from src.models.auth import TokenPayload
 
 logger = structlog.get_logger()
 router = APIRouter()
@@ -276,6 +278,7 @@ async def upload_cv(
     file: UploadFile = File(...),
     attachment_type: Optional[str] = Form(None),
     session: AsyncSession = Depends(get_db_session),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     await _get_candidate_or_404(session, candidate_id)
 
@@ -325,6 +328,16 @@ async def upload_cv(
     session.add(cv)
     await session.commit()
     await session.refresh(cv)
+
+    logger.info(
+        "cv_uploaded",
+        uploaded_by=current_user.sub,
+        candidate_id=str(candidate_id),
+        file_name=file.filename,
+        file_size=len(file_content),
+        is_primary=is_primary,
+        cv_id=str(cv.id),
+    )
 
     try:
         from src.core.redis import get_redis_pool
@@ -455,6 +468,7 @@ async def upload_attachment(
     attachment_type: str = Form(...),
     file: UploadFile = File(...),
     session: AsyncSession = Depends(get_db_session),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
     await _get_candidate_or_404(session, candidate_id)
 
@@ -481,6 +495,16 @@ async def upload_attachment(
     session.add(attachment)
     await session.commit()
     await session.refresh(attachment)
+
+    logger.info(
+        "attachment_uploaded",
+        uploaded_by=current_user.sub,
+        candidate_id=str(candidate_id),
+        file_name=file.filename,
+        attachment_type=attachment_type,
+        file_size=len(file_content),
+        attachment_id=str(attachment.id),
+    )
 
     try:
         from src.core.redis import get_redis_pool

@@ -128,12 +128,12 @@ async def invite_user(
         raise HTTPException(status_code=403, detail="You are not allowed to invite users")
 
     repo = UserRepository(db)
-    existing = await repo.get_by_email(data.email)
+    existing = await repo.get_by_email(str(data.email))
     if existing:
         raise HTTPException(status_code=400, detail="This email is already registered")
 
-    invite_token = _create_invite_token(data.email)
-    sent = await send_invite_email(data.email, invite_token)
+    invite_token = _create_invite_token(str(data.email))
+    sent = await send_invite_email(str(data.email), invite_token)
     if not sent:
         raise HTTPException(status_code=500, detail="Failed to send invite email")
 
@@ -252,6 +252,7 @@ async def refresh_token(data: RefreshTokenRequest, db: AsyncSession = Depends(ge
     await _set_cached_user(user)
     return create_tokens(user.email, user.role)
 
+
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: TokenPayload = Depends(get_current_user), db: AsyncSession = Depends(get_db_session)):
     cached = await _get_cached_user(current_user.sub)
@@ -286,7 +287,7 @@ async def forgot_password(
 
     await db.execute(
         delete(PasswordResetToken).where(
-            PasswordResetToken.email == data.email
+            PasswordResetToken.email == user.email
         )
     )
 
@@ -294,14 +295,14 @@ async def forgot_password(
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.reset_token_expire_minutes)
 
     reset_token = PasswordResetToken(
-        email=data.email,
+        email=user.email,
         token=token,
         expires_at=expires_at,
     )
     db.add(reset_token)
     await db.commit()
 
-    await send_reset_email(data.email, token)
+    await send_reset_email(user.email, token)
 
     return {"message": "If this email exists, a reset link has been sent"}
 

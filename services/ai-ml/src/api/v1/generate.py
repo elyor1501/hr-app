@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import csv
 import json
 import logging
+import os
+import time
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
@@ -12,6 +17,34 @@ from services.llm.gemini_llm_client import GeminiLLMClient
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["generate"])
 llm = GeminiLLMClient()
+
+CSV_LOG_PATH = Path(os.getenv("AIML_CSV_LOG_PATH", "/app/logs/deloitte_token_usage.csv"))
+
+CSV_HEADERS = [
+    "timestamp",
+    "candidate_id",
+    "endpoint",
+    "status",
+    "input_tokens",
+    "output_tokens",
+    "total_tokens",
+    "cost_usd",
+    "duration_ms",
+    "error",
+]
+
+
+def _write_csv_log(row: dict) -> None:
+    try:
+        CSV_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        file_exists = CSV_LOG_PATH.exists()
+        with open(CSV_LOG_PATH, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_HEADERS)
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(row)
+    except Exception as e:
+        logger.warning("csv_log_write_failed", extra={"error": str(e)})
 
 
 # ── Request model ─────────────────────────────────────────────────────────────
@@ -229,41 +262,83 @@ async def generate_deloitte_content(payload: DeloitteParseRequest) -> dict:
         extra={"candidate_id": payload.candidate_id},
     )
 
-    candidate_context = _build_candidate_context(
-        payload.cv_text,
-        candidate_location=payload.candidate_location or "",
-        candidate_role=payload.candidate_role or "",
-    )
-    prompt = _DELOITTE_PROMPT.format(candidate_data=candidate_context)
+    start_ms = time.perf_counter()
+    status = "success"
+    error_msg = ""
+    input_tokens = 0
+    output_tokens = 0
+    cost_usd = 0.0
 
-    llm_result = await llm.generate_json_async(prompt)
-
-    if not isinstance(llm_result, dict) or not llm_result:
-        logger.warning(
-            "deloitte_llm_empty_response",
-            extra={"candidate_id": payload.candidate_id},
+    try:
+        candidate_context = _build_candidate_context(
+            payload.cv_text,
+            candidate_location=payload.candidate_location or "",
+            candidate_role=payload.candidate_role or "",
         )
-        raise HTTPException(
-            status_code=500,
-            detail="LLM returned empty response — backend should fall back to regex parser",
+        prompt = _DELOITTE_PROMPT.format(candidate_data=candidate_context)
+
+        llm_result = await llm.generate_json_async(prompt)
+
+        session_cost = llm.consume_session_cost()
+        input_tokens = session_cost["input_tokens"]
+        output_tokens = session_cost["output_tokens"]
+        cost_usd = session_cost["total_cost_usd"]
+
+        if not isinstance(llm_result, dict) or not llm_result:
+            status = "empty_response"
+            error_msg = "LLM returned empty response"
+            raise HTTPException(
+                status_code=500,
+                detail="LLM returned empty response — backend should fall back to regex parser",
+            )
+
+        result = _map_to_pptx_format(
+            llm_result,
+            candidate_role=payload.candidate_role or "",
+            candidate_location=payload.candidate_location or "",
         )
 
-    result = _map_to_pptx_format(
-        llm_result,
-        candidate_role=payload.candidate_role or "",
-        candidate_location=payload.candidate_location or "",
-    )
+        logger.info(
+            "deloitte_content_generation_complete",
+            extra={
+                "candidate_id": payload.candidate_id,
+                "summary_paras": len(result["summary_paras"]),
+                "exp_paras": len([p for p in result["relevant_exp_paras"] if p]),
+                "business_skills": len(result["business_skills"]),
+                "tech_skill_groups": len(result["tech_skills"]),
+                "clients": result["clients"],
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "cost_usd": cost_usd,
+            },
+        )
 
-    logger.info(
-        "deloitte_content_generation_complete",
-        extra={
-            "candidate_id": payload.candidate_id,
-            "summary_paras": len(result["summary_paras"]),
-            "exp_paras": len([p for p in result["relevant_exp_paras"] if p]),
-            "business_skills": len(result["business_skills"]),
-            "tech_skill_groups": len(result["tech_skills"]),
-            "clients": result["clients"],
-        },
-    )
+        return result
 
-    return result
+    except HTTPException:
+        status = "error"
+        raise
+
+    except Exception as e:
+        status = "error"
+        error_msg = str(e)
+        logger.error(
+            "deloitte_content_generation_failed",
+            extra={"candidate_id": payload.candidate_id, "error": str(e)},
+        )
+        raise HTTPException(status_code=500, detail=str(e))
+
+    finally:
+        duration_ms = round((time.perf_counter() - start_ms) * 1000, 2)
+        _write_csv_log({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "candidate_id": payload.candidate_id or "",
+            "endpoint": "/api/v1/deloitte-parse",
+            "status": status,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": input_tokens + output_tokens,
+            "cost_usd": cost_usd,
+            "duration_ms": duration_ms,
+            "error": error_msg,
+        })
