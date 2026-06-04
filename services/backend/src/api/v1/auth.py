@@ -255,17 +255,6 @@ async def refresh_token(data: RefreshTokenRequest, db: AsyncSession = Depends(ge
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: TokenPayload = Depends(get_current_user), db: AsyncSession = Depends(get_db_session)):
-    cached = await _get_cached_user(current_user.sub)
-    if cached:
-        return UserResponse(
-            id=cached["id"],
-            email=cached["email"],
-            full_name=cached["full_name"],
-            role=cached["role"],
-            is_active=cached["is_active"],
-            created_at=cached.get("created_at"),
-            updated_at=cached.get("updated_at"),
-        )
     repo = UserRepository(db)
     user = await repo.get_by_email(current_user.sub)
     if not user:

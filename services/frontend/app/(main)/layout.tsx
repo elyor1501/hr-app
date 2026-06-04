@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/app/contexts/UserContext";
 import ClientLayout from "./client-layout";
 
@@ -35,14 +35,21 @@ function AuthSkeleton() {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useUser();
+  const { user, loading, refreshUser } = useUser();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!loading && !user) {
       router.replace("/login");
     }
   }, [loading, user, router]);
+
+  useEffect(() => {
+    if (user) {
+      refreshUser();
+    }
+  }, [pathname]);
 
   if (loading) return <AuthSkeleton />;
 
