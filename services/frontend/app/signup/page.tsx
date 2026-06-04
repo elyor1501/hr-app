@@ -7,16 +7,6 @@ import Image from "next/image";
 import Logo from "@/app/(main)/VASPP_logo_black_text.png";
 import { useUser } from "@/app/contexts/UserContext";
 
-const ALLOWED_INVITERS = [
-  "elke@vaspp.com",
-  "akshay@vaspp.com",
-  "kruthika.prasad@vaspp.com",
-  "gurudarshan.bn@vaspp.com",
-  "elyor.farmonov@vaspp.com",
-  "nithin@vaspp.com",
-  "abhilash.gowda@vaspp.com",
-];
-
 export default function Signup() {
   const router = useRouter();
   const { user, loading } = useUser();
@@ -30,7 +20,7 @@ export default function Signup() {
       return;
     }
 
-    if (user.email && ALLOWED_INVITERS.includes((user.email as string).toLowerCase())) {
+    if (user.role === "admin") {
       setAllowed(true);
     } else {
       router.replace("/dashboard");

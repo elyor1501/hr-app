@@ -124,7 +124,7 @@ async def invite_user(
     current_user: TokenPayload = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
-    if current_user.sub.lower() not in [e.lower() for e in settings.allowed_inviters]:
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="You are not allowed to invite users")
 
     repo = UserRepository(db)

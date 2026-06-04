@@ -24,16 +24,6 @@ import Image from "next/image";
 import Logo from "@/app/(main)/VASPP_logo_black_text.png";
 import { useUser } from "@/app/contexts/UserContext";
 
-const ALLOWED_INVITERS = [
-  "elke@vaspp.com",
-  "akshay@vaspp.com",
-  "kruthika.prasad@vaspp.com",
-  "gurudarshan.bn@vaspp.com",
-  "elyor.farmonov@vaspp.com",
-  "nithin@vaspp.com",
-  "abhilash.gowda@vaspp.com",
-];
-
 const baseItems = [
   { title: "Candidates", url: "/candidates", icon: Users },
   { title: "Resumes", url: "/resumeList", icon: FileText },
@@ -50,11 +40,9 @@ export function AppSidebar() {
 
   const showText = isMobile ? openMobile : !isCollapsed;
 
-  const isAllowedInviter = user?.email
-    ? ALLOWED_INVITERS.includes(user.email.toLowerCase())
-    : false;
+  const isAdmin = user?.role === "admin";
 
-  const items = isAllowedInviter
+  const items = isAdmin
     ? [...baseItems, { title: "Invite User", url: "/signup", icon: UserPlus }]
     : baseItems;
 
