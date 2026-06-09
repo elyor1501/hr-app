@@ -869,7 +869,9 @@ export default function CandidateDetails({ id, empData }: Props) {
                           </div>
                           <p className="text-xs text-muted-foreground mt-0.5">
                             Uploaded on{" "}
-                            {new Date(resume.created_at).toLocaleDateString()}
+                            {new Date(resume.created_at)
+                              .toLocaleDateString("en-GB")
+                              .replace(/\//g, ".")}
                           </p>
                         </div>
                       </div>
@@ -981,7 +983,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {resume.deloitte_pptx_url
-                                ? "Generated Deloitte format resume"
+                                ? "Generated Deloitte Resume"
                                 : "Not generated yet"}
                             </p>
                           </div>

@@ -50,18 +50,20 @@ export function AppSidebar() {
     <Sidebar
       collapsible="icon"
       className="border-r border-border/40 bg-background/95 backdrop-blur-sm transition-all duration-300 z-40"
-      style={{
-        "--sidebar-width-icon": "5rem",
-      } as React.CSSProperties}
+      style={
+        {
+          "--sidebar-width-icon": "5rem",
+        } as React.CSSProperties
+      }
     >
-      <SidebarHeader className="h-20 flex items-center justify-center border-b border-border/40 mb-4 px-4 bg-background/50">
+      <SidebarHeader className="h-16 flex items-center justify-center mb-2 mt-2 px-4 bg-background/50">
         <div
           className={cn(
             "flex items-center w-full overflow-hidden",
-            showText ? "justify-start gap-3" : "justify-center"
+            showText ? "justify-start gap-3" : "justify-center",
           )}
         >
-          <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center shadow-lg transition-transform hover:scale-105 overflow-hidden bg-white p-1">
+          <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center overflow-hidden p-1">
             <Image
               src={Logo}
               alt="VASPP Logo"
@@ -82,7 +84,7 @@ export function AppSidebar() {
                 className="text-[10px] font-bold mt-1 uppercase tracking-tighter"
                 style={{ color: "#F5A623" }}
               >
-                HR Management System
+                RM System
               </span>
             </div>
           )}
@@ -98,7 +100,11 @@ export function AppSidebar() {
 
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={item.title}
+                >
                   <Link
                     href={item.url}
                     className={cn(
@@ -106,19 +112,21 @@ export function AppSidebar() {
                       showText ? "justify-start gap-3" : "justify-center",
                       isActive
                         ? "shadow-sm translate-x-1"
-                        : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground hover:translate-x-1"
+                        : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground hover:translate-x-1",
                     )}
-                    style={isActive ? { backgroundColor: "#F5A62320", color: "#F5A623" } : {}}
+                    style={
+                      isActive
+                        ? { backgroundColor: "#F5A62320", color: "#F5A623" }
+                        : {}
+                    }
                   >
                     <item.icon
                       className={cn(
                         "h-5 w-5 shrink-0 transition-all duration-200",
-                        isActive ? "scale-110" : "group-hover:scale-110"
+                        isActive ? "scale-110" : "group-hover:scale-110",
                       )}
                       style={
-                        isActive
-                          ? { color: "#F5A623" }
-                          : { color: "#429ABD" }
+                        isActive ? { color: "#F5A623" } : { color: "#429ABD" }
                       }
                     />
                     {showText && (

@@ -26,7 +26,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
     accessorKey: "request_number",
     header: "Request No",
     cell: ({ row }) => (
-      <span className="font-medium">
+      <span className="uppercase break-words whitespace-normal hover:text-blue-600 hover:underline transition-colors cursor-pointer">
         {row.getValue("request_number") || "NA"}
       </span>
     ),

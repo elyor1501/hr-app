@@ -37,7 +37,7 @@ export function DeleteCandidateButton({ candidateId }: { candidateId: string }) 
         <Button 
           variant="ghost" 
           size="icon" 
-          className="transition-all duration-300 hover:bg-[#F5A62320] hover:text-[#F5A623]" 
+          className="transition-all duration-300 text-red-500 hover:bg-red-50 hover:text-red-600" 
           title="Delete Candidate"
         >
           <Trash className="w-4 h-4" />

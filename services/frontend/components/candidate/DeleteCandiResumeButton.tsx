@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash, Trash2 } from "lucide-react";
 
 import {
   Dialog,
@@ -50,14 +50,14 @@ export function DeleteResumeButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button
-          type="button"
-          onClick={(e) => e.stopPropagation()}
-          className="p-2 text-gray-400 hover:text-[#F5A623] hover:bg-[#F5A62320] rounded-lg transition-all duration-300"
-          title="Delete Resume"
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="transition-all duration-300 text-red-500 hover:bg-red-50 hover:text-red-600" 
+          title="Delete Candidate"
         >
-          <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
+          <Trash className="w-4 h-4" />
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-lg mx-auto rounded-xl sm:rounded-lg">

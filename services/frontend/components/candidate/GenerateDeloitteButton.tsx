@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { FileDown, Trash2, Download, Eye, Loader2 } from "lucide-react";
+import { FileDown, Trash2, Download, Eye, Loader2, Trash } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -120,10 +120,10 @@ export function GenerateDeloitteButton({
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}
-              className="p-2 text-gray-400 hover:text-[#F5A623] hover:bg-[#F5A62320] rounded-lg transition-all duration-300"
+              className="p-2 text-gray-400 text-red-500 hover:bg-red-50 hover:text-red-600"
               title="Delete Deloitte Resume"
             >
-              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Trash className="w-4 h-4" />
             </button>
           </DialogTrigger>
           <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-lg mx-auto rounded-xl sm:rounded-lg">

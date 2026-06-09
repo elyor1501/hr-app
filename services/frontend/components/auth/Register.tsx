@@ -147,7 +147,7 @@ export function RegisterForm({ token }: Props) {
           Create Account
         </CardTitle>
         <CardDescription className="text-center">
-          You have been invited to join VASPP HR Management System.
+          You have been invited to join VASPP Resource Management System.
         </CardDescription>
       </CardHeader>
 

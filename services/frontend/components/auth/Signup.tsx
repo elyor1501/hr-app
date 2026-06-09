@@ -76,22 +76,47 @@ export function SignUpForm() {
       <Card className="w-full max-w-md shadow-2xl m-2">
         <CardContent className="pt-10 pb-10 flex flex-col items-center gap-4">
           <CheckCircle className="h-12 w-12" style={{ color: "#429ABD" }} />
-          <p className="text-center text-lg font-semibold" style={{ color: "#429ABD" }}>
+          <p
+            className="text-center text-lg font-semibold"
+            style={{ color: "#429ABD" }}
+          >
             Invite sent!
           </p>
           <p className="text-center text-sm text-muted-foreground">
-            The invite link has been sent to the email address. It is valid for 5 minutes.
+            The invite link has been sent to the email address. It is valid for
+            5 minutes.
           </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setSent(false);
-              form.reset();
-            }}
-            style={{ borderColor: "#429ABD", color: "#429ABD" }}
-          >
-            Send another invite
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSent(false);
+                form.reset();
+              }}
+              style={{ backgroundColor: "#429ABD" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#F5A623")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#429ABD")
+              }
+            >
+              Send another invite
+            </Button>
+
+            <Button
+              style={{ backgroundColor: "#429ABD" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#F5A623")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#429ABD")
+              }
+              onClick={() => router.push("/dashboard")}
+            >
+              Go to Dashboard
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -110,7 +135,10 @@ export function SignUpForm() {
 
       <Card className="w-full max-w-md shadow-2xl m-2">
         <CardHeader>
-          <CardTitle className="text-center text-2xl" style={{ color: "#429ABD" }}>
+          <CardTitle
+            className="text-center text-2xl"
+            style={{ color: "#429ABD" }}
+          >
             Invite User
           </CardTitle>
           <CardDescription className="text-center">
@@ -120,13 +148,18 @@ export function SignUpForm() {
 
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-6"
+            >
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel style={{ color: "#429ABD" }}>Email Address</FormLabel>
+                    <FormLabel style={{ color: "#429ABD" }}>
+                      Email Address
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Mail

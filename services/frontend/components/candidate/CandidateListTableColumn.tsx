@@ -9,22 +9,25 @@ import { CompareCheckbox } from "./CompareCheckbox";
 import { DeleteCandidateButton } from "./DeleteCandidateButton";
 
 export const columns_candidate_list: ColumnDef<CandidateList>[] = [
-  {
-    accessorKey: "first_name",
-    header: "Name and Email",
-    cell: ({ row }) => {
-      const first = row.original.first_name || "";
-      const last = row.original.last_name || "";
-      const email = row.original.email || "NA";
-      const fullName = `${first} ${last}`.trim();
-      return (
-        <div className="flex flex-col">
-          <span className="font-medium">{fullName || "NA"}</span>
-          <span className="text-sm text-gray-500 break-all">{email}</span>
-        </div>
-      );
-    },
+ {
+  accessorKey: "first_name",
+  header: "Name and Email",
+  cell: ({ row }) => {
+    const first = row.original.first_name || "";
+    const last = row.original.last_name || "";
+    const email = row.original.email || "NA";
+    const fullName = `${first} ${last}`.trim();
+
+    return (
+      <div className="flex flex-col">
+        <span className="font-medium hover:text-blue-600 hover:underline transition-colors">
+          {fullName || "NA"}
+        </span>
+        <span className="text-sm text-gray-500 break-all">{email}</span>
+      </div>
+    );
   },
+},
   {
     accessorKey: "current_title",
     header: "Role",

@@ -20,7 +20,7 @@ async def send_reset_email(to_email: str, reset_token: str) -> bool:
         text_body = f"""
 Hello,
 
-You requested a password reset for your VASPP HR Management System account.
+You requested a password reset for your VASPP Resource Management System account.
 
 Click the link below to reset your password:
 {reset_url}
@@ -37,7 +37,7 @@ VASPP HR Team
 <html>
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
   <div style="text-align: center; margin-bottom: 30px;">
-    <h2 style="color: #429ABD;">VASPP HR Management System</h2>
+    <h2 style="color: #429ABD;">VASPP Resource Management System</h2>
   </div>
   <div style="background: #f9f9f9; border-radius: 12px; padding: 30px;">
     <h3 style="color: #333; margin-top: 0;">Password Reset Request</h3>
@@ -106,7 +106,7 @@ async def send_invite_email(to_email: str, invite_token: str) -> bool:
         text_body = f"""
 Hello,
 
-You have been invited to join the VASPP HR Management System.
+You have been invited to join the VASPP Resource Management System.
 
 Click the link below to create your account:
 {invite_url}
@@ -124,11 +124,11 @@ VASPP HR Team
 <html>
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
   <div style="text-align: center; margin-bottom: 30px;">
-    <h2 style="color: #429ABD;">VASPP HR Management System</h2>
+    <h2 style="color: #429ABD;">VASPP Resource Management System</h2>
   </div>
   <div style="background: #f9f9f9; border-radius: 12px; padding: 30px;">
     <h3 style="color: #333; margin-top: 0;">You're Invited!</h3>
-    <p style="color: #555;">You have been invited to join the VASPP HR Management System.</p>
+    <p style="color: #555;">You have been invited to join the VASPP Resource Management System.</p>
     <p style="color: #555;">Click the button below to create your account:</p>
     <div style="text-align: center; margin: 30px 0;">
       <a href="{invite_url}"

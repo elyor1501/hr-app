@@ -26,7 +26,7 @@ function DashboardSkeleton() {
 
 export default async function Dashboard() {
   return (
-    <div className="space-y-6 sm:space-y-8 lg:space-y-10 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10 ">
       <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 text-white shadow-2xl" style={{ background: 'linear-gradient(135deg, #429ABD 0%, #2d6d8a 100%)' }}>
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1 sm:mb-2">
@@ -36,8 +36,8 @@ export default async function Dashboard() {
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight mb-1 sm:mb-2">
             Welcome Back 👋
           </h1>
-          <p className="text-sm sm:text-base text-white/80 max-w-xl font-medium">
-            Your recruitment pipeline is looking healthy today. You have new candidates to review and job postings reaching their peak.
+          <p className="text-sm sm:text-base text-white/80  font-medium">
+            You have new candidates to review and job postings reaching their peak.
           </p>
         </div>
         
