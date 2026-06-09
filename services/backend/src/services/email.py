@@ -14,7 +14,7 @@ async def send_reset_email(to_email: str, reset_token: str) -> bool:
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "Password Reset Request — VASPP HR System"
-        msg["From"] = settings.smtp_from
+        msg["From"] = f"RM SYSTEM <{settings.smtp_from}>"
         msg["To"] = to_email
 
         text_body = f"""
@@ -76,7 +76,7 @@ VASPP HR Team
             server.starttls(context=context)
             server.ehlo()
             server.login(settings.smtp_user, settings.smtp_password)
-            server.sendmail(settings.smtp_user, to_email, msg.as_string())
+            server.sendmail(settings.smtp_from, to_email, msg.as_string())
 
         return True
 
@@ -100,7 +100,7 @@ async def send_invite_email(to_email: str, invite_token: str) -> bool:
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "You're Invited — VASPP HR System"
-        msg["From"] = settings.smtp_from
+        msg["From"] = f"RM SYSTEM <{settings.smtp_from}>"
         msg["To"] = to_email
 
         text_body = f"""
@@ -163,7 +163,7 @@ VASPP HR Team
             server.starttls(context=context)
             server.ehlo()
             server.login(settings.smtp_user, settings.smtp_password)
-            server.sendmail(settings.smtp_user, to_email, msg.as_string())
+            server.sendmail(settings.smtp_from, to_email, msg.as_string())
 
         return True
 
