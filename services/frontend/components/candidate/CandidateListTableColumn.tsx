@@ -7,27 +7,28 @@ import { CandidateList } from "@/lib/candidates/data";
 import { useRouter } from "next/navigation";
 import { CompareCheckbox } from "./CompareCheckbox";
 import { DeleteCandidateButton } from "./DeleteCandidateButton";
+import { ViewCandidateButton } from "./ViewCandidateButton";
 
 export const columns_candidate_list: ColumnDef<CandidateList>[] = [
- {
-  accessorKey: "first_name",
-  header: "Name and Email",
-  cell: ({ row }) => {
-    const first = row.original.first_name || "";
-    const last = row.original.last_name || "";
-    const email = row.original.email || "NA";
-    const fullName = `${first} ${last}`.trim();
+  {
+    accessorKey: "first_name",
+    header: "Name and Email",
+    cell: ({ row }) => {
+      const first = row.original.first_name || "";
+      const last = row.original.last_name || "";
+      const email = row.original.email || "NA";
+      const fullName = `${first} ${last}`.trim();
 
-    return (
-      <div className="flex flex-col">
-        <span className="font-medium hover:text-blue-600 hover:underline transition-colors">
-          {fullName || "NA"}
-        </span>
-        <span className="text-sm text-gray-500 break-all">{email}</span>
-      </div>
-    );
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium hover:text-blue-600 hover:underline transition-colors">
+            {fullName || "NA"}
+          </span>
+          <span className="text-sm text-gray-500 break-all">{email}</span>
+        </div>
+      );
+    },
   },
-},
   {
     accessorKey: "current_title",
     header: "Role",
@@ -77,18 +78,9 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
       const candidate = row.original;
       return (
         <div className="flex items-center justify-center w-full gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/candidates/${candidate.id}`);
-            }}
-            className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
-            title="View Candidate"
-          >
-            <Eye className="w-4 h-4" />
-          </Button>
+          {/* <div onClick={(e) => e.stopPropagation()}>
+            <ViewCandidateButton candidateId={candidate.id} />
+          </div> */}
           <div onClick={(e) => e.stopPropagation()}>
             <DeleteCandidateButton candidateId={candidate.id} />
           </div>

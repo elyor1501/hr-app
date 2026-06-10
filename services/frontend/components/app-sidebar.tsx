@@ -16,7 +16,6 @@ import {
   Search,
   Users,
   NotebookPen,
-  UserPlus,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -35,16 +34,11 @@ const baseItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { state, isMobile, openMobile } = useSidebar();
-  const { user } = useUser();
   const isCollapsed = state === "collapsed";
 
   const showText = isMobile ? openMobile : !isCollapsed;
 
-  const isAdmin = user?.role === "admin";
-
-  const items = isAdmin
-    ? [...baseItems, { title: "Invite User", url: "/signup", icon: UserPlus }]
-    : baseItems;
+  const items = baseItems;
 
   return (
     <Sidebar

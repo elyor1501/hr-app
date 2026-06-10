@@ -69,7 +69,7 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
       showPagination={false}
       globalFilterValue={displayValue}
       onGlobalFilterChange={handleSearch}
-      searchPlaceholder="Search resumes or type date (DD.MM.YYYY)..."
+      searchPlaceholder="Search resumes..."
       rowSelection={rowSelection}
       onRowSelectionChange={setRowSelection}
       onRowClick={(row: any) => {
