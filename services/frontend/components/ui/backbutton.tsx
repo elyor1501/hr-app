@@ -12,9 +12,9 @@ export function BackButton() {
     router.back();
   };
 
-  if (pathname === "/dashboard") {
-    return null;
-  }
+  // if (pathname === "/dashboard") {
+  //   return null;
+  // }
 
   return (
     <Button

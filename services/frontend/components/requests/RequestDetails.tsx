@@ -460,23 +460,38 @@ export default function RequestDetails({
                 Request Date
               </label>
               <input
-                type="date"
+                type="text"
                 name="request_date"
-                defaultValue={request.request_date ?? ""}
+                defaultValue={
+                  request.request_date
+                    ? new Date(request.request_date)
+                        .toLocaleDateString("de-DE")
+                        .replaceAll("/", ".")
+                    : ""
+                }
                 disabled={!isEditing}
                 className={fieldClass}
+                placeholder="dd.mm.yyyy"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Proposed Date
               </label>
               <input
-                type="date"
+                type="text"
                 name="proposed_date"
-                defaultValue={request.proposed_date ?? ""}
+                defaultValue={
+                  request.proposed_date
+                    ? new Date(request.proposed_date)
+                        .toLocaleDateString("de-DE")
+                        .replaceAll("/", ".")
+                    : ""
+                }
                 disabled={!isEditing}
                 className={fieldClass}
+                placeholder="dd.mm.yyyy"
               />
             </div>
           </div>
