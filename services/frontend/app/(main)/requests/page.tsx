@@ -13,8 +13,10 @@ export default async function Page({ searchParams }: PageProps) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
   const q = params.q as string | undefined;
+  const dateFrom = params.dateFrom as string | undefined;
+  const dateTo = params.dateTo as string | undefined;
 
-  const data = await getRequests(page, 10, q);
+  const data = await getRequests(page, 10, q, dateFrom, dateTo);
   const hasNext = data.length === 10;
   const totalPages = hasNext ? page + 1 : page;
 

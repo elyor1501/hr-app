@@ -22,7 +22,9 @@ export type RequestItem = {
 export async function getRequests(
   page: number = 1,
   limit: number = 10,
-  q?: string
+  q?: string,
+  dateFrom?: string,
+  dateTo?: string
 ): Promise<RequestItem[]> {
   const apiUrl = getApiUrl();
   const token = getAuthToken();
@@ -33,6 +35,8 @@ export async function getRequests(
     limit: limit.toString(),
   });
   if (q) queryParams.set("q", q);
+  if (dateFrom) queryParams.set("dateFrom", dateFrom);
+  if (dateTo) queryParams.set("dateTo", dateTo);
 
   try {
     const res = await fetch(

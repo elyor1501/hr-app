@@ -38,7 +38,7 @@ ALLOWED_ATTACHMENT_TYPES = [
     "Other",
 ]
 
-PROFILE_CACHE_TTL = 300
+PROFILE_CACHE_TTL = 1800
 
 
 def _clean_email(email: Optional[str]) -> Optional[str]:

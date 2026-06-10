@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash, Trash2 } from "lucide-react";
-
+import { Trash } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +11,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import { deleteResume } from "@/lib/candidates/action";
-import { getCandidateById } from "@/lib/candidates/data";
+import { getCandidateById, invalidateCandidatesCache } from "@/lib/candidates/data";
+import { getApiUrl } from "@/lib/api-config";
 import { toast } from "sonner";
 
 type Props = {
@@ -34,8 +32,29 @@ export function DeleteResumeButton({
   const handleDelete = () => {
     startTransition(async () => {
       try {
-        await deleteResume(candidateId, resumeId);
+        const token = typeof window !== "undefined"
+          ? localStorage.getItem("access_token") || ""
+          : "";
 
+        const apiUrl = getApiUrl();
+        const deleteUrl = apiUrl
+          ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${resumeId}`
+          : `/api/v1/candidates/${candidateId}/cvs/${resumeId}`;
+
+        const res = await fetch(deleteUrl, {
+          method: "DELETE",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("Delete resume failed:", text);
+          throw new Error("Failed to delete resume");
+        }
+
+        invalidateCandidatesCache();
         const updated = await getCandidateById(candidateId);
         onSuccess?.(updated);
 
@@ -50,11 +69,11 @@ export function DeleteResumeButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="transition-all duration-300 text-red-500 hover:bg-red-50 hover:text-red-600" 
-          title="Delete Candidate"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="transition-all duration-300 text-red-500 hover:bg-red-50 hover:text-red-600"
+          title="Delete Resume"
         >
           <Trash className="w-4 h-4" />
         </Button>
@@ -62,7 +81,7 @@ export function DeleteResumeButton({
 
       <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-lg mx-auto rounded-xl sm:rounded-lg">
         <DialogHeader>
-          <DialogTitle style={{ color: '#429ABD' }}>Delete Resume</DialogTitle>
+          <DialogTitle style={{ color: "#429ABD" }}>Delete Resume</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete this resume?
           </DialogDescription>

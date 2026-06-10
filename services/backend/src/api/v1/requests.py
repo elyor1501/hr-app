@@ -229,17 +229,14 @@ def _build_skills_comparison(
     structured_data: dict,
 ) -> SkillsComparison:
     jd_skills = _extract_skills_from_jd(job_description)
-
     all_candidate_skills = list(candidate_skills or [])
     if structured_data.get("skills"):
         for s in structured_data["skills"]:
             if s.lower() not in [x.lower() for x in all_candidate_skills]:
                 all_candidate_skills.append(s)
-
     candidate_skills_lower = [s.lower() for s in all_candidate_skills]
     matching = [s for s in jd_skills if s.lower() in candidate_skills_lower]
     missing = [s for s in jd_skills if s.lower() not in candidate_skills_lower]
-
     return SkillsComparison(
         job_required_skills=jd_skills,
         candidate_skills=all_candidate_skills[:30],
@@ -251,7 +248,6 @@ def _build_skills_comparison(
 async def _get_structured_cv_for_candidate(session: AsyncSession, candidate: Candidate) -> dict:
     if candidate.json_data and isinstance(candidate.json_data, dict):
         return candidate.json_data
-
     if candidate.email and "@placeholder.com" not in candidate.email and "@noemail.vaspp.com" not in candidate.email:
         result = await session.execute(
             select(ParsedResume).where(ParsedResume.email == candidate.email).limit(1)
@@ -259,7 +255,6 @@ async def _get_structured_cv_for_candidate(session: AsyncSession, candidate: Can
         pr = result.scalars().first()
         if pr and pr.json_data:
             return pr.json_data
-
     if candidate.first_name and candidate.last_name:
         result = await session.execute(
             select(ParsedResume).where(
@@ -272,7 +267,6 @@ async def _get_structured_cv_for_candidate(session: AsyncSession, candidate: Can
         pr = result.scalars().first()
         if pr and pr.json_data:
             return pr.json_data
-
     cv = {}
     if candidate.first_name:
         cv["full_name"] = f"{candidate.first_name} {candidate.last_name}".strip()
@@ -300,16 +294,13 @@ async def _get_structured_cv_cached(candidate: Candidate) -> dict:
             return json.loads(cached)
     except Exception:
         pass
-
     async with async_session_maker() as session:
         cv = await _get_structured_cv_for_candidate(session, candidate)
-
     try:
         redis = await get_redis_pool()
         await redis.setex(cache_key, CV_CACHE_TTL, json.dumps(cv, default=str))
     except Exception:
         pass
-
     return cv
 
 
@@ -320,10 +311,8 @@ async def _match_single_candidate(
 ) -> Optional[CandidateMatchResult]:
     try:
         structured_cv = await _get_structured_cv_cached(candidate)
-
         if not structured_cv:
             return None
-
         trimmed_cv = {
             "full_name": structured_cv.get("full_name") or f"{candidate.first_name} {candidate.last_name}".strip(),
             "current_title": structured_cv.get("current_title") or candidate.current_title or "",
@@ -334,24 +323,19 @@ async def _match_single_candidate(
             "experience": structured_cv.get("experience", [])[:3],
             "education": structured_cv.get("education", [])[:2],
         }
-
         ai_result = await ai_client.rag_match(
             job_description=job_description,
             structured_cv=trimmed_cv,
         )
-
         match_score = ai_result.get("match_score", 0)
-
         skills_comparison = _build_skills_comparison(
             job_description=job_description,
             candidate_skills=candidate.skills or [],
             structured_data=structured_cv,
         )
-
         clean_email = candidate.email
         if clean_email and ("@placeholder.com" in clean_email or "@noemail.vaspp.com" in clean_email or clean_email.startswith("unknown_")):
             clean_email = None
-
         return CandidateMatchResult(
             candidate_id=str(candidate.id),
             first_name=candidate.first_name,
@@ -370,7 +354,6 @@ async def _match_single_candidate(
             hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
             availability=candidate.availability,
         )
-
     except Exception as e:
         logger.error("candidate_match_failed", candidate_id=str(candidate.id), error=str(e))
         return None
@@ -387,23 +370,18 @@ async def _run_matching_background(
 ):
     cache_key = f"hr_app:match_result:{request_id}"
     lock_key = f"hr_app:match_lock:{request_id}"
-
     try:
         redis = await get_redis_pool()
         await redis.setex(lock_key, MATCH_LOCK_TTL, "processing")
-
         async with async_session_maker() as session:
             result = await session.execute(
                 select(Candidate).where(Candidate.id.in_([UUID(cid) for cid in candidate_ids]))
             )
             candidates = result.scalars().all()
-
         final_matches = []
-
         for candidate in candidates:
             try:
                 structured_cv = await _get_structured_cv_cached(candidate)
-
                 trimmed_cv = {
                     "full_name": structured_cv.get("full_name") or f"{candidate.first_name} {candidate.last_name}".strip(),
                     "current_title": structured_cv.get("current_title") or candidate.current_title or "",
@@ -414,22 +392,18 @@ async def _run_matching_background(
                     "experience": structured_cv.get("experience", [])[:3],
                     "education": structured_cv.get("education", [])[:2],
                 }
-
                 ai_result = await ai_client.rag_match(
                     job_description=job_description,
                     structured_cv=trimmed_cv,
                 )
-
                 skills_comparison = _build_skills_comparison(
                     job_description=job_description,
                     candidate_skills=candidate.skills or [],
                     structured_data=structured_cv,
                 )
-
                 clean_email = candidate.email
                 if clean_email and ("@placeholder.com" in clean_email or "@noemail.vaspp.com" in clean_email or clean_email.startswith("unknown_")):
                     clean_email = None
-
                 final_matches.append(
                     CandidateMatchResult(
                         candidate_id=str(candidate.id),
@@ -453,14 +427,10 @@ async def _run_matching_background(
             except Exception as e:
                 logger.error("single_candidate_match_failed", candidate_id=str(candidate.id), error=str(e))
                 continue
-
         final_matches.sort(key=lambda x: x.match_score, reverse=True)
-
         if min_score > 0:
             final_matches = [m for m in final_matches if m.match_score >= min_score]
-
         final_matches = final_matches[:top_k]
-
         response = AutoMatchResponse(
             request_id=request_id,
             request_number=request_number,
@@ -471,13 +441,10 @@ async def _run_matching_background(
             auto_proposed=False,
             matches=final_matches,
         )
-
         redis = await get_redis_pool()
         await redis.setex(cache_key, MATCH_CACHE_TTL, json.dumps(response.model_dump(), default=str))
         await redis.delete(lock_key)
-
         logger.info("matching_complete", request_id=request_id, total_matches=len(final_matches))
-
     except Exception as e:
         logger.error("background_matching_failed", request_id=request_id, error=str(e))
         try:
@@ -492,7 +459,6 @@ async def _run_matching_background(
 @router.get("/count", response_model=RequestCountResponse)
 async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
     cache_key = "hr_app:requests:count"
-
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -500,7 +466,6 @@ async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
             return RequestCountResponse(**json.loads(cached))
     except Exception:
         pass
-
     result = await session.execute(
         select(
             StaffingRequest.state,
@@ -513,19 +478,16 @@ async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
     counts = {row.state: row.cnt for row in rows}
     open_count = counts.get("open", 0)
     in_progress_count = counts.get("in_progress", 0)
-
     response = RequestCountResponse(
         open_count=open_count,
         in_progress_count=in_progress_count,
         total_active=open_count + in_progress_count
     )
-
     try:
         redis = await get_redis_pool()
         await redis.setex(cache_key, 300, json.dumps(response.model_dump()))
     except Exception:
         pass
-
     return response
 
 
@@ -548,7 +510,6 @@ async def create_request(
     )
     session.add(req)
     await session.flush()
-
     audit = RequestAuditLog(
         request_id=req.id,
         old_state=None,
@@ -558,9 +519,7 @@ async def create_request(
     session.add(audit)
     await session.commit()
     await session.refresh(req)
-
     await _invalidate_requests_cache()
-
     return _build_response(req, [])
 
 
@@ -570,9 +529,13 @@ async def list_requests(
     limit: int = Query(50, ge=1, le=100),
     state: Optional[str] = Query(default=None),
     q: Optional[str] = Query(default=None),
+    dateFrom: Optional[str] = Query(default=None),
+    dateTo: Optional[str] = Query(default=None),
     session: AsyncSession = Depends(get_db_session)
 ):
-    cache_key = f"hr_app:requests:list:{skip}:{limit}:{state}:{q or ''}"
+    from datetime import timezone
+
+    cache_key = f"hr_app:requests:list:{skip}:{limit}:{state}:{q or ''}:{dateFrom or ''}:{dateTo or ''}"
 
     try:
         redis = await get_redis_pool()
@@ -582,29 +545,48 @@ async def list_requests(
     except Exception:
         pass
 
-    stmt = (
-        select(
-            StaffingRequest,
-            func.count(RequestCandidate.id).label("candidate_count")
-        )
-        .outerjoin(RequestCandidate, RequestCandidate.request_id == StaffingRequest.id)
-        .group_by(StaffingRequest.id)
-        .order_by(StaffingRequest.created_at.desc())
-        .offset(skip)
-        .limit(limit)
-    )
+    filters = []
 
     if state:
-        stmt = stmt.where(StaffingRequest.state == state)
-        
+        filters.append(StaffingRequest.state == state)
+
     if q:
-        stmt = stmt.where(
+        filters.append(
             or_(
                 StaffingRequest.company_name.ilike(f"%{q}%"),
                 StaffingRequest.request_title.ilike(f"%{q}%"),
                 StaffingRequest.request_number.ilike(f"%{q}%")
             )
         )
+
+    if dateFrom:
+        try:
+            date_from_dt = datetime.strptime(dateFrom, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            filters.append(StaffingRequest.created_at >= date_from_dt)
+        except ValueError:
+            pass
+
+    if dateTo:
+        try:
+            date_to_dt = datetime.strptime(dateTo, "%Y-%m-%d").replace(
+                hour=23, minute=59, second=59, tzinfo=timezone.utc
+            )
+            filters.append(StaffingRequest.created_at <= date_to_dt)
+        except ValueError:
+            pass
+
+    stmt = (
+        select(
+            StaffingRequest,
+            func.count(RequestCandidate.id).label("candidate_count")
+        )
+        .outerjoin(RequestCandidate, RequestCandidate.request_id == StaffingRequest.id)
+        .where(and_(*filters) if filters else True)
+        .group_by(StaffingRequest.id)
+        .order_by(StaffingRequest.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+    )
 
     result = await session.execute(stmt)
     rows = result.fetchall()
@@ -645,10 +627,8 @@ async def get_request(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
     req = result.scalar_one_or_none()
-
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
 
@@ -663,12 +643,9 @@ async def update_request(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
     req = result.scalar_one_or_none()
-
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     update_data = data.model_dump(exclude_none=True)
-
     if "state" in update_data:
         new_state = update_data["state"]
         allowed = VALID_TRANSITIONS.get(req.state, [])
@@ -687,32 +664,24 @@ async def update_request(
             session.add(audit)
         if new_state == "signed":
             req.contract_status = True
-
     if "contract_status" in update_data and update_data["contract_status"] is True:
         if req.state != "signed" and update_data.get("state") != "signed":
             raise HTTPException(
                 status_code=400,
                 detail="Contract can only be set when request is signed"
             )
-
     jd_changed = "job_description" in update_data and update_data["job_description"] != req.job_description
-
     for field, value in update_data.items():
         setattr(req, field, value)
-
     await session.commit()
     await session.refresh(req)
-
     await _invalidate_requests_cache()
-
-    # Cached match results are tied to the JD text; clear them so the next match click re-embeds.
     if jd_changed:
         try:
             redis = await get_redis_pool()
             await redis.delete(f"hr_app:match_result:{request_id}")
         except Exception:
             pass
-
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
 
@@ -727,24 +696,18 @@ async def transition_state(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
     req = result.scalar_one_or_none()
-
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     allowed = VALID_TRANSITIONS.get(req.state, [])
-
     if data.new_state not in allowed:
         raise HTTPException(
             status_code=400,
             detail=f"Cannot transition from '{req.state}' to '{data.new_state}'. Allowed: {allowed}"
         )
-
     old_state = req.state
     req.state = data.new_state
-
     if data.new_state == "signed":
         req.contract_status = True
-
     audit = RequestAuditLog(
         request_id=req.id,
         old_state=old_state,
@@ -754,9 +717,7 @@ async def transition_state(
     session.add(audit)
     await session.commit()
     await session.refresh(req)
-
     await _invalidate_requests_cache()
-
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
 
@@ -772,15 +733,11 @@ async def auto_match_candidates(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
     req = result.scalar_one_or_none()
-
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     if not req.job_description or not req.job_description.strip():
         raise HTTPException(status_code=422, detail="Request has no job description to match against")
-
     cache_key = f"hr_app:match_result:{request_id}"
-
     if not data.force_refresh:
         try:
             redis = await get_redis_pool()
@@ -795,7 +752,6 @@ async def auto_match_candidates(
                 )
         except Exception:
             pass
-
     try:
         match_payload = await ai_client.match_candidates(
             job_description=req.job_description,
@@ -804,16 +760,11 @@ async def auto_match_candidates(
     except Exception as exc:
         logger.error("ai_match_call_failed", request_id=str(request_id), error=str(exc))
         raise HTTPException(status_code=502, detail=f"Matching service unavailable: {exc}")
-
     jd_embedding = match_payload.get("embedding") or []
     if not jd_embedding:
         logger.error("ai_match_empty_embedding", request_id=str(request_id))
         raise HTTPException(status_code=502, detail="Matching service returned no embedding")
-
-    # pgvector requires the literal as a bracketed string when cast to vector type.
     vec_literal = "[" + ",".join(f"{float(x):.8f}" for x in jd_embedding) + "]"
-
-    # `<=>` is cosine distance (0 = identical). Convert to similarity in the SELECT.
     sim_rows = (await session.execute(
         text(
             """
@@ -826,16 +777,13 @@ async def auto_match_candidates(
         ),
         {"jd_vec": vec_literal, "top_k": data.top_k},
     )).fetchall()
-
     total_evaluated = (await session.execute(
         text(
             "SELECT COUNT(*) FROM candidates "
             "WHERE embedding IS NOT NULL AND status = 'active'"
         )
     )).scalar() or 0
-
     similarity_by_id = {str(row.id): float(row.similarity) for row in sim_rows}
-
     candidate_ids = [UUID(cid) for cid in similarity_by_id.keys()]
     candidates: List[Candidate] = []
     if candidate_ids:
@@ -843,15 +791,12 @@ async def auto_match_candidates(
             select(Candidate).where(Candidate.id.in_(candidate_ids))
         )
         candidates = list(cand_result.scalars().all())
-
     matches: List[CandidateMatchResult] = []
     for candidate in candidates:
         similarity = similarity_by_id.get(str(candidate.id), 0.0)
         score = max(0, min(100, round(similarity * 100)))
-
         if score < data.min_score:
             continue
-
         clean_email = candidate.email
         if clean_email and (
             "@placeholder.com" in clean_email
@@ -859,7 +804,6 @@ async def auto_match_candidates(
             or clean_email.startswith("unknown_")
         ):
             clean_email = None
-
         matches.append(
             CandidateMatchResult(
                 candidate_id=str(candidate.id),
@@ -885,9 +829,7 @@ async def auto_match_candidates(
                 availability=candidate.availability,
             )
         )
-
     matches.sort(key=lambda m: m.match_score, reverse=True)
-
     response = AutoMatchResponse(
         request_id=str(request_id),
         request_number=req.request_number,
@@ -900,13 +842,11 @@ async def auto_match_candidates(
         auto_proposed=False,
         matches=matches,
     )
-
     try:
         redis = await get_redis_pool()
         await redis.setex(cache_key, MATCH_CACHE_TTL, json.dumps(response.model_dump(), default=str))
     except Exception:
         pass
-
     return MatchStatusResponse(
         status="completed",
         request_id=str(request_id),
@@ -920,10 +860,8 @@ async def get_match_status(request_id: UUID):
     cache_key = f"hr_app:match_result:{request_id}"
     lock_key = f"hr_app:match_lock:{request_id}"
     error_key = f"hr_app:match_error:{request_id}"
-
     try:
         redis = await get_redis_pool()
-
         cached = await redis.get(cache_key)
         if cached:
             cached_result = AutoMatchResponse(**json.loads(cached))
@@ -933,7 +871,6 @@ async def get_match_status(request_id: UUID):
                 message=f"Found {cached_result.total_matches} matching candidates",
                 result=cached_result,
             )
-
         error = await redis.get(error_key)
         if error:
             error_data = json.loads(error)
@@ -943,7 +880,6 @@ async def get_match_status(request_id: UUID):
                 message=f"Matching failed: {error_data.get('error', 'Unknown error')}",
                 result=None,
             )
-
         is_processing = await redis.get(lock_key)
         if is_processing:
             return MatchStatusResponse(
@@ -952,10 +888,8 @@ async def get_match_status(request_id: UUID):
                 message="Matching in progress...",
                 result=None,
             )
-
     except Exception:
         pass
-
     return MatchStatusResponse(
         status="idle",
         request_id=str(request_id),
@@ -974,21 +908,16 @@ async def propose_candidate(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
     req = result.scalar_one_or_none()
-
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     if req.state in ["signed", "closed"]:
         raise HTTPException(status_code=400, detail="Cannot propose candidates for a signed or closed request")
-
     candidate_result = await session.execute(
         select(Candidate).where(Candidate.id == data.candidate_id)
     )
     candidate = candidate_result.scalar_one_or_none()
-
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
-
     existing = await session.execute(
         select(RequestCandidate).where(
             and_(
@@ -999,7 +928,6 @@ async def propose_candidate(
     )
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=409, detail="Candidate already proposed for this request")
-
     rc = RequestCandidate(
         request_id=request_id,
         candidate_id=data.candidate_id,
@@ -1008,7 +936,6 @@ async def propose_candidate(
         notes=data.notes,
     )
     session.add(rc)
-
     if req.state == "open":
         old_state = req.state
         req.state = "in_progress"
@@ -1019,12 +946,9 @@ async def propose_candidate(
             notes="Auto-transitioned when candidate proposed",
         )
         session.add(audit)
-
     await session.commit()
     await session.refresh(req)
-
     await _invalidate_requests_cache()
-
     candidates = await _get_proposed_candidates(session, request_id)
     return _build_response(req, candidates)
 
@@ -1039,13 +963,10 @@ async def remove_candidate(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
     req = result.scalar_one_or_none()
-
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     if req.state in ["signed", "closed"]:
         raise HTTPException(status_code=400, detail="Cannot remove candidates from a signed or closed request")
-
     rc_result = await session.execute(
         select(RequestCandidate).where(
             and_(
@@ -1055,13 +976,10 @@ async def remove_candidate(
         )
     )
     rc = rc_result.scalar_one_or_none()
-
     if not rc:
         raise HTTPException(status_code=404, detail="Candidate not proposed for this request")
-
     await session.delete(rc)
     await session.commit()
-
     await _invalidate_requests_cache()
 
 
@@ -1074,33 +992,27 @@ async def delete_request(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
     req = result.scalar_one_or_none()
-
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     await session.delete(req)
     await session.commit()
-
     await _invalidate_requests_cache()
+
+
 def _quick_overlap_score(job_description: str, candidate: Candidate, structured_cv: dict) -> int:
     jd_lower = job_description.lower()
     title = (candidate.current_title or structured_cv.get("current_title") or "").lower()
     summary = (structured_cv.get("summary") or candidate.resume_text or "")[:1000].lower()
     skills = [s.lower() for s in (structured_cv.get("skills") or candidate.skills or [])]
-
     jd_skills = _extract_skills_from_jd(job_description)
     matching_skills = [s for s in jd_skills if s.lower() in skills]
-
     score = 0
     score += min(len(matching_skills) * 12, 60)
-
     title_words = [w for w in jd_lower.split() if len(w) >= 4][:10]
     if any(word in title for word in title_words):
         score += 20
-
     if any(word in summary for word in title_words[:5]):
         score += 20
-
     return min(score, 100)
 
 
@@ -1115,11 +1027,9 @@ def _build_preliminary_candidate_match(
         candidate_skills=candidate.skills or [],
         structured_data=structured_cv,
     )
-
     clean_email = candidate.email
     if clean_email and ("@placeholder.com" in clean_email or "@noemail.vaspp.com" in clean_email or clean_email.startswith("unknown_")):
         clean_email = None
-
     return CandidateMatchResult(
         candidate_id=str(candidate.id),
         first_name=candidate.first_name,
@@ -1139,6 +1049,7 @@ def _build_preliminary_candidate_match(
         availability=candidate.availability,
     )
 
+
 async def _get_proposed_candidates(session: AsyncSession, request_id: UUID) -> List[CandidateSummary]:
     stmt = (
         select(
@@ -1156,7 +1067,6 @@ async def _get_proposed_candidates(session: AsyncSession, request_id: UUID) -> L
     )
     result = await session.execute(stmt)
     rows = result.fetchall()
-
     return [
         CandidateSummary(
             id=str(row.id),

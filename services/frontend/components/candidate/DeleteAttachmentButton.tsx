@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-
 import {
   Dialog,
   DialogContent,
@@ -12,9 +11,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import { deleteAttachment } from "@/lib/candidates/action";
-import { getCandidateById } from "@/lib/candidates/data";
+import { getCandidateById, invalidateCandidatesCache } from "@/lib/candidates/data";
+import { getApiUrl } from "@/lib/api-config";
 import { toast } from "sonner";
 
 type Props = {
@@ -34,8 +32,29 @@ export function DeleteAttachmentButton({
   const handleDelete = () => {
     startTransition(async () => {
       try {
-        await deleteAttachment(candidateId, attachmentId);
+        const token = typeof window !== "undefined"
+          ? localStorage.getItem("access_token") || ""
+          : "";
 
+        const apiUrl = getApiUrl();
+        const deleteUrl = apiUrl
+          ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments/${attachmentId}`
+          : `/api/v1/candidates/${candidateId}/attachments/${attachmentId}`;
+
+        const res = await fetch(deleteUrl, {
+          method: "DELETE",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("Delete attachment failed:", text);
+          throw new Error("Failed to delete attachment");
+        }
+
+        invalidateCandidatesCache();
         const updated = await getCandidateById(candidateId);
         onSuccess?.(updated);
 
@@ -61,7 +80,7 @@ export function DeleteAttachmentButton({
 
       <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-lg mx-auto rounded-xl sm:rounded-lg">
         <DialogHeader>
-          <DialogTitle style={{ color: '#429ABD' }}>Delete Attachment</DialogTitle>
+          <DialogTitle style={{ color: "#429ABD" }}>Delete Attachment</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete this attachment?
           </DialogDescription>

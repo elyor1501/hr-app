@@ -99,8 +99,8 @@ async def send_invite_email(to_email: str, invite_token: str) -> bool:
         invite_url = f"{settings.frontend_url}/register?token={invite_token}"
 
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = "You're Invited — VASPP HR System"
-        msg["From"] = settings.smtp_from
+        msg["Subject"] = "You're Invited — VASPP RM System"
+        msg["From"] = f"RM SYSTEM <{settings.smtp_from}>"
         msg["To"] = to_email
 
         text_body = f"""

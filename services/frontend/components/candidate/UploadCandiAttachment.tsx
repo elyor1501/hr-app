@@ -7,22 +7,20 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { uploadAttachment } from "@/lib/candidates/action";
-import { getCandidateById } from "@/lib/candidates/data";
+import { getCandidateById, invalidateCandidatesCache } from "@/lib/candidates/data";
 import { toast } from "sonner";
-import {   Select,
+import {
+  Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
   SelectTrigger,
-  SelectValue, } from "../ui/select";
+  SelectValue,
+} from "../ui/select";
 
 type Props = {
   candidateId: string;
@@ -42,7 +40,10 @@ const ALLOWED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 ];
 
-const ALLOWED_FILE_EXTENSIONS = [".pdf", ".jpeg", ".jpg", ".png", ".svg", ".doc", ".docx", ".ppt", ".pptx"];
+const ALLOWED_FILE_EXTENSIONS = [
+  ".pdf", ".jpeg", ".jpg", ".png", ".svg",
+  ".doc", ".docx", ".ppt", ".pptx",
+];
 
 export function UploadAttachmentDialog({
   candidateId,
@@ -57,20 +58,21 @@ export function UploadAttachmentDialog({
   const validateFile = (file: File): boolean => {
     if (!ALLOWED_FILE_TYPES.includes(file.type)) {
       const fileName = file.name.toLowerCase();
-      const hasValidExtension = ALLOWED_FILE_EXTENSIONS.some(ext => fileName.endsWith(ext));
-      
+      const hasValidExtension = ALLOWED_FILE_EXTENSIONS.some((ext) =>
+        fileName.endsWith(ext)
+      );
       if (!hasValidExtension) {
-        toast.error("Invalid file type. Please upload PDF, images (JPG, PNG, SVG), DOC, DOCX, PPT, or PPTX files only.");
+        toast.error(
+          "Invalid file type. Please upload PDF, images (JPG, PNG, SVG), DOC, DOCX, PPT, or PPTX files only."
+        );
         return false;
       }
     }
-    
-    const maxSize = 10 * 1024 * 1024; 
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error("File size must be less than 10MB");
       return false;
     }
-    
     return true;
   };
 
@@ -80,7 +82,7 @@ export function UploadAttachmentDialog({
       if (validateFile(selectedFile)) {
         setFile(selectedFile);
       } else {
-        e.target.value = ""; 
+        e.target.value = "";
         setFile(null);
       }
     } else {
@@ -93,7 +95,6 @@ export function UploadAttachmentDialog({
       toast.error("Please select a file");
       return;
     }
-
     if (!docType) {
       toast.error("Please select attachment type");
       return;
@@ -101,17 +102,23 @@ export function UploadAttachmentDialog({
 
     startTransition(async () => {
       try {
+        const token =
+          typeof window !== "undefined"
+            ? localStorage.getItem("access_token") || ""
+            : "";
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("attachment_type", docType);
 
-        await uploadAttachment(candidateId, formData);
+        await uploadAttachment(candidateId, formData, token);
+
+        invalidateCandidatesCache();
 
         const updated = await getCandidateById(candidateId);
         onSuccess?.(updated);
 
         toast.success("Attachment uploaded successfully");
-
         setFile(null);
         setDocType("");
         setOpen(false);
@@ -124,39 +131,48 @@ export function UploadAttachmentDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white transition-all duration-300 hover:shadow-lg w-full sm:w-auto" style={{ backgroundColor: '#429ABD' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}>
+        <button
+          className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
+          style={{ backgroundColor: "#429ABD" }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#F5A623")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "#429ABD")
+          }
+        >
           Upload Attachment
         </button>
       </DialogTrigger>
 
       <DialogContent className="w-[calc(100%-2rem)] sm:w-auto max-w-md mx-auto rounded-xl sm:rounded-lg">
         <DialogHeader>
-          <DialogTitle style={{ color: '#429ABD' }}>Upload Attachment</DialogTitle>
+          <DialogTitle style={{ color: "#429ABD" }}>
+            Upload Attachment
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
-         <div className="space-y-1">
-  <label className="text-sm font-medium text-gray-700">
-    Attachment Type
-  </label>
-  <Select value={docType} onValueChange={setDocType}>
-    <SelectTrigger className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-[#429ABD] focus:border-[#429ABD]">
-      <SelectValue placeholder="Select attachment type" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectGroup>
-        <SelectLabel>Attachment Types</SelectLabel>
-        {attachmentTypes.map((type) => (
-          <SelectItem key={type} value={type}>
-            {type}
-          </SelectItem>
-        ))}
-      </SelectGroup>
-    </SelectContent>
-  </Select>
-</div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">
+              Attachment Type
+            </label>
+            <Select value={docType} onValueChange={setDocType}>
+              <SelectTrigger className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-[#429ABD] focus:border-[#429ABD]">
+                <SelectValue placeholder="Select attachment type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Attachment Types</SelectLabel>
+                  {attachmentTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">
@@ -165,10 +181,9 @@ export function UploadAttachmentDialog({
             <input
               type="file"
               onChange={handleFileChange}
-              accept=".pdf,.jpeg,.jpg,.png,.svg,.doc,.docx,.ppt,.pptx,application/pdf,image/jpeg,image/jpg,image/png,image/svg+xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+              accept=".pdf,.jpeg,.jpg,.png,.svg,.doc,.docx,.ppt,.pptx"
               className="w-full text-sm border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]"
             />
-          
           </div>
         </div>
 
@@ -181,14 +196,17 @@ export function UploadAttachmentDialog({
           >
             Cancel
           </Button>
-
-          <Button 
-            onClick={handleUpload} 
-            disabled={isPending} 
+          <Button
+            onClick={handleUpload}
+            disabled={isPending}
             className="w-full sm:w-auto transition-all duration-300 hover:shadow-lg"
-            style={{ backgroundColor: '#429ABD' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+            style={{ backgroundColor: "#429ABD" }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#F5A623")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#429ABD")
+            }
           >
             {isPending ? "Uploading..." : "Upload"}
           </Button>

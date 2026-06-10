@@ -1,11 +1,10 @@
 "use server";
 import { revalidateCandidates } from "./revalidate";
-import { getApiUrl, getAuthToken } from "../api-config";
+import { getApiUrl } from "../api-config";
 import { getCandidateById } from "./data";
 
 export async function deleteCandidate(candidateId: string) {
   try {
-    const token = getAuthToken();
     const apiUrl = getApiUrl();
     const deleteUrl = apiUrl
       ? `${apiUrl}/api/v1/candidates/${candidateId}`
@@ -13,9 +12,6 @@ export async function deleteCandidate(candidateId: string) {
 
     const res = await fetch(deleteUrl, {
       method: "DELETE",
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
       cache: "no-store",
     });
 
@@ -26,7 +22,6 @@ export async function deleteCandidate(candidateId: string) {
     }
 
     await revalidateCandidates();
-
     return { success: true };
   } catch (error) {
     console.error(error);
@@ -36,7 +31,6 @@ export async function deleteCandidate(candidateId: string) {
 
 export async function updateCandidate(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
-  const token = getAuthToken();
   const apiUrl = getApiUrl();
 
   const payload: Record<string, any> = {};
@@ -79,7 +73,6 @@ export async function updateCandidate(formData: FormData): Promise<void> {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(payload),
     cache: "no-store",
@@ -95,7 +88,6 @@ export async function updateCandidate(formData: FormData): Promise<void> {
 }
 
 export async function createCandidate(formData: FormData) {
-  const token = getAuthToken();
   const apiUrl = getApiUrl();
   const createUrl = apiUrl
     ? `${apiUrl}/api/v1/candidates/`
@@ -103,9 +95,6 @@ export async function createCandidate(formData: FormData) {
 
   const res = await fetch(createUrl, {
     method: "POST",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
     body: formData,
   });
 
@@ -116,12 +105,10 @@ export async function createCandidate(formData: FormData) {
   }
 
   await revalidateCandidates();
-
   return await res.json();
 }
 
 export async function setPrimaryResume(candidateId: string, resumeId: string) {
-  const token = getAuthToken();
   const apiUrl = getApiUrl();
   const primaryUrl = apiUrl
     ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${resumeId}/set-primary`
@@ -129,9 +116,6 @@ export async function setPrimaryResume(candidateId: string, resumeId: string) {
 
   const res = await fetch(primaryUrl, {
     method: "PATCH",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
   });
 
   if (!res.ok) {
@@ -145,7 +129,6 @@ export async function setPrimaryResume(candidateId: string, resumeId: string) {
 }
 
 export async function deleteResume(candidateId: string, resumeId: string) {
-  const token = getAuthToken();
   const apiUrl = getApiUrl();
   const deleteUrl = apiUrl
     ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${resumeId}`
@@ -153,9 +136,6 @@ export async function deleteResume(candidateId: string, resumeId: string) {
 
   const res = await fetch(deleteUrl, {
     method: "DELETE",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
   });
 
   if (!res.ok) {
@@ -168,8 +148,10 @@ export async function deleteResume(candidateId: string, resumeId: string) {
   return { success: true };
 }
 
-export async function deleteAttachment(candidateId: string, attachmentId: string) {
-  const token = getAuthToken();
+export async function deleteAttachment(
+  candidateId: string,
+  attachmentId: string
+) {
   const apiUrl = getApiUrl();
   const deleteUrl = apiUrl
     ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments/${attachmentId}`
@@ -177,9 +159,6 @@ export async function deleteAttachment(candidateId: string, attachmentId: string
 
   const res = await fetch(deleteUrl, {
     method: "DELETE",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
   });
 
   if (!res.ok) {
@@ -192,8 +171,11 @@ export async function deleteAttachment(candidateId: string, attachmentId: string
   return { success: true };
 }
 
-export async function uploadAttachment(candidateId: string, formData: FormData) {
-  const token = getAuthToken();
+export async function uploadAttachment(
+  candidateId: string,
+  formData: FormData,
+  token: string
+) {
   const apiUrl = getApiUrl();
   const uploadUrl = apiUrl
     ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments`
@@ -217,19 +199,17 @@ export async function uploadAttachment(candidateId: string, formData: FormData) 
   return await res.json();
 }
 
-export async function generateDeloitteResume(candidateId: string, cvId: string) {
-  const token = getAuthToken();
+export async function generateDeloitteResume(
+  candidateId: string,
+  cvId: string
+) {
   const apiUrl = getApiUrl();
-
   const url = apiUrl
     ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${cvId}/generate-deloitte`
     : `/api/v1/candidates/${candidateId}/cvs/${cvId}/generate-deloitte`;
 
   const res = await fetch(url, {
     method: "POST",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
     cache: "no-store",
   });
 
@@ -240,24 +220,21 @@ export async function generateDeloitteResume(candidateId: string, cvId: string) 
   }
 
   await revalidateCandidates();
-
   const updatedCandidate = await getCandidateById(candidateId);
   return updatedCandidate;
 }
 
-export async function deleteDeloitteResume(candidateId: string, cvId: string) {
-  const token = getAuthToken();
+export async function deleteDeloitteResume(
+  candidateId: string,
+  cvId: string
+) {
   const apiUrl = getApiUrl();
-
   const url = apiUrl
     ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${cvId}/deloitte`
     : `/api/v1/candidates/${candidateId}/cvs/${cvId}/deloitte`;
 
   const res = await fetch(url, {
     method: "DELETE",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
     cache: "no-store",
   });
 
@@ -268,7 +245,6 @@ export async function deleteDeloitteResume(candidateId: string, cvId: string) {
   }
 
   await revalidateCandidates();
-
   const updatedCandidate = await getCandidateById(candidateId);
   return updatedCandidate;
 }
