@@ -50,6 +50,10 @@ class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
 
+class UpdateUserRoleRequest(BaseModel):
+    role: str
+
+
 def _user_cache_key(email: str) -> str:
     return f"hr_app:user:email:{email.lower()}"
 
@@ -261,6 +265,73 @@ async def get_me(current_user: TokenPayload = Depends(get_current_user), db: Asy
         raise HTTPException(status_code=404, detail="User not found")
     await _set_cached_user(user)
     return user
+
+
+@router.get("/users", status_code=200)
+async def list_users(
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    result = await db.execute(
+        select(User).order_by(User.created_at.desc())
+    )
+    users = result.scalars().all()
+
+    return [
+        {
+            "id": str(u.id),
+            "email": u.email,
+            "full_name": u.full_name,
+            "role": u.role,
+            "is_active": u.is_active,
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+        }
+        for u in users
+    ]
+
+
+@router.patch("/users/{user_id}/role", status_code=200)
+async def update_user_role(
+    user_id: str,
+    data: UpdateUserRoleRequest,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    if data.role not in ["admin", "recruiter"]:
+        raise HTTPException(status_code=400, detail="Role must be admin or recruiter")
+
+    from uuid import UUID
+    result = await db.execute(
+        select(User).where(User.id == UUID(user_id))
+    )
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.email.lower() == current_user.sub.lower() and data.role != "admin":
+        raise HTTPException(status_code=400, detail="You cannot remove your own admin access")
+
+    user.role = data.role
+    user.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(user)
+
+    await _delete_cached_user(user.email)
+
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "full_name": user.full_name,
+        "role": user.role,
+        "is_active": user.is_active,
+    }
 
 
 @router.post("/forgot-password", status_code=200)

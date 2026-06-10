@@ -275,13 +275,17 @@ async def search_candidates(
     candidateStatus: Optional[str] = Query(default=None),
     experience_level: Optional[str] = Query(default=None),
     availability: Optional[str] = Query(default=None),
+    dateFrom: Optional[str] = Query(default=None),
+    dateTo: Optional[str] = Query(default=None),
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     session: AsyncSession = Depends(get_db_session),
 ):
+    from datetime import datetime, timezone
+
     resolved_title = currentTitle or job_title
 
-    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{name}{location}{resolved_title}{currentCompany}{experienceMin}{experienceMax}{skills}{candidateStatus}{experience_level}{availability}{page}{page_size}'.encode()).hexdigest()}"
+    cache_key = f"hr_backend:search:{hashlib.md5(f'{q}{name}{location}{resolved_title}{currentCompany}{experienceMin}{experienceMax}{skills}{candidateStatus}{experience_level}{availability}{dateFrom}{dateTo}{page}{page_size}'.encode()).hexdigest()}"
 
     try:
         redis = await get_redis_pool()
@@ -345,6 +349,20 @@ async def search_candidates(
 
     if availability:
         filters.append(Candidate.availability == availability)
+
+    if dateFrom:
+        try:
+            date_from_dt = datetime.strptime(dateFrom, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            filters.append(Candidate.created_at >= date_from_dt)
+        except ValueError:
+            pass
+
+    if dateTo:
+        try:
+            date_to_dt = datetime.strptime(dateTo, "%Y-%m-%d").replace(hour=23, minute=59, second=59, tzinfo=timezone.utc)
+            filters.append(Candidate.created_at <= date_to_dt)
+        except ValueError:
+            pass
 
     base_query = select(*CANDIDATE_LIST_COLUMNS).order_by(Candidate.created_at.desc())
 

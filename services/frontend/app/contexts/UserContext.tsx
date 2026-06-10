@@ -28,6 +28,9 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+const USER_CACHE_TTL = 5 * 60 * 1000;
+let _userCache: { data: User; timestamp: number } | null = null;
+
 async function _doTokenRefresh(): Promise<boolean> {
   try {
     const refreshToken = localStorage.getItem("refresh_token");
@@ -60,15 +63,25 @@ async function _doTokenRefresh(): Promise<boolean> {
 }
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearUser = useCallback(() => {
-    setUser(null);
+    setUserState(null);
+    _userCache = null;
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
       refreshTimerRef.current = null;
+    }
+  }, []);
+
+  const setUser = useCallback((u: User | null) => {
+    setUserState(u);
+    if (u) {
+      _userCache = { data: u, timestamp: Date.now() };
+    } else {
+      _userCache = null;
     }
   }, []);
 
@@ -77,7 +90,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       clearTimeout(refreshTimerRef.current);
     }
 
-    const expiresAt = parseInt(localStorage.getItem("token_expires_at") || "0", 10);
+    const expiresAt = parseInt(
+      localStorage.getItem("token_expires_at") || "0",
+      10
+    );
     const now = Date.now();
     const delay = expiresAt - now;
 
@@ -109,8 +125,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [clearUser]);
 
   const refreshUser = useCallback(async () => {
+    if (
+      _userCache &&
+      Date.now() - _userCache.timestamp < USER_CACHE_TTL
+    ) {
+      setUserState(_userCache.data);
+      setLoading(false);
+      return;
+    }
+
     const data = await getLoggedInUser();
-    setUser(data ?? null);
+    if (data) {
+      _userCache = { data, timestamp: Date.now() };
+      setUserState(data);
+    } else {
+      _userCache = null;
+      setUserState(null);
+    }
     setLoading(false);
     if (data) {
       scheduleTokenRefresh();
@@ -126,7 +157,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const expiresAt = parseInt(localStorage.getItem("token_expires_at") || "0", 10);
+    const expiresAt = parseInt(
+      localStorage.getItem("token_expires_at") || "0",
+      10
+    );
     if (expiresAt && Date.now() >= expiresAt) {
       _doTokenRefresh().then((success) => {
         if (success) {
@@ -153,7 +187,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, loading, clearUser, setUser, refreshUser }}>
+    <UserContext.Provider
+      value={{ user, loading, clearUser, setUser, refreshUser }}
+    >
       {children}
     </UserContext.Provider>
   );

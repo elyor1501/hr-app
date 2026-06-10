@@ -5,7 +5,7 @@ from uuid import UUID
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import ARRAY, Boolean, Date, DateTime, Enum, ForeignKey, Integer, Numeric, String, Text, Index, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, deferred
 from src.db.base import BaseModel
 from src.models.enums import CandidateStatus, UserRole
 
@@ -35,12 +35,12 @@ class Candidate(BaseModel):
     current_company: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     years_of_experience: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     skills: Mapped[Optional[List[str]]] = mapped_column(ARRAY(String), nullable=True)
-    resume_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    resume_text: Mapped[Optional[str]] = deferred(mapped_column(Text, nullable=True))
     resume: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     location: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     status: Mapped[str] = mapped_column(Enum(CandidateStatus, values_callable=lambda x: [e.value for e in x], name="candidatestatus", create_type=False), default=CandidateStatus.ACTIVE.value, index=True)
     linkedin_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    embedding: Mapped[Optional[List[float]]] = mapped_column(Vector(768), nullable=True)
+    embedding: Mapped[Optional[List[float]]] = deferred(mapped_column(Vector(768), nullable=True))
     json_data: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     experience_level: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)
     hourly_rate: Mapped[Optional[float]] = mapped_column(Numeric(10, 2), nullable=True)
@@ -93,6 +93,7 @@ class CandidateCV(BaseModel):
         Index("idx_candidate_cvs_is_primary", "candidate_id", "is_primary"),
     )
 
+
 class CandidateAttachment(BaseModel):
     __tablename__ = "candidate_attachments"
 
@@ -130,7 +131,7 @@ class Job(BaseModel):
     application_posted: Mapped[Optional[date]] = mapped_column(Date)
     application_deadline: Mapped[Optional[date]] = mapped_column(Date)
     status: Mapped[str] = mapped_column(String(50), default="open", index=True)
-    embedding: Mapped[Optional[List[float]]] = mapped_column(Vector(768), nullable=True)
+    embedding: Mapped[Optional[List[float]]] = deferred(mapped_column(Vector(768), nullable=True))
 
     __table_args__ = (
         Index("idx_jobs_status", "status"),
@@ -161,8 +162,8 @@ class Resume(BaseModel):
     file_name: Mapped[str] = mapped_column(String(255), nullable=False)
     file_url: Mapped[str] = mapped_column(Text, nullable=False)
     file_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, unique=True, index=True)
-    raw_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    embedding: Mapped[Optional[List[float]]] = mapped_column(Vector(768), nullable=True)
+    raw_text: Mapped[Optional[str]] = deferred(mapped_column(Text, nullable=True))
+    embedding: Mapped[Optional[List[float]]] = deferred(mapped_column(Vector(768), nullable=True))
     parsed_data: Mapped[Optional["ParsedResume"]] = relationship("ParsedResume", back_populates="resume", uselist=False, cascade="all, delete-orphan", lazy="noload")
 
     __table_args__ = (

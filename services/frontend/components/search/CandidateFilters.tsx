@@ -25,10 +25,9 @@ export interface FilterState {
   experienceMax: string;
   skills: string[];
   candidateStatus: string;
+  dateFrom: string;
+  dateTo: string;
 }
-
-const CANDIDATE_STATUS = ["active", "inactive"];
-const PROCESSING_STATUS = ["processing", "completed", "error"];
 
 export default function CandidateFilters() {
   const router = useRouter();
@@ -43,7 +42,9 @@ export default function CandidateFilters() {
     experienceMin: searchParams.get("experienceMin") || "",
     experienceMax: searchParams.get("experienceMax") || "",
     skills: searchParams.getAll("skills") || [],
-   candidateStatus: searchParams.get("candidateStatus") || "",
+    candidateStatus: searchParams.get("candidateStatus") || "",
+    dateFrom: searchParams.get("dateFrom") || "",
+    dateTo: searchParams.get("dateTo") || "",
   });
 
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
@@ -59,21 +60,17 @@ export default function CandidateFilters() {
     if (filters.q) params.set("q", filters.q);
     if (filters.name) params.set("name", filters.name);
     if (filters.location) params.set("location", filters.location);
-    if (filters.currentTitle)
-      params.set("currentTitle", filters.currentTitle);
-    if (filters.currentCompany)
-      params.set("currentCompany", filters.currentCompany);
-    if (filters.experienceMin)
-      params.set("experienceMin", filters.experienceMin);
-    if (filters.experienceMax)
-      params.set("experienceMax", filters.experienceMax);
-    if (filters.candidateStatus) {
-      params.set("candidateStatus", filters.candidateStatus);
-    }
+    if (filters.currentTitle) params.set("currentTitle", filters.currentTitle);
+    if (filters.currentCompany) params.set("currentCompany", filters.currentCompany);
+    if (filters.experienceMin) params.set("experienceMin", filters.experienceMin);
+    if (filters.experienceMax) params.set("experienceMax", filters.experienceMax);
+    if (filters.candidateStatus) params.set("candidateStatus", filters.candidateStatus);
+    if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
+    if (filters.dateTo) params.set("dateTo", filters.dateTo);
     filters.skills.forEach((s) => params.append("skills", s));
     params.set("page", "1");
 
-    // router.push(`/candidates?${params.toString()}`);
+    router.push(`/candidates?${params.toString()}`);
   };
 
   const handleClear = () => {
@@ -87,8 +84,10 @@ export default function CandidateFilters() {
       experienceMax: "",
       skills: [],
       candidateStatus: "",
+      dateFrom: "",
+      dateTo: "",
     });
-    // router.push("/candidates");
+    router.push("/candidates");
   };
 
   const addSkill = (e: React.KeyboardEvent) => {
@@ -155,7 +154,6 @@ export default function CandidateFilters() {
       {isAdvancedOpen && (
         <Card>
           <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
             <div>
               <Label>Name</Label>
               <Input
@@ -176,9 +174,7 @@ export default function CandidateFilters() {
               <Label>Job Title</Label>
               <Input
                 value={filters.currentTitle}
-                onChange={(e) =>
-                  handleChange("currentTitle", e.target.value)
-                }
+                onChange={(e) => handleChange("currentTitle", e.target.value)}
               />
             </div>
 
@@ -186,9 +182,7 @@ export default function CandidateFilters() {
               <Label>Company</Label>
               <Input
                 value={filters.currentCompany}
-                onChange={(e) =>
-                  handleChange("currentCompany", e.target.value)
-                }
+                onChange={(e) => handleChange("currentCompany", e.target.value)}
               />
             </div>
 
@@ -198,16 +192,12 @@ export default function CandidateFilters() {
                 <Input
                   placeholder="Min"
                   value={filters.experienceMin}
-                  onChange={(e) =>
-                    handleChange("experienceMin", e.target.value)
-                  }
+                  onChange={(e) => handleChange("experienceMin", e.target.value)}
                 />
                 <Input
                   placeholder="Max"
                   value={filters.experienceMax}
-                  onChange={(e) =>
-                    handleChange("experienceMax", e.target.value)
-                  }
+                  onChange={(e) => handleChange("experienceMax", e.target.value)}
                 />
               </div>
             </div>
@@ -218,6 +208,7 @@ export default function CandidateFilters() {
                 value={skillInput}
                 onChange={(e) => setSkillInput(e.target.value)}
                 onKeyDown={addSkill}
+                placeholder="Type skill and press Enter"
               />
               <div className="flex flex-wrap gap-2 mt-2">
                 {filters.skills.map((skill) => (
@@ -232,33 +223,46 @@ export default function CandidateFilters() {
               </div>
             </div>
 
-            <div className=" flex space-x-2">
-  <Label>Candidate Status</Label>
+            <div>
+              <Label>Created Date Range</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="date"
+                  value={filters.dateFrom}
+                  onChange={(e) => handleChange("dateFrom", e.target.value)}
+                />
+                <Input
+                  type="date"
+                  value={filters.dateTo}
+                  onChange={(e) => handleChange("dateTo", e.target.value)}
+                />
+              </div>
+            </div>
 
-  <div className="flex gap-2">
-    {["active", "inactive"].map((status) => {
-      const isSelected = filters.candidateStatus === status;
-
-      return (
-        <button
-          key={status}
-          type="button"
-          onClick={() => handleChange("candidateStatus", status)}
-          className={`px-4 py-1.5 rounded-md border text-sm transition capitalize
-            ${
-              isSelected
-                ? status === "active"
-                  ? "bg-green-100 text-green-700 border-green-300"
-                  : "bg-red-100 text-red-700 border-red-300"
-                : "bg-background hover:bg-muted"
-            }`}
-        >
-          {status}
-        </button>
-      );
-    })}
-  </div>
-</div>
+            <div className="flex space-x-2">
+              <Label>Candidate Status</Label>
+              <div className="flex gap-2">
+                {["active", "inactive"].map((s) => {
+                  const isSelected = filters.candidateStatus === s;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => handleChange("candidateStatus", isSelected ? "" : s)}
+                      className={`px-4 py-1.5 rounded-md border text-sm transition capitalize ${
+                        isSelected
+                          ? s === "active"
+                            ? "bg-green-100 text-green-700 border-green-300"
+                            : "bg-red-100 text-red-700 border-red-300"
+                          : "bg-background hover:bg-muted"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </CardContent>
 
           <div className="flex justify-end gap-2 p-4 border-t">

@@ -15,7 +15,7 @@ from src.db.models import Job
 router = APIRouter()
 
 JOBS_CACHE_KEY = "hr_app:jobs:list"
-JOBS_CACHE_TTL = 60
+JOBS_CACHE_TTL = 300
 
 
 def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepository[Job]:
@@ -25,9 +25,15 @@ def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepos
 async def invalidate_jobs_cache():
     try:
         redis = await get_redis_pool()
-        keys = await redis.keys("hr_app:jobs:*")
-        if keys:
-            await redis.delete(*keys)
+        cursor = 0
+        keys_to_delete = []
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:jobs:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        if keys_to_delete:
+            await redis.delete(*keys_to_delete)
     except Exception:
         pass
     try:
@@ -46,7 +52,7 @@ class PaginatedJobsResponse(BaseModel):
     has_previous: bool
 
 
-@router.post("/", response_model=JobResponse, status_code=status.HTTP_201_CREATED, summary="Create a new job posting")
+@router.post("/", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
 async def create_job(job_in: JobCreate, repo: BaseRepository[Job] = Depends(get_repository)):
     job_data = job_in.to_db_dict()
     job_data["embedding"] = None
@@ -57,13 +63,13 @@ async def create_job(job_in: JobCreate, repo: BaseRepository[Job] = Depends(get_
 
 @router.get("/", response_model=PaginatedJobsResponse)
 async def list_jobs(
-    page: int = Query(1, ge=1, description="Page number (starts from 1)"),
-    page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
     q: Optional[str] = Query(None),
     session: AsyncSession = Depends(get_db_session),
 ):
     cache_key = f"{JOBS_CACHE_KEY}:{page}:{page_size}:{q or ''}"
-    
+
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -81,9 +87,7 @@ async def list_jobs(
     count_query = text(f"SELECT COUNT(*) FROM jobs {where_clause}")
     count_result = await session.execute(count_query, {"q": params.get("q")} if q else {})
     total = count_result.scalar() or 0
-    
-    offset = (page - 1) * page_size
-    
+
     query = text(f"""
         SELECT id, title, department, employment_type, work_mode, location,
                description, responsibilities, required_skills, preferred_skills,
@@ -94,10 +98,10 @@ async def list_jobs(
         ORDER BY created_at DESC
         OFFSET :offset LIMIT :limit
     """)
-    
+
     result = await session.execute(query, params)
     rows = result.fetchall()
-    
+
     items = []
     for row in rows:
         items.append({
@@ -122,9 +126,9 @@ async def list_jobs(
             "created_at": row.created_at.isoformat() if row.created_at else None,
             "updated_at": row.updated_at.isoformat() if row.updated_at else None,
         })
-    
+
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
-    
+
     response_data = {
         "items": items,
         "total": total,
@@ -147,7 +151,7 @@ async def list_jobs(
 @router.get("/{id}", response_model=JobResponse)
 async def get_job(id: UUID, repo: BaseRepository[Job] = Depends(get_repository)):
     cache_key = f"hr_app:job:{id}"
-    
+
     try:
         redis = await get_redis_pool()
         cached = await redis.get(cache_key)
@@ -155,19 +159,19 @@ async def get_job(id: UUID, repo: BaseRepository[Job] = Depends(get_repository))
             return JobResponse(**json.loads(cached))
     except Exception:
         pass
-    
+
     job = await repo.get_by_id(id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
-    
+
     job_dict = job.to_dict()
-    
+
     try:
         redis = await get_redis_pool()
         await redis.setex(cache_key, JOBS_CACHE_TTL, json.dumps(job_dict))
     except Exception:
         pass
-    
+
     return job
 
 

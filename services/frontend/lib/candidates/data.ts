@@ -35,7 +35,7 @@ export type PaginatedCandidates = {
   has_previous: boolean;
 };
 
-const CACHE_TTL = 60000;
+const CACHE_TTL = 0;
 const DETAIL_CACHE_TTL = 300000;
 let candidatesCache: { data: PaginatedCandidates; timestamp: number; q?: string } | null = null;
 let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
@@ -45,19 +45,6 @@ export async function getCandidates(
   page_size: number = 10,
   q?: string
 ): Promise<PaginatedCandidates> {
-  const isServer = typeof window === "undefined";
-
-  if (
-    !isServer &&
-    candidatesCache &&
-    candidatesCache.data.page === page &&
-    candidatesCache.data.page_size === page_size &&
-    candidatesCache.q === (q || "") &&
-    Date.now() - candidatesCache.timestamp < CACHE_TTL
-  ) {
-    return candidatesCache.data;
-  }
-
   const apiUrl = getApiUrl();
   const token = getAuthToken();
   const queryParams = new URLSearchParams({
@@ -108,10 +95,6 @@ export async function getCandidates(
       has_previous: data.has_previous ?? false,
     };
 
-    if (!isServer) {
-      candidatesCache = { data: result, timestamp: Date.now(), q: q || "" };
-    }
-
     return result;
   } catch (err) {
     console.error("Fetch error:", err);
@@ -149,7 +132,7 @@ export async function getCandidateById(id: string) {
     const res = await fetch(profileUrl, {
       method: "GET",
       headers,
-      cache: "no-store",
+      next: { revalidate: 300 },
     });
 
     if (res.status === 404) {
@@ -239,6 +222,8 @@ export async function searchCandidates(params: any): Promise<PaginatedCandidates
         : params.skills;
       queryParams.set("skills", skills);
     }
+    if (params.dateFrom) queryParams.set("dateFrom", params.dateFrom as string);
+    if (params.dateTo) queryParams.set("dateTo", params.dateTo as string);
 
     queryParams.set("page", page.toString());
     queryParams.set("page_size", page_size.toString());

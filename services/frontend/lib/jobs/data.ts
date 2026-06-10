@@ -24,7 +24,7 @@ export type JobList = {
 };
 
 let jobCache: { data: JobList[]; timestamp: number } | null = null;
-const CACHE_TTL = 30000;
+const CACHE_TTL = 300000;
 
 export async function getJob(
   page: number = 1,
@@ -48,7 +48,7 @@ export async function getJob(
       `${apiUrl}/api/v1/jobs/?${queryParams.toString()}`,
       {
         headers,
-        next: { revalidate: 30 },
+        next: { revalidate: 300 },
       }
     );
 
@@ -94,7 +94,7 @@ export async function getJobById(id: string) {
       {
         method: "GET",
         headers,
-        next: { revalidate: 60 },
+        next: { revalidate: 300 },
       }
     );
 

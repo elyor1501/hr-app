@@ -66,48 +66,39 @@ export function DataTable<TData, TValue>({
   onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
-    {
-      id: "created_at",
-      desc: true,
-    },
+    { id: "created_at", desc: true },
   ]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({
-      created_at: true,
-    });
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    created_at: true,
+  });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
+  const [globalFilter, setGlobalFilter] = React.useState(globalFilterValue || "");
 
-  const [globalFilter, setGlobalFilter] = React.useState(
-    globalFilterValue || "",
-  );
-
-  // Update internal state when prop changes
   React.useEffect(() => {
     if (globalFilterValue !== undefined) {
       setGlobalFilter(globalFilterValue);
     }
   }, [globalFilterValue]);
 
-  // Debounce search changes
   React.useEffect(() => {
     const timer = setTimeout(() => {
       if (onGlobalFilterChange && globalFilter !== globalFilterValue) {
         onGlobalFilterChange(globalFilter);
       }
-    }, 500);
-
+    }, 800);
     return () => clearTimeout(timer);
   }, [globalFilter, onGlobalFilterChange, globalFilterValue]);
 
+  const memoizedData = React.useMemo(() => data, [data]);
+  const memoizedColumns = React.useMemo(() => columns, [columns]);
+
   const table = useReactTable({
-    data,
-    columns,
+    data: memoizedData,
+    columns: memoizedColumns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -119,13 +110,13 @@ export function DataTable<TData, TValue>({
     onGlobalFilterChange: setGlobalFilter,
     onRowSelectionChange: onRowSelectionChange,
     state: {
-          sorting,
-          columnFilters,
-          columnVisibility,
-          pagination,
-          globalFilter: onGlobalFilterChange ? "" : globalFilter,
-          rowSelection,
-        },
+      sorting,
+      columnFilters,
+      columnVisibility,
+      pagination,
+      globalFilter: onGlobalFilterChange ? "" : globalFilter,
+      rowSelection,
+    },
   });
 
   return (
@@ -140,7 +131,6 @@ export function DataTable<TData, TValue>({
                 onChange={(event) => setGlobalFilter(event.target.value)}
                 className="w-32 md:w-64"
               />
-
               {globalFilter && (
                 <Button
                   variant="outline"
@@ -198,11 +188,9 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   const columnHeader = header.column.columnDef.header;
                   const isButtonHeader = typeof columnHeader === "function";
-
                   const displayContent = isButtonHeader
                     ? columnHeader(header.getContext())
                     : columnHeader || sort;
-
                   return (
                     <TableHead
                       className={`px-6 py-3 whitespace-nowrap break-words text-sm font-medium ${
@@ -215,8 +203,8 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : isButtonHeader
-                          ? displayContent
-                          : flexRender(displayContent, header.getContext())}
+                        ? displayContent
+                        : flexRender(displayContent, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -237,27 +225,20 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`px-2 md:px-6 py-2 md:py-4 font-medium truncate min-w-0 text-xs md:text-sm dark:text-neutral-50
-                      ${
+                      className={`px-2 md:px-6 py-2 md:py-4 font-medium truncate min-w-0 text-xs md:text-sm dark:text-neutral-50 ${
                         ["uploaded_at"].includes(cell.column.id)
                           ? "hidden md:table-cell"
                           : "table-cell"
                       }`}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results
                 </TableCell>
               </TableRow>
@@ -275,12 +256,10 @@ export function DataTable<TData, TValue>({
           >
             <ArrowLeft />
           </Button>
-
           <span className="text-sm">
             Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>
-
           <Button
             variant="outline"
             size="sm"

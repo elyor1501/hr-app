@@ -3,7 +3,7 @@ import JobTable from "@/components/jobs/JobTable";
 import { getJob } from "@/lib/jobs/data";
 import ServerPagination from "@/components/ServerPagination";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

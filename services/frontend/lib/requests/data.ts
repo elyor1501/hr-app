@@ -43,7 +43,7 @@ export async function getRequests(
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        next: { revalidate: 30 },
+        next: { revalidate: 300 },
       }
     );
 
@@ -52,7 +52,6 @@ export async function getRequests(
     }
 
     const data = await res.json();
-
     return Array.isArray(data) ? data : data?.items ?? data?.data ?? [];
   } catch (error) {
     console.error("getRequests error:", error);
@@ -71,7 +70,7 @@ export async function getRequestById(id: string): Promise<RequestItem | null> {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      next: { revalidate: 30 },
+      next: { revalidate: 300 },
     });
 
     if (!res.ok) {
@@ -79,7 +78,6 @@ export async function getRequestById(id: string): Promise<RequestItem | null> {
     }
 
     const data = await res.json();
-
     return data?.data ?? data ?? null;
   } catch (error) {
     console.error("getRequestById error:", error);

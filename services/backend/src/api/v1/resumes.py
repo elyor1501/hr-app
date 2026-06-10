@@ -25,7 +25,7 @@ router = APIRouter()
 upload_logger = structlog.get_logger()
 
 RESUMES_CACHE_KEY = "hr_app:resumes:list"
-RESUMES_CACHE_TTL = 60
+RESUMES_CACHE_TTL = 300
 MAX_UPLOAD_LIMIT = 300
 UPLOAD_CONCURRENCY = 3
 JOB_CHUNK_SIZE = 10
@@ -98,15 +98,27 @@ def get_repository(session: AsyncSession = Depends(get_db_session)) -> BaseRepos
 async def invalidate_resumes_cache():
     try:
         redis = await get_redis_pool()
-        keys = await redis.keys("hr_app:resumes:*")
-        if keys:
-            await redis.delete(*keys)
-        candidate_keys = await redis.keys("hr_app:candidates:*")
-        if candidate_keys:
-            await redis.delete(*candidate_keys)
-        search_keys = await redis.keys("hr_backend:search:*")
-        if search_keys:
-            await redis.delete(*search_keys)
+        cursor = 0
+        keys_to_delete = []
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:resumes:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        cursor = 0
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:candidates:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        cursor = 0
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_backend:search:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        if keys_to_delete:
+            await redis.delete(*keys_to_delete)
     except Exception:
         pass
 
@@ -314,9 +326,13 @@ async def list_resumes(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     q: Optional[str] = Query(None),
+    dateFrom: Optional[str] = Query(None),
+    dateTo: Optional[str] = Query(None),
     session: AsyncSession = Depends(get_db_session)
 ):
-    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}:{q or ''}"
+    from datetime import datetime, timezone
+
+    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}:{q or ''}:{dateFrom or ''}:{dateTo or ''}"
 
     try:
         redis = await get_redis_pool()
@@ -326,17 +342,38 @@ async def list_resumes(
     except Exception:
         pass
 
-    where_clause = ""
-    params = {"skip": (page - 1) * page_size, "limit": page_size}
+    conditions = []
+    params: dict = {"skip": (page - 1) * page_size, "limit": page_size}
+
     if q:
-        where_clause = "WHERE file_name ILIKE :q"
+        conditions.append("file_name ILIKE :q")
         params["q"] = f"%{q}%"
 
+    if dateFrom:
+        try:
+            dt = datetime.strptime(dateFrom, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            conditions.append("created_at >= :date_from")
+            params["date_from"] = dt
+        except ValueError:
+            pass
+
+    if dateTo:
+        try:
+            dt = datetime.strptime(dateTo, "%Y-%m-%d").replace(
+                hour=23, minute=59, second=59, tzinfo=timezone.utc
+            )
+            conditions.append("created_at <= :date_to")
+            params["date_to"] = dt
+        except ValueError:
+            pass
+
+    where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+    count_params = {k: v for k, v in params.items() if k not in ("skip", "limit")}
     count_query = text(f"SELECT COUNT(*) FROM resumes {where_clause}")
-    count_result = await session.execute(count_query, {"q": params.get("q")} if q else {})
+    count_result = await session.execute(count_query, count_params)
     total = count_result.scalar() or 0
 
-    offset = (page - 1) * page_size
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
     query = text(f"""

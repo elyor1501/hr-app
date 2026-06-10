@@ -6,7 +6,7 @@ import { updateCandidate, setPrimaryResume } from "@/lib/candidates/action";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { FileText, CheckCircle, Paperclip, EyeIcon } from "lucide-react";
+import { FileText, Paperclip, EyeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DeleteResumeButton } from "./DeleteCandiResumeButton";
 import { DeleteAttachmentButton } from "./DeleteAttachmentButton";
@@ -74,6 +74,46 @@ function formatRateType(rt: string | null): string {
   return rt.charAt(0).toUpperCase() + rt.slice(1);
 }
 
+function openFileViewer(fileUrl: string) {
+  const ext = fileUrl?.split(".").pop()?.toLowerCase();
+
+  if (ext === "pdf") {
+    window.open(fileUrl, "_blank");
+    return;
+  }
+
+  const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+  const newWindow = window.open(viewerUrl, "_blank");
+
+  if (!newWindow) return;
+
+  let attempts = 0;
+  const maxAttempts = 3;
+
+  const retry = () => {
+    attempts++;
+    if (attempts < maxAttempts) {
+      setTimeout(() => {
+        try {
+          newWindow.location.href = `${viewerUrl}&t=${Date.now()}`;
+        } catch {
+          return;
+        }
+        retry();
+      }, 4000);
+    } else {
+      setTimeout(() => {
+        try {
+          newWindow.location.href = fileUrl;
+        } catch {
+        }
+      }, 4000);
+    }
+  };
+
+  setTimeout(retry, 4000);
+}
+
 export default function CandidateDetails({ id, empData }: Props) {
   const [candidate, setCandidate] = useState<any>(
     empData?.status === "processing" ? null : empData,
@@ -139,25 +179,17 @@ export default function CandidateDetails({ id, empData }: Props) {
 
   async function handleSubmit(formData: FormData) {
     if (saving) return;
-
     setSaving(true);
-
     try {
       await updateCandidate(formData);
-
       const updatedCandidate = await getCandidateById(id);
       setCandidate(updatedCandidate);
-
       if (updatedCandidate?.rate_type) setRateType(updatedCandidate.rate_type);
-
       if (updatedCandidate?.currency) setCurrency(updatedCandidate.currency);
-
       if (updatedCandidate?.proposed_rate_type)
         setProposedRateType(updatedCandidate.proposed_rate_type);
-
       if (updatedCandidate?.proposed_currency)
         setProposedCurrency(updatedCandidate.proposed_currency);
-
       setIsEditing(false);
       toast.success("Candidate updated successfully");
     } catch (error: any) {
@@ -322,6 +354,7 @@ export default function CandidateDetails({ id, empData }: Props) {
       </div>
     </div>
   );
+
   return (
     <div className="max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-sm border border-border p-4 sm:p-6 md:p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
@@ -369,9 +402,7 @@ export default function CandidateDetails({ id, empData }: Props) {
           className="mt-4 sm:mt-6"
           onSubmit={async (e) => {
             e.preventDefault();
-
             if (loading) return;
-
             const formData = new FormData(e.currentTarget);
             await handleSubmit(formData);
           }}
@@ -379,16 +410,8 @@ export default function CandidateDetails({ id, empData }: Props) {
           <input type="hidden" name="id" value={candidate.id} />
           <input type="hidden" name="rate_type" value={rateType} />
           <input type="hidden" name="currency" value={currency} />
-          <input
-            type="hidden"
-            name="proposed_rate_type"
-            value={proposedRateType}
-          />
-          <input
-            type="hidden"
-            name="proposed_currency"
-            value={proposedCurrency}
-          />
+          <input type="hidden" name="proposed_rate_type" value={proposedRateType} />
+          <input type="hidden" name="proposed_currency" value={proposedCurrency} />
 
           <TabsContent value="basic" className="space-y-4 sm:space-y-6">
             <div className="flex justify-end">
@@ -426,14 +449,12 @@ export default function CandidateDetails({ id, empData }: Props) {
                       pointerEvents: saving ? "none" : "auto",
                     }}
                     onMouseEnter={(e) => {
-                      if (!saving) {
+                      if (!saving)
                         e.currentTarget.style.backgroundColor = "#F5A623";
-                      }
                     }}
                     onMouseLeave={(e) => {
-                      if (!saving) {
+                      if (!saving)
                         e.currentTarget.style.backgroundColor = "#429ABD";
-                      }
                     }}
                   >
                     {saving ? "Saving..." : "Save"}
@@ -480,9 +501,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 ) : (
                   <input
                     name="status"
-                    value={
-                      candidate?.status === "active" ? "Active" : "Inactive"
-                    }
+                    value={candidate?.status === "active" ? "Active" : "Inactive"}
                     disabled
                     className={fieldClass}
                   />
@@ -647,13 +666,11 @@ export default function CandidateDetails({ id, empData }: Props) {
                       </span>
                     )}
                   </div>
-
                   <div>
                     <span className="text-xs sm:text-sm text-muted-foreground">
                       {edu.institution}
                     </span>
                   </div>
-
                   {edu.grade && (
                     <div className="text-xs sm:text-sm text-muted-foreground">
                       Grade: {edu.grade}
@@ -669,10 +686,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                {sectionHeader(
-                  `Matching Requests (${matches.length})`,
-                  "#F5A623",
-                )}
+                {sectionHeader(`Matching Requests (${matches.length})`, "#F5A623")}
                 <button
                   type="button"
                   onClick={(e) => {
@@ -713,33 +727,24 @@ export default function CandidateDetails({ id, empData }: Props) {
                         </h3>
                         <span
                           className="px-2 py-1 rounded text-xs sm:text-sm font-semibold"
-                          style={{
-                            backgroundColor: "#429ABD20",
-                            color: "#429ABD",
-                          }}
+                          style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
                         >
                           {Number(job.match_score).toFixed(2)}%
                         </span>
                       </div>
                       <p className="text-xs sm:text-sm text-muted-foreground mb-2">
-                        <span className="font-bold text-foreground">
-                          Reasoning:
-                        </span>{" "}
+                        <span className="font-bold text-foreground">Reasoning:</span>{" "}
                         {job.reasoning}
                       </p>
                       {job.strengths?.length > 0 && (
                         <div className="text-xs sm:text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-foreground">
-                            Strengths:
-                          </span>{" "}
+                          <span className="font-bold text-foreground">Strengths:</span>{" "}
                           {job.strengths.join(", ")}
                         </div>
                       )}
                       {job.gaps?.length > 0 && (
                         <div className="text-xs sm:text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-foreground">
-                            Gaps:
-                          </span>{" "}
+                          <span className="font-bold text-foreground">Gaps:</span>{" "}
                           {job.gaps.join(", ")}
                         </div>
                       )}
@@ -817,28 +822,10 @@ export default function CandidateDetails({ id, empData }: Props) {
                 candidate.cvs.map((resume: any) => (
                   <div
                     key={resume.id}
-                    onClick={() => {
-                      const ext = resume.file_url
-                        ?.split(".")
-                        .pop()
-                        ?.toLowerCase();
-
-                      if (ext === "pdf") {
-                        window.open(resume.file_url, "_blank");
-                      } else {
-                        window.open(
-                          `https://docs.google.com/gview?url=${encodeURIComponent(resume.file_url)}&embedded=true`,
-                          "_blank",
-                        );
-                      }
-                    }}
+                    onClick={() => openFileViewer(resume.file_url)}
                     className="rounded-xl border border-border shadow-sm overflow-hidden transition-all duration-300"
                   >
-                    <div
-                      className={cn(
-                        "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#429ABD08] hover:border-[#429ABD] border border-transparent transition-all duration-300",
-                      )}
-                    >
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#429ABD08] hover:border-[#429ABD] border border-transparent transition-all duration-300">
                       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                         <div
                           className={cn(
@@ -894,18 +881,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            const ext = resume.file_url
-                              ?.split(".")
-                              .pop()
-                              ?.toLowerCase();
-                            if (ext === "pdf") {
-                              window.open(resume.file_url, "_blank");
-                            } else {
-                              window.open(
-                                `https://docs.google.com/gview?url=${encodeURIComponent(resume.file_url)}&embedded=true`,
-                                "_blank",
-                              );
-                            }
+                            openFileViewer(resume.file_url);
                           }}
                           className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
                           title="View Resume"
@@ -926,28 +902,12 @@ export default function CandidateDetails({ id, empData }: Props) {
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
-
                           if (!resume.deloitte_pptx_url) return;
-
-                          const ext = resume.deloitte_pptx_url
-                            ?.split(".")
-                            .pop()
-                            ?.toLowerCase();
-
-                          if (ext === "pdf") {
-                            window.open(resume.deloitte_pptx_url, "_blank");
-                          } else {
-                            window.open(
-                              `https://docs.google.com/gview?url=${encodeURIComponent(resume.deloitte_pptx_url)}&embedded=true`,
-                              "_blank",
-                            );
-                          }
+                          openFileViewer(resume.deloitte_pptx_url);
                         }}
                         className={cn(
                           "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#F5A62308] hover:border-[#F5A623] border border-transparent transition-all duration-300",
-                          resume.deloitte_pptx_url
-                            ? "bg-[#429ABD06]"
-                            : "bg-muted/20",
+                          resume.deloitte_pptx_url ? "bg-[#429ABD06]" : "bg-muted/20",
                         )}
                       >
                         <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
@@ -961,7 +921,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                           >
                             <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                           </div>
-
                           <div>
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="font-medium text-sm text-foreground">
@@ -969,7 +928,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                                   ? `${(resume.file_name || "Resume").replace(/\.[^/.]+$/, "")}_Deloitte.pptx`
                                   : "Deloitte Resume"}
                               </span>
-
                               <span
                                 className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full"
                                 style={{
@@ -980,7 +938,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                                 Deloitte
                               </span>
                             </div>
-
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {resume.deloitte_pptx_url
                                 ? "Generated Deloitte Resume"
@@ -988,7 +945,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                             </p>
                           </div>
                         </div>
-
                         <div className="flex items-center gap-2 ml-auto sm:ml-0">
                           <GenerateDeloitteButton
                             candidateId={id}
@@ -1005,6 +961,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               )}
             </div>
           </TabsContent>
+
           <TabsContent value="attachments" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <h3
@@ -1063,20 +1020,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                     <div className="flex items-center gap-2 ml-auto sm:ml-0">
                       <button
                         type="button"
-                        onClick={() => {
-                          const ext = attachment.file_url
-                            ?.split(".")
-                            .pop()
-                            ?.toLowerCase();
-                          if (ext === "pdf") {
-                            window.open(attachment.file_url, "_blank");
-                          } else {
-                            window.open(
-                              `https://docs.google.com/gview?url=${encodeURIComponent(attachment.file_url)}&embedded=true`,
-                              "_blank",
-                            );
-                          }
-                        }}
+                        onClick={() => openFileViewer(attachment.file_url)}
                         title="View Attachment"
                         className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
                       >

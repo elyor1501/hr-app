@@ -29,7 +29,7 @@ export interface StatsData {
 }
 
 let statsCache: { data: StatsData; timestamp: number } | null = null;
-const CACHE_TTL = 30000;
+const CACHE_TTL = 300000;
 
 export async function getStats(): Promise<StatsData | null> {
   const isServer = typeof window === "undefined";
@@ -42,12 +42,16 @@ export async function getStats(): Promise<StatsData | null> {
     const token = getAuthToken();
     const apiUrl = getApiUrl();
 
-    const res = await fetch(`${apiUrl}/api/v1/stats`, {
+    const fetchUrl = apiUrl
+      ? `${apiUrl}/api/v1/stats`
+      : `/api/v1/stats`;
+
+    const res = await fetch(fetchUrl, {
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      next: { revalidate: 60 }, // Revalidate every minute
+      next: { revalidate: 300 },
     });
 
     if (!res.ok) throw new Error("API error");
@@ -57,7 +61,7 @@ export async function getStats(): Promise<StatsData | null> {
     if (!isServer) {
       statsCache = { data, timestamp: Date.now() };
     }
-    
+
     return data;
   } catch (err) {
     console.error("Failed to fetch stats:", err);

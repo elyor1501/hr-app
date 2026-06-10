@@ -35,9 +35,8 @@ function AuthSkeleton() {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { user, loading, refreshUser } = useUser();
+  const { user, loading } = useUser();
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -45,14 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [loading, user, router]);
 
-  useEffect(() => {
-    if (user) {
-      refreshUser();
-    }
-  }, [pathname]);
-
   if (loading) return <AuthSkeleton />;
-
   if (!user) return null;
 
   return <ClientLayout user={user}>{children}</ClientLayout>;

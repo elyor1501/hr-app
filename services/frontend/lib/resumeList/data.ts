@@ -20,26 +20,15 @@ export type PaginatedResumes = {
   has_previous: boolean;
 };
 
-const CACHE_TTL = 0;
 let resumeCache: { data: PaginatedResumes; timestamp: number } | null = null;
 
 export async function getResumes(
   page: number = 1,
   page_size: number = 10,
-  q?: string
+  q?: string,
+  dateFrom?: string,
+  dateTo?: string
 ): Promise<PaginatedResumes> {
-  const isServer = typeof window === "undefined";
-
-  if (
-    !isServer &&
-    resumeCache &&
-    resumeCache.data.page === page &&
-    resumeCache.data.page_size === page_size &&
-    Date.now() - resumeCache.timestamp < CACHE_TTL
-  ) {
-    return resumeCache.data;
-  }
-
   const apiUrl = getApiUrl();
   const token = getAuthToken();
 
@@ -52,6 +41,8 @@ export async function getResumes(
     page_size: page_size.toString(),
   });
   if (q) queryParams.set("q", q);
+  if (dateFrom) queryParams.set("dateFrom", dateFrom);
+  if (dateTo) queryParams.set("dateTo", dateTo);
 
   const fullUrl = apiUrl
     ? `${apiUrl}/api/v1/resumes/?${queryParams.toString()}`
@@ -89,13 +80,7 @@ export async function getResumes(
           : "processing",
     }));
 
-    const result: PaginatedResumes = { ...data, items: updatedItems };
-
-    if (!isServer) {
-      resumeCache = { data: result, timestamp: Date.now() };
-    }
-
-    return result;
+    return { ...data, items: updatedItems };
   } catch (error) {
     console.error("Error fetching resumes:", error);
     return empty;

@@ -1,12 +1,11 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 import CandidatesTable from "@/components/candidate/CandidateTable";
 import { CompareBar } from "@/components/candidate/CompareBar";
 import { getCandidates, searchCandidates, PaginatedCandidates } from "@/lib/candidates/data";
 import { getResumes } from "@/lib/resumeList/data";
 import ServerPagination from "@/components/ServerPagination";
 import CandidateFilters from "@/components/search/CandidateFilters";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -18,17 +17,23 @@ export default async function Page({ searchParams }: PageProps) {
   const pageSize = 10;
 
   const q = params.q as string | undefined;
-  const hasFilters = params.name || params.jobTitle || params.location || params.experienceLevel || params.availability || params.skills;
+  const dateFrom = params.dateFrom as string | undefined;
+  const dateTo = params.dateTo as string | undefined;
 
-  let candidateResult: PaginatedCandidates;
+  const hasFilters =
+    params.name ||
+    params.jobTitle ||
+    params.location ||
+    params.experienceLevel ||
+    params.availability ||
+    params.skills ||
+    dateFrom ||
+    dateTo;
 
-  if (hasFilters) {
-    candidateResult = await searchCandidates({ ...params, page, page_size: pageSize });
-  } else {
-    candidateResult = await getCandidates(page, pageSize, q);
-  }
-
-  const [resumeResult] = await Promise.all([
+  const [candidateResult, resumeResult] = await Promise.all([
+    hasFilters
+      ? searchCandidates({ ...params, page, page_size: pageSize })
+      : getCandidates(page, pageSize, q),
     getResumes(1, pageSize),
   ]);
 
@@ -38,8 +43,13 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <div className="pb-20">
-      <div className="flex items-center justify-between border p-4 rounded-lg mt-2" style={{ borderColor: '#429ABD20' }}>
-        <h1 className="font-semibold" style={{ color: '#429ABD' }}>Candidate List</h1>
+      <div
+        className="flex items-center justify-between border p-4 rounded-lg mt-2"
+        style={{ borderColor: "#429ABD20" }}
+      >
+        <h1 className="font-semibold" style={{ color: "#429ABD" }}>
+          Candidate List
+        </h1>
       </div>
 
       <CandidatesTable data={data} resumes={resumes} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +27,7 @@ type UserNavProps = {
 
 export function UserNav({ user }: UserNavProps) {
   const router = useRouter();
-  const { clearUser } = useUser();
+  const { clearUser, user: contextUser } = useUser();
 
   const email = user?.email ?? "";
   const name =
@@ -37,6 +37,7 @@ export function UserNav({ user }: UserNavProps) {
     "User";
 
   const initials = name.substring(0, 2).toUpperCase();
+  const isAdmin = contextUser?.role === "admin";
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -68,13 +69,32 @@ export function UserNav({ user }: UserNavProps) {
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium">{name}</p>
-            <p className="text-xs text-muted-foreground">
-              {email}
-            </p>
+            <p className="text-xs text-muted-foreground">{email}</p>
+            {isAdmin && (
+              <span
+                className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit"
+                style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
+              >
+                Admin
+              </span>
+            )}
           </div>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
+
+        {isAdmin && (
+          <DropdownMenuItem
+            onClick={() => router.push("/manage-users")}
+            className="flex items-center cursor-pointer"
+            style={{ color: "#429ABD" }}
+          >
+            <Users className="w-4 h-4 mr-3" />
+            Manage Users
+          </DropdownMenuItem>
+        )}
+
+        {isAdmin && <DropdownMenuSeparator />}
 
         <DropdownMenuItem
           onClick={handleLogout}

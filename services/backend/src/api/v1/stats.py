@@ -47,7 +47,7 @@ class StatsResponse(BaseModel):
 
 
 STATS_CACHE_KEY = "hr_app:stats:dashboard"
-STATS_CACHE_TTL = 30
+STATS_CACHE_TTL = 300
 
 
 async def _build_stats_from_row(row) -> StatsResponse:
@@ -85,12 +85,6 @@ async def _build_stats_from_row(row) -> StatsResponse:
 
 async def _fetch_fresh_stats(session: AsyncSession) -> StatsResponse:
     try:
-        await session.execute(text("REFRESH MATERIALIZED VIEW dashboard_stats"))
-        await session.commit()
-    except Exception:
-        pass
-
-    try:
         result = await session.execute(text("SELECT * FROM dashboard_stats LIMIT 1"))
         row = result.fetchone()
         if row:
@@ -99,7 +93,7 @@ async def _fetch_fresh_stats(session: AsyncSession) -> StatsResponse:
         pass
 
     result = await session.execute(text("""
-        SELECT 
+        SELECT
             (SELECT COUNT(*) FROM jobs) as total_jobs,
             (SELECT COUNT(*) FROM candidates) as total_employees,
             (SELECT COUNT(*) FROM resumes) as total_resumes,
@@ -119,6 +113,14 @@ async def _fetch_fresh_stats(session: AsyncSession) -> StatsResponse:
     """))
     row = result.fetchone()
     return await _build_stats_from_row(row)
+
+
+async def _refresh_materialized_view(session: AsyncSession):
+    try:
+        await session.execute(text("REFRESH MATERIALIZED VIEW dashboard_stats"))
+        await session.commit()
+    except Exception:
+        pass
 
 
 @router.get("", response_model=StatsResponse)
@@ -150,6 +152,7 @@ async def refresh_stats(session: AsyncSession = Depends(get_db_session)):
     except Exception:
         pass
 
+    await _refresh_materialized_view(session)
     response = await _fetch_fresh_stats(session)
 
     try:

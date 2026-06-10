@@ -174,12 +174,21 @@ class RequestCountResponse(BaseModel):
 async def _invalidate_requests_cache():
     try:
         redis = await get_redis_pool()
-        keys = await redis.keys("hr_app:requests:*")
-        if keys:
-            await redis.delete(*keys)
-        stats_keys = await redis.keys("hr_app:stats:*")
-        if stats_keys:
-            await redis.delete(*stats_keys)
+        cursor = 0
+        keys_to_delete = []
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:requests:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        cursor = 0
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:stats:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        if keys_to_delete:
+            await redis.delete(*keys_to_delete)
     except Exception:
         pass
 
@@ -513,7 +522,7 @@ async def get_requests_count(session: AsyncSession = Depends(get_db_session)):
 
     try:
         redis = await get_redis_pool()
-        await redis.setex(cache_key, 30, json.dumps(response.model_dump()))
+        await redis.setex(cache_key, 300, json.dumps(response.model_dump()))
     except Exception:
         pass
 
@@ -620,7 +629,7 @@ async def list_requests(
 
     try:
         redis = await get_redis_pool()
-        await redis.setex(cache_key, 30, json.dumps([i.model_dump() for i in items], default=str))
+        await redis.setex(cache_key, 300, json.dumps([i.model_dump() for i in items], default=str))
     except Exception:
         pass
 

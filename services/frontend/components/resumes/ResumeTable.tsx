@@ -7,6 +7,22 @@ import { useState } from "react";
 import { BulkDeleteResumesButton } from "./BulkDeleteResumesButton";
 import { toast } from "sonner";
 
+function parseSearchDate(value: string): { dateFrom: string; dateTo: string } | null {
+  const ddmmyyyy = value.match(/^(\d{2})[.\-\/](\d{2})[.\-\/](\d{4})$/);
+  if (ddmmyyyy) {
+    const formatted = `${ddmmyyyy[3]}-${ddmmyyyy[2]}-${ddmmyyyy[1]}`;
+    return { dateFrom: formatted, dateTo: formatted };
+  }
+
+  const yyyymmdd = value.match(/^(\d{4})[.\-\/](\d{2})[.\-\/](\d{2})$/);
+  if (yyyymmdd) {
+    const formatted = `${yyyymmdd[1]}-${yyyymmdd[2]}-${yyyymmdd[3]}`;
+    return { dateFrom: formatted, dateTo: formatted };
+  }
+
+  return null;
+}
+
 export default function ResumeTable({ resumes }: { resumes: any[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -15,14 +31,29 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
 
   const handleSearch = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set("q", value);
-    } else {
-      params.delete("q");
-    }
+
+    params.delete("q");
+    params.delete("dateFrom");
+    params.delete("dateTo");
     params.set("page", "1");
+
+    if (value) {
+      const dateResult = parseSearchDate(value.trim());
+      if (dateResult) {
+        params.set("dateFrom", dateResult.dateFrom);
+        params.set("dateTo", dateResult.dateTo);
+      } else {
+        params.set("q", value);
+      }
+    }
+
     router.push(`/resumeList?${params.toString()}`);
   };
+
+  const displayValue = searchParams.get("q") ||
+    (searchParams.get("dateFrom")
+      ? searchParams.get("dateFrom")!.split("-").reverse().join(".")
+      : "");
 
   const onBulkDeleteSuccess = () => {
     setRowSelection({});
@@ -36,9 +67,9 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
       filter={""}
       sort={""}
       showPagination={false}
-      globalFilterValue={q}
+      globalFilterValue={displayValue}
       onGlobalFilterChange={handleSearch}
-      searchPlaceholder="Search resumes..."
+      searchPlaceholder="Search resumes or type date (DD.MM.YYYY)..."
       rowSelection={rowSelection}
       onRowSelectionChange={setRowSelection}
       onRowClick={(row: any) => {
@@ -57,7 +88,6 @@ export default function ResumeTable({ resumes }: { resumes: any[] }) {
           const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(
             fileUrl,
           )}&embedded=true`;
-
           window.open(viewerUrl, "_blank");
         }
       }}
