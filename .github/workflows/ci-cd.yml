@@ -73,7 +73,7 @@ jobs:
             echo '=== Cleanup complete ==='
           "
 
-          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} "
             echo '=== Configuring firewall ==='
             sudo ufw allow 80/tcp 2>/dev/null || true
             sudo ufw allow 443/tcp 2>/dev/null || true
@@ -216,15 +216,15 @@ jobs:
             fi
 
             if curl -f http://127.0.0.1:8001/health > /dev/null 2>&1; then
-              echo '✅ AI-ML: OK'
+              echo 'AI-ML: OK'
             else
-              echo '⚠️ AI-ML: No health endpoint'
+              echo 'AI-ML: No health endpoint'
             fi
 
             if curl -f http://localhost:3000 > /dev/null 2>&1; then
-              echo '✅ Frontend: OK'
+              echo 'Frontend: OK'
             else
-              echo '❌ Frontend: FAILED'
+              echo 'Frontend: FAILED'
             fi
 
             echo ''
@@ -233,3 +233,11 @@ jobs:
             echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
             echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
           "
+
+      - name: Warm Cache After Deploy
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} "bash /home/deployer/post_deploy_warm.sh"
