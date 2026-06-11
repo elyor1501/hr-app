@@ -47,7 +47,7 @@ class StatsResponse(BaseModel):
 
 
 STATS_CACHE_KEY = "hr_app:stats:dashboard"
-STATS_CACHE_TTL = 3600
+STATS_CACHE_TTL = 60
 
 
 async def _build_stats_from_row(row) -> StatsResponse:
