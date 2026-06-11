@@ -63,7 +63,7 @@ const ActionCell = ({ resume }: { resume: ResumeList }) => {
 
   return (
     <div className="flex gap-2">
-      <Button
+      {/* <Button
         variant="ghost"
         size="icon"
         onClick={(e) => {
@@ -73,7 +73,7 @@ const ActionCell = ({ resume }: { resume: ResumeList }) => {
         title="View Resume"
       >
         <EyeIcon className="w-4 h-4" />
-      </Button>
+      </Button> */}
       <div onClick={(e) => e.stopPropagation()}>
         <DeleteResumeButton id={resume.id} />
       </div>

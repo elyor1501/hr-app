@@ -82,7 +82,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
 
       return (
         <div className="flex items-center justify-center gap-2">
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             onClick={(e) => {
@@ -92,7 +92,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
             className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
           >
             <Eye className="w-4 h-4" />
-          </Button>
+          </Button> */}
           <div onClick={(e) => e.stopPropagation()}>
             <DeleteRequestButton requestId={request.id} />
           </div>
