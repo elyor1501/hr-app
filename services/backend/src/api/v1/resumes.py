@@ -117,6 +117,12 @@ async def invalidate_resumes_cache():
             keys_to_delete.extend(keys)
             if cursor == 0:
                 break
+        cursor = 0
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:stats:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
         if keys_to_delete:
             await redis.delete(*keys_to_delete)
     except Exception:
@@ -198,6 +204,8 @@ async def _process_batch_background(files_data: List[dict], uploaded_by: str, ba
             "process_resumes_batch",
             resume_items=chunk,
         )
+
+    await invalidate_resumes_cache()
 
 
 @router.post("/bulk", response_model=BulkUploadAccepted, status_code=status.HTTP_202_ACCEPTED)

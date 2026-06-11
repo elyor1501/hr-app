@@ -83,6 +83,12 @@ async def invalidate_candidates_cache():
             keys_to_delete.extend(keys)
             if cursor == 0:
                 break
+        cursor = 0
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:stats:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
         if keys_to_delete:
             await redis.delete(*keys_to_delete)
     except Exception:
@@ -515,4 +521,19 @@ async def delete_candidate(
         raise HTTPException(status_code=404, detail="Candidate not found")
 
     await invalidate_candidates_cache()
-    await cache.invalidate_candidate(str(id))
+
+    try:
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:candidate:{id}")
+        await redis.delete(f"hr_app:candidate_profile:{id}")
+        cursor = 0
+        keys_to_delete = []
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_backend:search:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0:
+                break
+        if keys_to_delete:
+            await redis.delete(*keys_to_delete)
+    except Exception:
+        pass

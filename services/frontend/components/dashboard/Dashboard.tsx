@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { EmployeeStatusChart } from "@/components/dashboard/charts/CandidateStatusChart";
 import { JobStatusChart } from "@/components/dashboard/charts/JobStatusChart";
 import { getApiUrl, getAuthToken } from "@/lib/api-config";
-import { Loader, SkeletonCard } from "@/components/ui/loader";
+import { SkeletonCard } from "@/components/ui/loader";
 import { Users, Briefcase, FileText, TrendingUp } from "lucide-react";
 
 interface StatsData {
@@ -40,39 +40,51 @@ export default function DashboardDetail({
 }: {
   initialStats: StatsData | null;
 }) {
-  const [stats, setStats] = useState<StatsData | null>(initialStats);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(
-    !initialStats ? "Failed to load dashboard data" : null
-  );
+  const [stats, setStats] = useState<StatsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchStats = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchStats = useCallback(async () => {
     try {
       const token = getAuthToken();
       const apiUrl = getApiUrl();
-      const fetchUrl = apiUrl
-        ? `${apiUrl}/api/v1/stats`
-        : `/api/v1/stats`;
+      const fetchUrl = apiUrl ? `${apiUrl}/api/v1/stats` : `/api/v1/stats`;
 
       const res = await fetch(fetchUrl, {
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
+        cache: "no-store",
       });
 
       if (!res.ok) throw new Error("API error");
 
       const data: StatsData = await res.json();
       setStats(data);
+      setError(null);
     } catch (err) {
       console.error("Failed to fetch stats:", err);
-      setError("Failed to load dashboard data");
+      if (!stats) {
+        setError("Failed to load dashboard data");
+      }
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+    const interval = setInterval(() => {
+      fetchStats();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [fetchStats]);
+
+  const handleRetry = async () => {
+    setLoading(true);
+    setError(null);
+    await fetchStats();
   };
 
   if (loading) {
@@ -83,7 +95,7 @@ export default function DashboardDetail({
           <SkeletonCard />
           <SkeletonCard />
         </div>
-        <Loader />
+        <div className="h-[200px] w-full bg-muted animate-pulse rounded-xl" />
       </div>
     );
   }
@@ -95,7 +107,7 @@ export default function DashboardDetail({
           {error || "No data available"}
         </p>
         <button
-          onClick={fetchStats}
+          onClick={handleRetry}
           className="mt-3 sm:mt-4 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-white transition-colors text-sm sm:text-base"
           style={{ backgroundColor: "#429ABD" }}
           onMouseEnter={(e) =>
