@@ -30,9 +30,6 @@ type Props = {
 
 const ALLOWED_FILE_TYPES = [
   "application/pdf",
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
   "image/svg+xml",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -41,8 +38,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const ALLOWED_FILE_EXTENSIONS = [
-  ".pdf", ".jpeg", ".jpg", ".png", ".svg",
-  ".doc", ".docx", ".ppt", ".pptx",
+  ".pdf",".doc", ".docx", ".ppt", ".pptx",
 ];
 
 export function UploadAttachmentDialog({
@@ -63,7 +59,7 @@ export function UploadAttachmentDialog({
       );
       if (!hasValidExtension) {
         toast.error(
-          "Invalid file type. Please upload PDF, images (JPG, PNG, SVG), DOC, DOCX, PPT, or PPTX files only."
+          "Invalid file type. Please upload PDF, DOC, DOCX, PPT, or PPTX files only."
         );
         return false;
       }
@@ -181,7 +177,7 @@ export function UploadAttachmentDialog({
             <input
               type="file"
               onChange={handleFileChange}
-              accept=".pdf,.jpeg,.jpg,.png,.svg,.doc,.docx,.ppt,.pptx"
+              accept=".pdf,.doc,.docx,.ppt,.pptx"
               className="w-full text-sm border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]"
             />
           </div>
