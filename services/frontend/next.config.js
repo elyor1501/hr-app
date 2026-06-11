@@ -2,6 +2,9 @@
 const nextConfig = {
   output: "standalone",
   compress: true,
+  generateBuildId: async () => {
+    return process.env.BUILD_ID || require('crypto').randomBytes(8).toString('hex')
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "500mb",
@@ -9,12 +12,6 @@ const nextConfig = {
   },
   async headers() {
     return [
-      {
-        source: "/api/:path*",
-        headers: [
-          { key: "Cache-Control", value: "no-store" },
-        ],
-      },
       {
         source: "/:path*",
         headers: [
