@@ -536,7 +536,7 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
 
         nsmap = "http://schemas.openxmlformats.org/drawingml/2006/main"
 
-        def _apply_normAutofit(txBody):
+        def _apply_autofit(txBody):
             bodyPr = txBody.find(f'{{{nsmap}}}bodyPr')
             if bodyPr is None:
                 return
@@ -566,6 +566,18 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             s = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]', '', s)
             s = s.replace('\x00', '')
             return s
+
+        def _truncate_to_fit(text: str, size_pt: float, box_width_emu: int, max_lines: int) -> str:
+            EMU_PER_PT = 12700
+            chars_per_line = max(1, int(box_width_emu / (size_pt * EMU_PER_PT * 0.52)))
+            max_chars = chars_per_line * max_lines
+            if len(text) <= max_chars:
+                return text
+            truncated = text[:max_chars - 3]
+            last_space = truncated.rfind(' ')
+            if last_space > max_chars * 0.8:
+                truncated = truncated[:last_space]
+            return truncated + "..."
 
         def _add_para(txBody, text: str, bold=None, size_pt=None, color_rgb=None, space_before=0, space_after=0):
             text = _sanitize(text)
@@ -626,7 +638,7 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
                 ph.left = left
                 ph.width = width
                 ph.height = new_h
-                _apply_normAutofit(ph.text_frame._txBody)
+                _apply_autofit(ph.text_frame._txBody)
                 _clear_and_fill(ph.text_frame._txBody, lines)
                 return new_h
             except KeyError:
@@ -675,6 +687,16 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
         else:
             exp_size = 8
 
+        truncated_summary = []
+        for para in summary_paras:
+            truncated = _truncate_to_fit(para, summary_size, PH26_WIDTH, 6)
+            truncated_summary.append(truncated)
+
+        truncated_exp = []
+        for para in exp_paras:
+            truncated = _truncate_to_fit(para, exp_size, EXP_TB_WIDTH, 5)
+            truncated_exp.append(truncated)
+
         fill_placeholder(13, [
             (_sanitize(candidate_data.get("name_large", "")), None, 18, None),
         ])
@@ -687,7 +709,7 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
 
         summary_lines = [
             (_sanitize(para), False, summary_size, None, 0, 0)
-            for para in summary_paras
+            for para in truncated_summary
         ]
         fill_placeholder_resized(
             26, summary_lines, summary_size,
@@ -697,14 +719,14 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
 
         skill_lines = [("Business Skills", True, skill_header_size, None, 0, 0)]
         for s in business_skills:
-            skill_lines.append((_sanitize(s), False, skill_item_size, None, 0, 0))
+            skill_lines.append((_sanitize(s[:40]), False, skill_item_size, None, 0, 0))
         skill_lines.append(("", None, 4, None, 0, 0))
         skill_lines.append(("Technology Skills", True, skill_header_size, None, 0, 0))
         for item in tech_skills:
             if isinstance(item, (list, tuple)) and len(item) == 2:
-                label, detail = _sanitize(item[0]), _sanitize(item[1])
+                label, detail = _sanitize(item[0][:20]), _sanitize(item[1][:50])
             else:
-                label, detail = _sanitize(item), ""
+                label, detail = _sanitize(item)[:20], ""
             skill_lines.append((f"{label}: {detail}", False, skill_item_size, None, 0, 0))
 
         skill_texts = [item[0] if isinstance(item, (list, tuple)) else "" for item in skill_lines]
@@ -716,27 +738,27 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             ph16.left = PH16_LEFT
             ph16.width = PH16_WIDTH
             ph16.height = skill_new_h
-            _apply_normAutofit(ph16.text_frame._txBody)
+            _apply_autofit(ph16.text_frame._txBody)
             _clear_and_fill(ph16.text_frame._txBody, skill_lines)
         except KeyError:
             pass
 
         right_lines = [("Languages", True, right_header_size, None, 0, 0)]
         for lang in languages:
-            right_lines.append((_sanitize(lang), False, right_item_size, None, 0, 0))
+            right_lines.append((_sanitize(lang[:40]), False, right_item_size, None, 0, 0))
         right_lines.append(("", None, 4, None, 0, 0))
         right_lines.append(("Industry Experience", True, right_header_size, None, 0, 0))
         for exp in industry:
-            right_lines.append((_sanitize(exp), False, right_item_size, None, 0, 0))
+            right_lines.append((_sanitize(exp[:40]), False, right_item_size, None, 0, 0))
         right_lines.append(("", None, 4, None, 0, 0))
         if certs:
             right_lines.append(("Certifications", True, right_header_size, None, 0, 0))
             for cert in certs:
-                right_lines.append((_sanitize(cert), False, right_item_size, None, 0, 0))
+                right_lines.append((_sanitize(cert[:50]), False, right_item_size, None, 0, 0))
             right_lines.append(("", None, 4, None, 0, 0))
         right_lines.append(("Education", True, right_header_size, None, 0, 0))
         for edu in education:
-            right_lines.append((_sanitize(edu), False, right_item_size, None, 0, 0))
+            right_lines.append((_sanitize(edu[:50]), False, right_item_size, None, 0, 0))
 
         right_texts = [item[0] if isinstance(item, (list, tuple)) else "" for item in right_lines]
         right_est_h = _estimate_h(right_texts, right_item_size, PH24_WIDTH)
@@ -747,14 +769,14 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             ph24.left = PH24_LEFT
             ph24.width = PH24_WIDTH
             ph24.height = right_new_h
-            _apply_normAutofit(ph24.text_frame._txBody)
+            _apply_autofit(ph24.text_frame._txBody)
             _clear_and_fill(ph24.text_frame._txBody, right_lines)
         except KeyError:
             pass
 
         exp_lines = [
             (_sanitize(para), False, exp_size, None, 0, 2)
-            for para in exp_paras
+            for para in truncated_exp
         ]
 
         exp_textbox = None
@@ -771,6 +793,7 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
             exp_textbox.left = EXP_TB_LEFT
             exp_textbox.width = EXP_TB_WIDTH
             exp_textbox.height = new_exp_h
+            _apply_autofit(exp_textbox.text_frame._txBody)
             _clear_and_fill(exp_textbox.text_frame._txBody, exp_lines)
 
             new_group25_top = EXP_TB_TOP + new_exp_h + SECTION_GAP
@@ -800,6 +823,8 @@ def _generate_pptx_bytes(candidate_data: dict, template_path: str) -> bytes:
                 pass
 
         clients_str = _sanitize(candidate_data.get("clients", ""))
+        if len(clients_str) > 120:
+            clients_str = clients_str[:117] + "..."
         clients_size = 8 if len(clients_str) < 80 else 7
         fill_placeholder(28, [
             (clients_str, False, clients_size, None, 0, 0),

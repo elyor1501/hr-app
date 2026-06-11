@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { FileDown, Trash2, Download, Eye, Loader2, Trash } from "lucide-react";
+import { FileDown, Download, Eye, Loader2, Trash } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-  generateDeloitteResume,
-  deleteDeloitteResume,
-} from "@/lib/candidates/action";
+import { getApiUrl } from "@/lib/api-config";
+import { getCandidateById, invalidateCandidatesCache } from "@/lib/candidates/data";
 
 type Props = {
   candidateId: string;
@@ -36,10 +34,35 @@ export function GenerateDeloitteButton({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  const getToken = () =>
+    typeof window !== "undefined"
+      ? localStorage.getItem("access_token") || ""
+      : "";
+
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const updated = await generateDeloitteResume(candidateId, cvId);
+      const token = getToken();
+      const apiUrl = getApiUrl();
+      const url = apiUrl
+        ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${cvId}/generate-deloitte`
+        : `/api/v1/candidates/${candidateId}/cvs/${cvId}/generate-deloitte`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Generate Deloitte failed:", text);
+        throw new Error("Failed to generate Deloitte resume");
+      }
+
+      invalidateCandidatesCache();
+      const updated = await getCandidateById(candidateId);
       onSuccess(updated);
       toast.success("Deloitte resume generated successfully");
     } catch (error: any) {
@@ -52,7 +75,27 @@ export function GenerateDeloitteButton({
   const handleDelete = () => {
     startTransition(async () => {
       try {
-        const updated = await deleteDeloitteResume(candidateId, cvId);
+        const token = getToken();
+        const apiUrl = getApiUrl();
+        const url = apiUrl
+          ? `${apiUrl}/api/v1/candidates/${candidateId}/cvs/${cvId}/deloitte`
+          : `/api/v1/candidates/${candidateId}/cvs/${cvId}/deloitte`;
+
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("Delete Deloitte failed:", text);
+          throw new Error("Failed to delete Deloitte resume");
+        }
+
+        invalidateCandidatesCache();
+        const updated = await getCandidateById(candidateId);
         onSuccess(updated);
         toast.success("Deloitte resume deleted");
         setDeleteOpen(false);
@@ -64,10 +107,43 @@ export function GenerateDeloitteButton({
 
   const handleView = () => {
     if (!deloittePptxUrl) return;
-    window.open(
-      `https://docs.google.com/gview?url=${encodeURIComponent(deloittePptxUrl)}&embedded=true`,
-      "_blank",
-    );
+
+    const ext = deloittePptxUrl?.split(".").pop()?.toLowerCase();
+
+    if (ext === "pdf") {
+      window.open(deloittePptxUrl, "_blank");
+      return;
+    }
+
+    const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(deloittePptxUrl)}&embedded=true`;
+    const newWindow = window.open(viewerUrl, "_blank");
+
+    if (!newWindow) return;
+
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    const retry = () => {
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(() => {
+          try {
+            newWindow.location.href = `${viewerUrl}&t=${Date.now()}`;
+          } catch {
+            return;
+          }
+          retry();
+        }, 4000);
+      } else {
+        setTimeout(() => {
+          try {
+            newWindow.location.href = deloittePptxUrl;
+          } catch {}
+        }, 4000);
+      }
+    };
+
+    setTimeout(retry, 4000);
   };
 
   const handleDownload = async () => {
@@ -120,7 +196,7 @@ export function GenerateDeloitteButton({
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}
-              className="p-2 text-gray-400 text-red-500 hover:bg-red-50 hover:text-red-600"
+              className="p-2 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-300"
               title="Delete Deloitte Resume"
             >
               <Trash className="w-4 h-4" />
