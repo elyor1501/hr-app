@@ -460,7 +460,7 @@ export default function RequestDetails({
                 Request Date
               </label>
               <input
-                type="text"
+                type="date"
                 name="request_date"
                 defaultValue={
                   request.request_date
@@ -480,7 +480,7 @@ export default function RequestDetails({
                 Proposed Date
               </label>
               <input
-                type="text"
+                type="date"
                 name="proposed_date"
                 defaultValue={
                   request.proposed_date
