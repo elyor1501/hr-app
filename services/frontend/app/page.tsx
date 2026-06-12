@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Check, Lightbulb, Shield, Eye, Users } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/app/(main)/VASPP_logo_black_text.png";
+import { Orbitron } from "next/font/google";
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+});
 
 export default function LandingPage() {
   return (
@@ -31,13 +37,16 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col leading-tight">
               <span
-                className="font-extrabold text-lg tracking-tight"
-                style={{ color: "#429ABD" }}
+                className="text-2xl font-black tracking-wider"
+                style={{
+                  color: "#429ABD",
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
               >
                 VASPP
               </span>
               <span
-                className="text-[10px] font-bold uppercase tracking-tight"
+                className="text-[12px] font-bold uppercase tracking-tight"
                 style={{ color: "#F5A623" }}
               >
                 Resource Management System
