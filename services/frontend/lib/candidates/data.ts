@@ -132,7 +132,7 @@ export async function getCandidateById(id: string) {
     const res = await fetch(profileUrl, {
       method: "GET",
       headers,
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
 
     if (res.status === 404) {

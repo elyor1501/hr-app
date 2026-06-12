@@ -55,6 +55,7 @@ export function DeleteAttachmentButton({
         }
 
         invalidateCandidatesCache();
+        await new Promise((resolve) => setTimeout(resolve, 500));
         const updated = await getCandidateById(candidateId);
         onSuccess?.(updated);
 
