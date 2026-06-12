@@ -345,6 +345,39 @@ async def update_user_role(
     }
 
 
+@router.delete("/users/{user_id}", status_code=204)
+async def delete_user(
+    user_id: str,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    from uuid import UUID
+    result = await db.execute(
+        select(User).where(User.id == UUID(user_id))
+    )
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.email.lower() == current_user.sub.lower():
+        raise HTTPException(status_code=400, detail="You cannot delete your own account")
+
+    await _delete_cached_user(user.email)
+
+    await db.execute(
+        delete(PasswordResetToken).where(
+            func.lower(PasswordResetToken.email) == user.email.lower()
+        )
+    )
+
+    await db.delete(user)
+    await db.commit()
+
+
 @router.post("/forgot-password", status_code=200)
 async def forgot_password(
     data: ForgotPasswordRequest,

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/contexts/UserContext";
 import { toast } from "sonner";
-import { Shield, ShieldOff, Users } from "lucide-react";
+import { Shield, ShieldOff, Users, Trash2 } from "lucide-react";
 
 type AppUser = {
   id: string;
@@ -21,6 +21,7 @@ export default function ManageUsersPage() {
   const [users, setUsers] = useState<AppUser[]>([]);
   const [fetching, setFetching] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -89,6 +90,36 @@ export default function ManageUsersPage() {
     }
   };
 
+  const deleteUser = async (userId: string, userName: string, userEmail: string) => {
+    if (!confirm(`Are you sure you want to permanently delete ${userName || userEmail}? This cannot be undone.`)) {
+      return;
+    }
+
+    setDeleting(userId);
+    try {
+      const token = localStorage.getItem("access_token");
+      const res = await fetch(`${apiUrl}/api/v1/auth/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.detail || "Failed to delete user");
+        return;
+      }
+
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      toast.success(`${userName || userEmail} has been deleted`);
+    } catch {
+      toast.error("Failed to delete user");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
   if (loading || fetching) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
@@ -145,19 +176,31 @@ export default function ManageUsersPage() {
                   Admin
                 </span>
               </div>
-              {u.email.toLowerCase() !== (user?.email as string)?.toLowerCase() && (
-                <button
-                  onClick={() => updateRole(u.id, "recruiter", u.full_name || u.email)}
-                  disabled={updating === u.id}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-200 text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
-                >
-                  <ShieldOff className="w-4 h-4" />
-                  {updating === u.id ? "Removing..." : "Remove Admin"}
-                </button>
-              )}
-              {u.email.toLowerCase() === (user?.email as string)?.toLowerCase() && (
-                <span className="text-xs text-muted-foreground italic">You</span>
-              )}
+              <div className="flex items-center gap-2">
+                {u.email.toLowerCase() !== (user?.email as string)?.toLowerCase() && (
+                  <>
+                    <button
+                      onClick={() => updateRole(u.id, "recruiter", u.full_name || u.email)}
+                      disabled={updating === u.id || deleting === u.id}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-200 text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
+                    >
+                      <ShieldOff className="w-4 h-4" />
+                      {updating === u.id ? "Removing..." : "Remove Admin"}
+                    </button>
+                    <button
+                      onClick={() => deleteUser(u.id, u.full_name, u.email)}
+                      disabled={updating === u.id || deleting === u.id}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-300 text-red-700 hover:bg-red-100 transition-all disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {deleting === u.id ? "Deleting..." : "Delete"}
+                    </button>
+                  </>
+                )}
+                {u.email.toLowerCase() === (user?.email as string)?.toLowerCase() && (
+                  <span className="text-xs text-muted-foreground italic">You</span>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -180,15 +223,25 @@ export default function ManageUsersPage() {
                   Recruiter
                 </span>
               </div>
-              <button
-                onClick={() => updateRole(u.id, "admin", u.full_name || u.email)}
-                disabled={updating === u.id}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
-                style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
-              >
-                <Shield className="w-4 h-4" />
-                {updating === u.id ? "Updating..." : "Make Admin"}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => updateRole(u.id, "admin", u.full_name || u.email)}
+                  disabled={updating === u.id || deleting === u.id}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+                  style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
+                >
+                  <Shield className="w-4 h-4" />
+                  {updating === u.id ? "Updating..." : "Make Admin"}
+                </button>
+                <button
+                  onClick={() => deleteUser(u.id, u.full_name, u.email)}
+                  disabled={updating === u.id || deleting === u.id}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-300 text-red-700 hover:bg-red-100 transition-all disabled:opacity-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {deleting === u.id ? "Deleting..." : "Delete"}
+                </button>
+              </div>
             </div>
           ))}
         </div>

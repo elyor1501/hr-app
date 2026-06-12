@@ -9,8 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { uploadAttachment } from "@/lib/candidates/action";
 import { getCandidateById, invalidateCandidatesCache } from "@/lib/candidates/data";
+import { getApiUrl } from "@/lib/api-config";
 import { toast } from "sonner";
 import {
   Select,
@@ -38,7 +38,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const ALLOWED_FILE_EXTENSIONS = [
-  ".pdf",".doc", ".docx", ".ppt", ".pptx",
+  ".pdf", ".doc", ".docx", ".ppt", ".pptx",
 ];
 
 export function UploadAttachmentDialog({
@@ -58,9 +58,7 @@ export function UploadAttachmentDialog({
         fileName.endsWith(ext)
       );
       if (!hasValidExtension) {
-        toast.error(
-          "Invalid file type. Please upload PDF, DOC, DOCX, PPT, or PPTX files only."
-        );
+        toast.error("Invalid file type. Please upload PDF, DOC, DOCX, PPT, or PPTX files only.");
         return false;
       }
     }
@@ -98,19 +96,34 @@ export function UploadAttachmentDialog({
 
     startTransition(async () => {
       try {
-        const token =
-          typeof window !== "undefined"
-            ? localStorage.getItem("access_token") || ""
-            : "";
+        const token = typeof window !== "undefined"
+          ? localStorage.getItem("access_token") || ""
+          : "";
+
+        const apiUrl = getApiUrl();
+        const uploadUrl = apiUrl
+          ? `${apiUrl}/api/v1/candidates/${candidateId}/attachments`
+          : `/api/v1/candidates/${candidateId}/attachments`;
 
         const formData = new FormData();
         formData.append("file", file);
         formData.append("attachment_type", docType);
 
-        await uploadAttachment(candidateId, formData, token);
+        const res = await fetch(uploadUrl, {
+          method: "POST",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("Upload attachment failed:", text);
+          throw new Error("Failed to upload attachment");
+        }
 
         invalidateCandidatesCache();
-
         const updated = await getCandidateById(candidateId);
         onSuccess?.(updated);
 
@@ -130,12 +143,8 @@ export function UploadAttachmentDialog({
         <button
           className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
           style={{ backgroundColor: "#429ABD" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "#F5A623")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "#429ABD")
-          }
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#F5A623")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#429ABD")}
         >
           Upload Attachment
         </button>
@@ -197,12 +206,8 @@ export function UploadAttachmentDialog({
             disabled={isPending}
             className="w-full sm:w-auto transition-all duration-300 hover:shadow-lg"
             style={{ backgroundColor: "#429ABD" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#F5A623")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#429ABD")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#F5A623")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#429ABD")}
           >
             {isPending ? "Uploading..." : "Upload"}
           </Button>
