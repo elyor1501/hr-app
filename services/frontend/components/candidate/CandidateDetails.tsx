@@ -112,6 +112,7 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [proposedRateAmount, setProposedRateAmount] = useState<string>(
     empData?.proposed_rate?.toString() ?? "",
   );
+  const [settingPrimaryId, setSettingPrimaryId] = useState<string | null>(null);
 
   const calculateDailyRate = (amount: string, type: string): number | null => {
     const val = parseFloat(amount);
@@ -174,7 +175,8 @@ export default function CandidateDetails({ id, empData }: Props) {
   }
 
   async function handleSetPrimary(resumeId: string) {
-    setUploading(true);
+    setSettingPrimaryId(resumeId);
+
     try {
       await setPrimaryResume(id, resumeId);
       const updated = await getCandidateById(id);
@@ -183,7 +185,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     } catch (error: any) {
       toast.error(error?.message || "Failed to set primary resume");
     } finally {
-      setUploading(false);
+      setSettingPrimaryId(null);
     }
   }
 
@@ -382,8 +384,16 @@ export default function CandidateDetails({ id, empData }: Props) {
           <input type="hidden" name="id" value={candidate.id} />
           <input type="hidden" name="rate_type" value={rateType} />
           <input type="hidden" name="currency" value={currency} />
-          <input type="hidden" name="proposed_rate_type" value={proposedRateType} />
-          <input type="hidden" name="proposed_currency" value={proposedCurrency} />
+          <input
+            type="hidden"
+            name="proposed_rate_type"
+            value={proposedRateType}
+          />
+          <input
+            type="hidden"
+            name="proposed_currency"
+            value={proposedCurrency}
+          />
 
           <TabsContent value="basic" className="space-y-4 sm:space-y-6">
             <div className="flex justify-end">
@@ -473,7 +483,9 @@ export default function CandidateDetails({ id, empData }: Props) {
                 ) : (
                   <input
                     name="status"
-                    value={candidate?.status === "active" ? "Active" : "Inactive"}
+                    value={
+                      candidate?.status === "active" ? "Active" : "Inactive"
+                    }
                     disabled
                     className={fieldClass}
                   />
@@ -658,7 +670,10 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                {sectionHeader(`Matching Requests (${matches.length})`, "#F5A623")}
+                {sectionHeader(
+                  `Matching Requests (${matches.length})`,
+                  "#F5A623",
+                )}
                 <button
                   type="button"
                   onClick={(e) => {
@@ -699,18 +714,24 @@ export default function CandidateDetails({ id, empData }: Props) {
                         </h3>
                         <span
                           className="px-2 py-1 rounded text-xs sm:text-sm font-semibold"
-                          style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
+                          style={{
+                            backgroundColor: "#429ABD20",
+                            color: "#429ABD",
+                          }}
                         >
                           {Number(job.match_score).toFixed(2)}%
                         </span>
                       </div>
                       <p className="text-xs sm:text-sm text-muted-foreground mb-2">
-                        <span className="font-bold text-foreground">Reasoning:</span>{" "}
+                        <span className="font-bold text-foreground">
+                          Reasoning:
+                        </span>{" "}
                         {job.reasoning}
                       </p>
                       {job.strengths?.length > 0 && (
                         <div className="text-xs sm:text-sm text-muted-foreground mb-2">
                           <span className="font-bold text-foreground">
+                            Strengths:
                           </span>{" "}
                           {job.strengths.join(", ")}
                         </div>
@@ -855,11 +876,13 @@ export default function CandidateDetails({ id, empData }: Props) {
                               e.stopPropagation();
                               handleSetPrimary(resume.id);
                             }}
-                            disabled={uploading}
-                            className="px-3 py-1.5 text-sm font-medium text-white bg-[#429ABD] hover:bg-[#F5A623] rounded-lg transition-all duration-300 disabled:opacity-50"
+                            disabled={settingPrimaryId === resume.id}
+                            className="px-3 py-1.5 text-sm font-medium text-white bg-[#429ABD] hover:bg-[#F5A623] rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Set as Primary"
                           >
-                            Set as primary
+                            {settingPrimaryId === resume.id
+                              ? "Setting..."
+                              : "Set as primary"}
                           </button>
                         )}
                         {/* <button

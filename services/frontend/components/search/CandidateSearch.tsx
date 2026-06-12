@@ -98,7 +98,7 @@ export default function CandidateSearch() {
       }));
 
       const unique = Array.from(
-        new Map(mapped.map((c) => [c.id, c])).values()
+        new Map(mapped.map((c) => [c.id, c])).values(),
       ).sort((a, b) => b.similarity_score - a.similarity_score);
 
       setResults(unique);
@@ -116,16 +116,21 @@ export default function CandidateSearch() {
     try {
       const params = new URLSearchParams();
       params.set("page", "1");
-      params.set("page_size", "20");
+      params.set("page_size", "100");
       if (filterStatus) params.set("candidateStatus", filterStatus);
       if (filterLocation) params.set("location", filterLocation);
       if (filterSkills) params.set("skills", filterSkills);
-      if (filterExperienceLevel) params.set("experience_level", filterExperienceLevel);
+      if (filterExperienceLevel)
+        params.set("experience_level", filterExperienceLevel);
       if (filterAvailability) params.set("availability", filterAvailability);
-      if (filterExpMin !== "") params.set("experienceMin", String(filterExpMin));
-      if (filterExpMax !== "") params.set("experienceMax", String(filterExpMax));
+      if (filterExpMin !== "")
+        params.set("experienceMin", String(filterExpMin));
+      if (filterExpMax !== "")
+        params.set("experienceMax", String(filterExpMax));
 
-      const res = await fetch(`${apiBase}/api/v1/candidates/search?${params.toString()}`);
+      const res = await fetch(
+        `${apiBase}/api/v1/candidates/search?${params.toString()}`,
+      );
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       const mapped: Candidate[] = (data.items || []).map((c: any) => ({
@@ -144,9 +149,7 @@ export default function CandidateSearch() {
         years_of_experience: c.years_of_experience,
       }));
 
-      const unique = Array.from(
-        new Map(mapped.map((c) => [c.id, c])).values()
-      );
+      const unique = Array.from(new Map(mapped.map((c) => [c.id, c])).values());
 
       setResults(unique);
     } catch (err) {
@@ -178,7 +181,9 @@ export default function CandidateSearch() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold" style={{ color: '#429ABD' }}>Candidate Search</h1>
+      <h1 className="text-xl font-semibold" style={{ color: "#429ABD" }}>
+        Candidate Search
+      </h1>
 
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
@@ -196,9 +201,13 @@ export default function CandidateSearch() {
           onClick={runSemanticSearch}
           disabled={semanticLoading || filterLoading || !query.trim()}
           className="transition-all duration-300 hover:shadow-lg"
-          style={{ backgroundColor: '#429ABD' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+          style={{ backgroundColor: "#429ABD" }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#F5A623")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "#429ABD")
+          }
         >
           {semanticLoading ? (
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -223,13 +232,18 @@ export default function CandidateSearch() {
 
       {showFilters && (
         <div className="p-4 border rounded-xl bg-slate-50 dark:bg-slate-900/50 space-y-4 transition-all duration-300">
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide" style={{ color: '#429ABD' }}>
+          <p
+            className="text-xs text-muted-foreground font-medium uppercase tracking-wide"
+            style={{ color: "#429ABD" }}
+          >
             Filter candidates
           </p>
 
           <div className="grid md:grid-cols-4 gap-4">
             <div>
-              <label className="text-xs font-medium text-foreground">Status</label>
+              <label className="text-xs font-medium text-foreground">
+                Status
+              </label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -242,7 +256,9 @@ export default function CandidateSearch() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-foreground">Location</label>
+              <label className="text-xs font-medium text-foreground">
+                Location
+              </label>
               <Input
                 placeholder="e.g. Bangalore"
                 value={filterLocation}
@@ -252,7 +268,9 @@ export default function CandidateSearch() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-foreground">Skills</label>
+              <label className="text-xs font-medium text-foreground">
+                Skills
+              </label>
               <Input
                 placeholder="React, Node, Python"
                 value={filterSkills}
@@ -270,7 +288,9 @@ export default function CandidateSearch() {
                 placeholder="0"
                 min={0}
                 value={filterExpMin}
-                onChange={(e) => setFilterExpMin(e.target.value ? Number(e.target.value) : "")}
+                onChange={(e) =>
+                  setFilterExpMin(e.target.value ? Number(e.target.value) : "")
+                }
                 className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
@@ -284,7 +304,9 @@ export default function CandidateSearch() {
                 placeholder="20"
                 min={0}
                 value={filterExpMax}
-                onChange={(e) => setFilterExpMax(e.target.value ? Number(e.target.value) : "")}
+                onChange={(e) =>
+                  setFilterExpMax(e.target.value ? Number(e.target.value) : "")
+                }
                 className="mt-1 bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-[#429ABD] focus-visible:border-[#429ABD] transition-all duration-300"
               />
             </div>
@@ -305,11 +327,17 @@ export default function CandidateSearch() {
               onClick={runFilterSearch}
               disabled={semanticLoading || filterLoading}
               className="transition-all duration-300 hover:shadow-lg"
-              style={{ backgroundColor: '#429ABD' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+              style={{ backgroundColor: "#429ABD" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#F5A623")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#429ABD")
+              }
             >
-              {filterLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {filterLoading && (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              )}
               Apply Filters
             </Button>
           </div>
@@ -318,7 +346,9 @@ export default function CandidateSearch() {
 
       <div className="space-y-4">
         {semanticLoading || filterLoading ? (
-          <p className="text-center text-muted-foreground py-12">Searching...</p>
+          <p className="text-center text-muted-foreground py-12">
+            Searching...
+          </p>
         ) : results.length > 0 ? (
           <>
             <p className="text-sm text-muted-foreground">
@@ -332,11 +362,20 @@ export default function CandidateSearch() {
                 <CardContent className="p-6 flex flex-col md:flex-row justify-between gap-6">
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:shadow-md" style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>
+                      <div
+                        className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:shadow-md"
+                        style={{
+                          backgroundColor: "#429ABD20",
+                          color: "#429ABD",
+                        }}
+                      >
                         <FileText className="h-6 w-6" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg leading-none" style={{ color: '#429ABD' }}>
+                        <h3
+                          className="font-bold text-lg leading-none"
+                          style={{ color: "#429ABD" }}
+                        >
                           {profile.first_name} {profile.last_name}
                         </h3>
                         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
@@ -369,12 +408,22 @@ export default function CandidateSearch() {
 
                     <div className="flex flex-wrap gap-2">
                       {profile.experience_level && (
-                        <Badge variant="secondary" className="text-xs" style={{ backgroundColor: '#429ABD20', color: '#429ABD' }}>
+                        <Badge
+                          variant="secondary"
+                          className="text-xs"
+                          style={{
+                            backgroundColor: "#429ABD20",
+                            color: "#429ABD",
+                          }}
+                        >
                           {profile.experience_level}
                         </Badge>
                       )}
                       {profile.availability && (
-                        <Badge variant="outline" className="text-xs border-[#F5A623] text-[#F5A623]">
+                        <Badge
+                          variant="outline"
+                          className="text-xs border-[#F5A623] text-[#F5A623]"
+                        >
                           {profile.availability}
                         </Badge>
                       )}
@@ -391,9 +440,13 @@ export default function CandidateSearch() {
                       variant="default"
                       onClick={() => router.push(`/candidates/${profile.id}`)}
                       className="h-8 w-8 p-0 flex items-center justify-center transition-all duration-300 hover:shadow-lg"
-                      style={{ backgroundColor: '#429ABD' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F5A623'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#429ABD'}
+                      style={{ backgroundColor: "#429ABD" }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#F5A623")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#429ABD")
+                      }
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -402,7 +455,11 @@ export default function CandidateSearch() {
                       <Badge
                         variant="outline"
                         className="h-fit mt-4 font-bold px-3 py-1 transition-all duration-300"
-                        style={{ backgroundColor: '#F5A62320', color: '#F5A623', borderColor: '#F5A62330' }}
+                        style={{
+                          backgroundColor: "#F5A62320",
+                          color: "#F5A623",
+                          borderColor: "#F5A62330",
+                        }}
                       >
                         {(profile.similarity_score * 100).toFixed(1)}% Match
                       </Badge>
@@ -415,17 +472,24 @@ export default function CandidateSearch() {
         ) : searched ? (
           <div className="text-center py-20 border border-dashed rounded-[2rem] bg-slate-50/50">
             <FilterX className="h-12 w-12 mx-auto text-slate-200 mb-4" />
-            <h3 className="font-semibold text-lg" style={{ color: '#429ABD' }}>No Results Found</h3>
+            <h3 className="font-semibold text-lg" style={{ color: "#429ABD" }}>
+              No Results Found
+            </h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto mt-1">
               Try adjusting your query or filters to broaden your results.
             </p>
           </div>
         ) : (
           <div className="text-center py-24 text-muted-foreground">
-            <div className="h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-6 transition-all duration-300" style={{ backgroundColor: '#429ABD20' }}>
-              <Search className="h-10 w-10" style={{ color: '#429ABD' }} />
+            <div
+              className="h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-6 transition-all duration-300"
+              style={{ backgroundColor: "#429ABD20" }}
+            >
+              <Search className="h-10 w-10" style={{ color: "#429ABD" }} />
             </div>
-            <p className="text-lg font-medium" style={{ color: '#429ABD' }}>Search or filter candidates</p>
+            <p className="text-lg font-medium" style={{ color: "#429ABD" }}>
+              Search or filter candidates
+            </p>
             <p className="text-sm opacity-70 mt-1">
               Use the search bar or open Filters to browse by criteria.
             </p>
