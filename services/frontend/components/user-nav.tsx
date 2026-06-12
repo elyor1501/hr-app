@@ -19,6 +19,7 @@ type UserNavProps = {
   user: {
     email: string;
     full_name?: string;
+    role?: string;
     user_metadata?: {
       full_name?: string;
     };
@@ -29,7 +30,8 @@ export function UserNav({ user }: UserNavProps) {
   const router = useRouter();
   const { clearUser, user: currentUser } = useUser();
 
-  const isAdmin = currentUser?.role === "admin";
+  const isAdmin =
+    currentUser?.role === "admin" || user?.role === "admin";
 
   const email = user?.email ?? "";
   const name =

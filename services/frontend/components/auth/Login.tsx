@@ -28,7 +28,7 @@ import { useUser } from "@/app/contexts/UserContext";
 
 export function LoginForm() {
   const router = useRouter();
-  const { setUser } = useUser();
+  const { refreshUser } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,14 +68,19 @@ export function LoginForm() {
         return;
       }
 
+      const expiresAt = Date.now() + 60 * 60 * 1000;
+      const expiresDate = new Date(expiresAt).toUTCString();
+
       localStorage.setItem("access_token", data.access_token);
       if (data.refresh_token) {
         localStorage.setItem("refresh_token", data.refresh_token);
       }
-      const expiresAt = Date.now() + 25 * 60 * 1000;
       localStorage.setItem("token_expires_at", String(expiresAt));
 
-      setUser({ id: "", email: values.email });
+      document.cookie = `access_token=${data.access_token}; path=/; expires=${expiresDate}; SameSite=Strict`;
+
+      await refreshUser();
+
       router.push("/dashboard");
     } catch {
       setError("Something went wrong. Please try again.");
