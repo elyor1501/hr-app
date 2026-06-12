@@ -33,6 +33,7 @@ export function GenerateDeloitteButton({
   const [generating, setGenerating] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [downloading, setDownloading] = useState(false);
 
   const getToken = () =>
     typeof window !== "undefined"
@@ -147,29 +148,42 @@ export function GenerateDeloitteButton({
   };
 
   const handleDownload = async () => {
-    if (!deloittePptxUrl) return;
+    if (!deloittePptxUrl || downloading) return;
+
+    setDownloading(true);
+
     try {
       const response = await fetch(deloittePptxUrl);
-      if (!response.ok) throw new Error("Download failed");
+
+      if (!response.ok) {
+        throw new Error("Download failed");
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
+
       const link = document.createElement("a");
       link.href = url;
+
       const baseName = cvFileName.replace(/\.[^/.]+$/, "");
       link.setAttribute("download", `${baseName}_Deloitte.pptx`);
+
       document.body.appendChild(link);
       link.click();
-      link.parentNode?.removeChild(link);
+      link.remove();
+
       setTimeout(() => window.URL.revokeObjectURL(url), 1000);
     } catch {
       toast.error("Failed to download Deloitte resume");
+    } finally {
+      setDownloading(false);
     }
   };
 
   if (deloittePptxUrl) {
     return (
       <div className="flex items-center gap-2">
-        <button
+        {/* <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
@@ -179,17 +193,26 @@ export function GenerateDeloitteButton({
           title="View Deloitte Resume"
         >
           <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
+        </button> */}
         <button
           type="button"
+          disabled={downloading}
           onClick={(e) => {
             e.stopPropagation();
             handleDownload();
           }}
-          className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
-          title="Download Deloitte Resume"
+          className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          title={
+            downloading
+              ? "Downloading Deloitte Resume..."
+              : "Download Deloitte Resume"
+          }
         >
-          <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+          {downloading ? (
+            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+          ) : (
+            <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+          )}
         </button>
         <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
           <DialogTrigger asChild>

@@ -83,35 +83,7 @@ function openFileViewer(fileUrl: string) {
   }
 
   const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-  const newWindow = window.open(viewerUrl, "_blank");
-
-  if (!newWindow) return;
-
-  let attempts = 0;
-  const maxAttempts = 3;
-
-  const retry = () => {
-    attempts++;
-    if (attempts < maxAttempts) {
-      setTimeout(() => {
-        try {
-          newWindow.location.href = `${viewerUrl}&t=${Date.now()}`;
-        } catch {
-          return;
-        }
-        retry();
-      }, 4000);
-    } else {
-      setTimeout(() => {
-        try {
-          newWindow.location.href = fileUrl;
-        } catch {
-        }
-      }, 4000);
-    }
-  };
-
-  setTimeout(retry, 4000);
+  window.open(viewerUrl, "_blank");
 }
 
 export default function CandidateDetails({ id, empData }: Props) {
@@ -738,13 +710,16 @@ export default function CandidateDetails({ id, empData }: Props) {
                       </p>
                       {job.strengths?.length > 0 && (
                         <div className="text-xs sm:text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-foreground">Strengths:</span>{" "}
+                          <span className="font-bold text-foreground">
+                          </span>{" "}
                           {job.strengths.join(", ")}
                         </div>
                       )}
                       {job.gaps?.length > 0 && (
                         <div className="text-xs sm:text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-foreground">Gaps:</span>{" "}
+                          <span className="font-bold text-foreground">
+                            Gaps:
+                          </span>{" "}
                           {job.gaps.join(", ")}
                         </div>
                       )}
@@ -839,9 +814,19 @@ export default function CandidateDetails({ id, empData }: Props) {
                         </div>
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-medium text-sm text-foreground">
+                            {/* <span className="font-medium text-sm text-foreground">
                               {resume.file_name || "Resume"}
-                            </span>
+                            </span> */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openFileViewer(resume.file_url);
+                              }}
+                              className="font-medium text-sm text-[#429ABD] hover:underline hover:text-blue-600 text-left"
+                            >
+                              {resume.file_name || "Resume"}
+                            </button>
                             {resume.is_primary && (
                               <span
                                 className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full"
@@ -877,7 +862,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                             Set as primary
                           </button>
                         )}
-                        <button
+                        {/* <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -887,7 +872,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                           title="View Resume"
                         >
                           <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </button>
+                        </button> */}
                         {(candidate.cvs || []).length > 1 && (
                           <DeleteResumeButton
                             candidateId={id}
@@ -907,7 +892,9 @@ export default function CandidateDetails({ id, empData }: Props) {
                         }}
                         className={cn(
                           "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#F5A62308] hover:border-[#F5A623] border border-transparent transition-all duration-300",
-                          resume.deloitte_pptx_url ? "bg-[#429ABD06]" : "bg-muted/20",
+                          resume.deloitte_pptx_url
+                            ? "bg-[#429ABD06]"
+                            : "bg-muted/20",
                         )}
                       >
                         <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
@@ -923,11 +910,18 @@ export default function CandidateDetails({ id, empData }: Props) {
                           </div>
                           <div>
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-medium text-sm text-foreground">
-                                {resume.deloitte_pptx_url
-                                  ? `${(resume.file_name || "Resume").replace(/\.[^/.]+$/, "")}_Deloitte.pptx`
-                                  : "Deloitte Resume"}
-                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (resume.deloitte_pptx_url) {
+                                    openFileViewer(resume.deloitte_pptx_url);
+                                  }
+                                }}
+                                className="font-medium text-sm text-[#429ABD] hover:text-blue-600 hover:underline cursor-pointer text-left"
+                              >
+                                {`${(resume.file_name || "Resume").replace(/\.[^/.]+$/, "")}_Deloitte.pptx`}
+                              </button>
                               <span
                                 className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full"
                                 style={{
