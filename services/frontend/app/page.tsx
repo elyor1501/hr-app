@@ -169,11 +169,11 @@ export default function LandingPage() {
         </div>
 
         <h1 className="text-5xl md:text-[4.5rem] font-bold tracking-tight leading-[1.1] mb-6 max-w-4xl text-slate-900 dark:text-white">
-          All-in-one HR <br /> platform
+          All-in-one RM <br /> platform
         </h1>
 
         <p className="text-lg md:text-xl mb-10 max-w-2xl font-medium text-slate-500 dark:text-slate-400">
-          VASPP is a modern, all-in-one HR platform designed to perfectly fit
+          VASPP is a modern, all-in-one RM platform designed to perfectly fit
           your business needs.
         </p>
 
