@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { UserProvider } from "@/app/contexts/UserContext";
 import "./globals.css";
+import { ThemeToaster } from "@/components/theme-toaster";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -37,7 +38,7 @@ export default function RootLayout({
         >
           <UserProvider>
             {children}
-            <Toaster richColors position="bottom-right" />
+            <ThemeToaster />
           </UserProvider>
         </ThemeProvider>
       </body>
