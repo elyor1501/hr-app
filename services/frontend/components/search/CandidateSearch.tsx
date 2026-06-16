@@ -387,6 +387,8 @@ export default function CandidateSearch() {
               <Card
                 key={profile.id}
                 className="group border shadow-sm hover:border-[#429ABD] transition-all duration-300 hover:shadow-lg"
+                onClick={() => router.push(`/candidates/${profile.id}`)}
+                className="group border shadow-sm hover:border-[#429ABD] transition-all duration-300 hover:shadow-lg cursor-pointer"
               >
                 <CardContent className="p-6 flex flex-col md:flex-row justify-between gap-6">
                   <div className="flex-1 space-y-3">
@@ -402,8 +404,11 @@ export default function CandidateSearch() {
                       </div>
                       <div>
                         <h3
-                          className="font-bold text-lg leading-none"
-                          style={{ color: "#429ABD" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/candidates/${profile.id}`);
+                          }}
+                          className="font-bold text-lg leading-none text-[#429ABD] cursor-pointer hover:underline underline-offset-4"
                         >
                           {profile.first_name} {profile.last_name}
                         </h3>
@@ -467,7 +472,10 @@ export default function CandidateSearch() {
                   <div className="flex flex-col md:flex-col gap-2">
                     <Button
                       variant="default"
-                      onClick={() => router.push(`/candidates/${profile.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/candidates/${profile.id}`);
+                      }}
                       className="h-8 w-8 p-0 flex items-center justify-center transition-all duration-300 hover:shadow-lg"
                       style={{ backgroundColor: "#429ABD" }}
                       onMouseEnter={(e) =>
