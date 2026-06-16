@@ -59,15 +59,30 @@ export default function CandidateSearch() {
   const [showFilters, setShowFilters] = useState(false);
 
   const [results, setResults] = useState<Candidate[]>([]);
-  const [semanticLoading, setSemanticLoading] = useState(false);
-  const [filterLoading, setFilterLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
   const apiBase = getApiUrl() || "";
 
+  const mapCandidate = (c: any, fromSemantic: boolean): Candidate => ({
+    id: c.id,
+    first_name: c.first_name ?? "",
+    last_name: c.last_name ?? "",
+    email: c.email ?? "",
+    phone: c.phone ?? null,
+    current_title: c.current_title ?? "",
+    skills: c.skills ?? [],
+    location: c.location ?? "",
+    status: fromSemantic ? (c.candidate_status ?? "") : (c.status ?? ""),
+    similarity_score: fromSemantic ? (c.score ?? 0) : 0,
+    experience_level: c.experience_level ?? "",
+    availability: c.availability ?? "",
+    years_of_experience: c.years_of_experience,
+  });
+
   const runSemanticSearch = async () => {
     if (!query.trim()) return;
-    setSemanticLoading(true);
+    setLoading(true);
     setSearched(true);
     try {
       const res = await fetch(`${apiBase}/api/v1/search`, {
@@ -76,42 +91,73 @@ export default function CandidateSearch() {
         body: JSON.stringify({
           query_text: query.trim(),
           top_k: 20,
-          min_score: 0.05,
+          min_score: 0.0,
         }),
       });
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      const mapped: Candidate[] = (data.candidates || []).map((c: any) => ({
-        id: c.id,
-        first_name: c.first_name ?? "",
-        last_name: c.last_name ?? "",
-        email: c.email ?? "",
-        phone: c.phone ?? null,
-        current_title: c.current_title ?? "",
-        skills: c.skills ?? [],
-        location: c.location ?? "",
-        status: c.candidate_status ?? "",
-        similarity_score: c.score ?? 0,
-        experience_level: c.experience_level ?? "",
-        availability: c.availability ?? "",
-        years_of_experience: c.years_of_experience,
-      }));
 
-      const unique = Array.from(
-        new Map(mapped.map((c) => [c.id, c])).values(),
-      ).sort((a, b) => b.similarity_score - a.similarity_score);
+      if (res.ok) {
+        const data = await res.json();
+        const mapped: Candidate[] = (data.candidates || []).map((c: any) =>
+          mapCandidate(c, true)
+        );
 
-      setResults(unique);
+        if (mapped.length > 0) {
+          const unique = Array.from(
+            new Map(mapped.map((c) => [c.id, c])).values()
+          ).sort((a, b) => b.similarity_score - a.similarity_score);
+          setResults(unique);
+          return;
+        }
+      }
+
+      const params = new URLSearchParams();
+      params.set("q", query.trim());
+      params.set("page", "1");
+      params.set("page_size", "100");
+
+      const fallbackRes = await fetch(
+        `${apiBase}/api/v1/candidates/search?${params.toString()}`
+      );
+
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        const mapped: Candidate[] = (fallbackData.items || []).map((c: any) =>
+          mapCandidate(c, false)
+        );
+        setResults(
+          Array.from(new Map(mapped.map((c) => [c.id, c])).values())
+        );
+      } else {
+        setResults([]);
+      }
     } catch (err) {
-      console.error("Semantic search error:", err);
-      setResults([]);
+      console.error("Search error:", err);
+      try {
+        const params = new URLSearchParams();
+        params.set("q", query.trim());
+        params.set("page", "1");
+        params.set("page_size", "100");
+        const fallbackRes = await fetch(
+          `${apiBase}/api/v1/candidates/search?${params.toString()}`
+        );
+        if (fallbackRes.ok) {
+          const fallbackData = await fallbackRes.json();
+          setResults(
+            (fallbackData.items || []).map((c: any) => mapCandidate(c, false))
+          );
+        } else {
+          setResults([]);
+        }
+      } catch {
+        setResults([]);
+      }
     } finally {
-      setSemanticLoading(false);
+      setLoading(false);
     }
   };
 
   const runFilterSearch = async () => {
-    setFilterLoading(true);
+    setLoading(true);
     setSearched(true);
     try {
       const params = new URLSearchParams();
@@ -129,34 +175,19 @@ export default function CandidateSearch() {
         params.set("experienceMax", String(filterExpMax));
 
       const res = await fetch(
-        `${apiBase}/api/v1/candidates/search?${params.toString()}`,
+        `${apiBase}/api/v1/candidates/search?${params.toString()}`
       );
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
-      const mapped: Candidate[] = (data.items || []).map((c: any) => ({
-        id: c.id,
-        first_name: c.first_name ?? "",
-        last_name: c.last_name ?? "",
-        email: c.email ?? "",
-        phone: c.phone ?? null,
-        current_title: c.current_title ?? "",
-        skills: c.skills ?? [],
-        location: c.location ?? "",
-        status: c.status ?? "",
-        similarity_score: 0,
-        experience_level: c.experience_level ?? "",
-        availability: c.availability ?? "",
-        years_of_experience: c.years_of_experience,
-      }));
-
-      const unique = Array.from(new Map(mapped.map((c) => [c.id, c])).values());
-
-      setResults(unique);
+      const mapped: Candidate[] = (data.items || []).map((c: any) =>
+        mapCandidate(c, false)
+      );
+      setResults(Array.from(new Map(mapped.map((c) => [c.id, c])).values()));
     } catch (err) {
       console.error("Filter search error:", err);
       setResults([]);
     } finally {
-      setFilterLoading(false);
+      setLoading(false);
     }
   };
 
@@ -199,7 +230,7 @@ export default function CandidateSearch() {
 
         <Button
           onClick={runSemanticSearch}
-          disabled={semanticLoading || filterLoading || !query.trim()}
+          disabled={loading || !query.trim()}
           className="transition-all duration-300 hover:shadow-lg"
           style={{ backgroundColor: "#429ABD" }}
           onMouseEnter={(e) =>
@@ -209,7 +240,7 @@ export default function CandidateSearch() {
             (e.currentTarget.style.backgroundColor = "#429ABD")
           }
         >
-          {semanticLoading ? (
+          {loading ? (
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
           ) : (
             <Search className="h-4 w-4 mr-2" />
@@ -325,7 +356,7 @@ export default function CandidateSearch() {
 
             <Button
               onClick={runFilterSearch}
-              disabled={semanticLoading || filterLoading}
+              disabled={loading}
               className="transition-all duration-300 hover:shadow-lg"
               style={{ backgroundColor: "#429ABD" }}
               onMouseEnter={(e) =>
@@ -335,9 +366,7 @@ export default function CandidateSearch() {
                 (e.currentTarget.style.backgroundColor = "#429ABD")
               }
             >
-              {filterLoading && (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              )}
+              {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Apply Filters
             </Button>
           </div>
@@ -345,7 +374,7 @@ export default function CandidateSearch() {
       )}
 
       <div className="space-y-4">
-        {semanticLoading || filterLoading ? (
+        {loading ? (
           <p className="text-center text-muted-foreground py-12">
             Searching...
           </p>
