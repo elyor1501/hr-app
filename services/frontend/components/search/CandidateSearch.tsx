@@ -386,7 +386,6 @@ export default function CandidateSearch() {
             {results.map((profile) => (
               <Card
                 key={profile.id}
-                className="group border shadow-sm hover:border-[#429ABD] transition-all duration-300 hover:shadow-lg"
                 onClick={() => router.push(`/candidates/${profile.id}`)}
                 className="group border shadow-sm hover:border-[#429ABD] transition-all duration-300 hover:shadow-lg cursor-pointer"
               >
