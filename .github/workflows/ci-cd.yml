@@ -229,7 +229,7 @@ jobs:
 
             echo ''
             echo '=== Deployment Complete ==='
-            echo 'Frontend: https://hr.vaspp.com'
+            echo 'Frontend: https://rm.vaspp.com'
             echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
             echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
 
