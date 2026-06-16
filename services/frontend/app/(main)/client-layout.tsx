@@ -36,7 +36,7 @@ function getPageTitle(pathname: string): string {
   if (pathname.startsWith("/candidates/")) return "Candidate Insights";
   if (pathname.startsWith("/jobs/")) return "Role Description";
   if (pathname.startsWith("/requests/")) return "Request Description";
-  return "HR Suite";
+  return "RM Suite";
 }
 
 export default function ClientLayout({ children, user }: Props) {

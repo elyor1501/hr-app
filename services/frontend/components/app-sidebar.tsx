@@ -50,7 +50,7 @@ export function AppSidebar() {
         } as React.CSSProperties
       }
     >
-      <SidebarHeader className="h-16 flex items-center justify-center mb-2 mt-2 px-4 bg-background/50">
+      <SidebarHeader className="h-20 flex items-center justify-center mb-2 mt-2 px-4 bg-background/50">
         <div
           className={cn(
             "flex items-center w-full overflow-hidden",
@@ -69,16 +69,19 @@ export function AppSidebar() {
           {showText && (
             <div className="flex flex-col animate-in fade-in slide-in-from-left-3 duration-300">
               <span
-                className="font-extrabold text-xl leading-none tracking-tight"
-                style={{ color: "#429ABD" }}
+                className="text-2xl font-black tracking-wider"
+                style={{
+                  color: "#429ABD",
+                  fontFamily: "'Orbitron', sans-serif",
+                }}
               >
                 VASPP
               </span>
               <span
-                className="text-[10px] font-bold mt-1 uppercase tracking-tighter"
+                className="text-[12px] font-bold uppercase tracking-tight"
                 style={{ color: "#F5A623" }}
               >
-                RM System
+                Resource Management System
               </span>
             </div>
           )}

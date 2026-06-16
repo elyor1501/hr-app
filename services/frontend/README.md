@@ -1,6 +1,6 @@
 # HR App
 
-The frontend for the **HR App** application, built with **Next.js**, **TypeScript**, and **Tailwind CSS** and connects to a **Supabase** backend.
+The frontend for the **RM App** application, built with **Next.js**, **TypeScript**, and **Tailwind CSS** and connects to a **Supabase** backend.
 
 ---
 

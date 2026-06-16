@@ -29,13 +29,16 @@ export default function Login() {
 
           <div className="flex flex-col leading-tight">
             <span
-              className="font-extrabold text-lg tracking-tight"
-              style={{ color: "#429ABD" }}
+              className="text-2xl font-black tracking-wider"
+              style={{
+                color: "#429ABD",
+                fontFamily: "'Orbitron', sans-serif",
+              }}
             >
               VASPP
             </span>
             <span
-              className="text-[10px] font-bold uppercase tracking-tight"
+              className="text-[12px] font-bold uppercase tracking-tight"
               style={{ color: "#F5A623" }}
             >
               Resource Management System
