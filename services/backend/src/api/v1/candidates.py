@@ -4,6 +4,7 @@ import json
 import hashlib
 from typing import List, Optional
 from uuid import UUID
+from sqlalchemy.orm import undefer
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy import select, func, or_, and_, text
@@ -488,7 +489,14 @@ async def update_candidate(
                 detail="Status must be active or inactive"
             )
 
-    updated = await repo.update(id, **update_dict)
+    await repo.update(id, **update_dict)
+
+    result = await repo.session.execute(
+        select(Candidate)
+        .options(undefer(Candidate.resume_text))
+        .where(Candidate.id == id)
+    )
+    updated = result.scalar_one()
 
     await invalidate_candidates_cache()
 
@@ -509,7 +517,6 @@ async def update_candidate(
         pass
 
     return updated
-
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_candidate(

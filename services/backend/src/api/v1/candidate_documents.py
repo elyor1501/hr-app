@@ -105,6 +105,14 @@ class CandidateProfileResponse(BaseModel):
     availability: Optional[str] = None
     status: Optional[str] = None
     candidate_status: Optional[str] = None
+    vendor: Optional[str] = None
+    rate_type: Optional[str] = None
+    currency: Optional[str] = None
+    daily_rate: Optional[float] = None
+    proposed_rate: Optional[float] = None
+    proposed_rate_type: Optional[str] = None
+    proposed_daily_rate: Optional[float] = None
+    proposed_currency: Optional[str] = None
     cvs: List[CVResponse] = []
     attachments: List[AttachmentResponse] = []
     created_at: str
@@ -241,6 +249,14 @@ async def get_candidate_profile(
         availability=candidate.availability,
         status=candidate.status,
         candidate_status=parsed_resume.candidate_status if parsed_resume else None,
+        vendor=candidate.vendor,
+        rate_type=candidate.rate_type,
+        currency=candidate.currency,
+        daily_rate=float(candidate.daily_rate) if candidate.daily_rate else None,
+        proposed_rate=float(candidate.proposed_rate) if candidate.proposed_rate else None,
+        proposed_rate_type=candidate.proposed_rate_type,
+        proposed_daily_rate=float(candidate.proposed_daily_rate) if candidate.proposed_daily_rate else None,
+        proposed_currency=candidate.proposed_currency,
         cvs=[_cv_to_response(cv) for cv in cvs],
         attachments=[_attachment_to_response(att) for att in attachments],
         created_at=candidate.created_at.isoformat(),
