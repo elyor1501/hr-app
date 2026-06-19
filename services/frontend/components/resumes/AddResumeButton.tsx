@@ -72,9 +72,7 @@ export default function AddResumeButton() {
     const currentBase = await getCurrentCandidateCount();
     setBaselineCount(currentBase);
     setUploadedCount(count);
-    setTimeout(() => {
-      router.refresh();
-    }, 1500);
+    router.refresh();
   };
 
   return (

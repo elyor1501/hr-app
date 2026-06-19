@@ -11,7 +11,10 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getCandidateById, invalidateCandidatesCache } from "@/lib/candidates/data";
+import {
+  getCandidateById,
+  invalidateCandidatesCache,
+} from "@/lib/candidates/data";
 import { getApiUrl } from "@/lib/api-config";
 import { toast } from "sonner";
 
@@ -32,9 +35,10 @@ export function DeleteResumeButton({
   const handleDelete = () => {
     startTransition(async () => {
       try {
-        const token = typeof window !== "undefined"
-          ? localStorage.getItem("access_token") || ""
-          : "";
+        const token =
+          typeof window !== "undefined"
+            ? localStorage.getItem("access_token") || ""
+            : "";
 
         const apiUrl = getApiUrl();
         const deleteUrl = apiUrl
@@ -74,6 +78,9 @@ export function DeleteResumeButton({
           size="icon"
           className="transition-all duration-300 text-red-500 hover:bg-red-50 hover:text-red-600"
           title="Delete Resume"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
           <Trash className="w-4 h-4" />
         </Button>
@@ -102,7 +109,10 @@ export function DeleteResumeButton({
 
           <Button
             variant="destructive"
-            onClick={handleDelete}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
             disabled={isPending}
             className="w-full sm:w-auto transition-all duration-300 hover:bg-[#F5A623] hover:border-[#F5A623] bg-red-600"
           >
