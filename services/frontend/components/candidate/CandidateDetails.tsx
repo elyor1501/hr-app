@@ -1005,7 +1005,8 @@ export default function CandidateDetails({ id, empData }: Props) {
                 candidate.attachments.map((attachment: any) => (
                   <div
                     key={attachment.id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-[#429ABD]/40 transition-all duration-300 gap-3 sm:gap-0"
+                    onClick={() => openFileViewer(attachment.file_url)}
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-[#429ABD]/40 hover:bg-[#429ABD08] transition-all duration-300 gap-3 sm:gap-0 cursor-pointer"
                   >
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                       <div className="p-2 bg-[#429ABD10] text-[#429ABD] rounded-lg">
@@ -1013,9 +1014,16 @@ export default function CandidateDetails({ id, empData }: Props) {
                       </div>
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium text-sm text-foreground">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openFileViewer(attachment.file_url);
+                            }}
+                            className="font-medium text-sm text-[#429ABD] hover:text-blue-600 hover:underline cursor-pointer text-left"
+                          >
                             {attachment.file_name || attachment.filename}
-                          </span>
+                          </button>
                           <span
                             className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
                             style={{
@@ -1034,15 +1042,18 @@ export default function CandidateDetails({ id, empData }: Props) {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                      <button
+                    <div
+                      className="flex items-center gap-2 ml-auto sm:ml-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* <button
                         type="button"
                         onClick={() => openFileViewer(attachment.file_url)}
                         title="View Attachment"
                         className="p-2 text-muted-foreground hover:text-[#429ABD] hover:bg-[#429ABD10] rounded-lg transition-all duration-300"
                       >
                         <EyeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </button>
+                      </button> */}
                       <DeleteAttachmentButton
                         candidateId={id}
                         attachmentId={attachment.id}

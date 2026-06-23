@@ -58,7 +58,7 @@ export default function RequestTable({ data }: { data: any[] }) {
       showPagination={false}
       globalFilterValue={displayValue}
       onGlobalFilterChange={handleSearch}
-      searchPlaceholder="Search requests or type date (DD.MM.YYYY)..."
+      searchPlaceholder="Search requests..."
       onRowClick={(row) => router.push(`/requests/${row.id}`)}
     />
   );

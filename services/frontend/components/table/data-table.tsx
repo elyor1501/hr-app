@@ -68,15 +68,21 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "created_at", desc: true },
   ]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
-    created_at: true,
-  });
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({
+      created_at: true,
+    });
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-  const [globalFilter, setGlobalFilter] = React.useState(globalFilterValue || "");
+  const [globalFilter, setGlobalFilter] = React.useState(
+    globalFilterValue || "",
+  );
+  const [isSearching, setIsSearching] = React.useState(false);
 
   React.useEffect(() => {
     if (globalFilterValue !== undefined) {
@@ -87,9 +93,11 @@ export function DataTable<TData, TValue>({
   React.useEffect(() => {
     const timer = setTimeout(() => {
       if (onGlobalFilterChange && globalFilter !== globalFilterValue) {
+        setIsSearching(true);
         onGlobalFilterChange(globalFilter);
       }
     }, 800);
+
     return () => clearTimeout(timer);
   }, [globalFilter, onGlobalFilterChange, globalFilterValue]);
 
@@ -119,18 +127,40 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  React.useEffect(() => {
+    setIsSearching(false);
+  }, [data]);
+
   return (
     <>
       {(showSearch || showColumns || renderBulkActions) && (
         <div className="flex items-center py-4 gap-2">
           {showSearch && (
             <div className="flex items-center gap-2">
-              <Input
-                placeholder={searchPlaceholder}
-                value={globalFilter ?? ""}
-                onChange={(event) => setGlobalFilter(event.target.value)}
-                className="w-32 md:w-64"
-              />
+              <div className="relative">
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={globalFilter ?? ""}
+                  onChange={(event) => setGlobalFilter(event.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+
+                      if (onGlobalFilterChange) {
+                        setIsSearching(true);
+                        onGlobalFilterChange(globalFilter);
+                      }
+                    }
+                  }}
+                  className="w-32 md:w-64 pr-8"
+                />
+
+                {isSearching && (
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />
+                  </div>
+                )}
+              </div>
               {globalFilter && (
                 <Button
                   variant="outline"
@@ -203,8 +233,8 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : isButtonHeader
-                        ? displayContent
-                        : flexRender(displayContent, header.getContext())}
+                          ? displayContent
+                          : flexRender(displayContent, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -231,15 +261,21 @@ export function DataTable<TData, TValue>({
                           : "table-cell"
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  {isSearching ? "Searching..." : "No results"}
                 </TableCell>
               </TableRow>
             )}
