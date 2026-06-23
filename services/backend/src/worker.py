@@ -51,6 +51,14 @@ async def move_to_dlq(ctx: Dict[str, Any], job_id: str, error: str):
         await redis.lpush(dlq_key, json.dumps(data))
 
 
+_PRESENT_SYNONYMS = {"present", "current", "today", "now", "heute", "aktuell", "laufend", "ongoing", "till date", "till now", "date"}
+
+
+def _extract_year_from_date(date_str: str) -> Optional[int]:
+    match = re.search(r'\b(19|20)\d{2}\b', date_str)
+    return int(match.group()) if match else None
+
+
 def calculate_years_experience(experience_list: List[Dict[str, Any]]) -> Optional[int]:
     if not isinstance(experience_list, list):
         return None
@@ -62,16 +70,26 @@ def calculate_years_experience(experience_list: List[Dict[str, Any]]) -> Optiona
         start = exp.get("start_date")
         end = exp.get("end_date")
         try:
-            if start and isinstance(start, str) and len(start) >= 4:
-                start_year = int(start[:4])
-                if end and isinstance(end, str) and end.lower() != "present" and len(end) >= 4:
-                    end_year = int(end[:4])
-                else:
-                    end_year = current_year
-                total_months += (end_year - start_year) * 12
+            if not start or not isinstance(start, str):
+                continue
+            start_year = _extract_year_from_date(start)
+            if start_year is None:
+                continue
+            if end and isinstance(end, str) and end.strip().lower() not in _PRESENT_SYNONYMS:
+                end_year = _extract_year_from_date(end) or current_year
+            else:
+                end_year = current_year
+            if end_year < start_year:
+                continue
+            if start_year < 1970 or start_year > current_year:
+                continue
+            total_months += (end_year - start_year) * 12
         except Exception:
             continue
-    return total_months // 12 if total_months > 0 else None
+    years = total_months // 12
+    if years <= 0 or years > 50:
+        return None
+    return years
 
 
 def _normalize_phone(phone: str) -> str:
@@ -602,7 +620,7 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
             "doc_id": doc_id,
             "text_length": len(raw_text),
             "embedding_generated": True,
-            "job_title": structured_data.get("job_title"),
+            "job_title": None,
             "staffing_request_created": True,
         }
         await update_job_status(ctx, job_id, "completed", progress=100, result=output)
