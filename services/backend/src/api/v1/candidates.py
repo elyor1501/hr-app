@@ -5,6 +5,8 @@ import hashlib
 from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.orm import undefer
+from src.api.deps import get_current_user
+from src.models.auth import TokenPayload
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy import select, func, or_, and_, text
@@ -444,7 +446,14 @@ async def update_candidate(
     id: UUID,
     update_data: CandidateUpdate,
     repo: CandidateRepository = Depends(get_repository),
+    current_user: TokenPayload = Depends(get_current_user),
 ):
+    if current_user.role not in ["admin", "candidate_editor"]:
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have permission to edit candidates"
+        )
+
     if not await repo.exists(id):
         raise HTTPException(status_code=404, detail="Candidate not found")
 

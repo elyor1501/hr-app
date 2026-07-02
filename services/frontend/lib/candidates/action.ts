@@ -31,6 +31,7 @@ export async function deleteCandidate(candidateId: string) {
 
 export async function updateCandidate(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
+  const token = (formData.get("_token") as string) || "";
   const apiUrl = getApiUrl();
 
   const payload: Record<string, any> = {};
@@ -73,6 +74,7 @@ export async function updateCandidate(formData: FormData): Promise<void> {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(payload),
     cache: "no-store",

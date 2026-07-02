@@ -89,13 +89,13 @@ export function UserNav({ user }: UserNavProps) {
 
         {isAdmin && (
           <>
-            {/* { <DropdownMenuItem
+           { <DropdownMenuItem
               onClick={() => router.push("/manage-users")}
               className="flex items-center cursor-pointer"
             >
               <Users className="w-4 h-4 mr-3" />
               Manage Users
-            </DropdownMenuItem> } */}
+            </DropdownMenuItem> } 
             <DropdownMenuItem
               onClick={() => router.push("/signup")}
               className="flex items-center cursor-pointer"

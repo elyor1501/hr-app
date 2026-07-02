@@ -34,3 +34,4 @@ class ExperienceLevel(str, Enum):
 class UserRole(str, Enum):
     ADMIN = "admin"
     RECRUITER = "recruiter"
+    CANDIDATE_EDITOR = "candidate_editor"

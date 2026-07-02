@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/contexts/UserContext";
 import { toast } from "sonner";
-import { Shield, ShieldOff, Users, Trash2 } from "lucide-react";
+import { Shield, ShieldOff, Users, Trash2, PenLine, PenLineIcon } from "lucide-react";
 
 type AppUser = {
   id: string;
@@ -31,7 +31,7 @@ export default function ManageUsersPage() {
       router.replace("/login");
       return;
     }
-    if (user.role !== "admin") {
+    if ((user as any).role !== "admin") {
       router.replace("/dashboard");
       return;
     }
@@ -78,11 +78,13 @@ export default function ManageUsersPage() {
         prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
       );
 
-      toast.success(
-        newRole === "admin"
-          ? `${userName} is now an Admin`
-          : `${userName} admin access removed`
-      );
+      const messages: Record<string, string> = {
+        admin: `${userName} is now an Admin`,
+        recruiter: `${userName} role changed to Recruiter`,
+        candidate_editor: `${userName} can now edit candidates`,
+      };
+
+      toast.success(messages[newRole] || `${userName} role updated`);
     } catch {
       toast.error("Failed to update role");
     } finally {
@@ -120,6 +122,34 @@ export default function ManageUsersPage() {
     }
   };
 
+  const getRoleBadge = (role: string) => {
+    if (role === "admin") {
+      return (
+        <span
+          className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit mt-1"
+          style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
+        >
+          Admin
+        </span>
+      );
+    }
+    if (role === "candidate_editor") {
+      return (
+        <span
+          className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit mt-1"
+          style={{ backgroundColor: "#F5A62320", color: "#F5A623" }}
+        >
+          Candidate Editor
+        </span>
+      );
+    }
+    return (
+      <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit mt-1 bg-muted text-muted-foreground">
+        Recruiter
+      </span>
+    );
+  };
+
   if (loading || fetching) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
@@ -130,7 +160,90 @@ export default function ManageUsersPage() {
   }
 
   const admins = users.filter((u) => u.role === "admin");
-  const recruiters = users.filter((u) => u.role !== "admin");
+  const editors = users.filter((u) => u.role === "candidate_editor");
+  const recruiters = users.filter((u) => u.role === "recruiter");
+
+  const renderUserActions = (u: AppUser) => {
+    const isSelf = u.email.toLowerCase() === (user?.email as string)?.toLowerCase();
+    if (isSelf) {
+      return <span className="text-xs text-muted-foreground italic">You</span>;
+    }
+
+    return (
+      <div className="flex items-center gap-2 flex-wrap">
+        {u.role !== "admin" && (
+          <button
+            onClick={() => updateRole(u.id, "admin", u.full_name || u.email)}
+            disabled={updating === u.id || deleting === u.id}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+            style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
+          >
+            <Shield className="w-4 h-4" />
+            {updating === u.id ? "Updating..." : "Make Admin"}
+          </button>
+        )}
+
+        {u.role === "admin" && (
+          <button
+            onClick={() => updateRole(u.id, "recruiter", u.full_name || u.email)}
+            disabled={updating === u.id || deleting === u.id}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-200 text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
+          >
+            <ShieldOff className="w-4 h-4" />
+            {updating === u.id ? "Removing..." : "Remove Admin"}
+          </button>
+        )}
+
+        {u.role !== "candidate_editor" && u.role !== "admin" && (
+          <button
+            onClick={() => updateRole(u.id, "candidate_editor", u.full_name || u.email)}
+            disabled={updating === u.id || deleting === u.id}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+            style={{ backgroundColor: "#F5A62320", color: "#F5A623" }}
+          >
+            <PenLine className="w-4 h-4" />
+            {updating === u.id ? "Updating..." : "Allow Edit"}
+          </button>
+        )}
+
+        {u.role === "candidate_editor" && (
+          <button
+            onClick={() => updateRole(u.id, "recruiter", u.full_name || u.email)}
+            disabled={updating === u.id || deleting === u.id}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-orange-200 text-orange-600 hover:bg-orange-50 transition-all disabled:opacity-50"
+          >
+            <PenLineIcon className="w-4 h-4" />
+            {updating === u.id ? "Removing..." : "Remove Edit Access"}
+          </button>
+        )}
+
+        <button
+          onClick={() => deleteUser(u.id, u.full_name, u.email)}
+          disabled={updating === u.id || deleting === u.id}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-300 text-red-700 hover:bg-red-100 transition-all disabled:opacity-50"
+        >
+          <Trash2 className="w-4 h-4" />
+          {deleting === u.id ? "Deleting..." : "Delete"}
+        </button>
+      </div>
+    );
+  };
+
+  const renderUserCard = (u: AppUser) => (
+    <div
+      key={u.id}
+      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border border-border bg-card gap-3"
+    >
+      <div className="flex flex-col">
+        <p className="font-semibold text-sm text-foreground">{u.full_name || "—"}</p>
+        <p className="text-xs text-muted-foreground">{u.email}</p>
+        {getRoleBadge(u.role)}
+      </div>
+      <div className="flex items-center gap-2">
+        {renderUserActions(u)}
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -141,7 +254,7 @@ export default function ManageUsersPage() {
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="rounded-xl border border-border p-4 bg-card">
           <p className="text-sm text-muted-foreground">Total Users</p>
           <p className="text-3xl font-bold" style={{ color: "#429ABD" }}>
@@ -154,6 +267,12 @@ export default function ManageUsersPage() {
             {admins.length}
           </p>
         </div>
+        <div className="rounded-xl border border-border p-4 bg-card">
+          <p className="text-sm text-muted-foreground">Candidate Editors</p>
+          <p className="text-3xl font-bold" style={{ color: "#F5A623" }}>
+            {editors.length}
+          </p>
+        </div>
       </div>
 
       {admins.length > 0 && (
@@ -161,89 +280,25 @@ export default function ManageUsersPage() {
           <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: "#F5A623" }}>
             Admins ({admins.length})
           </h2>
-          {admins.map((u) => (
-            <div
-              key={u.id}
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border border-border bg-card gap-3"
-            >
-              <div className="flex flex-col">
-                <p className="font-semibold text-sm text-foreground">{u.full_name || "—"}</p>
-                <p className="text-xs text-muted-foreground">{u.email}</p>
-                <span
-                  className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit mt-1"
-                  style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
-                >
-                  Admin
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                {u.email.toLowerCase() !== (user?.email as string)?.toLowerCase() && (
-                  <>
-                    <button
-                      onClick={() => updateRole(u.id, "recruiter", u.full_name || u.email)}
-                      disabled={updating === u.id || deleting === u.id}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-200 text-red-600 hover:bg-red-50 transition-all disabled:opacity-50"
-                    >
-                      <ShieldOff className="w-4 h-4" />
-                      {updating === u.id ? "Removing..." : "Remove Admin"}
-                    </button>
-                    <button
-                      onClick={() => deleteUser(u.id, u.full_name, u.email)}
-                      disabled={updating === u.id || deleting === u.id}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-300 text-red-700 hover:bg-red-100 transition-all disabled:opacity-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      {deleting === u.id ? "Deleting..." : "Delete"}
-                    </button>
-                  </>
-                )}
-                {u.email.toLowerCase() === (user?.email as string)?.toLowerCase() && (
-                  <span className="text-xs text-muted-foreground italic">You</span>
-                )}
-              </div>
-            </div>
-          ))}
+          {admins.map(renderUserCard)}
+        </div>
+      )}
+
+      {editors.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: "#F5A623" }}>
+            Candidate Editors ({editors.length})
+          </h2>
+          {editors.map(renderUserCard)}
         </div>
       )}
 
       {recruiters.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            Users ({recruiters.length})
+            Recruiters ({recruiters.length})
           </h2>
-          {recruiters.map((u) => (
-            <div
-              key={u.id}
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border border-border bg-card gap-3"
-            >
-              <div className="flex flex-col">
-                <p className="font-semibold text-sm text-foreground">{u.full_name || "—"}</p>
-                <p className="text-xs text-muted-foreground">{u.email}</p>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit mt-1 bg-muted text-muted-foreground">
-                  Recruiter
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => updateRole(u.id, "admin", u.full_name || u.email)}
-                  disabled={updating === u.id || deleting === u.id}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
-                  style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
-                >
-                  <Shield className="w-4 h-4" />
-                  {updating === u.id ? "Updating..." : "Make Admin"}
-                </button>
-                <button
-                  onClick={() => deleteUser(u.id, u.full_name, u.email)}
-                  disabled={updating === u.id || deleting === u.id}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border border-red-300 text-red-700 hover:bg-red-100 transition-all disabled:opacity-50"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  {deleting === u.id ? "Deleting..." : "Delete"}
-                </button>
-              </div>
-            </div>
-          ))}
+          {recruiters.map(renderUserCard)}
         </div>
       )}
     </div>

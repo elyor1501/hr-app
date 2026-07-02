@@ -314,8 +314,8 @@ async def update_user_role(
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    if data.role not in ["admin", "recruiter"]:
-        raise HTTPException(status_code=400, detail="Role must be admin or recruiter")
+    if data.role not in ["admin", "recruiter", "candidate_editor"]:
+        raise HTTPException(status_code=400, detail="Role must be admin, recruiter or candidate_editor")
 
     from uuid import UUID
     result = await db.execute(
