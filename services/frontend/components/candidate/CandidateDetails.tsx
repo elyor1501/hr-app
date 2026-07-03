@@ -51,6 +51,14 @@ const RATE_TYPE_OPTIONS = [
   { value: "monthly", label: "Monthly" },
 ];
 
+const AVAILABILITY_OPTIONS = [
+  "Immediate",
+  "2 weeks",
+  "1 month",
+  "3 months",
+  "Not Available",
+];
+
 function getCurrencySymbol(currency: string): string {
   const symbols: Record<string, string> = {
     EUR: "€", USD: "$", GBP: "£", INR: "₹", AED: "AED",
@@ -103,6 +111,13 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [yearsOfExperience, setYearsOfExperience] = useState<string>(empData?.years_of_experience?.toString() ?? "");
   const [skillsText, setSkillsText] = useState<string>((empData?.skills || []).join(", "));
   const [availability, setAvailability] = useState<string>(empData?.availability ?? "");
+  const [availabilityMode, setAvailabilityMode] = useState<string>(
+    empData?.availability && AVAILABILITY_OPTIONS.includes(empData.availability)
+      ? empData.availability
+      : empData?.availability
+        ? "custom"
+        : ""
+  );
   const [experienceLevel, setExperienceLevel] = useState<string>(empData?.experience_level ?? "");
   const [vendor, setVendor] = useState<string>(empData?.vendor ?? "");
 
@@ -212,7 +227,13 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (updated.current_company) setCurrentCompany(updated.current_company ?? "");
       if (updated.years_of_experience !== undefined) setYearsOfExperience(updated.years_of_experience?.toString() ?? "");
       if (updated.skills) setSkillsText((updated.skills || []).join(", "));
-      if (updated.availability) setAvailability(updated.availability ?? "");
+      if (updated.availability !== undefined) {
+        const newAvail = updated.availability ?? "";
+        setAvailability(newAvail);
+        setAvailabilityMode(
+          AVAILABILITY_OPTIONS.includes(newAvail) ? newAvail : newAvail ? "custom" : ""
+        );
+      }
       if (updated.experience_level) setExperienceLevel(updated.experience_level ?? "");
       if (updated.vendor) setVendor(updated.vendor ?? "");
 
@@ -531,14 +552,38 @@ export default function CandidateDetails({ id, empData }: Props) {
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">Availability</label>
                 {isEditing ? (
-                  <select value={availability} onChange={(e) => setAvailability(e.target.value)} className={fieldClass}>
-                    <option value="">Select availability</option>
-                    <option value="Immediate">Immediate</option>
-                    <option value="2 weeks">2 weeks</option>
-                    <option value="1 month">1 month</option>
-                    <option value="3 months">3 months</option>
-                    <option value="Not Available">Not Available</option>
-                  </select>
+                  <div className="space-y-2">
+                    <select
+                      value={availabilityMode}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setAvailabilityMode(val);
+                        if (val !== "custom") {
+                          setAvailability(val);
+                        } else {
+                          setAvailability("");
+                        }
+                      }}
+                      className={fieldClass}
+                    >
+                      <option value="">Select availability</option>
+                      <option value="Immediate">Immediate</option>
+                      <option value="2 weeks">2 weeks</option>
+                      <option value="1 month">1 month</option>
+                      <option value="3 months">3 months</option>
+                      <option value="Not Available">Not Available</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                    {availabilityMode === "custom" && (
+                      <input
+                        value={availability}
+                        onChange={(e) => setAvailability(e.target.value)}
+                        placeholder="e.g. 1 week, 3 weeks, 2 months"
+                        className={fieldClass}
+                        autoFocus
+                      />
+                    )}
+                  </div>
                 ) : (
                   <input value={availability || "Not set"} disabled className={fieldClass} />
                 )}
@@ -789,4 +834,4 @@ export default function CandidateDetails({ id, empData }: Props) {
       </Tabs>
     </div>
   );
-} 
+}
