@@ -582,7 +582,23 @@ async def list_requests(
         )
         .outerjoin(RequestCandidate, RequestCandidate.request_id == StaffingRequest.id)
         .where(and_(*filters) if filters else True)
-        .group_by(StaffingRequest.id)
+        .group_by(
+            StaffingRequest.id,
+            StaffingRequest.request_number,
+            StaffingRequest.company_name,
+            StaffingRequest.request_title,
+            StaffingRequest.job_description,
+            StaffingRequest.prepared_rate,
+            StaffingRequest.final_rate,
+            StaffingRequest.request_date,
+            StaffingRequest.proposed_date,
+            StaffingRequest.customer_feedback,
+            StaffingRequest.contract_status,
+            StaffingRequest.state,
+            StaffingRequest.created_by,
+            StaffingRequest.created_at,
+            StaffingRequest.updated_at,
+        )
         .order_by(StaffingRequest.created_at.desc())
         .offset(skip)
         .limit(limit)
