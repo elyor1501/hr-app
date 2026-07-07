@@ -24,7 +24,17 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
           <span className="font-medium hover:text-blue-600 hover:underline transition-colors">
             {fullName || "NA"}
           </span>
-          <span className="text-sm text-gray-500 break-all">{email}</span>
+          <div className="text-sm text-gray-500">
+            {email
+              .split(",")
+              .map((mail: string) => mail.trim())
+              .filter(Boolean)
+              .map((mail: string, index: number) => (
+                <div key={index} className="break-all">
+                  {mail}
+                </div>
+              ))}
+          </div>
         </div>
       );
     },
