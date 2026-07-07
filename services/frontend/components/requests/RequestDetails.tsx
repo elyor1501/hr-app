@@ -542,6 +542,7 @@ export default function RequestDetails({
                   value={proposedDateValue}
                   min={getMinProposedDate()}
                   onChange={handleProposedDateChange}
+                  lang="en-GB"
                   className={`${fieldClass} ${
                     proposedDateError ? "border-red-500 focus:ring-red-500" : ""
                   }`}
