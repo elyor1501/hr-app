@@ -623,6 +623,15 @@ async def get_request(
     request_id: UUID,
     session: AsyncSession = Depends(get_db_session)
 ):
+    cache_key = f"hr_app:requests:detail:{request_id}"
+    try:
+        redis = await get_redis_pool()
+        cached = await redis.get(cache_key)
+        if cached:
+            return RequestResponse(**json.loads(cached))
+    except Exception:
+        pass
+
     result = await session.execute(
         select(StaffingRequest).where(StaffingRequest.id == request_id)
     )
@@ -630,8 +639,19 @@ async def get_request(
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
     candidates = await _get_proposed_candidates(session, request_id)
-    return _build_response(req, candidates)
+    response = _build_response(req, candidates)
 
+    try:
+        redis = await get_redis_pool()
+        await redis.setex(
+            cache_key,
+            1800,
+            json.dumps(response.model_dump(), default=str)
+        )
+    except Exception:
+        pass
+
+    return response
 
 @router.patch("/{request_id}", response_model=RequestResponse)
 async def update_request(
@@ -676,6 +696,11 @@ async def update_request(
     await session.commit()
     await session.refresh(req)
     await _invalidate_requests_cache()
+    try:
+        redis = await get_redis_pool()
+        await redis.delete(f"hr_app:requests:detail:{request_id}")
+    except Exception:
+        pass
     if jd_changed:
         try:
             redis = await get_redis_pool()

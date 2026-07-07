@@ -187,6 +187,7 @@ async def get_candidate_profile(
 ):
     from src.core.redis import get_redis_pool
     import json
+    from sqlalchemy import text
 
     cache_key = f"hr_app:candidate_profile:{candidate_id}"
     try:
@@ -197,8 +198,32 @@ async def get_candidate_profile(
     except Exception:
         pass
 
-    candidate = await session.get(Candidate, candidate_id)
-    if not candidate:
+    result = await session.execute(
+        text("""
+            SELECT
+                c.id, c.first_name, c.last_name, c.email, c.phone,
+                c.current_title, c.current_company, c.years_of_experience,
+                c.skills, c.location, c.status, c.linkedin_url,
+                c.experience_level, c.hourly_rate, c.availability,
+                c.vendor, c.rate_type, c.currency, c.daily_rate,
+                c.proposed_rate, c.proposed_rate_type, c.proposed_daily_rate,
+                c.proposed_currency, c.json_data, c.created_at, c.updated_at,
+                pr.github, pr.portfolio, pr.summary,
+                pr.education, pr.experience, pr.projects,
+                pr.certifications, pr.candidate_status
+            FROM candidates c
+            LEFT JOIN parsed_resumes pr
+                ON lower(pr.email) = lower(c.email)
+                AND pr.email NOT LIKE '%@noemail.vaspp.com%'
+                AND pr.email NOT LIKE '%@placeholder.com%'
+            WHERE c.id = :candidate_id
+            LIMIT 1
+        """),
+        {"candidate_id": str(candidate_id)}
+    )
+    row = result.mappings().first()
+
+    if not row:
         raise HTTPException(status_code=404, detail="Candidate not found")
 
     cvs_result = await session.execute(
@@ -215,28 +240,47 @@ async def get_candidate_profile(
     )
     attachments = attachments_result.scalars().all()
 
-    parsed_resume = await _get_parsed_resume_for_candidate(session, candidate)
+    json_data = row["json_data"] or {}
 
-    github = parsed_resume.github if parsed_resume else (candidate.json_data.get("github") if candidate.json_data else None)
-    portfolio = parsed_resume.portfolio if parsed_resume else (candidate.json_data.get("portfolio") if candidate.json_data else None)
-    summary = parsed_resume.summary if parsed_resume else (candidate.json_data.get("summary") if candidate.json_data else None)
-    education = parsed_resume.education if parsed_resume else (candidate.json_data.get("education") if candidate.json_data else None)
-    experience = parsed_resume.experience if parsed_resume else (candidate.json_data.get("experience") if candidate.json_data else None)
-    projects = parsed_resume.projects if parsed_resume else (candidate.json_data.get("projects") if candidate.json_data else None)
-    certifications = parsed_resume.certifications if parsed_resume else (candidate.json_data.get("certifications") if candidate.json_data else None)
+    github = row["github"] if row["github"] else json_data.get("github")
+    portfolio = row["portfolio"] if row["portfolio"] else json_data.get("portfolio")
+    summary = row["summary"] if row["summary"] else json_data.get("summary")
+    education = row["education"] if row["education"] else json_data.get("education")
+    experience = row["experience"] if row["experience"] else json_data.get("experience")
+    projects = row["projects"] if row["projects"] else json_data.get("projects")
+    certifications = row["certifications"] if row["certifications"] else json_data.get("certifications")
+
+    if not row["github"] and not row["summary"]:
+        pr_name_result = await session.execute(
+            select(ParsedResume).where(
+                and_(
+                    func.lower(ParsedResume.first_name) == (row["first_name"] or "").lower(),
+                    func.lower(ParsedResume.last_name) == (row["last_name"] or "").lower(),
+                )
+            ).limit(1)
+        )
+        pr_by_name = pr_name_result.scalars().first()
+        if pr_by_name:
+            github = github or pr_by_name.github
+            portfolio = portfolio or pr_by_name.portfolio
+            summary = summary or pr_by_name.summary
+            education = education or pr_by_name.education
+            experience = experience or pr_by_name.experience
+            projects = projects or pr_by_name.projects
+            certifications = certifications or pr_by_name.certifications
 
     response = CandidateProfileResponse(
-        id=str(candidate.id),
-        first_name=candidate.first_name,
-        last_name=candidate.last_name,
-        email=_clean_email(candidate.email),
-        phone=candidate.phone,
-        current_title=candidate.current_title,
-        current_company=candidate.current_company,
-        years_of_experience=candidate.years_of_experience,
-        skills=candidate.skills,
-        location=candidate.location,
-        linkedin_url=candidate.linkedin_url,
+        id=str(row["id"]),
+        first_name=row["first_name"],
+        last_name=row["last_name"],
+        email=_clean_email(row["email"]),
+        phone=row["phone"],
+        current_title=row["current_title"],
+        current_company=row["current_company"],
+        years_of_experience=row["years_of_experience"],
+        skills=row["skills"],
+        location=row["location"],
+        linkedin_url=row["linkedin_url"],
         github=github,
         portfolio=portfolio,
         summary=summary,
@@ -244,23 +288,23 @@ async def get_candidate_profile(
         experience=experience,
         projects=projects,
         certifications=certifications,
-        experience_level=candidate.experience_level,
-        hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
-        availability=candidate.availability,
-        status=candidate.status,
-        candidate_status=parsed_resume.candidate_status if parsed_resume else None,
-        vendor=candidate.vendor,
-        rate_type=candidate.rate_type,
-        currency=candidate.currency,
-        daily_rate=float(candidate.daily_rate) if candidate.daily_rate else None,
-        proposed_rate=float(candidate.proposed_rate) if candidate.proposed_rate else None,
-        proposed_rate_type=candidate.proposed_rate_type,
-        proposed_daily_rate=float(candidate.proposed_daily_rate) if candidate.proposed_daily_rate else None,
-        proposed_currency=candidate.proposed_currency,
+        experience_level=row["experience_level"],
+        hourly_rate=float(row["hourly_rate"]) if row["hourly_rate"] else None,
+        availability=row["availability"],
+        status=row["status"],
+        candidate_status=row["candidate_status"],
+        vendor=row["vendor"],
+        rate_type=row["rate_type"],
+        currency=row["currency"],
+        daily_rate=float(row["daily_rate"]) if row["daily_rate"] else None,
+        proposed_rate=float(row["proposed_rate"]) if row["proposed_rate"] else None,
+        proposed_rate_type=row["proposed_rate_type"],
+        proposed_daily_rate=float(row["proposed_daily_rate"]) if row["proposed_daily_rate"] else None,
+        proposed_currency=row["proposed_currency"],
         cvs=[_cv_to_response(cv) for cv in cvs],
         attachments=[_attachment_to_response(att) for att in attachments],
-        created_at=candidate.created_at.isoformat(),
-        updated_at=candidate.updated_at.isoformat() if candidate.updated_at else None,
+        created_at=row["created_at"].isoformat(),
+        updated_at=row["updated_at"].isoformat() if row["updated_at"] else None,
     )
 
     try:
