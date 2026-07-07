@@ -69,8 +69,10 @@ export const columns_request_list: ColumnDef<Request>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const date = new Date(row.original.created_at);
-      const formatted = date.toLocaleDateString("en-GB").replace(/\//g, ".");
+      const raw = row.original.created_at;
+      if (!raw) return <div className="text-center w-full px-2 py-1">NA</div>;
+      const parts = raw.split("T")[0].split("-");
+      const formatted = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : raw;
       return <div className="text-center w-full px-2 py-1">{formatted}</div>;
     },
   },
