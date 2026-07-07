@@ -233,7 +233,4 @@ jobs:
             echo 'Backend API: http://${{ secrets.DEPLOY_HOST }}:8000'
             echo 'AI-ML API: http://127.0.0.1:8001 (localhost only)'
 
-            echo '=== Starting Cache Warming ==='
-            bash /home/deployer/post_deploy_warm.sh
-            echo '=== Cache Warming Complete ==='
           "
