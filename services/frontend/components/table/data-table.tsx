@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -83,6 +83,7 @@ export function DataTable<TData, TValue>({
     globalFilterValue || "",
   );
   const [isSearching, setIsSearching] = React.useState(false);
+  const [loadingRowId, setLoadingRowId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (globalFilterValue !== undefined) {
@@ -247,10 +248,19 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={`border-b hover:bg-muted/50 dark:hover:bg-neutral-800/60 border-neutral-200 dark:border-neutral-800 whitespace-nowrap ${
-                    onRowClick ? "cursor-pointer" : ""
-                  }`}
-                  onClick={() => onRowClick?.(row.original)}
+                  className={`border-b border-neutral-200 dark:border-neutral-800 whitespace-nowrap transition-all
+                  ${
+                    loadingRowId === (row.original as any).id
+                      ? "opacity-60 bg-muted pointer-events-none"
+                      : "hover:bg-muted/50 dark:hover:bg-neutral-800/60"
+                  }
+                  ${onRowClick ? "cursor-pointer" : ""}`}
+                  onClick={() => {
+                    if (!onRowClick) return;
+
+                    setLoadingRowId((row.original as any).id);
+                    onRowClick(row.original);
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

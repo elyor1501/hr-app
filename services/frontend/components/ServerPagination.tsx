@@ -3,7 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 
 interface ServerPaginationProps {
   currentPage: number;
@@ -18,10 +18,16 @@ export default function ServerPagination({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [loadingDirection, setLoadingDirection] = useState<
+    "prev" | "next" | null
+  >(null);
 
-  const goToPage = (page: number) => {
+  const goToPage = (page: number, direction: "prev" | "next") => {
+    setLoadingDirection(direction);
+
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(page));
+
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
     });
@@ -32,11 +38,11 @@ export default function ServerPagination({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => goToPage(currentPage - 1)}
+        onClick={() => goToPage(currentPage - 1, "prev")}
         disabled={currentPage <= 1 || isPending}
         className="hover:border-[#429ABD] hover:text-[#429ABD] transition-colors duration-300"
       >
-        {isPending ? (
+        {loadingDirection === "prev" && isPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <ArrowLeft />
@@ -50,11 +56,11 @@ export default function ServerPagination({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => goToPage(currentPage + 1)}
+        onClick={() => goToPage(currentPage + 1, "next")}
         disabled={currentPage >= totalPages || isPending}
         className="hover:border-[#429ABD] hover:text-[#429ABD] transition-colors duration-300"
       >
-        {isPending ? (
+        {loadingDirection === "next" && isPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <ArrowRight />
