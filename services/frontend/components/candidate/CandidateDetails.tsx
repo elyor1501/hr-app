@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { DeleteResumeButton } from "./DeleteCandiResumeButton";
 import { DeleteAttachmentButton } from "./DeleteAttachmentButton";
 import { UploadAttachmentDialog } from "./UploadCandiAttachment";
-import CandidateProposedRequests from "./CandidateProposedRequests";
+//import CandidateProposedRequests from "./CandidateProposedRequests";
 import {
   Select,
   SelectContent,
@@ -623,7 +623,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               {rateCard("Requested Rate", "#429ABD", requestedRateAmount, setRequestedRateAmount, rateType, setRateType, currency, setCurrency, liveDailyRate)}
               {rateCard("Proposed Rate", "#F5A623", proposedRateAmount, setProposedRateAmount, proposedRateType, setProposedRateType, proposedCurrency, setProposedCurrency, liveProposedDailyRate)}
             </div>
-            <CandidateProposedRequests candidateId={id} />
+            {/* <CandidateProposedRequests candidateId={id} /> */}
             {sectionHeader("Educational Details")}
 
             {education.length > 0 ? (
