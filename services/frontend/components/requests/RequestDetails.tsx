@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { updateRequest } from "@/lib/requests/action";
 import { getRequestById } from "@/lib/requests/data";
 import { EyeIcon } from "lucide-react";
+import DatePicker from "react-datepicker";
+import { format, parseISO } from "date-fns";
 
 type Props = {
   id: string;
@@ -238,9 +240,117 @@ export default function RequestDetails({
 
   const formatDate = (date: string) => {
     if (!date) return "";
-    const parts = date.split("T")[0].split("-");
-    if (parts.length !== 3) return date;
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    try {
+      const parsedDate = parseISO(date);
+      return format(parsedDate, "dd.MM.yyyy");
+    } catch {
+      const parts = date.split("T")[0].split("-");
+      if (parts.length !== 3) return date;
+      return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
+  };
+
+  const CustomHeader = ({
+    date,
+    changeYear,
+    changeMonth,
+    decreaseMonth,
+    increaseMonth,
+    prevMonthButtonDisabled,
+    nextMonthButtonDisabled,
+  }: any) => {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const currentYear = date.getFullYear();
+    const currentMonth = date.getMonth();
+
+    const startYear = new Date().getFullYear();
+const years = Array.from({ length: 20 }, (_, i) => startYear + i);
+
+    return (
+      <div className="flex items-center justify-between px-2 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
+        <button
+          type="button"
+          onClick={decreaseMonth}
+          disabled={prevMonthButtonDisabled}
+          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded disabled:opacity-50 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+
+        <div className="flex gap-2">
+          <select
+            value={currentMonth}
+            onChange={({ target: { value } }) => changeMonth(parseInt(value))}
+            className="text-sm font-medium bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+          >
+            {months.map((month, index) => (
+              <option key={index} value={index}>
+                {month}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={currentYear}
+            onChange={({ target: { value } }) => changeYear(parseInt(value))}
+            className="text-sm font-medium bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+            size={1}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="button"
+          onClick={increaseMonth}
+          disabled={nextMonthButtonDisabled}
+          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded disabled:opacity-50 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -536,17 +646,30 @@ export default function RequestDetails({
               </label>
 
               {isEditing ? (
-                <input
-                  type="date"
-                  name="proposed_date"
-                  value={proposedDateValue}
-                  min={getMinProposedDate()}
-                  onChange={handleProposedDateChange}
-                  lang="en-GB"
-                  className={`${fieldClass} ${
-                    proposedDateError ? "border-red-500 focus:ring-red-500" : ""
-                  }`}
-                />
+                <div className="custom-datepicker">
+                    <DatePicker
+                      selected={proposedDateValue ? parseISO(proposedDateValue) : null}
+                      onChange={(date: Date | null) => {
+                        if (!date) return;
+                        handleProposedDateChange({
+                          target: {
+                            name: "proposed_date",
+                            value: format(date, "yyyy-MM-dd"),
+                          },
+                        } as React.ChangeEvent<HTMLInputElement>);
+                      }}
+                      dateFormat="dd.MM.yyyy"
+                      minDate={parseISO(getMinProposedDate())}
+                      className={fieldClass}
+                      showYearDropdown
+                      showMonthDropdown
+                      dropdownMode="select"
+                      yearDropdownItemNumber={15}
+                      scrollableYearDropdown
+                      renderCustomHeader={CustomHeader}
+                      popperClassName="custom-datepicker"
+                    />
+                  </div>
               ) : (
                 <input
                   type="text"
@@ -556,6 +679,11 @@ export default function RequestDetails({
                   className={fieldClass}
                 />
               )}
+              <input
+                type="hidden"
+                name="proposed_date"
+                value={proposedDateValue}
+              />
 
               {proposedDateError && isEditing && (
                 <p className="text-xs text-red-500 mt-1">{proposedDateError}</p>
