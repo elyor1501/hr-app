@@ -113,6 +113,18 @@ class CandidateProfileResponse(BaseModel):
     proposed_rate_type: Optional[str] = None
     proposed_daily_rate: Optional[float] = None
     proposed_currency: Optional[str] = None
+    dob: Optional[str] = None
+    ssn_last4: Optional[str] = None
+    work_authorization: Optional[str] = None
+    interview_availability: Optional[str] = None
+    willing_to_travel: Optional[bool] = None
+    willing_inperson: Optional[bool] = None
+    us_experience: Optional[int] = None
+    pending_offers: Optional[bool] = None
+    pending_offers_details: Optional[str] = None
+    sap_email: Optional[str] = None
+    sap_cuser: Optional[str] = None
+    sap_secure_id: Optional[str] = None
     cvs: List[CVResponse] = []
     attachments: List[AttachmentResponse] = []
     created_at: str
@@ -208,6 +220,10 @@ async def get_candidate_profile(
                 c.vendor, c.rate_type, c.currency, c.daily_rate,
                 c.proposed_rate, c.proposed_rate_type, c.proposed_daily_rate,
                 c.proposed_currency, c.json_data, c.created_at, c.updated_at,
+                c.dob, c.ssn_last4, c.work_authorization, c.interview_availability,
+                c.willing_to_travel, c.willing_inperson, c.us_experience,
+                c.pending_offers, c.pending_offers_details,
+                c.sap_email, c.sap_cuser, c.sap_secure_id,
                 pr.github, pr.portfolio, pr.summary,
                 pr.education, pr.experience, pr.projects,
                 pr.certifications, pr.candidate_status
@@ -301,6 +317,18 @@ async def get_candidate_profile(
         proposed_rate_type=row["proposed_rate_type"],
         proposed_daily_rate=float(row["proposed_daily_rate"]) if row["proposed_daily_rate"] else None,
         proposed_currency=row["proposed_currency"],
+        dob=row["dob"],
+        ssn_last4=row["ssn_last4"],
+        work_authorization=row["work_authorization"],
+        interview_availability=row["interview_availability"],
+        willing_to_travel=row["willing_to_travel"],
+        willing_inperson=row["willing_inperson"],
+        us_experience=row["us_experience"],
+        pending_offers=row["pending_offers"],
+        pending_offers_details=row["pending_offers_details"],
+        sap_email=row["sap_email"],
+        sap_cuser=row["sap_cuser"],
+        sap_secure_id=row["sap_secure_id"],
         cvs=[_cv_to_response(cv) for cv in cvs],
         attachments=[_attachment_to_response(att) for att in attachments],
         created_at=row["created_at"].isoformat(),

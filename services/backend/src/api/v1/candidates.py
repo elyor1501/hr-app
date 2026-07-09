@@ -69,6 +69,18 @@ CANDIDATE_LIST_COLUMNS = [
     Candidate.proposed_rate_type,
     Candidate.proposed_daily_rate,
     Candidate.proposed_currency,
+    Candidate.dob,
+    Candidate.ssn_last4,
+    Candidate.work_authorization,
+    Candidate.interview_availability,
+    Candidate.willing_to_travel,
+    Candidate.willing_inperson,
+    Candidate.us_experience,
+    Candidate.pending_offers,
+    Candidate.pending_offers_details,
+    Candidate.sap_email,
+    Candidate.sap_cuser,
+    Candidate.sap_secure_id,
 ]
 
 
@@ -358,6 +370,8 @@ async def search_candidates(
 
     if availability:
         filters.append(Candidate.availability == availability)
+    if role := None:
+        pass
 
     if dateFrom:
         try:
@@ -497,6 +511,21 @@ async def update_candidate(
                 status_code=400,
                 detail="Status must be active or inactive"
             )
+    if "sap_email" in update_dict and update_dict["sap_email"]:
+        existing = await repo.get_by_id(id)
+        if existing:
+            dob = update_dict.get("dob") or existing.dob or ""
+            ssn = update_dict.get("ssn_last4") or existing.ssn_last4 or ""
+            first_name = update_dict.get("first_name") or existing.first_name or ""
+            ff = first_name[:2].upper()
+            dob_parts = dob.replace("-", "/").split("/")
+            if len(dob_parts) == 2:
+                mmdd = dob_parts[0].zfill(2) + dob_parts[1].zfill(2)
+            else:
+                mmdd = ""
+            zzzz = ssn[-4:] if len(ssn) >= 4 else ssn
+            if ff and mmdd and zzzz:
+                update_dict["sap_secure_id"] = f"{ff}{mmdd}{zzzz}"
 
     await repo.update(id, **update_dict)
 
