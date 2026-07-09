@@ -710,6 +710,34 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
             />
           </div>
 
+                    {(request.sap_email || isEditing) && (
+            <div className="border border-border rounded-lg p-4 space-y-4">
+              <p className="text-sm font-semibold" style={{ color: "#429ABD" }}>SAP Customer Details</p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-foreground">SAP Email</label>
+                  <input
+                    name="sap_email"
+                    defaultValue={request.sap_email ?? ""}
+                    disabled={!isEditing}
+                    placeholder="e.g. Micky.Mouse@sap.com"
+                    className={fieldClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-foreground">SAP C-USER</label>
+                  <input
+                    name="sap_cuser"
+                    defaultValue={request.sap_cuser ?? ""}
+                    disabled={!isEditing}
+                    placeholder="e.g. MMOUSE"
+                    className={fieldClass}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium mb-1 text-foreground">
               Customer Feedback
@@ -942,6 +970,17 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
                   <p className="text-xs text-muted-foreground">
                     Rate: €{candidate.hourly_rate}/hr
                   </p>
+                )}
+                                {request.sap_email && candidate.sap_secure_id && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs font-semibold text-foreground">SAP Secure ID:</span>
+                    <span className="px-2 py-0.5 text-xs font-mono font-bold rounded" style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}>
+                      {candidate.sap_secure_id}
+                    </span>
+                  </div>
+                )}
+                {request.sap_email && !candidate.sap_secure_id && (
+                  <p className="text-xs text-orange-500 mt-1">SAP Secure ID: Incomplete (DOB or SSN missing)</p>
                 )}
                 <div className="flex justify-end">
                   <button

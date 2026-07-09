@@ -78,8 +78,6 @@ CANDIDATE_LIST_COLUMNS = [
     Candidate.us_experience,
     Candidate.pending_offers,
     Candidate.pending_offers_details,
-    Candidate.sap_email,
-    Candidate.sap_cuser,
     Candidate.sap_secure_id,
 ]
 
@@ -453,6 +451,65 @@ async def get_candidate(
         pass
 
     return candidate
+
+@router.get("/{id}/requests")
+async def get_candidate_requests(
+    id: UUID,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=50),
+    session: AsyncSession = Depends(get_db_session),
+):
+    from src.db.models import StaffingRequest, RequestCandidate
+    
+    stmt = (
+        select(
+            StaffingRequest.id,
+            StaffingRequest.request_number,
+            StaffingRequest.request_title,
+            StaffingRequest.company_name,
+            StaffingRequest.state,
+            StaffingRequest.created_at,
+            RequestCandidate.proposed_date,
+            RequestCandidate.proposed_rate,
+        )
+        .join(RequestCandidate, RequestCandidate.request_id == StaffingRequest.id)
+        .where(RequestCandidate.candidate_id == id)
+        .order_by(RequestCandidate.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+    )
+    
+    count_stmt = (
+        select(func.count())
+        .select_from(RequestCandidate)
+        .where(RequestCandidate.candidate_id == id)
+    )
+    
+    total_result = await session.execute(count_stmt)
+    result = await session.execute(stmt)
+    
+    total = total_result.scalar() or 0
+    rows = result.mappings().all()
+    
+    return {
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size if total > 0 else 1,
+        "items": [
+            {
+                "id": str(row["id"]),
+                "request_number": row["request_number"],
+                "request_title": row["request_title"],
+                "company_name": row["company_name"],
+                "state": row["state"],
+                "created_at": row["created_at"].isoformat(),
+                "proposed_date": row["proposed_date"].isoformat() if row["proposed_date"] else None,
+                "proposed_rate": float(row["proposed_rate"]) if row["proposed_rate"] else None,
+            }
+            for row in rows
+        ]
+    }
 
 
 @router.patch("/{id}", response_model=CandidateResponse)

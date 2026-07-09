@@ -38,6 +38,8 @@ class RequestCreate(BaseModel):
     prepared_rate: Optional[float] = Field(default=None, ge=0)
     request_date: date = Field(...)
     proposed_date: Optional[date] = Field(default=None)
+    sap_email: Optional[str] = Field(default=None)
+    sap_cuser: Optional[str] = Field(default=None)
 
 
 class RequestUpdate(BaseModel):
@@ -50,6 +52,8 @@ class RequestUpdate(BaseModel):
     customer_feedback: Optional[str] = Field(default=None)
     contract_status: Optional[bool] = Field(default=None)
     state: Optional[str] = Field(default=None)
+    sap_email: Optional[str] = Field(default=None)
+    sap_cuser: Optional[str] = Field(default=None)
 
 
 class StateTransition(BaseModel):
@@ -94,6 +98,7 @@ class CandidateMatchResult(BaseModel):
     skills_comparison: SkillsComparison
     hourly_rate: Optional[float] = None
     availability: Optional[str] = None
+    sap_secure_id: Optional[str] = None
 
 
 class AutoMatchResponse(BaseModel):
@@ -142,6 +147,8 @@ class RequestResponse(BaseModel):
     state: str
     created_at: datetime
     updated_at: datetime
+    sap_email: Optional[str] = None
+    sap_cuser: Optional[str] = None
     proposed_candidates: List[CandidateSummary] = []
 
     class Config:
@@ -598,6 +605,8 @@ async def list_requests(
             StaffingRequest.created_by,
             StaffingRequest.created_at,
             StaffingRequest.updated_at,
+            StaffingRequest.sap_email,
+            StaffingRequest.sap_cuser,
         )
         .order_by(StaffingRequest.created_at.desc())
         .offset(skip)
@@ -868,6 +877,7 @@ async def auto_match_candidates(
                 ),
                 hourly_rate=float(candidate.hourly_rate) if candidate.hourly_rate else None,
                 availability=candidate.availability,
+                sap_secure_id=candidate.sap_secure_id if hasattr(candidate, 'sap_secure_id') else None,
             )
         )
     matches.sort(key=lambda m: m.match_score, reverse=True)
@@ -1138,5 +1148,7 @@ def _build_response(req: StaffingRequest, candidates: List[CandidateSummary]) ->
         state=req.state,
         created_at=req.created_at,
         updated_at=req.updated_at,
+        sap_email=req.sap_email if hasattr(req, 'sap_email') else None,
+        sap_cuser=req.sap_cuser if hasattr(req, 'sap_cuser') else None,
         proposed_candidates=candidates,
     )

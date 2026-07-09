@@ -114,8 +114,6 @@ class CandidateUpdate(BaseSchema):
     us_experience: Optional[int] = None
     pending_offers: Optional[bool] = None
     pending_offers_details: Optional[str] = None
-    sap_email: Optional[str] = None
-    sap_cuser: Optional[str] = None
     sap_secure_id: Optional[str] = None
 
     @field_validator("status", mode="before")
@@ -165,8 +163,6 @@ class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     us_experience: Optional[int] = None
     pending_offers: Optional[bool] = None
     pending_offers_details: Optional[str] = None
-    sap_email: Optional[str] = None
-    sap_cuser: Optional[str] = None
     sap_secure_id: Optional[str] = None
 
 
