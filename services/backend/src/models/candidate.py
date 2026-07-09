@@ -105,6 +105,15 @@ class CandidateUpdate(BaseSchema):
     proposed_rate_type: Optional[str] = None
     proposed_daily_rate: Optional[float] = None
     proposed_currency: Optional[str] = None
+    dob: Optional[str] = None
+    ssn_last4: Optional[str] = None
+    work_authorization: Optional[str] = None
+    interview_availability: Optional[str] = None
+    willing_to_travel: Optional[bool] = None
+    willing_inperson: Optional[bool] = None
+    us_experience: Optional[int] = None
+    pending_offers: Optional[bool] = None
+    pending_offers_details: Optional[str] = None
 
     @field_validator("status", mode="before")
     @classmethod
@@ -144,6 +153,15 @@ class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     proposed_rate_type: Optional[str] = None
     proposed_daily_rate: Optional[float] = None
     proposed_currency: Optional[str] = None
+    dob: Optional[str] = None
+    ssn_last4: Optional[str] = None
+    work_authorization: Optional[str] = None
+    interview_availability: Optional[str] = None
+    willing_to_travel: Optional[bool] = None
+    willing_inperson: Optional[bool] = None
+    us_experience: Optional[int] = None
+    pending_offers: Optional[bool] = None
+    pending_offers_details: Optional[str] = None
 
 
 class CandidateInDB(CandidateResponse, EmbeddingMixin):
