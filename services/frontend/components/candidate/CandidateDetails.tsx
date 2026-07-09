@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { DeleteResumeButton } from "./DeleteCandiResumeButton";
 import { DeleteAttachmentButton } from "./DeleteAttachmentButton";
 import { UploadAttachmentDialog } from "./UploadCandiAttachment";
+import CandidateProposedRequests from "./CandidateProposedRequests";
 import {
   Select,
   SelectContent,
@@ -166,9 +167,12 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (firstName.trim()) payload.first_name = firstName.trim();
       payload.last_name = lastName.trim();
       if (email.trim() && email.includes("@")) payload.email = email.trim();
-      if (phone.trim()) payload.phone = phone.trim();
-      if (location.trim()) payload.location = location.trim();
-      if (linkedinUrl.trim()) payload.linkedin_url = linkedinUrl.trim();
+      const cleanPhone = phone.trim();
+      if (cleanPhone && cleanPhone !== "NA" && cleanPhone !== "na") payload.phone = cleanPhone;
+      const cleanLocation = location.trim();
+      if (cleanLocation && cleanLocation !== "NA" && cleanLocation !== "na") payload.location = cleanLocation;
+      const cleanLinkedin = linkedinUrl.trim();
+      if (cleanLinkedin && cleanLinkedin !== "NA" && cleanLinkedin !== "na") payload.linkedin_url = cleanLinkedin;
       if (currentTitle.trim()) payload.current_title = currentTitle.trim();
       if (currentCompany.trim()) payload.current_company = currentCompany.trim();
       if (yearsOfExperience !== "") {
@@ -619,7 +623,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               {rateCard("Requested Rate", "#429ABD", requestedRateAmount, setRequestedRateAmount, rateType, setRateType, currency, setCurrency, liveDailyRate)}
               {rateCard("Proposed Rate", "#F5A623", proposedRateAmount, setProposedRateAmount, proposedRateType, setProposedRateType, proposedCurrency, setProposedCurrency, liveProposedDailyRate)}
             </div>
-
+            <CandidateProposedRequests candidateId={id} />
             {sectionHeader("Educational Details")}
 
             {education.length > 0 ? (
