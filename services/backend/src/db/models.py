@@ -237,6 +237,8 @@ class StaffingRequest(BaseModel):
     contract_status: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     state: Mapped[str] = mapped_column(String(20), default="open", nullable=False, index=True)
     created_by: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    sap_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    sap_cuser: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
     proposed_candidates: Mapped[List["RequestCandidate"]] = relationship("RequestCandidate", back_populates="request", cascade="all, delete-orphan", lazy="noload")
 
