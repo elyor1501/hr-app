@@ -127,6 +127,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     empData?.proposed_rate?.toString() ?? "",
   );
 
+  // Basic info states
   const [firstName, setFirstName] = useState<string>(empData?.first_name ?? "");
   const [lastName, setLastName] = useState<string>(empData?.last_name ?? "");
   const [email, setEmail] = useState<string>(empData?.email ?? "");
@@ -239,6 +240,7 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (firstName.trim()) payload.first_name = firstName.trim();
       payload.last_name = lastName.trim();
       if (email.trim() && email.includes("@")) payload.email = email.trim();
+
       const cleanPhone = phone.trim();
       if (cleanPhone && cleanPhone !== "NA" && cleanPhone !== "na")
         payload.phone = cleanPhone;
@@ -255,12 +257,14 @@ export default function CandidateDetails({ id, empData }: Props) {
         const yoe = parseInt(yearsOfExperience);
         if (!isNaN(yoe)) payload.years_of_experience = yoe;
       }
+
       if (skillsText.trim()) {
         payload.skills = skillsText
           .split(",")
           .map((s) => s.trim().toLowerCase())
           .filter(Boolean);
       }
+
       if (availability) payload.availability = availability;
       if (experienceLevel) payload.experience_level = experienceLevel;
       if (vendor.trim()) payload.vendor = vendor.trim();
@@ -560,6 +564,8 @@ export default function CandidateDetails({ id, empData }: Props) {
 
         <div className="mt-4 sm:mt-6">
           <TabsContent value="basic" className="space-y-4 sm:space-y-6">
+
+            {/* Edit Button - Top */}
             <div className="flex justify-end">
               {!isEditing && canEdit && (
                 <button
@@ -579,6 +585,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               )}
             </div>
 
+            {/* Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -606,6 +613,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
+            {/* Email + Status */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -729,7 +737,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
                   Mobile Number
@@ -756,6 +764,14 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
+            {sapSecureId && (
+              <div className="mt-4 p-3 border-2 border-[#429ABD] rounded-lg bg-[#429ABD05] flex justify-between items-center">
+                <span className="font-bold text-[#429ABD]">SAP SECURE ID</span>
+                <span className="font-mono text-lg font-bold">{sapSecureId}</span>
+              </div>
+            )}
+
+            {/* Phone + Location */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -783,6 +799,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
+            {/* Years of Experience + US Experience */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -812,6 +829,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
+            {/* Availability + Work Authorization */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {/* <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -1110,6 +1128,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             )}
 
+            {/* Matching */}
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 {sectionHeader(
@@ -1190,6 +1209,7 @@ export default function CandidateDetails({ id, empData }: Props) {
             </div>
           </TabsContent>
 
+          {/* Experience Tab */}
           <TabsContent value="experience" className="space-y-4 sm:space-y-6">
             {experience.length === 0 ? (
               <div className="text-center py-12 border-2 border-dashed border-border rounded-xl bg-muted/30">
@@ -1236,6 +1256,7 @@ export default function CandidateDetails({ id, empData }: Props) {
             )}
           </TabsContent>
 
+          {/* Resume Tab */}
           <TabsContent value="resume" className="space-y-4 sm:space-y-6">
             <div className="flex justify-between items-center">
               <h3
@@ -1401,6 +1422,7 @@ export default function CandidateDetails({ id, empData }: Props) {
             </div>
           </TabsContent>
 
+          {/* Attachments Tab */}
           <TabsContent value="attachments" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <h3

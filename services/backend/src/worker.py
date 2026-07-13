@@ -262,17 +262,25 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
             new_skills = set(structured_data.get("skills") or [])
             existing_candidate.skills = list(existing_skills | new_skills)
 
+        if structured_data.get("phone"):
+            existing_candidate.phone = structured_data.get("phone")
+
+        if structured_data.get("email") and "@" in structured_data.get("email") and "@noemail" not in structured_data.get("email"):
+            existing_candidate.email = structured_data.get("email")
+
         if not existing_candidate.current_title and parsed.current_title:
             existing_candidate.current_title = parsed.current_title
+
         if not existing_candidate.current_company and parsed.current_company:
             existing_candidate.current_company = parsed.current_company
-        if not existing_candidate.phone and structured_data.get("phone"):
-            existing_candidate.phone = structured_data.get("phone")
-        if not existing_candidate.linkedin_url and structured_data.get("linkedin"):
+
+        if structured_data.get("linkedin"):
             existing_candidate.linkedin_url = structured_data.get("linkedin")
-        if not existing_candidate.location and structured_data.get("location"):
+
+        if structured_data.get("location"):
             existing_candidate.location = structured_data.get("location")
-        if not existing_candidate.years_of_experience and years_exp:
+
+        if years_exp:
             existing_candidate.years_of_experience = years_exp
 
         await _link_cv_to_candidate(session, existing_candidate, resume)
