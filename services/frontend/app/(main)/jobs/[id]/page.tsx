@@ -6,14 +6,14 @@ export const dynamic = "force-dynamic";
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [jobData, candidateData] = await Promise.all([
-    getJobById(id),
-    getCandidates(),
-  ]);
+  // const [jobData, candidateData] = await Promise.all([
+  //   getJobById(id),
+  //   getCandidates(),
+  // ]);
 
   return (
     <div>
-      <JobDetails id={id} jobData={jobData} candidateData={candidateData.items} />
+      {/* <JobDetails id={id} jobData={jobData} candidateData={candidateData.items} /> */}
     </div>
   );
 }
