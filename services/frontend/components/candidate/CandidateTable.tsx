@@ -350,7 +350,7 @@ export default function CandidatesTable({
                 className="flex items-center gap-1 px-0 hover:bg-transparent"
                 onClick={() => applySort("first_name")}
               >
-                <span className="font-semibold">Name and Email</span>
+                <span>Name and Email</span>
 
                 {sortBy === "first_name" ? (
                   sortOrder === "asc" ? (
@@ -398,7 +398,7 @@ export default function CandidatesTable({
           ...col,
           header: () => (
             <div className="flex items-center justify-between gap-2 py-1">
-              <span className="font-semibold text-foreground">Role</span>
+              <span>Role</span>
               <button
                 id="filter-btn-role"
                 type="button"

@@ -255,11 +255,17 @@ export function DataTable<TData, TValue>({
                       : "hover:bg-muted/50 dark:hover:bg-neutral-800/60"
                   }
                   ${onRowClick ? "cursor-pointer" : ""}`}
-                  onClick={() => {
+                  onClick={async () => {
                     if (!onRowClick) return;
 
-                    setLoadingRowId((row.original as any).id);
-                    onRowClick(row.original);
+                    const rowId = (row.original as any).id;
+                    setLoadingRowId(rowId);
+
+                    try {
+                      await onRowClick(row.original);
+                    } finally {
+                      setLoadingRowId(null);
+                    }
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

@@ -23,6 +23,7 @@ import {
 } from "../ui/select";
 import { GenerateDeloitteButton } from "./GenerateDeloitteButton";
 import { useUser } from "@/app/contexts/UserContext";
+import { Checkbox } from "../ui/checkbox";
 
 type Props = {
   id: string;
@@ -411,8 +412,7 @@ export default function CandidateDetails({ id, empData }: Props) {
   ];
 
   const fieldClass =
-    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]";
-
+    "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground placeholder:opacity-350 disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]";
   const sectionHeader = (title: string, color: string = "#429ABD") => (
     <h2 className="text-base sm:text-lg font-semibold" style={{ color }}>
       {title}
@@ -653,35 +653,6 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  DOB (MM.DD)
-                </label>
-                <input
-                  value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="09.25"
-                  className={fieldClass}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  SSN last 4 Digits No
-                </label>
-                <input
-                  value={ssnLast4}
-                  onChange={(e) => setSsnLast4(e.target.value)}
-                  disabled={!isEditing}
-                  maxLength={4}
-                  placeholder="5633"
-                  className={fieldClass}
-                />
-              </div>
-            </div> */}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
               <div>
                 <label className="block text-sm font-medium mb-2">
@@ -698,22 +669,33 @@ export default function CandidateDetails({ id, empData }: Props) {
                   />
                 ) : (
                   <input
-                    value={dob || "Not set"}
+                    value={dob}
+                    placeholder="NA"
                     disabled
                     className={fieldClass}
                   />
                 )}
               </div>
-              <div >
+              <div>
                 <label className="block text-sm font-medium mb-2">
                   SSN Last 4
                 </label>
 
                 <div className="relative">
                   <input
-                    type={showSsn ? "text" : "password"}
+                    type="text"
                     value={
-                      isEditing ? ssnLast4 : ssnLast4 ? ssnLast4 : "Not set"
+                      isEditing
+                        ? showSsn
+                          ? ssnLast4
+                          : ssnLast4
+                            ? "••••"
+                            : ""
+                        : ssnLast4
+                          ? showSsn
+                            ? ssnLast4
+                            : "••••"
+                          : "NA"
                     }
                     onChange={(e) => isEditing && setSsnLast4(e.target.value)}
                     disabled={!isEditing}
@@ -746,15 +728,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                 </span>
               </div>
             )}
-
-            {ssnLast4 && sapSecureId && (
-  <div className="mt-4 p-3 border-2 border-[#429ABD] rounded-lg bg-[#429ABD05] flex justify-between items-center">
-    <span className="font-bold text-[#429ABD]">SAP Secure ID</span>
-    <span className="font-mono text-lg font-bold">
-      {sapSecureId}
-    </span>
-  </div>
-)}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
@@ -903,7 +876,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                   </div>
                 ) : (
                   <input
-                    value={availability || "Not set"}
+                    value={availability || "NA"}
                     disabled
                     className={fieldClass}
                   />
@@ -953,21 +926,25 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={willingToTravel}
                   disabled={!isEditing}
-                  onChange={(e) => setWillingToTravel(e.target.checked)}
+                  onCheckedChange={(checked) =>
+                    isEditing && setWillingToTravel(checked === true)
+                  }
+                  className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
                 />
                 Willing to Travel for customer location
               </label>
 
               <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={willingInperson}
                   disabled={!isEditing}
-                  onChange={(e) => setWillingInperson(e.target.checked)}
+                  onCheckedChange={(checked) =>
+                    isEditing && setWillingInperson(checked === true)
+                  }
+                  className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
                 />
                 Final round :Willing for In-Person Interview
               </label>
@@ -976,11 +953,13 @@ export default function CandidateDetails({ id, empData }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-1 gap-4 sm:gap-6">
               <div>
                 <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={pendingOffers}
                     disabled={!isEditing}
-                    onChange={(e) => setPendingOffers(e.target.checked)}
+                    onCheckedChange={(checked) =>
+                      isEditing && setPendingOffers(checked === true)
+                    }
+                    className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
                   />
                   Any Pending Offer's or Waiting for feedback
                 </label>
@@ -1027,7 +1006,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 value={vendor}
                 onChange={(e) => setVendor(e.target.value)}
                 disabled={!isEditing}
-                placeholder={isEditing ? "Enter vendor name" : "Not set"}
+                placeholder={isEditing ? "Enter vendor name" : "NA"}
                 className={fieldClass}
               />
             </div>
@@ -1126,8 +1105,8 @@ export default function CandidateDetails({ id, empData }: Props) {
                 </div>
               ))
             ) : (
-              <div className="text-sm text-muted-foreground text-center py-4">
-                No Education Details
+              <div className="flex items-center justify-center rounded-lg border bg-muted/20 py-8 text-sm text-muted-foreground">
+                No education details available.
               </div>
             )}
 
