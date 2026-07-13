@@ -71,7 +71,7 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           <span>Created At</span>
-          <ArrowUpDown className="h-3 w-3" />
+          {/* <ArrowUpDown className="h-3 w-3" /> */}
         </Button>
       </div>
     ),

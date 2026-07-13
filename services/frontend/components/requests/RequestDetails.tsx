@@ -277,7 +277,7 @@ export default function RequestDetails({
     const currentMonth = date.getMonth();
 
     const startYear = new Date().getFullYear();
-const years = Array.from({ length: 20 }, (_, i) => startYear + i);
+    const years = Array.from({ length: 20 }, (_, i) => startYear + i);
 
     return (
       <div className="flex items-center justify-between px-2 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
@@ -353,6 +353,12 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
     );
   };
 
+  const sectionHeader = (title: string, color: string = "#429ABD") => (
+    <h2 className="text-base sm:text-lg font-semibold" style={{ color }}>
+      {title}
+    </h2>
+  );
+
   return (
     <div className="max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-sm border border-border p-8">
       <form
@@ -374,7 +380,10 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
 
         <div className="space-y-6">
           <div className="flex justify-between mb-6">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2
+              className="text-lg sm:text-xl font-bold"
+              style={{ color: "#429ABD" }}
+            >
               Request Details
             </h2>
             {!isEditing && (
@@ -477,9 +486,9 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-3 border border-border rounded-lg p-4">
-              <p className="text-sm font-semibold text-foreground">
-                Requested Rate
+            <div className="space-y-3 border-2 border-[#429ABD] rounded-lg p-4">
+              <p className="text-sm font-semibold" style={{ color: "#429ABD" }}>
+                REQUESTED RATE
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -550,9 +559,9 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
               </div>
             </div>
 
-            <div className="space-y-3 border border-border rounded-lg p-4">
-              <p className="text-sm font-semibold text-foreground">
-                Proposed Rate
+            <div className="space-y-3 border-2 border-[#F5A623] rounded-lg p-4">
+              <p className="text-sm font-semibold" style={{ color: "#F5A623" }}>
+                PROPOSED RATE
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -647,29 +656,31 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
 
               {isEditing ? (
                 <div className="custom-datepicker">
-                    <DatePicker
-                      selected={proposedDateValue ? parseISO(proposedDateValue) : null}
-                      onChange={(date: Date | null) => {
-                        if (!date) return;
-                        handleProposedDateChange({
-                          target: {
-                            name: "proposed_date",
-                            value: format(date, "yyyy-MM-dd"),
-                          },
-                        } as React.ChangeEvent<HTMLInputElement>);
-                      }}
-                      dateFormat="dd.MM.yyyy"
-                      minDate={parseISO(getMinProposedDate())}
-                      className={fieldClass}
-                      showYearDropdown
-                      showMonthDropdown
-                      dropdownMode="select"
-                      yearDropdownItemNumber={15}
-                      scrollableYearDropdown
-                      renderCustomHeader={CustomHeader}
-                      popperClassName="custom-datepicker"
-                    />
-                  </div>
+                  <DatePicker
+                    selected={
+                      proposedDateValue ? parseISO(proposedDateValue) : null
+                    }
+                    onChange={(date: Date | null) => {
+                      if (!date) return;
+                      handleProposedDateChange({
+                        target: {
+                          name: "proposed_date",
+                          value: format(date, "yyyy-MM-dd"),
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>);
+                    }}
+                    dateFormat="dd.MM.yyyy"
+                    minDate={parseISO(getMinProposedDate())}
+                    className={fieldClass}
+                    showYearDropdown
+                    showMonthDropdown
+                    dropdownMode="select"
+                    yearDropdownItemNumber={15}
+                    scrollableYearDropdown
+                    renderCustomHeader={CustomHeader}
+                    popperClassName="custom-datepicker"
+                  />
+                </div>
               ) : (
                 <input
                   type="text"
@@ -710,12 +721,14 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
             />
           </div>
 
-                    {(request.sap_email || isEditing) && (
-            <div className="border border-border rounded-lg p-4 space-y-4">
-              <p className="text-sm font-semibold" style={{ color: "#429ABD" }}>SAP Customer Details</p>
+          {sectionHeader("SAP Customer Details")}
+          {(request.sap_email || isEditing) && (
+            <div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-foreground">SAP Email</label>
+                  <label className="block text-sm font-medium mb-1 text-foreground">
+                    SAP Email
+                  </label>
                   <input
                     name="sap_email"
                     defaultValue={request.sap_email ?? ""}
@@ -725,7 +738,9 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-foreground">SAP C-USER</label>
+                  <label className="block text-sm font-medium mb-1 text-foreground">
+                    SAP C-USER
+                  </label>
                   <input
                     name="sap_cuser"
                     defaultValue={request.sap_cuser ?? ""}
@@ -799,9 +814,7 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
 
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-foreground">
-            Matching Candidates ({matches.length})
-          </h2>
+          {sectionHeader(`Matching Candidates (${matches.length})`, "#F5A623")}
           <div className="flex gap-2">
             <button
               onClick={() => runCandidateMatching(false)}
@@ -971,16 +984,23 @@ const years = Array.from({ length: 20 }, (_, i) => startYear + i);
                     Rate: €{candidate.hourly_rate}/hr
                   </p>
                 )}
-                                {request.sap_email && candidate.sap_secure_id && (
+                {request.sap_email && candidate.sap_secure_id && (
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-semibold text-foreground">SAP Secure ID:</span>
-                    <span className="px-2 py-0.5 text-xs font-mono font-bold rounded" style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}>
+                    <span className="text-xs font-semibold text-foreground">
+                      SAP Secure ID:
+                    </span>
+                    <span
+                      className="px-2 py-0.5 text-xs font-mono font-bold rounded"
+                      style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}
+                    >
                       {candidate.sap_secure_id}
                     </span>
                   </div>
                 )}
                 {request.sap_email && !candidate.sap_secure_id && (
-                  <p className="text-xs text-orange-500 mt-1">SAP Secure ID: Incomplete (DOB or SSN missing)</p>
+                  <p className="text-xs text-orange-500 mt-1">
+                    SAP Secure ID: Incomplete (DOB or SSN missing)
+                  </p>
                 )}
                 <div className="flex justify-end">
                   <button

@@ -37,13 +37,20 @@ export type PaginatedCandidates = {
 
 const CACHE_TTL = 0;
 const DETAIL_CACHE_TTL = 300000;
-let candidatesCache: { data: PaginatedCandidates; timestamp: number; q?: string } | null = null;
-let candidateByIdCache: Map<string, { data: any; timestamp: number }> = new Map();
+let candidatesCache: {
+  data: PaginatedCandidates;
+  timestamp: number;
+  q?: string;
+} | null = null;
+let candidateByIdCache: Map<string, { data: any; timestamp: number }> =
+  new Map();
 
 export async function getCandidates(
-  page: number = 1,
-  page_size: number = 10,
-  q?: string
+  page: number,
+  page_size: number,
+  q?: string,
+  sortBy?: string,
+  sortOrder?: "asc" | "desc",
 ): Promise<PaginatedCandidates> {
   const apiUrl = getApiUrl();
   const token = getAuthToken();
@@ -51,7 +58,16 @@ export async function getCandidates(
     page: page.toString(),
     page_size: page_size.toString(),
   });
+
   if (q) queryParams.set("q", q);
+
+  if (sortBy) {
+    queryParams.set("sort_by", sortBy);
+  }
+
+  if (sortOrder) {
+    queryParams.set("sort_order", sortOrder);
+  }
 
   const fetchUrl = apiUrl
     ? `${apiUrl}/api/v1/candidates?${queryParams.toString()}`
@@ -191,7 +207,9 @@ export async function matchJobs(resumeId: string) {
   }
 }
 
-export async function searchCandidates(params: any): Promise<PaginatedCandidates> {
+export async function searchCandidates(
+  params: any,
+): Promise<PaginatedCandidates> {
   try {
     const apiUrl = getApiUrl();
     const token = getAuthToken();
@@ -202,7 +220,8 @@ export async function searchCandidates(params: any): Promise<PaginatedCandidates
     const queryParams = new URLSearchParams();
     if (params.q) queryParams.set("q", params.q);
     if (params.name) queryParams.set("name", params.name as string);
-    if (params.jobTitle) queryParams.set("job_title", params.jobTitle as string);
+    if (params.jobTitle)
+      queryParams.set("job_title", params.jobTitle as string);
     if (params.location) queryParams.set("location", params.location as string);
     if (params.experienceLevel) {
       const levels = Array.isArray(params.experienceLevel)

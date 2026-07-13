@@ -8,6 +8,10 @@ from sqlalchemy.orm import undefer
 from src.api.deps import get_current_user
 from src.models.auth import TokenPayload
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy import select, func, or_, and_, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -218,9 +222,14 @@ async def list_candidates(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     q: Optional[str] = Query(None),
+    sort_by: Optional[str] = Query(None),
+    sort_order: str = Query("asc"),
     session: AsyncSession = Depends(get_db_session),
 ):
-    cache_key = f"{CANDIDATES_CACHE_KEY}:{page}:{page_size}:{q or ''}"
+    cache_key = (
+        f"{CANDIDATES_CACHE_KEY}:{page}:{page_size}:"
+        f"{q or ''}:{sort_by or ''}:{sort_order}"
+    )
 
     try:
         redis = await get_redis_pool()
@@ -236,14 +245,29 @@ async def list_candidates(
             or_(
                 Candidate.first_name.ilike(f"%{q}%"),
                 Candidate.last_name.ilike(f"%{q}%"),
-                func.concat(Candidate.first_name, ' ', Candidate.last_name).ilike(f"%{q}%"),
+                func.concat(Candidate.first_name, " ", Candidate.last_name).ilike(f"%{q}%"),
                 Candidate.current_title.ilike(f"%{q}%"),
                 Candidate.location.ilike(f"%{q}%"),
                 Candidate.email.ilike(f"%{q}%"),
             )
         )
 
-    base_query = select(*CANDIDATE_LIST_COLUMNS).order_by(Candidate.created_at.desc())
+    base_query = select(*CANDIDATE_LIST_COLUMNS)
+
+    if sort_by == "first_name":
+        if sort_order == "desc":
+            base_query = base_query.order_by(
+                Candidate.first_name.desc(),
+                Candidate.last_name.desc(),
+            )
+        else:
+            base_query = base_query.order_by(
+                Candidate.first_name.asc(),
+                Candidate.last_name.asc(),
+            )
+    else:
+        base_query = base_query.order_by(Candidate.created_at.desc())
+
     count_stmt = select(func.count()).select_from(base_query.subquery())
 
     if filters:
@@ -253,7 +277,9 @@ async def list_candidates(
         filtered_query = base_query
 
     total_result = await session.execute(count_stmt)
-    result = await session.execute(filtered_query.offset((page - 1) * page_size).limit(page_size))
+    result = await session.execute(
+        filtered_query.offset((page - 1) * page_size).limit(page_size)
+    )
 
     total = total_result.scalar() or 0
     rows = result.mappings().all()
@@ -273,7 +299,11 @@ async def list_candidates(
 
     try:
         redis = await get_redis_pool()
-        await redis.setex(cache_key, CANDIDATES_CACHE_TTL, json.dumps(response_data, default=str))
+        await redis.setex(
+            cache_key,
+            CANDIDATES_CACHE_TTL,
+            json.dumps(response_data, default=str),
+        )
     except Exception:
         pass
 
@@ -328,19 +358,26 @@ async def search_candidates(
         )
 
     if name:
-        filters.append(
-            or_(
-                Candidate.first_name.ilike(f"%{name}%"),
-                Candidate.last_name.ilike(f"%{name}%"),
-                func.concat(Candidate.first_name, ' ', Candidate.last_name).ilike(f"%{name}%"),
-            )
-        )
+        name_values = [n.strip() for n in name.split(",") if n.strip()]
+        if name_values:
+            name_clauses = [
+                or_(
+                    Candidate.first_name.ilike(f"%{n}%"),
+                    Candidate.last_name.ilike(f"%{n}%"),
+                    func.concat(Candidate.first_name, ' ', Candidate.last_name).ilike(f"%{n}%"),
+                )
+                for n in name_values
+            ]
+            filters.append(or_(*name_clauses))
 
     if location:
         filters.append(Candidate.location.ilike(f"%{location}%"))
 
     if resolved_title:
-        filters.append(Candidate.current_title.ilike(f"%{resolved_title}%"))
+        title_values = [t.strip() for t in resolved_title.split(",") if t.strip()]
+        if title_values:
+            title_clauses = [Candidate.current_title.ilike(f"%{t}%") for t in title_values]
+            filters.append(or_(*title_clauses))
 
     if currentCompany:
         filters.append(Candidate.current_company.ilike(f"%{currentCompany}%"))
