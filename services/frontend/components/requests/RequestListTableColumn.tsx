@@ -51,8 +51,45 @@ export const columns_request_list: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "state",
-    header: "Request Status",
-    cell: ({ row }) => <span>{row.getValue("state") || "NA"}</span>,
+    header: "Status",
+    cell: ({ row }) => {
+      const status = (row.getValue("state") as string)?.toLowerCase();
+
+      return (
+        <span
+          className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+            status === "open"
+              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+              : status === "in_progress"
+                ? "bg-[#F5A623]/20 text-[#F5A623]"
+                : status === "signed"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                  : status === "closed"
+                    ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                    : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+          }`}
+        >
+          {row.getValue("state") || "NA"}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "proposed_date",
+    header: () => <button type="button">Proposed Date</button>,
+    cell: ({ row }) => {
+      const d = row.original.proposed_date;
+      if (!d) return <span>-</span>;
+      try {
+        return (
+          <span className="text-sm">
+            {new Date(d).toLocaleDateString("en-GB").replace(/\//g, ".")}
+          </span>
+        );
+      } catch {
+        return <span className="text-sm">{d}</span>;
+      }
+    },
   },
   {
     accessorKey: "created_at",
@@ -72,7 +109,8 @@ export const columns_request_list: ColumnDef<Request>[] = [
       const raw = row.original.created_at;
       if (!raw) return <div className="text-center w-full px-2 py-1">NA</div>;
       const parts = raw.split("T")[0].split("-");
-      const formatted = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : raw;
+      const formatted =
+        parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : raw;
       return <div className="text-center w-full px-2 py-1">{formatted}</div>;
     },
   },

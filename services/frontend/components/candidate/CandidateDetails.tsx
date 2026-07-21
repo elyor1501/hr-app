@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { getCandidateById, matchJobs } from "@/lib/candidates/data";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { getCandidateById } from "@/lib/candidates/data";
 import { setPrimaryResume } from "@/lib/candidates/action";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { DeleteResumeButton } from "./DeleteCandiResumeButton";
 import { DeleteAttachmentButton } from "./DeleteAttachmentButton";
 import { UploadAttachmentDialog } from "./UploadCandiAttachment";
-//import CandidateProposedRequests from "./CandidateProposedRequests";
+import CandidateProposedRequests from "./CandidateProposedRequests";
 import {
   Select,
   SelectContent,
@@ -103,7 +103,6 @@ export default function CandidateDetails({ id, empData }: Props) {
   );
   const sapSecureId =
     candidate?.sap_secure_id ?? empData?.sap_secure_id ?? null;
-  const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [matching, setMatching] = useState(false);
@@ -127,7 +126,6 @@ export default function CandidateDetails({ id, empData }: Props) {
     empData?.proposed_rate?.toString() ?? "",
   );
 
-  // Basic info states
   const [firstName, setFirstName] = useState<string>(empData?.first_name ?? "");
   const [lastName, setLastName] = useState<string>(empData?.last_name ?? "");
   const [email, setEmail] = useState<string>(empData?.email ?? "");
@@ -187,6 +185,49 @@ export default function CandidateDetails({ id, empData }: Props) {
     empData?.pending_offers_details ?? "",
   );
 
+  type AutoSaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
+  const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>("idle");
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const originalValues = useRef({
+    firstName: empData?.first_name ?? "",
+    lastName: empData?.last_name ?? "",
+    email: empData?.email ?? "",
+    phone: empData?.phone ?? "",
+    location: empData?.location ?? "",
+    linkedinUrl: empData?.linkedin_url ?? "",
+    currentTitle: empData?.current_title ?? "",
+    currentCompany: empData?.current_company ?? "",
+    yearsOfExperience: empData?.years_of_experience?.toString() ?? "",
+    skillsText: (empData?.skills || []).join(", "),
+    availability: empData?.availability ?? "",
+    availabilityMode:
+      empData?.availability &&
+      AVAILABILITY_OPTIONS.includes(empData.availability)
+        ? empData.availability
+        : empData?.availability
+          ? "custom"
+          : "",
+    experienceLevel: empData?.experience_level ?? "",
+    vendor: empData?.vendor ?? "",
+    dob: empData?.dob ?? "",
+    ssnLast4: empData?.ssn_last4 ?? "",
+    workAuthorization: empData?.work_authorization ?? "",
+    interviewAvailability: empData?.interview_availability ?? "",
+    willingToTravel: empData?.willing_to_travel ?? false,
+    willingInperson: empData?.willing_inperson ?? false,
+    usExperience: empData?.us_experience?.toString() ?? "",
+    pendingOffers: empData?.pending_offers ?? false,
+    pendingOffersDetails: empData?.pending_offers_details ?? "",
+    rateType: empData?.rate_type ?? "hourly",
+    currency: empData?.currency ?? "EUR",
+    proposedRateType: empData?.proposed_rate_type ?? "daily",
+    proposedCurrency: empData?.proposed_currency ?? "EUR",
+    requestedRateAmount: empData?.hourly_rate?.toString() ?? "",
+    proposedRateAmount: empData?.proposed_rate?.toString() ?? "",
+    candidateStatus: empData?.status ?? "",
+  });
+
   const calculateDailyRate = (amount: string, type: string): number | null => {
     const val = parseFloat(amount);
     if (isNaN(val) || val <= 0) return null;
@@ -208,11 +249,173 @@ export default function CandidateDetails({ id, empData }: Props) {
   const canEdit =
     (user as any)?.role === "admin" ||
     (user as any)?.role === "candidate_editor";
+    //set to true always in editing mode
+  const [isEditing, setIsEditing] = useState(true);
+
+  const isDirty = useCallback(() => {
+    const o = originalValues.current;
+    return (
+      firstName !== o.firstName ||
+      lastName !== o.lastName ||
+      email !== o.email ||
+      phone !== o.phone ||
+      location !== o.location ||
+      linkedinUrl !== o.linkedinUrl ||
+      currentTitle !== o.currentTitle ||
+      currentCompany !== o.currentCompany ||
+      yearsOfExperience !== o.yearsOfExperience ||
+      skillsText !== o.skillsText ||
+      availability !== o.availability ||
+      experienceLevel !== o.experienceLevel ||
+      vendor !== o.vendor ||
+      dob !== o.dob ||
+      ssnLast4 !== o.ssnLast4 ||
+      workAuthorization !== o.workAuthorization ||
+      interviewAvailability !== o.interviewAvailability ||
+      willingToTravel !== o.willingToTravel ||
+      willingInperson !== o.willingInperson ||
+      usExperience !== o.usExperience ||
+      pendingOffers !== o.pendingOffers ||
+      pendingOffersDetails !== o.pendingOffersDetails ||
+      rateType !== o.rateType ||
+      currency !== o.currency ||
+      proposedRateType !== o.proposedRateType ||
+      proposedCurrency !== o.proposedCurrency ||
+      requestedRateAmount !== o.requestedRateAmount ||
+      proposedRateAmount !== o.proposedRateAmount
+    );
+  }, [
+    firstName,
+    lastName,
+    email,
+    phone,
+    location,
+    linkedinUrl,
+    currentTitle,
+    currentCompany,
+    yearsOfExperience,
+    skillsText,
+    availability,
+    experienceLevel,
+    vendor,
+    dob,
+    ssnLast4,
+    workAuthorization,
+    interviewAvailability,
+    willingToTravel,
+    willingInperson,
+    usExperience,
+    pendingOffers,
+    pendingOffersDetails,
+    rateType,
+    currency,
+    proposedRateType,
+    proposedCurrency,
+    requestedRateAmount,
+    proposedRateAmount,
+  ]);
+
+  useEffect(() => {
+    if (!canEdit || !isEditing) return;
+    if (!isDirty()) {
+      setAutoSaveStatus("idle");
+      return;
+    }
+    setAutoSaveStatus("pending");
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      handleSubmit(true);
+    }, 2000);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [
+    firstName,
+    lastName,
+    email,
+    phone,
+    location,
+    linkedinUrl,
+    currentTitle,
+    currentCompany,
+    yearsOfExperience,
+    skillsText,
+    availability,
+    experienceLevel,
+    vendor,
+    dob,
+    ssnLast4,
+    workAuthorization,
+    interviewAvailability,
+    willingToTravel,
+    willingInperson,
+    usExperience,
+    pendingOffers,
+    pendingOffersDetails,
+    rateType,
+    currency,
+    proposedRateType,
+    proposedCurrency,
+    requestedRateAmount,
+    proposedRateAmount,
+  ]);
+
+  function handleCancel() {
+    const o = originalValues.current;
+    setFirstName(o.firstName);
+    setLastName(o.lastName);
+    setEmail(o.email);
+    setPhone(o.phone);
+    setLocation(o.location);
+    setLinkedinUrl(o.linkedinUrl);
+    setCurrentTitle(o.currentTitle);
+    setCurrentCompany(o.currentCompany);
+    setYearsOfExperience(o.yearsOfExperience);
+    setSkillsText(o.skillsText);
+    setAvailability(o.availability);
+    setAvailabilityMode(o.availabilityMode);
+    setExperienceLevel(o.experienceLevel);
+    setVendor(o.vendor);
+    setDob(o.dob);
+    setSsnLast4(o.ssnLast4);
+    setWorkAuthorization(o.workAuthorization);
+    setInterviewAvailability(o.interviewAvailability);
+    setWillingToTravel(o.willingToTravel);
+    setWillingInperson(o.willingInperson);
+    setUsExperience(o.usExperience);
+    setPendingOffers(o.pendingOffers);
+    setPendingOffersDetails(o.pendingOffersDetails);
+    setRateType(o.rateType);
+    setCurrency(o.currency);
+    setProposedRateType(o.proposedRateType);
+    setProposedCurrency(o.proposedCurrency);
+    setRequestedRateAmount(o.requestedRateAmount);
+    setProposedRateAmount(o.proposedRateAmount);
+    setAutoSaveStatus("idle");
+    setIsEditing(false);
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+  }
 
   async function runJobMatching(candidateData: any) {
     setMatching(true);
     try {
-      const matchData = await matchJobs(candidateData.id);
+      const token = localStorage.getItem("access_token") || "";
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
+      const res = await fetch(
+        `http://localhost:8000/api/v1/candidates/${candidateData.id}/match-requests`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal,
+        },
+      );
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error("Failed to match");
+      const matchData = await res.json();
       const topMatches = (matchData.results || [])
         .map((item: any) => ({
           ...item,
@@ -221,26 +424,33 @@ export default function CandidateDetails({ id, empData }: Props) {
         .sort((a: any, b: any) => b.match_score - a.match_score)
         .slice(0, 5);
       setMatches(topMatches);
-    } catch (error) {
-      console.error("Matching error:", error);
+      if (topMatches.length === 0) {
+        toast.info("No matching requests found for this candidate");
+      }
+    } catch (error: any) {
+      if (error?.name === "AbortError") {
+        toast.error("Request timed out. Please try again.");
+      } else {
+        console.error("Matching error:", error);
+        toast.error("Failed to find matching requests");
+      }
     }
     setMatching(false);
   }
-
-  async function handleSubmit() {
+  async function handleSubmit(isAutoSave = false) {
     if (saving) return;
     setSaving(true);
+    if (!isAutoSave) setAutoSaveStatus("saving");
+    else setAutoSaveStatus("saving");
     try {
       const token = localStorage.getItem("access_token") || "";
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
       const payload: Record<string, any> = {};
 
       if (candidate?.status) payload.status = candidate.status;
       if (firstName.trim()) payload.first_name = firstName.trim();
       payload.last_name = lastName.trim();
       if (email.trim() && email.includes("@")) payload.email = email.trim();
-
       const cleanPhone = phone.trim();
       if (cleanPhone && cleanPhone !== "NA" && cleanPhone !== "na")
         payload.phone = cleanPhone;
@@ -257,14 +467,12 @@ export default function CandidateDetails({ id, empData }: Props) {
         const yoe = parseInt(yearsOfExperience);
         if (!isNaN(yoe)) payload.years_of_experience = yoe;
       }
-
       if (skillsText.trim()) {
         payload.skills = skillsText
           .split(",")
           .map((s) => s.trim().toLowerCase())
           .filter(Boolean);
       }
-
       if (availability) payload.availability = availability;
       if (experienceLevel) payload.experience_level = experienceLevel;
       if (vendor.trim()) payload.vendor = vendor.trim();
@@ -272,29 +480,22 @@ export default function CandidateDetails({ id, empData }: Props) {
       payload.ssn_last4 = ssnLast4.trim();
       payload.work_authorization = workAuthorization.trim();
       payload.interview_availability = interviewAvailability.trim();
-
       payload.willing_to_travel = willingToTravel;
       payload.willing_inperson = willingInperson;
-
       if (usExperience !== "") {
         const years = parseInt(usExperience);
-        if (!isNaN(years)) {
-          payload.us_experience = years;
-        }
+        if (!isNaN(years)) payload.us_experience = years;
       }
-
       payload.pending_offers = pendingOffers;
       payload.pending_offers_details = pendingOffers
         ? pendingOffersDetails.trim()
         : "";
-
       if (requestedRateAmount !== "") {
         const parsed = parseFloat(requestedRateAmount);
         if (!isNaN(parsed)) payload.hourly_rate = parsed;
       }
       payload.rate_type = rateType;
       payload.currency = currency;
-
       if (proposedRateAmount !== "") {
         const parsed = parseFloat(proposedRateAmount);
         if (!isNaN(parsed)) payload.proposed_rate = parsed;
@@ -361,7 +562,53 @@ export default function CandidateDetails({ id, empData }: Props) {
       setPendingOffers(updated.pending_offers ?? false);
       setPendingOffersDetails(updated.pending_offers_details ?? "");
 
-      setIsEditing(false);
+      setAutoSaveStatus("saved");
+      originalValues.current = {
+        firstName: updated.first_name ?? firstName,
+        lastName: updated.last_name ?? lastName,
+        email: updated.email ?? email,
+        phone: updated.phone ?? phone,
+        location: updated.location ?? location,
+        linkedinUrl: updated.linkedin_url ?? linkedinUrl,
+        currentTitle: updated.current_title ?? currentTitle,
+        currentCompany: updated.current_company ?? currentCompany,
+        yearsOfExperience:
+          updated.years_of_experience?.toString() ?? yearsOfExperience,
+        skillsText: updated.skills
+          ? (updated.skills as string[]).join(", ")
+          : skillsText,
+        availability: updated.availability ?? availability,
+        availabilityMode: AVAILABILITY_OPTIONS.includes(
+          updated.availability ?? "",
+        )
+          ? updated.availability
+          : updated.availability
+            ? "custom"
+            : "",
+        experienceLevel: updated.experience_level ?? experienceLevel,
+        vendor: updated.vendor ?? vendor,
+        dob: updated.dob ?? dob,
+        ssnLast4: updated.ssn_last4 ?? ssnLast4,
+        workAuthorization: updated.work_authorization ?? workAuthorization,
+        interviewAvailability:
+          updated.interview_availability ?? interviewAvailability,
+        willingToTravel: updated.willing_to_travel ?? willingToTravel,
+        willingInperson: updated.willing_inperson ?? willingInperson,
+        usExperience: updated.us_experience?.toString() ?? usExperience,
+        pendingOffers: updated.pending_offers ?? pendingOffers,
+        pendingOffersDetails:
+          updated.pending_offers_details ?? pendingOffersDetails,
+        rateType: updated.rate_type ?? rateType,
+        currency: updated.currency ?? currency,
+        proposedRateType: updated.proposed_rate_type ?? proposedRateType,
+        proposedCurrency: updated.proposed_currency ?? proposedCurrency,
+        requestedRateAmount:
+          updated.hourly_rate?.toString() ?? requestedRateAmount,
+        proposedRateAmount:
+          updated.proposed_rate?.toString() ?? proposedRateAmount,
+        candidateStatus: updated.status ?? candidate?.status ?? "",
+      };
+      setTimeout(() => setAutoSaveStatus("idle"), 3000);
       toast.success("Candidate updated successfully");
       router.refresh();
     } catch (error: any) {
@@ -417,6 +664,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
   const fieldClass =
     "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground placeholder:opacity-350 disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]";
+
   const sectionHeader = (title: string, color: string = "#429ABD") => (
     <h2 className="text-base sm:text-lg font-semibold" style={{ color }}>
       {title}
@@ -530,11 +778,26 @@ export default function CandidateDetails({ id, empData }: Props) {
         >
           Candidate Details
         </h2>
+        {/* {canEdit && !isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:shadow-md active:scale-95"
+            style={{ backgroundColor: "#429ABD" }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#F5A623")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#429ABD")
+            }
+          >
+            Edit
+          </button>
+        )} */}
       </div>
 
       <Tabs defaultValue="basic" className="w-full">
         <div className="overflow-x-auto pb-2 sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <TabsList className="inline-flex w-full sm:grid sm:grid-cols-4 min-w-max sm:min-w-0 gap-1">
+          <TabsList className="inline-flex w-full sm:grid sm:grid-cols-5 min-w-max sm:min-w-0 gap-1">
             <TabsTrigger
               value="basic"
               className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300"
@@ -559,33 +822,81 @@ export default function CandidateDetails({ id, empData }: Props) {
             >
               Attachments
             </TabsTrigger>
+            <TabsTrigger
+              value="requests"
+              className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300"
+            >
+              Requests
+            </TabsTrigger>
           </TabsList>
         </div>
 
         <div className="mt-4 sm:mt-6">
           <TabsContent value="basic" className="space-y-4 sm:space-y-6">
+            {isEditing && (
+              <div className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-border/60 bg-background/95 backdrop-blur shadow-sm mb-2">
+                <div className="flex items-center gap-2 text-xs">
+                  {autoSaveStatus === "idle" && (
+                    <span className="text-muted-foreground">
+                      All changes saved
+                    </span>
+                  )}
+                  {autoSaveStatus === "pending" && (
+                    <span className="flex items-center gap-1.5 text-amber-500">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      Unsaved changes
+                    </span>
+                  )}
+                  {autoSaveStatus === "saving" && (
+                    <span className="flex items-center gap-1.5 text-blue-500">
+                      <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                      Auto-saving...
+                    </span>
+                  )}
+                  {autoSaveStatus === "saved" && (
+                    <span className="flex items-center gap-1.5 text-green-600">
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      Saved
+                    </span>
+                  )}
+                  {autoSaveStatus === "error" && (
+                    <span className="text-red-500">Save failed</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {/* <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={saving}
+                    className="px-3 py-1.5 border border-border rounded-lg text-xs text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button> */}
+                  <button
+                    type="button"
+                    onClick={() => handleSubmit(false)}
+                    disabled={saving}
+                    className="px-3 py-1.5 rounded-lg text-xs text-white disabled:opacity-60 transition-all hover:shadow-md"
+                    style={{ backgroundColor: saving ? "#F5A623" : "#429ABD" }}
+                  >
+                    {saving ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              </div>
+            )}
 
-            {/* Edit Button - Top */}
-            <div className="flex justify-end">
-              {!isEditing && canEdit && (
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
-                  style={{ backgroundColor: "#429ABD", color: "white" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#F5A623")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#429ABD")
-                  }
-                >
-                  Edit Candidate
-                </button>
-              )}
-            </div>
-
-            {/* Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -613,7 +924,6 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
-            {/* Email + Status */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -688,7 +998,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <label className="block text-sm font-medium mb-2">
                   SSN Last 4
                 </label>
-
                 <div className="relative">
                   <input
                     type="text"
@@ -711,7 +1020,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                     placeholder="Last 4 digits"
                     maxLength={4}
                   />
-
                   {ssnLast4 && (
                     <button
                       type="button"
@@ -728,14 +1036,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                 </div>
               </div>
             </div>
-            {sapSecureId && (
-              <div className="mt-4 p-3 border-2 border-[#429ABD] rounded-lg bg-[#429ABD05] flex justify-between items-center">
-                <span className="font-bold text-[#429ABD]">SAP SECURE ID</span>
-                <span className="font-mono text-lg font-bold">
-                  {sapSecureId}
-                </span>
-              </div>
-            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
               <div>
@@ -764,14 +1064,6 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
-            {sapSecureId && (
-              <div className="mt-4 p-3 border-2 border-[#429ABD] rounded-lg bg-[#429ABD05] flex justify-between items-center">
-                <span className="font-bold text-[#429ABD]">SAP SECURE ID</span>
-                <span className="font-mono text-lg font-bold">{sapSecureId}</span>
-              </div>
-            )}
-
-            {/* Phone + Location */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -799,7 +1091,6 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
-            {/* Years of Experience + US Experience */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
@@ -818,7 +1109,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <label className="block text-sm font-medium mb-1">
                   US Experience (Years)
                 </label>
-
                 <input
                   type="number"
                   value={usExperience}
@@ -829,32 +1119,7 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             </div>
 
-            {/* Availability + Work Authorization */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              {/* <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Experience Level
-                </label>
-                {isEditing ? (
-                  <select
-                    value={experienceLevel}
-                    onChange={(e) => setExperienceLevel(e.target.value)}
-                    className={fieldClass}
-                  >
-                    <option value="">Select level</option>
-                    <option value="Junior">Junior</option>
-                    <option value="Mid">Mid</option>
-                    <option value="Senior">Senior</option>
-                    <option value="Lead">Lead</option>
-                  </select>
-                ) : (
-                  <input
-                    value={experienceLevel || "Not set"}
-                    disabled
-                    className={fieldClass}
-                  />
-                )}
-              </div> */}
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
                   Availability to join
@@ -904,7 +1169,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <label className="block text-sm font-medium mb-1">
                   Work Authorization
                 </label>
-
                 <input
                   value={workAuthorization}
                   onChange={(e) => setWorkAuthorization(e.target.value)}
@@ -919,7 +1183,6 @@ export default function CandidateDetails({ id, empData }: Props) {
               <label className="block text-sm font-medium mb-1">
                 Interview Availability
               </label>
-
               <input
                 value={interviewAvailability}
                 onChange={(e) => setInterviewAvailability(e.target.value)}
@@ -954,7 +1217,6 @@ export default function CandidateDetails({ id, empData }: Props) {
                 />
                 Willing to Travel for customer location
               </label>
-
               <label className="flex items-center gap-2">
                 <Checkbox
                   checked={willingInperson}
@@ -964,31 +1226,29 @@ export default function CandidateDetails({ id, empData }: Props) {
                   }
                   className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
                 />
-                Final round :Willing for In-Person Interview
+                Final round: Willing for In-Person Interview
               </label>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-4 sm:gap-6">
-              <div>
-                <label className="flex items-center gap-2">
-                  <Checkbox
-                    checked={pendingOffers}
-                    disabled={!isEditing}
-                    onCheckedChange={(checked) =>
-                      isEditing && setPendingOffers(checked === true)
-                    }
-                    className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
-                  />
-                  Any Pending Offer's or Waiting for feedback
-                </label>
-              </div>
+            <div>
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={pendingOffers}
+                  disabled={!isEditing}
+                  onCheckedChange={(checked) =>
+                    isEditing && setPendingOffers(checked === true)
+                  }
+                  className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
+                />
+                Any Pending Offers or Waiting for feedback
+              </label>
             </div>
+
             {pendingOffers && (
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Pending Offer Details
                 </label>
-
                 <textarea
                   value={pendingOffersDetails}
                   onChange={(e) => setPendingOffersDetails(e.target.value)}
@@ -1054,39 +1314,6 @@ export default function CandidateDetails({ id, empData }: Props) {
               )}
             </div>
 
-            {isEditing && (
-              <div className="flex justify-end gap-2 mt-8 pt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(false)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 border border-border rounded-lg text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={saving}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg"
-                  style={{
-                    backgroundColor: saving ? "#F5A623" : "#429ABD",
-                    pointerEvents: saving ? "none" : "auto",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!saving)
-                      e.currentTarget.style.backgroundColor = "#F5A623";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!saving)
-                      e.currentTarget.style.backgroundColor = "#429ABD";
-                  }}
-                >
-                  {saving ? "Saving..." : "Save"}
-                </button>
-              </div>
-            )}
-            {/* <CandidateProposedRequests candidateId={id} /> */}
             {sectionHeader("Educational Details")}
 
             {education.length > 0 ? (
@@ -1128,7 +1355,6 @@ export default function CandidateDetails({ id, empData }: Props) {
               </div>
             )}
 
-            {/* Matching */}
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 {sectionHeader(
@@ -1138,6 +1364,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <button
                   type="button"
                   onClick={() => runJobMatching(candidate)}
+                  disabled={matching}
                   className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-50 transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
                   style={{ backgroundColor: "#429ABD" }}
                   onMouseEnter={(e) =>
@@ -1164,7 +1391,8 @@ export default function CandidateDetails({ id, empData }: Props) {
                   {matches.map((job) => (
                     <div
                       key={job.job_id}
-                      className="border border-border rounded-lg p-4 shadow-sm bg-card hover:border-[#429ABD]/30 transition-all duration-300"
+                      className="border border-border rounded-lg p-4 shadow-sm bg-card hover:border-[#429ABD]/30 transition-all duration-300 cursor-pointer"
+                      onClick={() => router.push(`/requests/${job.job_id}`)}
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                         <h3 className="font-semibold text-foreground">
@@ -1209,7 +1437,6 @@ export default function CandidateDetails({ id, empData }: Props) {
             </div>
           </TabsContent>
 
-          {/* Experience Tab */}
           <TabsContent value="experience" className="space-y-4 sm:space-y-6">
             {experience.length === 0 ? (
               <div className="text-center py-12 border-2 border-dashed border-border rounded-xl bg-muted/30">
@@ -1256,7 +1483,6 @@ export default function CandidateDetails({ id, empData }: Props) {
             )}
           </TabsContent>
 
-          {/* Resume Tab */}
           <TabsContent value="resume" className="space-y-4 sm:space-y-6">
             <div className="flex justify-between items-center">
               <h3
@@ -1422,7 +1648,6 @@ export default function CandidateDetails({ id, empData }: Props) {
             </div>
           </TabsContent>
 
-          {/* Attachments Tab */}
           <TabsContent value="attachments" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <h3
@@ -1500,6 +1725,10 @@ export default function CandidateDetails({ id, empData }: Props) {
                 ))
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="requests" className="pt-2">
+            <CandidateProposedRequests candidateId={id} />
           </TabsContent>
         </div>
       </Tabs>
