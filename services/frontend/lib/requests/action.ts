@@ -34,6 +34,8 @@ export async function updateRequest(formData: FormData): Promise<void> {
 
   const payload = {
     company_name: formData.get("company_name"),
+    contact_person: formData.get("contact_person") || null,
+    contact_phone: formData.get("contact_phone") || null,
     request_title: formData.get("request_title"),
     state: formData.get("state"),
     job_description: formData.get("job_description"),
@@ -44,6 +46,17 @@ export async function updateRequest(formData: FormData): Promise<void> {
       ? Number(formData.get("final_rate"))
       : null,
     proposed_date: formData.get("proposed_date") || null,
+    feedback_date: formData.get("feedback_date") || null,
+
+    duration_of_request: formData.get("duration_of_request") || null,
+
+    num_candidates: formData.get("num_candidates")
+      ? Number(formData.get("num_candidates"))
+      : null,
+
+    num_proposed_candidates: formData.get("num_proposed_candidates")
+      ? Number(formData.get("num_proposed_candidates"))
+      : null,
     customer_feedback: formData.get("customer_feedback") || null,
     contract_status: formData.get("contract_status") === "true",
     sap_email: formData.get("sap_email") || null,

@@ -31,6 +31,24 @@ export default function RequestDetails({
   const [proposedDateValue, setProposedDateValue] = useState<string>(
     request?.proposed_date ? request.proposed_date.split("T")[0] : "",
   );
+  const [feedbackDateValue, setFeedbackDateValue] = useState<string>(
+    request?.feedback_date ? request.feedback_date.split("T")[0] : "",
+  );
+  const [contactPerson, setContactPerson] = useState(
+    request?.contact_person ?? "",
+  );
+  const [contactPhone, setContactPhone] = useState(
+    request?.contact_phone ?? "",
+  );
+  const [durationOfRequest, setDurationOfRequest] = useState(
+    request?.duration_of_request ?? "",
+  );
+  const [numCandidates, setNumCandidates] = useState(
+    request?.num_candidates?.toString() ?? "",
+  );
+  const [numProposedCandidates, setNumProposedCandidates] = useState(
+    request?.num_proposed_candidates?.toString() ?? "",
+  );
   const [shortlistedIds, setShortlistedIds] = useState<Set<string>>(new Set());
   const [shortlistingId, setShortlistingId] = useState<string | null>(null);
 
@@ -128,13 +146,21 @@ export default function RequestDetails({
     sapEmail: request?.sap_email ?? "",
     sapCuser: request?.sap_cuser ?? "",
     customerFeedback: request?.customer_feedback ?? "",
+    contactPerson: request?.contact_person ?? "",
+    contactPhone: request?.contact_phone ?? "",
+    feedbackDateValue: request?.feedback_date
+      ? request.feedback_date.split("T")[0]
+      : "",
+    durationOfRequest: request?.duration_of_request ?? "",
+    numCandidates: request?.num_candidates?.toString() ?? "",
+    numProposedCandidates: request?.num_proposed_candidates?.toString() ?? "",
   });
 
   const { user } = useUser();
   const canEdit =
     (user as any)?.role === "admin" || (user as any)?.role === "request_editor";
   //set to true always in editing mode
-    const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(true);
 
   const isDirty = useCallback(() => {
     const o = originalValues.current;
@@ -154,7 +180,13 @@ export default function RequestDetails({
       jobDescription !== o.jobDescription ||
       sapEmail !== o.sapEmail ||
       sapCuser !== o.sapCuser ||
-      customerFeedback !== o.customerFeedback
+      customerFeedback !== o.customerFeedback ||
+      feedbackDateValue !== o.feedbackDateValue ||
+      contactPerson !== o.contactPerson ||
+      contactPhone !== o.contactPhone ||
+      durationOfRequest !== o.durationOfRequest ||
+      numCandidates !== o.numCandidates ||
+      numProposedCandidates !== o.numProposedCandidates
     );
   }, [
     proposedDateValue,
@@ -173,6 +205,12 @@ export default function RequestDetails({
     sapEmail,
     sapCuser,
     customerFeedback,
+    contactPerson,
+    contactPhone,
+    feedbackDateValue,
+    durationOfRequest,
+    numCandidates,
+    numProposedCandidates,
   ]);
 
   useEffect(() => {
@@ -206,6 +244,12 @@ export default function RequestDetails({
     sapEmail,
     sapCuser,
     customerFeedback,
+    contactPerson,
+    contactPhone,
+    feedbackDateValue,
+    durationOfRequest,
+    numCandidates,
+    numProposedCandidates,
     isDirty,
     canEdit,
   ]);
@@ -228,6 +272,12 @@ export default function RequestDetails({
     setSapEmail(o.sapEmail);
     setSapCuser(o.sapCuser);
     setCustomerFeedback(o.customerFeedback);
+    setContactPerson(o.contactPerson);
+    setContactPhone(o.contactPhone);
+    setFeedbackDateValue(o.feedbackDateValue);
+    setDurationOfRequest(o.durationOfRequest);
+    setNumCandidates(o.numCandidates);
+    setNumProposedCandidates(o.numProposedCandidates);
     setAutoSaveStatus("idle");
     setIsEditing(false);
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
@@ -578,6 +628,15 @@ export default function RequestDetails({
         sapEmail: updatedRequest?.sap_email ?? "",
         sapCuser: updatedRequest?.sap_cuser ?? "",
         customerFeedback: updatedRequest?.customer_feedback ?? "",
+        contactPerson: updatedRequest?.contact_person ?? "",
+        contactPhone: updatedRequest?.contact_phone ?? "",
+        feedbackDateValue: updatedRequest?.feedback_date
+          ? updatedRequest.feedback_date.split("T")[0]
+          : "",
+        durationOfRequest: updatedRequest?.duration_of_request ?? "",
+        numCandidates: updatedRequest?.num_candidates?.toString() ?? "",
+        numProposedCandidates:
+          updatedRequest?.num_proposed_candidates?.toString() ?? "",
       };
       setTimeout(() => setAutoSaveStatus("idle"), 3000);
 
@@ -922,6 +981,47 @@ export default function RequestDetails({
             </div>
           )}
 
+          <div className="grid md:grid-cols-2 gap-4 p-4 bg-muted/20 rounded-xl border border-border">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Company Name
+              </label>
+              <input
+                name="company_name"
+                defaultValue={request.company_name ?? ""}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Company name"
+                className={fieldClass}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Contact Person
+              </label>
+              <input
+                name="contact_person"
+                defaultValue={request.contact_person ?? ""}
+                onChange={(e) => setContactPerson(e.target.value)}
+                placeholder="Contact name"
+                className={fieldClass}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Contact Phone
+              </label>
+              <input
+                name="contact_phone"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                placeholder="Phone number"
+                className={fieldClass}
+              />
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
@@ -987,19 +1087,6 @@ export default function RequestDetails({
                 </p>
               )}
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-foreground">
-              Company Name
-            </label>
-            <input
-              name="company_name"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              disabled={!isEditing}
-              className={fieldClass}
-            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -1150,7 +1237,7 @@ export default function RequestDetails({
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-4 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Request Date
@@ -1169,55 +1256,113 @@ export default function RequestDetails({
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Proposed Date
               </label>
-              {isEditing ? (
-                <div className="custom-datepicker">
-                  <DatePicker
-                    selected={
-                      proposedDateValue ? parseISO(proposedDateValue) : null
-                    }
-                    onChange={(date: Date | null) => {
-                      if (!date) return;
-                      handleProposedDateChange({
-                        target: {
-                          name: "proposed_date",
-                          value: format(date, "yyyy-MM-dd"),
-                        },
-                      } as React.ChangeEvent<HTMLInputElement>);
-                    }}
-                    dateFormat="dd.MM.yyyy"
-                    minDate={parseISO(getMinProposedDate())}
-                    className={fieldClass}
-                    showYearDropdown
-                    showMonthDropdown
-                    dropdownMode="select"
-                    yearDropdownItemNumber={15}
-                    scrollableYearDropdown
-                    renderCustomHeader={CustomHeader}
-                    popperClassName="custom-datepicker"
-                  />
-                </div>
-              ) : (
-                <input
-                  type="text"
-                  value={proposedDateValue ? formatDate(proposedDateValue) : ""}
-                  disabled
-                  readOnly
+              <div className="custom-datepicker">
+                <DatePicker
+                  selected={
+                    proposedDateValue ? parseISO(proposedDateValue) : null
+                  }
+                  onChange={(date: Date | null) => {
+                    if (!date) return;
+                    handleProposedDateChange({
+                      target: {
+                        name: "proposed_date",
+                        value: format(date, "yyyy-MM-dd"),
+                      },
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                  dateFormat="dd.MM.yyyy"
+                  minDate={parseISO(getMinProposedDate())}
                   className={fieldClass}
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  yearDropdownItemNumber={15}
+                  scrollableYearDropdown
+                  renderCustomHeader={CustomHeader}
+                  popperClassName="custom-datepicker"
                 />
-              )}
+              </div>
               <input
                 type="hidden"
                 name="proposed_date"
                 value={proposedDateValue}
               />
-              {proposedDateError && isEditing && (
+              {proposedDateError && (
                 <p className="text-xs text-red-500 mt-1">{proposedDateError}</p>
               )}
-              {isEditing && !proposedDateError && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Must be today or a future date and not before request date
-                </p>
-              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Feedback Date
+              </label>
+              <div className="custom-datepicker">
+                <DatePicker
+                  selected={
+                    feedbackDateValue ? parseISO(feedbackDateValue) : null
+                  }
+                  onChange={(date: Date | null) => {
+                    setFeedbackDateValue(
+                      date ? format(date, "yyyy-MM-dd") : "",
+                    );
+                  }}
+                  dateFormat="dd.MM.yyyy"
+                  className={fieldClass}
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  yearDropdownItemNumber={15}
+                  scrollableYearDropdown
+                  renderCustomHeader={CustomHeader}
+                  popperClassName="custom-datepicker"
+                />
+              </div>
+              <input
+                type="hidden"
+                name="feedback_date"
+                value={feedbackDateValue}
+                onChange={(e) => setFeedbackDateValue(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Duration of Request
+              </label>
+              <input
+                name="duration_of_request"
+                defaultValue={request.duration_of_request ?? ""}
+                onChange={(e) => setDurationOfRequest(e.target.value)}
+                placeholder="e.g. 6 months"
+                className={fieldClass}
+              />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Number of Candidates
+              </label>
+              <input
+                type="number"
+                name="num_candidates"
+                defaultValue={request.num_candidates ?? ""}
+                onChange={(e) => setNumCandidates(e.target.value)}
+                placeholder="0"
+                className={fieldClass}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Number of Proposed Candidates
+              </label>
+              <input
+                type="number"
+                name="num_proposed_candidates"
+                defaultValue={request.num_proposed_candidates ?? ""}
+                onChange={(e) => setNumProposedCandidates(e.target.value)}
+                placeholder="0"
+                className={fieldClass}
+              />
             </div>
           </div>
 
@@ -1555,7 +1700,7 @@ export default function RequestDetails({
                   )}
 
                   <div className="flex justify-end gap-2">
-                    <button
+                    {/* <button
                       type="button"
                       disabled={
                         isShortlisted ||
@@ -1580,7 +1725,7 @@ export default function RequestDetails({
                         : shortlistingId === candidate.candidate_id
                           ? "Shortlisting..."
                           : "Shortlist"}
-                    </button>
+                    </button> */}
                     <button
                       onClick={() =>
                         router.push(`/candidates/${candidate.candidate_id}`)

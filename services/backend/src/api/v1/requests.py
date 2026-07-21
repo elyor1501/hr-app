@@ -763,7 +763,7 @@ async def update_request(
     req = result.scalar_one_or_none()
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-    update_data = data.model_dump(exclude_none=True)
+    update_data = data.model_dump(exclude_unset=True)
     if "state" in update_data:
         new_state = update_data["state"]
         allowed = VALID_TRANSITIONS.get(req.state, [])
