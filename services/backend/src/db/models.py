@@ -63,7 +63,6 @@ class Candidate(BaseModel):
     pending_offers: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True, default=False)
     pending_offers_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     sap_secure_id: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
-    sap_secure_id: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
     cvs: Mapped[List["CandidateCV"]] = relationship("CandidateCV", back_populates="candidate", cascade="all, delete-orphan", lazy="noload")
     attachments: Mapped[List["CandidateAttachment"]] = relationship("CandidateAttachment", back_populates="candidate", cascade="all, delete-orphan", lazy="noload")
@@ -233,15 +232,20 @@ class StaffingRequest(BaseModel):
     final_rate: Mapped[Optional[float]] = mapped_column(Numeric(10, 2), nullable=True)
     request_date: Mapped[date] = mapped_column(Date, nullable=False)
     proposed_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    feedback_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     customer_feedback: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     contract_status: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     state: Mapped[str] = mapped_column(String(20), default="open", nullable=False, index=True)
     created_by: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     sap_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     sap_cuser: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    contact_person: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    contact_phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    num_candidates: Mapped[Optional[int]] = mapped_column(Integer, default=0)
+    num_proposed_candidates: Mapped[Optional[int]] = mapped_column(Integer, default=0)
+    duration_of_request: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
     proposed_candidates: Mapped[List["RequestCandidate"]] = relationship("RequestCandidate", back_populates="request", cascade="all, delete-orphan", lazy="noload")
-
     __table_args__ = (
         Index("idx_staffing_requests_state", "state"),
         Index("idx_staffing_requests_company", "company_name"),

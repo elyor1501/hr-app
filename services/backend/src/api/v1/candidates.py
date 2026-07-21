@@ -358,7 +358,7 @@ async def search_candidates(
         )
 
     if name:
-        name_values = [n.strip() for n in name.split(",") if n.strip()]
+        name_values = [n.strip() for n in name.split("|") if n.strip()]
         if name_values:
             name_clauses = [
                 or_(
@@ -374,7 +374,7 @@ async def search_candidates(
         filters.append(Candidate.location.ilike(f"%{location}%"))
 
     if resolved_title:
-        title_values = [t.strip() for t in resolved_title.split(",") if t.strip()]
+        title_values = [t.strip() for t in resolved_title.split("|") if t.strip()]
         if title_values:
             title_clauses = [Candidate.current_title.ilike(f"%{t}%") for t in title_values]
             filters.append(or_(*title_clauses))
@@ -405,8 +405,6 @@ async def search_candidates(
 
     if availability:
         filters.append(Candidate.availability == availability)
-    if role := None:
-        pass
 
     if dateFrom:
         try:
@@ -489,6 +487,7 @@ async def get_candidate(
 
     return candidate
 
+
 @router.get("/{id}/requests")
 async def get_candidate_requests(
     id: UUID,
@@ -496,38 +495,70 @@ async def get_candidate_requests(
     page_size: int = Query(10, ge=1, le=50),
     session: AsyncSession = Depends(get_db_session),
 ):
-    from src.db.models import StaffingRequest, RequestCandidate
-    
-    stmt = (
-        select(
-            StaffingRequest.id,
-            StaffingRequest.request_number,
-            StaffingRequest.request_title,
-            StaffingRequest.company_name,
-            StaffingRequest.state,
-            StaffingRequest.created_at,
-            RequestCandidate.proposed_date,
-            RequestCandidate.proposed_rate,
-        )
-        .join(RequestCandidate, RequestCandidate.request_id == StaffingRequest.id)
-        .where(RequestCandidate.candidate_id == id)
-        .order_by(RequestCandidate.created_at.desc())
-        .offset((page - 1) * page_size)
-        .limit(page_size)
-    )
-    
-    count_stmt = (
-        select(func.count())
-        .select_from(RequestCandidate)
-        .where(RequestCandidate.candidate_id == id)
-    )
-    
-    total_result = await session.execute(count_stmt)
-    result = await session.execute(stmt)
-    
-    total = total_result.scalar() or 0
-    rows = result.mappings().all()
-    
+    try:
+        stmt = text("""
+            SELECT DISTINCT
+                sr.id,
+                sr.request_number,
+                sr.request_title,
+                sr.company_name,
+                sr.state,
+                sr.created_at,
+                COALESCE(cms.score, 0) as match_score,
+                rc.proposed_date,
+                rc.proposed_rate,
+                CASE WHEN rc.id IS NOT NULL THEN true ELSE false END as is_proposed
+            FROM staffing_requests sr
+            LEFT JOIN request_candidates rc ON rc.request_id = sr.id AND rc.candidate_id = :cid
+            LEFT JOIN candidate_match_scores cms ON cms.request_id = sr.id AND cms.candidate_id = :cid
+            WHERE rc.candidate_id = :cid OR cms.candidate_id = :cid
+            ORDER BY COALESCE(cms.score, 0) DESC, sr.created_at DESC
+            LIMIT :lim OFFSET :off
+        """)
+
+        count_stmt = text("""
+            SELECT COUNT(DISTINCT sr.id)
+            FROM staffing_requests sr
+            LEFT JOIN request_candidates rc ON rc.request_id = sr.id AND rc.candidate_id = :cid
+            LEFT JOIN candidate_match_scores cms ON cms.request_id = sr.id AND cms.candidate_id = :cid
+            WHERE rc.candidate_id = :cid OR cms.candidate_id = :cid
+        """)
+
+        total_result = await session.execute(count_stmt, {"cid": str(id)})
+        result = await session.execute(stmt, {"cid": str(id), "lim": page_size, "off": (page - 1) * page_size})
+        total = total_result.scalar() or 0
+        rows = result.mappings().all()
+
+    except Exception:
+        stmt = text("""
+            SELECT DISTINCT
+                sr.id,
+                sr.request_number,
+                sr.request_title,
+                sr.company_name,
+                sr.state,
+                sr.created_at,
+                0 as match_score,
+                rc.proposed_date,
+                rc.proposed_rate,
+                true as is_proposed
+            FROM staffing_requests sr
+            JOIN request_candidates rc ON rc.request_id = sr.id AND rc.candidate_id = :cid
+            ORDER BY sr.created_at DESC
+            LIMIT :lim OFFSET :off
+        """)
+
+        count_stmt = text("""
+            SELECT COUNT(DISTINCT sr.id)
+            FROM staffing_requests sr
+            JOIN request_candidates rc ON rc.request_id = sr.id AND rc.candidate_id = :cid
+        """)
+
+        total_result = await session.execute(count_stmt, {"cid": str(id)})
+        result = await session.execute(stmt, {"cid": str(id), "lim": page_size, "off": (page - 1) * page_size})
+        total = total_result.scalar() or 0
+        rows = result.mappings().all()
+
     return {
         "total": total,
         "page": page,
@@ -540,6 +571,8 @@ async def get_candidate_requests(
                 "request_title": row["request_title"],
                 "company_name": row["company_name"],
                 "state": row["state"],
+                "match_score": int(row["match_score"]),
+                "is_proposed": row["is_proposed"],
                 "created_at": row["created_at"].isoformat(),
                 "proposed_date": row["proposed_date"].isoformat() if row["proposed_date"] else None,
                 "proposed_rate": float(row["proposed_rate"]) if row["proposed_rate"] else None,
@@ -547,6 +580,127 @@ async def get_candidate_requests(
             for row in rows
         ]
     }
+
+
+@router.get("/{id}/top-matching-requests")
+async def get_top_matching_requests(
+    id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+):
+    try:
+        stmt = text("""
+            SELECT DISTINCT
+                sr.id,
+                sr.request_number,
+                sr.request_title,
+                sr.company_name,
+                sr.state,
+                sr.created_at,
+                COALESCE(cms.score, 0) as match_score
+            FROM staffing_requests sr
+            JOIN candidate_match_scores cms ON cms.request_id = sr.id AND cms.candidate_id = :cid
+            WHERE cms.candidate_id = :cid
+            ORDER BY cms.score DESC
+            LIMIT 3
+        """)
+
+        result = await session.execute(stmt, {"cid": str(id)})
+        rows = result.mappings().all()
+
+        return {
+            "items": [
+                {
+                    "id": str(row["id"]),
+                    "request_number": row["request_number"],
+                    "request_title": row["request_title"],
+                    "company_name": row["company_name"],
+                    "state": row["state"],
+                    "match_score": int(row["match_score"]),
+                }
+                for row in rows
+            ]
+        }
+
+    except Exception:
+        return {"items": []}
+
+
+@router.post("/{id}/match-requests")
+async def match_candidate_to_requests(
+    id: UUID,
+    session: AsyncSession = Depends(get_db_session),
+):
+    from src.services.ai_client import AIClient
+    from src.db.models import StaffingRequest
+    from sqlalchemy.orm import undefer as sa_undefer
+
+    ai_client = AIClient()
+
+    candidate_result = await session.execute(
+        select(Candidate)
+        .options(sa_undefer(Candidate.resume_text))
+        .where(Candidate.id == id)
+    )
+    candidate = candidate_result.scalar_one_or_none()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+
+    requests_result = await session.execute(
+        select(StaffingRequest)
+        .where(
+            StaffingRequest.state.in_(["open", "in_progress"]),
+            StaffingRequest.job_description.isnot(None),
+        )
+        .limit(20)
+    )
+    requests = requests_result.scalars().all()
+
+    if not requests:
+        return {"results": [], "total": 0}
+
+    cv: dict = {}
+    if candidate.first_name:
+        cv["full_name"] = f"{candidate.first_name} {candidate.last_name}".strip()
+    if candidate.email and "@noemail" not in candidate.email:
+        cv["email"] = candidate.email
+    if candidate.skills:
+        cv["skills"] = candidate.skills
+    if candidate.current_title:
+        cv["current_title"] = candidate.current_title
+    if candidate.current_company:
+        cv["current_company"] = candidate.current_company
+    if candidate.location:
+        cv["location"] = candidate.location
+    if candidate.resume_text:
+        cv["summary"] = candidate.resume_text[:1000]
+    if candidate.json_data and isinstance(candidate.json_data, dict):
+        for k, v in candidate.json_data.items():
+            if k not in cv:
+                cv[k] = v
+
+    results = []
+    for req in requests:
+        try:
+            ai_result = await ai_client.rag_match(
+                job_description=req.job_description,
+                structured_cv=cv,
+            )
+            results.append({
+                "job_id": str(req.id),
+                "job_title": req.request_title,
+                "request_number": req.request_number,
+                "company_name": req.company_name,
+                "match_score": ai_result.get("match_score", 0),
+                "reasoning": ai_result.get("reasoning", ""),
+                "strengths": ai_result.get("strengths", []),
+                "gaps": ai_result.get("gaps", []),
+            })
+        except Exception:
+            continue
+
+    results.sort(key=lambda x: x["match_score"], reverse=True)
+
+    return {"results": results[:5], "total": len(results)}
 
 
 @router.patch("/{id}", response_model=CandidateResponse)
@@ -605,21 +759,21 @@ async def update_candidate(
                 status_code=400,
                 detail="Status must be active or inactive"
             )
-    if "sap_email" in update_dict and update_dict["sap_email"]:
-        existing = await repo.get_by_id(id)
-        if existing:
-            dob = update_dict.get("dob") or existing.dob or ""
-            ssn = update_dict.get("ssn_last4") or existing.ssn_last4 or ""
-            first_name = update_dict.get("first_name") or existing.first_name or ""
-            ff = first_name[:2].upper()
-            dob_parts = dob.replace("-", "/").split("/")
-            if len(dob_parts) == 2:
-                mmdd = dob_parts[0].zfill(2) + dob_parts[1].zfill(2)
-            else:
-                mmdd = ""
-            zzzz = ssn[-4:] if len(ssn) >= 4 else ssn
-            if ff and mmdd and zzzz:
-                update_dict["sap_secure_id"] = f"{ff}{mmdd}{zzzz}"
+
+    existing = await repo.get_by_id(id)
+    if existing:
+        dob = update_dict.get("dob") or existing.dob or ""
+        ssn = update_dict.get("ssn_last4") or existing.ssn_last4 or ""
+        first_name = update_dict.get("first_name") or existing.first_name or ""
+        ff = first_name[:2].upper()
+        dob_parts = dob.replace("-", "/").split("/")
+        if len(dob_parts) == 2:
+            mmdd = dob_parts[0].zfill(2) + dob_parts[1].zfill(2)
+        else:
+            mmdd = ""
+        zzzz = ssn[-4:] if len(ssn) >= 4 else ssn
+        if ff and mmdd and len(zzzz) == 4:
+            update_dict["sap_secure_id"] = f"{ff}{mmdd}{zzzz}"
 
     await repo.update(id, **update_dict)
 
@@ -649,6 +803,7 @@ async def update_candidate(
         pass
 
     return updated
+
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_candidate(

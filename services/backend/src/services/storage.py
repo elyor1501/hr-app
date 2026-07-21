@@ -60,67 +60,47 @@ async def _delete_async(bucket: str, file_path: str):
 
 async def upload_file(file: UploadFile) -> str:
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
-    try:
-        file_content = await file.read()
-        file_ext = file.filename.split(".")[-1] if "." in file.filename else "pdf"
-        file_path = f"{uuid.uuid4()}.{file_ext}"
-        return await _upload_async(BUCKET_NAME, file_path, file_content, file.content_type or "application/octet-stream")
-    except Exception as e:
-        print(f"Upload failed: {e}")
-        return None
+        raise Exception("Storage not configured: SUPABASE_URL or SUPABASE_SERVICE_KEY missing")
+    file_content = await file.read()
+    file_ext = file.filename.split(".")[-1] if "." in file.filename else "pdf"
+    file_path = f"{uuid.uuid4()}.{file_ext}"
+    return await _upload_async(BUCKET_NAME, file_path, file_content, file.content_type or "application/octet-stream")
 
 
 async def upload_file_bytes(file_content: bytes, filename: str, content_type: str) -> str:
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
-    try:
-        file_ext = filename.split(".")[-1].lower() if "." in filename else "pdf"
-        file_path = f"{uuid.uuid4()}.{file_ext}"
-        return await _upload_async(BUCKET_NAME, file_path, file_content, content_type or "application/octet-stream")
-    except Exception as e:
-        print(f"Upload failed: {e}")
-        return None
+        raise Exception("Storage not configured: SUPABASE_URL or SUPABASE_SERVICE_KEY missing")
+    file_ext = filename.split(".")[-1].lower() if "." in filename else "pdf"
+    file_path = f"{uuid.uuid4()}.{file_ext}"
+    return await _upload_async(BUCKET_NAME, file_path, file_content, content_type or "application/octet-stream")
 
 
 async def upload_requirement_doc(file: UploadFile) -> str:
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
-    try:
-        file_content = await file.read()
-        file_ext = file.filename.split(".")[-1].lower() if "." in file.filename else "pdf"
-        file_path = f"{uuid.uuid4()}.{file_ext}"
-        return await _upload_async(REQUIREMENT_DOCS_BUCKET, file_path, file_content, file.content_type or "application/octet-stream")
-    except Exception as e:
-        print(f"Requirement doc upload failed: {e}")
-        return None
+        raise Exception("Storage not configured: SUPABASE_URL or SUPABASE_SERVICE_KEY missing")
+    file_content = await file.read()
+    file_ext = file.filename.split(".")[-1].lower() if "." in file.filename else "pdf"
+    file_path = f"{uuid.uuid4()}.{file_ext}"
+    return await _upload_async(REQUIREMENT_DOCS_BUCKET, file_path, file_content, file.content_type or "application/octet-stream")
 
 
 async def upload_candidate_cv(file: UploadFile) -> str:
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
-    try:
-        file_content = await file.read()
-        file_ext = file.filename.split(".")[-1].lower() if "." in file.filename else "pdf"
-        file_path = f"{uuid.uuid4()}.{file_ext}"
-        return await _upload_async(CANDIDATE_CVS_BUCKET, file_path, file_content, file.content_type or "application/octet-stream")
-    except Exception as e:
-        print(f"Candidate CV upload failed: {e}")
-        return None
+        raise Exception("Storage not configured: SUPABASE_URL or SUPABASE_SERVICE_KEY missing")
+    file_content = await file.read()
+    file_ext = file.filename.split(".")[-1].lower() if "." in file.filename else "pdf"
+    file_path = f"{uuid.uuid4()}.{file_ext}"
+    return await _upload_async(CANDIDATE_CVS_BUCKET, file_path, file_content, file.content_type or "application/octet-stream")
 
 
 async def upload_candidate_attachment(file: UploadFile) -> str:
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
-    try:
-        file_content = await file.read()
-        file.file.seek(0)
-        file_ext = file.filename.split(".")[-1].lower() if "." in file.filename else "pdf"
-        file_path = f"{uuid.uuid4()}.{file_ext}"
-        return await _upload_async(CANDIDATE_ATTACHMENTS_BUCKET, file_path, file_content, file.content_type or "application/octet-stream")
-    except Exception as e:
-        print(f"Candidate attachment upload failed: {e}")
-        return None
+        raise Exception("Storage not configured: SUPABASE_URL or SUPABASE_SERVICE_KEY missing")
+    file_content = await file.read()
+    file.file.seek(0)
+    file_ext = file.filename.split(".")[-1].lower() if "." in file.filename else "pdf"
+    file_path = f"{uuid.uuid4()}.{file_ext}"
+    return await _upload_async(CANDIDATE_ATTACHMENTS_BUCKET, file_path, file_content, file.content_type or "application/octet-stream")
 
 
 async def delete_file_from_storage(file_url: str) -> bool:
@@ -158,7 +138,7 @@ async def delete_requirement_doc_from_storage(file_url: str) -> bool:
         await _delete_async(REQUIREMENT_DOCS_BUCKET, file_path)
         return True
     except Exception as e:
-        print(f"Requirement doc delete failed: {e}")
+        print(f"Delete failed: {e}")
         return False
 
 
@@ -170,7 +150,7 @@ async def delete_candidate_cv_from_storage(file_url: str) -> bool:
         await _delete_async(CANDIDATE_CVS_BUCKET, file_path)
         return True
     except Exception as e:
-        print(f"Candidate CV delete failed: {e}")
+        print(f"Delete failed: {e}")
         return False
 
 
@@ -182,21 +162,18 @@ async def delete_candidate_attachment_from_storage(file_url: str) -> bool:
         await _delete_async(CANDIDATE_ATTACHMENTS_BUCKET, file_path)
         return True
     except Exception as e:
-        print(f"Candidate attachment delete failed: {e}")
+        print(f"Delete failed: {e}")
         return False
-    
+
+
 DELOITTE_PPTX_BUCKET = "deloitte-resumes"
 
 
 async def upload_deloitte_pptx(file_content: bytes, filename: str) -> str:
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
-    try:
-        file_path = f"{uuid.uuid4()}.pptx"
-        return await _upload_async(DELOITTE_PPTX_BUCKET, file_path, file_content, "application/vnd.openxmlformats-officedocument.presentationml.presentation")
-    except Exception as e:
-        print(f"Deloitte PPTX upload failed: {e}")
-        return None
+        raise Exception("Storage not configured: SUPABASE_URL or SUPABASE_SERVICE_KEY missing")
+    file_path = f"{uuid.uuid4()}.pptx"
+    return await _upload_async(DELOITTE_PPTX_BUCKET, file_path, file_content, "application/vnd.openxmlformats-officedocument.presentationml.presentation")
 
 
 async def delete_deloitte_pptx_from_storage(file_url: str) -> bool:

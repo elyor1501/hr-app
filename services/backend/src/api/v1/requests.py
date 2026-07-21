@@ -49,11 +49,17 @@ class RequestUpdate(BaseModel):
     prepared_rate: Optional[float] = Field(default=None, ge=0)
     final_rate: Optional[float] = Field(default=None, ge=0)
     proposed_date: Optional[date] = Field(default=None)
+    feedback_date: Optional[date] = Field(default=None)
     customer_feedback: Optional[str] = Field(default=None)
     contract_status: Optional[bool] = Field(default=None)
     state: Optional[str] = Field(default=None)
     sap_email: Optional[str] = Field(default=None)
     sap_cuser: Optional[str] = Field(default=None)
+    contact_person: Optional[str] = Field(default=None)
+    contact_phone: Optional[str] = Field(default=None)
+    num_candidates: Optional[int] = Field(default=None)
+    num_proposed_candidates: Optional[int] = Field(default=None)
+    duration_of_request: Optional[str] = Field(default=None)
 
 
 class StateTransition(BaseModel):
@@ -142,6 +148,7 @@ class RequestResponse(BaseModel):
     final_rate: Optional[float] = None
     request_date: date
     proposed_date: Optional[date] = None
+    feedback_date: Optional[date] = None
     customer_feedback: Optional[str] = None
     contract_status: bool
     state: str
@@ -149,6 +156,11 @@ class RequestResponse(BaseModel):
     updated_at: datetime
     sap_email: Optional[str] = None
     sap_cuser: Optional[str] = None
+    contact_person: Optional[str] = None
+    contact_phone: Optional[str] = None
+    num_candidates: Optional[int] = None
+    num_proposed_candidates: Optional[int] = None
+    duration_of_request: Optional[str] = None
     proposed_candidates: List[CandidateSummary] = []
 
     class Config:
@@ -209,7 +221,7 @@ async def _generate_request_number(session: AsyncSession) -> str:
         )
     )
     count = result.scalar() or 0
-    return f"{prefix}{str(count + 1).zfill(3)}"
+    return f"{prefix}{count + 1}"
 
 
 def _extract_skills_from_jd(job_description: str) -> List[str]:
@@ -512,6 +524,8 @@ async def create_request(
         prepared_rate=data.prepared_rate,
         request_date=data.request_date,
         proposed_date=data.proposed_date,
+        sap_email=data.sap_email,
+        sap_cuser=data.sap_cuser,
         state="open",
         contract_status=False,
     )
@@ -538,11 +552,26 @@ async def list_requests(
     q: Optional[str] = Query(default=None),
     dateFrom: Optional[str] = Query(default=None),
     dateTo: Optional[str] = Query(default=None),
-    session: AsyncSession = Depends(get_db_session)
+    requestNumber: Optional[str] = Query(default=None),
+    company: Optional[str] = Query(default=None),
+    sortBy: Optional[str] = Query(default=None),
+    sortOrder: str = Query(default="asc"),
+    session: AsyncSession = Depends(get_db_session),
 ):
     from datetime import timezone
 
-    cache_key = f"hr_app:requests:list:{skip}:{limit}:{state}:{q or ''}:{dateFrom or ''}:{dateTo or ''}"
+    sort_by = sortBy.strip() if sortBy else None
+    sort_order = (sortOrder or "asc").lower()
+    if sort_order not in {"asc", "desc"}:
+        sort_order = "asc"
+
+    cache_key = (
+        f"hr_app:requests:list:"
+        f"{skip}:{limit}:{state or ''}:{q or ''}:"
+        f"{dateFrom or ''}:{dateTo or ''}:"
+        f"{sort_by or ''}:{sort_order}:"
+        f"{requestNumber or ''}:{company or ''}"
+    )
 
     try:
         redis = await get_redis_pool()
@@ -557,17 +586,32 @@ async def list_requests(
     if state:
         filters.append(StaffingRequest.state == state)
 
-    if q:
+    if q and q.strip():
         filters.append(
             or_(
-                StaffingRequest.company_name.ilike(f"%{q}%"),
-                StaffingRequest.request_title.ilike(f"%{q}%"),
-                StaffingRequest.request_number.ilike(f"%{q}%")
+                StaffingRequest.company_name.ilike(f"%{q.strip()}%"),
+                StaffingRequest.request_title.ilike(f"%{q.strip()}%"),
+                StaffingRequest.request_number.ilike(f"%{q.strip()}%"),
             )
         )
 
+    if requestNumber:
+        rn_values = [v.strip() for v in requestNumber.split("|") if v.strip()]
+        if rn_values:
+            filters.append(
+                or_(*[StaffingRequest.request_number.ilike(f"%{v}%") for v in rn_values])
+            )
+
+    if company:
+        co_values = [v.strip() for v in company.split("|") if v.strip()]
+        if co_values:
+            filters.append(
+                or_(*[StaffingRequest.company_name.ilike(f"%{v}%") for v in co_values])
+            )
+
     if dateFrom:
         try:
+            from datetime import timezone
             date_from_dt = datetime.strptime(dateFrom, "%Y-%m-%d").replace(tzinfo=timezone.utc)
             filters.append(StaffingRequest.created_at >= date_from_dt)
         except ValueError:
@@ -575,18 +619,18 @@ async def list_requests(
 
     if dateTo:
         try:
+            from datetime import timezone
             date_to_dt = datetime.strptime(dateTo, "%Y-%m-%d").replace(
-                hour=23, minute=59, second=59, tzinfo=timezone.utc
+                hour=23, minute=59, second=59, microsecond=999999, tzinfo=timezone.utc
             )
             filters.append(StaffingRequest.created_at <= date_to_dt)
         except ValueError:
             pass
 
+    candidate_count = func.count(RequestCandidate.id).label("candidate_count")
+
     stmt = (
-        select(
-            StaffingRequest,
-            func.count(RequestCandidate.id).label("candidate_count")
-        )
+        select(StaffingRequest, candidate_count)
         .outerjoin(RequestCandidate, RequestCandidate.request_id == StaffingRequest.id)
         .where(and_(*filters) if filters else True)
         .group_by(
@@ -599,6 +643,7 @@ async def list_requests(
             StaffingRequest.final_rate,
             StaffingRequest.request_date,
             StaffingRequest.proposed_date,
+            StaffingRequest.feedback_date,
             StaffingRequest.customer_feedback,
             StaffingRequest.contract_status,
             StaffingRequest.state,
@@ -607,11 +652,38 @@ async def list_requests(
             StaffingRequest.updated_at,
             StaffingRequest.sap_email,
             StaffingRequest.sap_cuser,
+            StaffingRequest.contact_person,
+            StaffingRequest.contact_phone,
+            StaffingRequest.num_candidates,
+            StaffingRequest.num_proposed_candidates,
+            StaffingRequest.duration_of_request,
         )
-        .order_by(StaffingRequest.created_at.desc())
-        .offset(skip)
-        .limit(limit)
     )
+
+    sortable_columns = {
+        "company_name": StaffingRequest.company_name,
+        "request_title": StaffingRequest.request_title,
+        "state": StaffingRequest.state,
+        "prepared_rate": StaffingRequest.prepared_rate,
+        "final_rate": StaffingRequest.final_rate,
+        "request_date": StaffingRequest.request_date,
+        "created_at": StaffingRequest.created_at,
+        "candidate_count": candidate_count,
+    }
+
+    text_sort_fields = {"company_name", "request_title", "state"}
+    sort_column = sortable_columns.get(sort_by)
+
+    if sort_column is not None:
+        sort_expression = func.lower(sort_column) if sort_by in text_sort_fields else sort_column
+        if sort_order == "desc":
+            stmt = stmt.order_by(sort_expression.desc().nulls_last(), StaffingRequest.created_at.desc(), StaffingRequest.id.desc())
+        else:
+            stmt = stmt.order_by(sort_expression.asc().nulls_last(), StaffingRequest.created_at.desc(), StaffingRequest.id.desc())
+    else:
+        stmt = stmt.order_by(StaffingRequest.created_at.desc(), StaffingRequest.id.desc())
+
+    stmt = stmt.offset(skip).limit(limit)
 
     result = await session.execute(stmt)
     rows = result.fetchall()
@@ -631,7 +703,7 @@ async def list_requests(
             request_date=req.request_date,
             contract_status=req.contract_status,
             created_at=req.created_at,
-            candidate_count=cnt,
+            candidate_count=cnt or 0,
         ))
 
     try:
@@ -677,6 +749,7 @@ async def get_request(
         pass
 
     return response
+
 
 @router.patch("/{request_id}", response_model=RequestResponse)
 async def update_request(
@@ -881,6 +954,22 @@ async def auto_match_candidates(
             )
         )
     matches.sort(key=lambda m: m.match_score, reverse=True)
+    for m in matches:
+        await session.execute(
+            text("""
+                INSERT INTO candidate_match_scores (candidate_id, request_id, score, reasoning)
+                VALUES (:c_id, :r_id, :score, :reasoning)
+                ON CONFLICT (candidate_id, request_id)
+                DO UPDATE SET score = EXCLUDED.score, reasoning = EXCLUDED.reasoning, updated_at = now()
+            """),
+            {
+                "c_id": m.candidate_id,
+                "r_id": str(request_id),
+                "score": m.match_score,
+                "reasoning": m.reasoning
+            }
+        )
+    await session.commit()
     response = AutoMatchResponse(
         request_id=str(request_id),
         request_number=req.request_number,
@@ -1143,6 +1232,7 @@ def _build_response(req: StaffingRequest, candidates: List[CandidateSummary]) ->
         final_rate=float(req.final_rate) if req.final_rate else None,
         request_date=req.request_date,
         proposed_date=req.proposed_date,
+        feedback_date=req.feedback_date if hasattr(req, 'feedback_date') else None,
         customer_feedback=req.customer_feedback,
         contract_status=req.contract_status,
         state=req.state,
@@ -1150,5 +1240,10 @@ def _build_response(req: StaffingRequest, candidates: List[CandidateSummary]) ->
         updated_at=req.updated_at,
         sap_email=req.sap_email if hasattr(req, 'sap_email') else None,
         sap_cuser=req.sap_cuser if hasattr(req, 'sap_cuser') else None,
+        contact_person=req.contact_person if hasattr(req, 'contact_person') else None,
+        contact_phone=req.contact_phone if hasattr(req, 'contact_phone') else None,
+        num_candidates=req.num_candidates if hasattr(req, 'num_candidates') else None,
+        num_proposed_candidates=req.num_proposed_candidates if hasattr(req, 'num_proposed_candidates') else None,
+        duration_of_request=req.duration_of_request if hasattr(req, 'duration_of_request') else None,
         proposed_candidates=candidates,
     )

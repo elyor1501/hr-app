@@ -136,8 +136,6 @@ async def _process_file_background(file_data: dict):
             filename=file_data["filename"],
             content_type=file_data["content_type"],
         )
-        if not url:
-            return None
 
         async with async_session_maker() as session:
             resume = Resume(
@@ -154,7 +152,8 @@ async def _process_file_background(file_data: dict):
             "file_type": file_data["file_ext"],
         }
 
-    except Exception:
+    except Exception as e:
+        upload_logger.error("file_upload_failed", filename=file_data.get("filename"), error=str(e))
         return None
 
 
@@ -336,11 +335,16 @@ async def list_resumes(
     q: Optional[str] = Query(None),
     dateFrom: Optional[str] = Query(None),
     dateTo: Optional[str] = Query(None),
+    sortBy: Optional[str] = Query(default=None),
+    sortOrder: str = Query(default="asc"),
     session: AsyncSession = Depends(get_db_session)
 ):
     from datetime import datetime, timezone
 
-    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}:{q or ''}:{dateFrom or ''}:{dateTo or ''}"
+    sort_by = sortBy.strip() if sortBy else None
+    sort_order = (sortOrder or "asc").lower()
+
+    cache_key = f"{RESUMES_CACHE_KEY}:{page}:{page_size}:{q or ''}:{dateFrom or ''}:{dateTo or ''}:{sort_by or ''}:{sort_order}"
 
     try:
         redis = await get_redis_pool()
@@ -384,11 +388,23 @@ async def list_resumes(
 
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
+    order_clause = "ORDER BY created_at DESC"
+    if sort_by == "file_name":
+        if sort_order == "desc":
+            order_clause = "ORDER BY LOWER(file_name) DESC NULLS LAST, created_at DESC"
+        else:
+            order_clause = "ORDER BY LOWER(file_name) ASC NULLS LAST, created_at DESC"
+    elif sort_by == "created_at":
+        if sort_order == "asc":
+            order_clause = "ORDER BY created_at ASC"
+        else:
+            order_clause = "ORDER BY created_at DESC"
+
     query = text(f"""
         SELECT id, file_name, file_url, raw_text, created_at, updated_at
         FROM resumes
         {where_clause}
-        ORDER BY created_at DESC
+        {order_clause}
         OFFSET :skip LIMIT :limit
     """)
 
