@@ -2,12 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Eye } from "lucide-react";
 import { CandidateList } from "@/lib/candidates/data";
 import { useRouter } from "next/navigation";
-import { CompareCheckbox } from "./CompareCheckbox";
 import { DeleteCandidateButton } from "./DeleteCandidateButton";
-import { ViewCandidateButton } from "./ViewCandidateButton";
 
 export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   {
@@ -49,13 +46,40 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
     ),
   },
   {
+    accessorKey: "current_company",
+    header: "Company",
+    cell: ({ row }) => (
+      <span className="whitespace-normal break-words text-sm">
+        {row.original.current_company || "NA"}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const s = row.original.status as string;
+      return (
+        <span
+          className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+            s === "active"
+              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+              : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+          }`}
+        >
+          {s === "active" ? "Active" : "Inactive"}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "years_of_experience",
-    header: () => <div className="text-center w-full">Year of experience</div>,
+    header: () => <div className="text-center w-full">Experience</div>,
     cell: ({ row }) => {
       const years = row.original.years_of_experience;
       return (
         <div className="text-center w-full">
-          {years ? `${years} years` : "NA"}
+          {years ? `${years} yrs` : "NA"}
         </div>
       );
     },

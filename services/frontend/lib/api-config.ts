@@ -6,7 +6,7 @@ export const getApiUrl = (): string => {
 
   const url = process.env.NEXT_PUBLIC_API_URL;
   if (!url || url === 'undefined' || url.trim() === '') {
-    return '';
+    return window.location.origin;
   }
 
   if (url.startsWith("http://") && window.location.protocol === "https:") {

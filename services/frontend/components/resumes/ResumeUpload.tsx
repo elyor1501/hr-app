@@ -97,9 +97,11 @@ export default function ResumeUpload({
     multiple: true,
     accept: {
       "application/pdf": [],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [],
       "application/vnd.ms-powerpoint": [".ppt"],
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        [".pptx"],
     },
   });
 
@@ -131,21 +133,25 @@ export default function ResumeUpload({
     };
   }, []);
 
- const handleBulkSubmit = async () => {
+  const handleBulkSubmit = async () => {
     if (uploads.length === 0) return;
 
-    try {
-      setIsUploading(true);
-      setError(null);
-      setUploadStatus(`Uploading ${uploads.length} files...`);
+    setIsUploading(true);
+    setError(null);
+    setUploadStatus(`Uploading ${uploads.length} files...`);
 
+    try {
       const filesToUpload = uploads.map((u) => u.file);
       const result = await uploadBulkResumes(filesToUpload);
+      const accepted = (result as any)?.accepted ?? uploads.length;
 
-      const accepted = (result as any)?.accepted ?? (Array.isArray(result) ? result.length : uploads.length);
+      if (accepted === 0) {
+        throw new Error(
+          "No files were accepted by the server. Storage may be unavailable.",
+        );
+      }
 
       setUploadStatus(`${accepted} files accepted!`);
-
       setUploads([]);
       onClose();
 
@@ -155,11 +161,12 @@ export default function ResumeUpload({
           onUploaded(accepted);
         }
       }, 1500);
-
-    } catch (error: any) {
-      console.error("Upload failed:", error);
-      setError(error?.message || "Upload failed. Check console.");
-      toast.error(error?.message || "Upload failed");
+    } catch (err: any) {
+      console.error("Upload failed:", err);
+      const msg = err?.message || "Upload failed. Please try again.";
+      setError(msg);
+      setUploadStatus("");
+      toast.error(msg);
     } finally {
       setIsUploading(false);
     }
@@ -231,7 +238,9 @@ export default function ResumeUpload({
           >
             Previous
           </button>
-          <span>Page {currentPage} / {totalPages}</span>
+          <span>
+            Page {currentPage} / {totalPages}
+          </span>
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((p) => p + 1)}

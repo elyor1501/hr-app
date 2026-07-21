@@ -10,15 +10,22 @@ export type RequestItem = {
   final_rate: number | null;
   request_date: string;
   proposed_date?: string;
+  feedback_date?: string;
   customer_feedback?: string | null;
   contract_status: boolean;
   state: string;
   created_by?: string;
   created_at: string;
   updated_at: string;
-  sap_email: string;
-  sap_cuser: string;
   candidate_count: number;
+  sap_email?: string | null;
+  sap_cuser?: string | null;
+  contact_person?: string | null;
+  contact_phone?: string | null;
+  num_candidates?: number | null;
+  num_proposed_candidates?: number | null;
+  duration_of_request?: string | null;
+  proposed_candidates?: any[];
 };
 
 export async function getRequests(

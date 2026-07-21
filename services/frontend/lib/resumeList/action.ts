@@ -1,11 +1,8 @@
-import { revalidateResumes } from "./revalidate";
 import { getApiUrl, getAuthToken } from "../api-config";
 
 const BATCH_TIMEOUT = 180000;
 const MAX_BATCH_SIZE_BYTES = 8 * 1024 * 1024;
 const MAX_CONCURRENT_UPLOADS = 3;
-
-const getApi = getApiUrl();
 
 function createBatches(files: File[]): File[][] {
   const batches: File[][] = [];
@@ -43,7 +40,11 @@ function createBatches(files: File[]): File[][] {
   return batches;
 }
 
-async function uploadSingleBatch(batch: File[], token: string | null): Promise<any> {
+async function uploadSingleBatch(
+  batch: File[],
+  token: string | null,
+): Promise<any> {
+  const apiUrl = getApiUrl();
   const formData = new FormData();
   batch.forEach((file) => formData.append("files", file));
 
@@ -51,7 +52,7 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
   const timeoutId = setTimeout(() => controller.abort(), BATCH_TIMEOUT);
 
   try {
-    const response = await fetch(`${getApi}/api/v1/resumes/bulk`, {
+    const response = await fetch(`${apiUrl}/api/v1/resumes/bulk`, {
       method: "POST",
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -64,7 +65,11 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.detail || "Failed to upload batch");
+      throw new Error(
+        errorData?.detail ||
+          errorData?.message ||
+          `Upload failed with status ${response.status}`,
+      );
     }
 
     return response.json();
@@ -80,21 +85,34 @@ async function uploadSingleBatch(batch: File[], token: string | null): Promise<a
 async function uploadWithConcurrency(
   batches: File[][],
   token: string | null,
-  concurrency: number
+  concurrency: number,
 ): Promise<any[]> {
   const results: any[] = [];
+  const errors: Error[] = [];
   let index = 0;
 
   async function worker() {
     while (index < batches.length) {
       const currentIndex = index++;
-      const result = await uploadSingleBatch(batches[currentIndex], token);
-      results[currentIndex] = result;
+      try {
+        const result = await uploadSingleBatch(batches[currentIndex], token);
+        results[currentIndex] = result;
+      } catch (err: any) {
+        errors.push(err);
+        results[currentIndex] = null;
+      }
     }
   }
 
-  const workers = Array.from({ length: Math.min(concurrency, batches.length) }, () => worker());
+  const workers = Array.from(
+    { length: Math.min(concurrency, batches.length) },
+    () => worker(),
+  );
   await Promise.all(workers);
+
+  if (errors.length > 0 && results.every((r) => r === null)) {
+    throw errors[0];
+  }
 
   return results;
 }
@@ -102,19 +120,20 @@ async function uploadWithConcurrency(
 export async function uploadBulkResumes(files: File[]) {
   const token = getAuthToken();
   const batches = createBatches(files);
-
-  const results = await uploadWithConcurrency(batches, token, MAX_CONCURRENT_UPLOADS);
-
+  const results = await uploadWithConcurrency(
+    batches,
+    token,
+    MAX_CONCURRENT_UPLOADS,
+  );
   const totalAccepted = results.reduce((sum, r) => sum + (r?.accepted || 0), 0);
-
-  await revalidateResumes();
   return { accepted: totalAccepted };
 }
 
 export async function deleteResume(id: string) {
+  const apiUrl = getApiUrl();
   const token = getAuthToken();
 
-  const response = await fetch(`${getApi}/api/v1/resumes/${id}`, {
+  const response = await fetch(`${apiUrl}/api/v1/resumes/${id}`, {
     method: "DELETE",
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -126,14 +145,14 @@ export async function deleteResume(id: string) {
     throw new Error(errorData?.detail || "Failed to delete resume");
   }
 
-  await revalidateResumes();
   return true;
 }
 
 export async function bulkDeleteResumes(ids: string[]) {
+  const apiUrl = getApiUrl();
   const token = getAuthToken();
 
-  const response = await fetch(`${getApi}/api/v1/resumes/bulk`, {
+  const response = await fetch(`${apiUrl}/api/v1/resumes/bulk`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -147,15 +166,18 @@ export async function bulkDeleteResumes(ids: string[]) {
     throw new Error(errorData?.detail || "Failed to delete resumes");
   }
 
-  const result = await response.json();
-  await revalidateResumes();
-  return result;
+  return response.json();
 }
 
-export async function downloadResume(id: string, fileName?: string, fallbackFileUrl?: string) {
+export async function downloadResume(
+  id: string,
+  fileName?: string,
+  fallbackFileUrl?: string,
+) {
+  const apiUrl = getApiUrl();
   const token = getAuthToken();
 
-  let response = await fetch(`${getApi}/api/v1/resumes/${id}/download`, {
+  let response = await fetch(`${apiUrl}/api/v1/resumes/${id}/download`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
@@ -165,12 +187,12 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
     response = await fetch(
       fallbackFileUrl.startsWith("http")
         ? fallbackFileUrl
-        : `${getApi}${fallbackFileUrl}`,
+        : `${apiUrl}${fallbackFileUrl}`,
       {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-      }
+      },
     );
   }
 
@@ -189,10 +211,15 @@ export async function downloadResume(id: string, fileName?: string, fallbackFile
   setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }
 
-export async function viewResume(id: string, fileName?: string, fallbackFileUrl?: string) {
+export async function viewResume(
+  id: string,
+  fileName?: string,
+  fallbackFileUrl?: string,
+) {
+  const apiUrl = getApiUrl();
   const token = getAuthToken();
 
-  let response = await fetch(`${getApi}/api/v1/resumes/${id}/download`, {
+  let response = await fetch(`${apiUrl}/api/v1/resumes/${id}/download`, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
@@ -202,12 +229,12 @@ export async function viewResume(id: string, fileName?: string, fallbackFileUrl?
     response = await fetch(
       fallbackFileUrl.startsWith("http")
         ? fallbackFileUrl
-        : `${getApi}${fallbackFileUrl}`,
+        : `${apiUrl}${fallbackFileUrl}`,
       {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-      }
+      },
     );
   }
 
@@ -228,5 +255,6 @@ export async function viewResume(id: string, fileName?: string, fallbackFileUrl?
       link.parentNode.removeChild(link);
     }
   }
+
   setTimeout(() => window.URL.revokeObjectURL(url), 1000);
 }
