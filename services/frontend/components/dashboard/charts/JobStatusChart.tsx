@@ -49,27 +49,27 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
   ];
 
   return (
-    <Card className="flex flex-col h-full">
-      <CardHeader className="pb-2 sm:pb-4">
-        <CardTitle className="text-base sm:text-lg">
+    <Card className="w-full overflow-hidden border-border/50 shadow-sm h-full">
+      <CardHeader className="px-3 pt-3 pb-1">
+        <CardTitle className="text-sm font-semibold">
           Request Jobs Overview
         </CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
+        <CardDescription className="text-xs font-medium text-muted-foreground">
           Real-time status of request postings
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6">
+      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 ">
         <div className="relative flex items-center justify-center">
-          <PieChart width={180} height={180}>
+          <PieChart width={150} height={150}>
             <Pie
               data={chartData}
               dataKey="value"
               nameKey="name"
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={75}
+              innerRadius={42}
+              outerRadius={62}
               paddingAngle={2}
             >
               {chartData.map((entry, index) => (
@@ -98,8 +98,8 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
           </PieChart>
 
           <div className="absolute text-center pointer-events-none z-0">
-            <p className="text-3xl font-bold text-foreground">{totalJobs}</p>
-            <p className="text-sm text-muted-foreground leading-tight">
+            <p className="text-xl sm:text-2xl font-bold">{totalJobs}</p>
+            <p className="text-xs font-medium text-muted-foreground">
               Total
               <br />
               Requests
@@ -107,19 +107,19 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 sm:gap-4 w-full sm:w-52">
+        <div className="flex flex-col gap-2 w-full sm:w-44">
           {chartData.map((item) => (
             <div key={item.name} className="space-y-1 sm:space-y-2">
-              <div className="flex justify-between text-xs sm:text-sm">
-                <span className="font-medium text-muted-foreground">
+              <div className="flex justify-between text-xs">
+                <span className="text-xs font-medium text-muted-foreground">
                   {item.name}
                 </span>
                 <span className="font-bold">{item.value}</span>
               </div>
 
-              <div className="w-full bg-secondary h-1.5 sm:h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-secondary h-1 rounded-full overflow-hidden">
                 <div
-                  className="h-1.5 sm:h-2 rounded-full transition-all duration-500"
+                  className="h-1 rounded-full transition-all duration-500"
                   style={{
                     width: totalJobs
                       ? `${(item.value / totalJobs) * 100}%`

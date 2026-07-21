@@ -7,6 +7,7 @@ import {
   YAxis,
   Cell,
   ResponsiveContainer,
+  LabelList,
 } from "recharts";
 
 import {
@@ -60,7 +61,9 @@ export function EmployeeStatusChart({
   } else {
     return (
       <Card className="w-full h-[300px] sm:h-[350px] flex items-center justify-center">
-        <p className="text-muted-foreground animate-pulse text-sm sm:text-base">Loading charts...</p>
+        <p className="text-muted-foreground animate-pulse text-sm sm:text-base">
+          Loading charts...
+        </p>
       </Card>
     );
   }
@@ -74,17 +77,20 @@ export function EmployeeStatusChart({
 
   return (
     <Card className="w-full overflow-hidden border-border/50 shadow-sm h-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base sm:text-lg font-bold tracking-tight text-foreground">
-          Candidate Pipeline
+      <CardHeader className="px-3 pt-3 pb-1">
+        <CardTitle className="text-sm font-semibold">
+         Candidate Pipeline
         </CardTitle>
         <CardDescription className="text-xs font-medium text-muted-foreground">
           Distribution of active vs inactive profiles
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="pt-2 sm:pt-4">
-        <ChartContainer config={chartConfig} className="h-[200px] sm:h-[250px] w-full">
+      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 ">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[100px] sm:h-[150px] w-full"
+        >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -98,7 +104,7 @@ export function EmployeeStatusChart({
                 tickLine={false}
                 tickMargin={8}
                 axisLine={false}
-                fontSize={11}
+                fontSize={13}
                 fontWeight={500}
                 className="fill-foreground"
                 width={70}
@@ -113,37 +119,23 @@ export function EmployeeStatusChart({
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={
-                      entry.status === "Active"
-                        ? "#429ABD" 
-                        : "#F5A623" 
-                    }
-                    className="transition-all duration-300 hover:opacity-90"
+                    fill={entry.status === "Active" ? "#429ABD" : "#F5A623"}
                   />
                 ))}
+
+                <LabelList
+                  dataKey="total"
+                  position="right"
+                  style={{
+                    fill: "#374151",
+                    fontWeight: 600,
+                    fontSize: 12,
+                  }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
-
-        <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4 border-t border-border/50 pt-3 sm:pt-4">
-          <div className="space-y-0.5 sm:space-y-1">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Active
-            </p>
-            <p className="text-xl sm:text-2xl font-bold" style={{ color: '#429ABD' }}>
-              {stats?.active || 0}
-            </p>
-          </div>
-          <div className="space-y-0.5 sm:space-y-1">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Inactive
-            </p>
-            <p className="text-xl sm:text-2xl font-bold" style={{ color: '#F5A623' }}>
-              {stats?.inactive || 0}
-            </p>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

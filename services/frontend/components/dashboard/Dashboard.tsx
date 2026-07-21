@@ -134,85 +134,82 @@ export default function DashboardDetail({
     open_requests + in_progress_requests + signed_requests + closed_requests;
 
   return (
-    <div className="space-y-6 sm:space-y-8 lg:space-y-8">
+    <div className="space-y-1 sm:space-y-2 lg:space-y-2">
       <section>
-        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+        <div className="flex items-center gap-1.5 mb-2">
           <div
-            className="p-1.5 sm:p-2 rounded-lg"
+            className="p-1 rounded-md"
             style={{ backgroundColor: "#429ABD20" }}
           >
             <TrendingUp
-              className="w-4 h-4 sm:w-5 sm:h-5"
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
               style={{ color: "#429ABD" }}
             />
           </div>
-          <h2 className="text-lg sm:text-xl font-semibold">Overview</h2>
+
+          <h2 className="text-sm font-semibold">Overview</h2>
         </div>
 
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-card border rounded-xl p-4 sm:p-6 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-lg hover:border-[#F5A623]/30">
-            <div className="absolute top-0 right-0 p-2 sm:p-3 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+        <div className="grid gap-2 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="bg-card border rounded-lg px-4 py-2 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
+            {" "}
+            <div className="absolute top-0 right-0 p-1.5 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
               <Briefcase
-                className="w-8 h-8 sm:w-12 sm:h-12 transition-all duration-300"
+                className="w-6 h-6 sm:w-8 sm:h-8 transition-all duration-300"
                 style={{ color: "#429ABD" }}
               />
             </div>
-            <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
+            <h3 className="text-xs font-medium text-muted-foreground">
               Total Requests
             </h3>
-            <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">
-              {totalJobs}
-            </p>
+            <p className="text-xl sm:text-2xl font-bold mt-1">{totalJobs}</p>
             <div
-              className="mt-2 sm:mt-4 flex items-center text-xs font-semibold"
+              className="mt-1.5 flex items-center text-xs font-semibold"
               style={{ color: "#F5A623" }}
             >
               <span>Active staffing demand</span>
             </div>
           </div>
 
-          <div className="bg-card border rounded-xl p-4 sm:p-6 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-lg hover:border-[#429ABD]/30">
-            <div className="absolute top-0 right-0 p-2 sm:p-3 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+          <div className="bg-card border rounded-lg px-4 py-2 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
+            {" "}
+            <div className="absolute top-0 right-0 p-1.5 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
               <Users
-                className="w-8 h-8 sm:w-12 sm:h-12 transition-all duration-300"
+                className="w-6 h-6 sm:w-8 sm:h-8 transition-all duration-300"
                 style={{ color: "#429ABD" }}
               />
             </div>
-            <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
+            <h3 className="text-xs font-medium text-muted-foreground">
               Total Candidates
             </h3>
-            <p
-              className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2"
-              style={{ color: "#429ABD" }}
-            >
+            <p className="text-xl sm:text-2xl font-bold mt-1">
               {stats.total_employees}
             </p>
             <div
-              className="mt-2 sm:mt-4 flex items-center text-xs font-semibold"
-              style={{ color: "#429ABD" }}
+              className="mt-1.5 flex items-center text-xs font-semibold"
+              style={{ color: "#F5A623" }}
             >
               <span>Managed profiles</span>
             </div>
           </div>
 
-          <div className="bg-card border rounded-xl p-4 sm:p-6 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-lg hover:border-[#F5A623]/30">
-            <div className="absolute top-0 right-0 p-2 sm:p-3 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+          <div className="bg-card border rounded-lg px-4 py-2 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
+            {" "}
+            <div className="absolute top-0 right-0 p-1.5 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
               <FileText
-                className="w-8 h-8 sm:w-12 sm:h-12 transition-all duration-300"
+                className="w-6 h-6 sm:w-8 sm:h-8 transition-all duration-300"
                 style={{ color: "#429ABD" }}
               />
             </div>
-            <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
+            <h3 className="text-xs font-medium text-muted-foreground">
               Total Resumes
             </h3>
-            <p
-              className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2"
-              style={{ color: "#F5A623" }}
-            >
+            <p className="text-xl sm:text-2xl font-bold mt-1">
+              {" "}
               {stats.total_resumes}
             </p>
             <div
-              className="mt-2 sm:mt-4 flex items-center text-xs font-semibold"
+              className="mt-1.5 flex items-center text-xs font-semibold"
               style={{ color: "#F5A623" }}
             >
               <span>Processed documents</span>
@@ -222,25 +219,25 @@ export default function DashboardDetail({
       </section>
 
       <section>
-        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+        <div className="flex items-center gap-1.5 mb-2">
           <div
-            className="p-1.5 sm:p-2 rounded-lg"
+            className="p-1 rounded-md"
             style={{ backgroundColor: "#F5A62315" }}
           >
             <FileText
-              className="w-4 h-4 sm:w-5 sm:h-5"
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
               style={{ color: "#F5A623" }}
             />
           </div>
-          <h2 className="text-lg sm:text-xl font-semibold">
-            Reports & Analytics
-          </h2>
+
+          <h2 className="text-sm font-semibold">Reports & Analytics</h2>
         </div>
 
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
           <div className="card-hover">
             <JobStatusChart stats={stats.requests} />
           </div>
+
           <div className="card-hover">
             <EmployeeStatusChart stats={stats.candidates_by_status} />
           </div>
