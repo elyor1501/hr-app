@@ -47,6 +47,8 @@ interface DataTableProps<TData, TValue> {
   onRowSelectionChange?: (updaterOrValue: any) => void;
   renderBulkActions?: (table: any) => React.ReactNode;
   onRowClick?: (row: TData) => void;
+  toolbarActions?: React.ReactNode;
+  manualSorting?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -64,6 +66,8 @@ export function DataTable<TData, TValue>({
   onRowSelectionChange,
   renderBulkActions,
   onRowClick,
+  toolbarActions,
+  manualSorting = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "created_at", desc: true },
@@ -113,6 +117,7 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    manualSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
@@ -134,83 +139,99 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      {(showSearch || showColumns || renderBulkActions) && (
-        <div className="flex items-center py-4 gap-2">
-          {showSearch && (
+      {(showSearch || showColumns || renderBulkActions || toolbarActions) && (
+        <div className="flex items-center  mt-2 mb-2 justify-between">
+          <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="relative">
-                <Input
-                  placeholder={searchPlaceholder}
-                  value={globalFilter ?? ""}
-                  onChange={(event) => setGlobalFilter(event.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
+              {showSearch && (
+                <>
+                  <div className="relative">
+                    <Input
+                      placeholder={searchPlaceholder}
+                      value={globalFilter ?? ""}
+                      onChange={(event) => setGlobalFilter(event.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
 
-                      if (onGlobalFilterChange) {
-                        setIsSearching(true);
-                        onGlobalFilterChange(globalFilter);
-                      }
-                    }
-                  }}
-                  className="w-32 md:w-64 pr-8"
-                />
+                          if (onGlobalFilterChange) {
+                            setIsSearching(true);
+                            onGlobalFilterChange(globalFilter);
+                          }
+                        }
+                      }}
+                      className="w-32 md:w-64 pr-8"
+                    />
 
-                {isSearching && (
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />
+                    {isSearching && (
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500" />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              {globalFilter && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setGlobalFilter("");
-                    onGlobalFilterChange?.("");
-                  }}
-                >
-                  Clear
-                </Button>
+
+                  {globalFilter && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setGlobalFilter("");
+                        onGlobalFilterChange?.("");
+                      }}
+                      className="h-9 border-[#429ABD] text-[#429ABD] hover:bg-[#429ABD] hover:text-white"
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </>
               )}
             </div>
-          )}
-          {renderBulkActions && renderBulkActions(table)}
-          {showColumns && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  Columns <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    const displayName =
-                      typeof column.columnDef.header === "string"
-                        ? column.columnDef.header
-                        : column.id;
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {displayName}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+
+            <div className="flex items-center gap-2">
+              {renderBulkActions && renderBulkActions(table)}
+
+              {showColumns && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Columns
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="end">
+                    {table
+                      .getAllColumns()
+                      .filter((column) => column.getCanHide())
+                      .map((column) => {
+                        const displayName =
+                          typeof column.columnDef.header === "string"
+                            ? column.columnDef.header
+                            : column.id;
+
+                        return (
+                          <DropdownMenuCheckboxItem
+                            key={column.id}
+                            className="capitalize"
+                            checked={column.getIsVisible()}
+                            onCheckedChange={(value) =>
+                              column.toggleVisibility(!!value)
+                            }
+                          >
+                            {displayName}
+                          </DropdownMenuCheckboxItem>
+                        );
+                      })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
+              {toolbarActions}
+            </div>
+          </div>
         </div>
       )}
+
       <div className="rounded-md border border-neutral-200 dark:border-neutral-800">
         <Table className="w-full">
           <TableHeader className="bg-gray-100 dark:bg-neutral-800">
@@ -224,7 +245,7 @@ export function DataTable<TData, TValue>({
                     : columnHeader || sort;
                   return (
                     <TableHead
-                      className={`px-6 py-3 whitespace-nowrap break-words text-sm font-medium ${
+                      className={`px-4 py-1.5 whitespace-nowrap break-words text-sm font-medium ${
                         ["uploaded_at"].includes(header.column.id)
                           ? "hidden md:table-cell"
                           : "table-cell"
@@ -271,7 +292,7 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`px-2 md:px-6 py-2 md:py-4 font-medium truncate min-w-0 text-xs md:text-sm dark:text-neutral-50 ${
+                      className={`px-2 md:px-4 py-1 md:py-2 font-medium truncate min-w-0 text-xs md:text-sm dark:text-neutral-50 ${
                         ["uploaded_at"].includes(cell.column.id)
                           ? "hidden md:table-cell"
                           : "table-cell"

@@ -4,16 +4,13 @@ import { revalidateRequest } from "./revalidate";
 export async function deleteRequest(requestId: string, token: string | null) {
   try {
     const apiUrl = getApiUrl();
-    const res = await fetch(
-      `${apiUrl}/api/v1/requests/${requestId}`,
-      {
-        method: "DELETE",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`${apiUrl}/api/v1/requests/${requestId}`, {
+      method: "DELETE",
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       const text = await res.text();
@@ -49,6 +46,8 @@ export async function updateRequest(formData: FormData): Promise<void> {
     proposed_date: formData.get("proposed_date") || null,
     customer_feedback: formData.get("customer_feedback") || null,
     contract_status: formData.get("contract_status") === "true",
+    sap_email: formData.get("sap_email") || null,
+    sap_cuser: formData.get("sap_cuser") || null,
   };
 
   const res = await fetch(`${apiUrl}/api/v1/requests/${id}`, {

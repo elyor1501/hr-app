@@ -16,6 +16,8 @@ export type RequestItem = {
   created_by?: string;
   created_at: string;
   updated_at: string;
+  sap_email: string;
+  sap_cuser: string;
   candidate_count: number;
 };
 
@@ -24,7 +26,11 @@ export async function getRequests(
   limit: number = 10,
   q?: string,
   dateFrom?: string,
-  dateTo?: string
+  dateTo?: string,
+  sortBy?: string,
+  sortOrder?: string,
+  requestNumber?: string,
+  company?: string
 ): Promise<RequestItem[]> {
   const apiUrl = getApiUrl();
   const token = getAuthToken();
@@ -37,7 +43,11 @@ export async function getRequests(
   if (q) queryParams.set("q", q);
   if (dateFrom) queryParams.set("dateFrom", dateFrom);
   if (dateTo) queryParams.set("dateTo", dateTo);
-
+  if (sortBy) queryParams.set("sortBy", sortBy);
+  if (sortOrder) queryParams.set("sortOrder", sortOrder);
+  if (requestNumber) queryParams.set("requestNumber", requestNumber);
+  if (company) queryParams.set("company", company);
+  const url = `${apiUrl}/api/v1/requests?${queryParams.toString()}`;
   try {
     const res = await fetch(
       `${apiUrl}/api/v1/requests?${queryParams.toString()}`,

@@ -27,7 +27,9 @@ export async function getResumes(
   page_size: number = 10,
   q?: string,
   dateFrom?: string,
-  dateTo?: string
+  dateTo?: string,
+  sortBy?: string,
+  sortOrder?: string
 ): Promise<PaginatedResumes> {
   const apiUrl = getApiUrl();
   const token = getAuthToken();
@@ -43,6 +45,8 @@ export async function getResumes(
   if (q) queryParams.set("q", q);
   if (dateFrom) queryParams.set("dateFrom", dateFrom);
   if (dateTo) queryParams.set("dateTo", dateTo);
+  if (sortBy) queryParams.set("sortBy", sortBy);
+  if (sortOrder) queryParams.set("sortOrder", sortOrder);
 
   const fullUrl = apiUrl
     ? `${apiUrl}/api/v1/resumes/?${queryParams.toString()}`

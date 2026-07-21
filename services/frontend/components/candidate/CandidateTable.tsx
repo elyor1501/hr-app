@@ -59,17 +59,17 @@ function FilterPanel({
   return createPortal(
     <>
       <div
-        className="fixed inset-0"
+        className="fixed inset-0 bg-black/20"
         style={{ zIndex: 99998 }}
         onClick={onClose}
       />
 
       <div
         style={panelStyle}
-        className="bg-card border border-border shadow-2xl rounded-xl p-3.5 flex flex-col gap-3 text-left font-normal"
+        className="bg-card border border-border shadow-2xl rounded-xl p-3 flex flex-col gap-3 text-left font-normal"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center pb-2 border-b border-border/60">
+        <div className="flex justify-between items-center border-border/60">
           <span className="text-xs font-semibold text-foreground">{title}</span>
           <button
             type="button"
@@ -115,7 +115,7 @@ function FilterPanel({
           </div>
         )}
 
-        <div className="max-h-48 overflow-y-auto border border-border/60 rounded-lg p-1.5 flex flex-col gap-0.5 bg-background">
+        <div className="max-h-40 overflow-y-auto border border-border/60 rounded-lg p-1.5 flex flex-col gap-0.5 bg-background">
           {filtered.length === 0 ? (
             <span className="text-[11px] text-muted-foreground p-1 text-center">
               No results
@@ -126,7 +126,7 @@ function FilterPanel({
               return (
                 <label
                   key={item}
-                  className="flex items-center gap-2 p-1.5 rounded hover:bg-muted/60 cursor-pointer text-xs text-foreground select-none"
+                  className="flex items-center gap-2 p-1 rounded hover:bg-muted/60 cursor-pointer text-xs text-foreground select-none"
                 >
                   <input
                     type="checkbox"
@@ -141,7 +141,7 @@ function FilterPanel({
           )}
         </div>
 
-        <div className="flex gap-2 justify-end border-t border-border/60 pt-2.5">
+        <div className="flex gap-2 justify-end border-border/60">
           <Button
             variant="ghost"
             size="sm"
@@ -203,7 +203,7 @@ export default function CandidatesTable({
   const parseMulti = (val: string | null) =>
     val
       ? val
-          .split(",")
+          .split("|")
           .map((v) => v.trim())
           .filter(Boolean)
       : [];
@@ -316,11 +316,11 @@ export default function CandidatesTable({
       }
 
       names.length > 0
-        ? params.set("name", names.join(","))
+        ? params.set("name", names.join("|"))
         : params.delete("name");
 
       roles.length > 0
-        ? params.set("jobTitle", roles.join(","))
+        ? params.set("jobTitle", roles.join("|"))
         : params.delete("jobTitle");
 
       router.push(`/candidates?${params.toString()}`);
@@ -381,7 +381,7 @@ export default function CandidatesTable({
                     : "text-muted-foreground"
                 }`}
               >
-                {/* <Filter className="w-3.5 h-3.5" /> */}
+                <Filter className="w-3.5 h-3.5" />
                 {selectedNames.length > 0 && (
                   <span className="text-[10px] font-bold leading-none">
                     {selectedNames.length}
@@ -416,7 +416,7 @@ export default function CandidatesTable({
                     : "text-muted-foreground"
                 }`}
               >
-                {/* <Filter className="w-3.5 h-3.5" /> */}
+                <Filter className="w-3.5 h-3.5" />
                 {selectedRoles.length > 0 && (
                   <span className="text-[10px] font-bold leading-none">
                     {selectedRoles.length}
@@ -490,6 +490,7 @@ export default function CandidatesTable({
           data={data}
           filter={""}
           sort={""}
+          manualSorting={true}
           showPagination={false}
           showSearch={true}
           globalFilterValue={q}

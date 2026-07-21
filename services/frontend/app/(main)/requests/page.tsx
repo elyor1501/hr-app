@@ -16,24 +16,28 @@ export default async function Page({ searchParams }: PageProps) {
   const dateFrom = params.dateFrom as string | undefined;
   const dateTo = params.dateTo as string | undefined;
 
-  const data = await getRequests(page, 10, q, dateFrom, dateTo);
+  const sortBy = params.sortBy as string | undefined;
+  const sortOrder = params.sortOrder as "asc" | "desc" | undefined;
+
+  const requestNumber = params.requestNumber as string | undefined;
+  const company = params.company as string | undefined;
+
+  const data = await getRequests(
+    page,
+    10,
+    q,
+    dateFrom,
+    dateTo,
+    sortBy,
+    sortOrder,
+    requestNumber,
+    company,
+  );
   const hasNext = data.length === 10;
   const totalPages = hasNext ? page + 1 : page;
 
   return (
     <div>
-      <div
-        className="flex items-center justify-between border p-4 rounded-lg mt-2"
-        style={{ borderColor: "#429ABD20" }}
-      >
-        <h1 className="font-semibold" style={{ color: "#429ABD" }}>
-          Requests List
-        </h1>
-        <div className="flex items-center gap-2">
-          <ImportJobButton />
-        </div>
-      </div>
-
       <RequestTable data={data} />
 
       <ServerPagination currentPage={page} totalPages={totalPages} />

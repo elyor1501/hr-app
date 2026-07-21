@@ -55,16 +55,7 @@ export default async function Page({ searchParams }: PageProps) {
   const resumes = resumeResult.items;
 
   return (
-    <div className="pb-20">
-      <div
-        className="flex items-center justify-between border p-4 rounded-lg mt-2"
-        style={{ borderColor: "#429ABD20" }}
-      >
-        <h1 className="font-semibold" style={{ color: "#429ABD" }}>
-          Candidate List
-        </h1>
-      </div>
-
+    <div>
       <CandidatesTable data={data} resumes={resumes} />
 
       <ServerPagination currentPage={page} totalPages={totalPages} />

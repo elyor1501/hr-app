@@ -211,10 +211,10 @@ export default function CandidateSearch() {
     filterExpMax !== "";
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-xl font-semibold" style={{ color: "#429ABD" }}>
+    <div className="space-y-2">
+      <span className="font-semibold mt-2" style={{ color: "#429ABD" }}>
         Candidate Search
-      </h1>
+      </span>
 
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
@@ -264,13 +264,13 @@ export default function CandidateSearch() {
       {showFilters && (
         <div className="p-4 border rounded-xl bg-slate-50 dark:bg-slate-900/50 space-y-4 transition-all duration-300">
           <p
-            className="text-xs text-muted-foreground font-medium uppercase tracking-wide"
+            className="text-muted-foreground font-semibold tracking-wide"
             style={{ color: "#429ABD" }}
           >
             Filter candidates
           </p>
 
-          <div className="grid md:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-5 gap-4">
             <div>
               <label className="text-xs font-medium text-foreground">
                 Status
