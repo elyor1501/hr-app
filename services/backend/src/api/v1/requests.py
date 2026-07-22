@@ -176,9 +176,13 @@ class RequestListItem(BaseModel):
     prepared_rate: Optional[float] = None
     final_rate: Optional[float] = None
     request_date: date
+    proposed_date: Optional[date] = None
     contract_status: bool
     created_at: datetime
     candidate_count: int = 0
+
+    class Config:
+        from_attributes = True
 
     class Config:
         from_attributes = True
@@ -701,6 +705,7 @@ async def list_requests(
             prepared_rate=float(req.prepared_rate) if req.prepared_rate else None,
             final_rate=float(req.final_rate) if req.final_rate else None,
             request_date=req.request_date,
+            proposed_date=req.proposed_date,
             contract_status=req.contract_status,
             created_at=req.created_at,
             candidate_count=cnt or 0,

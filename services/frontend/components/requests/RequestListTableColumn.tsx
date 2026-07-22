@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Eye } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DeleteRequestButton } from "./DeleteRequestButton";
 
@@ -19,6 +19,20 @@ export type Request = {
   contract_status: boolean;
   created_at: string;
   candidate_count: number;
+};
+
+const STATE_LABELS: Record<string, string> = {
+  open: "Open",
+  in_progress: "In Progress",
+  signed: "Signed",
+  closed: "Closed",
+};
+
+const STATE_COLORS: Record<string, string> = {
+  open: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  in_progress: "bg-[#F5A623]/20 text-[#F5A623]",
+  signed: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+  closed: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
 };
 
 export const columns_request_list: ColumnDef<Request>[] = [
@@ -54,32 +68,23 @@ export const columns_request_list: ColumnDef<Request>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = (row.getValue("state") as string)?.toLowerCase();
-
       return (
         <span
           className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-            status === "open"
-              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-              : status === "in_progress"
-                ? "bg-[#F5A623]/20 text-[#F5A623]"
-                : status === "signed"
-                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
-                  : status === "closed"
-                    ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
-                    : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+            STATE_COLORS[status] || "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
           }`}
         >
-          {row.getValue("state") || "NA"}
+          {STATE_LABELS[status] || status || "NA"}
         </span>
       );
     },
   },
   {
     accessorKey: "proposed_date",
-    header: () => <button type="button">Proposed Date</button>,
+    header: "Proposed Date",
     cell: ({ row }) => {
       const d = row.original.proposed_date;
-      if (!d) return <span>-</span>;
+      if (!d) return <span className="text-muted-foreground">-</span>;
       try {
         return (
           <span className="text-sm">
@@ -93,18 +98,7 @@ export const columns_request_list: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "created_at",
-    header: ({ column }) => (
-      <div className="flex items-center justify-center w-full">
-        <Button
-          variant="ghost"
-          className="flex items-center gap-1 px-2 py-1"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span>Created At</span>
-          {/* <ArrowUpDown className="h-3 w-3" /> */}
-        </Button>
-      </div>
-    ),
+    header: "Created At",
     cell: ({ row }) => {
       const raw = row.original.created_at;
       if (!raw) return <div className="text-center w-full px-2 py-1">NA</div>;
@@ -119,20 +113,8 @@ export const columns_request_list: ColumnDef<Request>[] = [
     cell: ({ row }) => {
       const router = useRouter();
       const request = row.original;
-
       return (
         <div className="flex items-center justify-center gap-2">
-          {/* <Button
-            variant="ghost"
-            size="icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/requests/${request.id}`);
-            }}
-            className="h-8 w-8 hover:text-blue-600 hover:bg-blue-50"
-          >
-            <Eye className="w-4 h-4" />
-          </Button> */}
           <div onClick={(e) => e.stopPropagation()}>
             <DeleteRequestButton requestId={request.id} />
           </div>

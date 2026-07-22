@@ -63,19 +63,9 @@ const AVAILABILITY_OPTIONS = [
 
 function getCurrencySymbol(currency: string): string {
   const symbols: Record<string, string> = {
-    EUR: "€",
-    USD: "$",
-    GBP: "£",
-    INR: "₹",
-    AED: "AED",
-    SGD: "SGD",
-    AUD: "A$",
-    CAD: "C$",
-    CHF: "CHF",
-    JPY: "¥",
-    CNY: "¥",
-    SAR: "SAR",
-    MYR: "MYR",
+    EUR: "€", USD: "$", GBP: "£", INR: "₹", AED: "AED",
+    SGD: "SGD", AUD: "A$", CAD: "C$", CHF: "CHF", JPY: "¥",
+    CNY: "¥", SAR: "SAR", MYR: "MYR",
   };
   return symbols[currency] || currency;
 }
@@ -109,56 +99,30 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [matches, setMatches] = useState<any[]>([]);
   const [settingPrimaryId, setSettingPrimaryId] = useState<string | null>(null);
 
-  const [rateType, setRateType] = useState<string>(
-    empData?.rate_type ?? "hourly",
-  );
+  const [rateType, setRateType] = useState<string>(empData?.rate_type ?? "hourly");
   const [currency, setCurrency] = useState<string>(empData?.currency ?? "EUR");
-  const [proposedRateType, setProposedRateType] = useState<string>(
-    empData?.proposed_rate_type ?? "daily",
-  );
-  const [proposedCurrency, setProposedCurrency] = useState<string>(
-    empData?.proposed_currency ?? "EUR",
-  );
-  const [requestedRateAmount, setRequestedRateAmount] = useState<string>(
-    empData?.hourly_rate?.toString() ?? "",
-  );
-  const [proposedRateAmount, setProposedRateAmount] = useState<string>(
-    empData?.proposed_rate?.toString() ?? "",
-  );
+  const [proposedRateType, setProposedRateType] = useState<string>(empData?.proposed_rate_type ?? "daily");
+  const [proposedCurrency, setProposedCurrency] = useState<string>(empData?.proposed_currency ?? "EUR");
+  const [requestedRateAmount, setRequestedRateAmount] = useState<string>(empData?.hourly_rate?.toString() ?? "");
+  const [proposedRateAmount, setProposedRateAmount] = useState<string>(empData?.proposed_rate?.toString() ?? "");
 
   const [firstName, setFirstName] = useState<string>(empData?.first_name ?? "");
   const [lastName, setLastName] = useState<string>(empData?.last_name ?? "");
   const [email, setEmail] = useState<string>(empData?.email ?? "");
   const [phone, setPhone] = useState<string>(empData?.phone ?? "");
   const [location, setLocation] = useState<string>(empData?.location ?? "");
-  const [linkedinUrl, setLinkedinUrl] = useState<string>(
-    empData?.linkedin_url ?? "",
-  );
-  const [currentTitle, setCurrentTitle] = useState<string>(
-    empData?.current_title ?? "",
-  );
-  const [currentCompany, setCurrentCompany] = useState<string>(
-    empData?.current_company ?? "",
-  );
-  const [yearsOfExperience, setYearsOfExperience] = useState<string>(
-    empData?.years_of_experience?.toString() ?? "",
-  );
-  const [skillsText, setSkillsText] = useState<string>(
-    (empData?.skills || []).join(", "),
-  );
-  const [availability, setAvailability] = useState<string>(
-    empData?.availability ?? "",
-  );
+  const [linkedinUrl, setLinkedinUrl] = useState<string>(empData?.linkedin_url ?? "");
+  const [currentTitle, setCurrentTitle] = useState<string>(empData?.current_title ?? "");
+  const [currentCompany, setCurrentCompany] = useState<string>(empData?.current_company ?? "");
+  const [yearsOfExperience, setYearsOfExperience] = useState<string>(empData?.years_of_experience?.toString() ?? "");
+  const [skillsText, setSkillsText] = useState<string>((empData?.skills || []).join(", "));
+  const [availability, setAvailability] = useState<string>(empData?.availability ?? "");
   const [availabilityMode, setAvailabilityMode] = useState<string>(
     empData?.availability && AVAILABILITY_OPTIONS.includes(empData.availability)
       ? empData.availability
-      : empData?.availability
-        ? "custom"
-        : "",
+      : empData?.availability ? "custom" : ""
   );
-  const [experienceLevel, setExperienceLevel] = useState<string>(
-    empData?.experience_level ?? "",
-  );
+  const [experienceLevel, setExperienceLevel] = useState<string>(empData?.experience_level ?? "");
   const [vendor, setVendor] = useState<string>(empData?.vendor ?? "");
   const [dob, setDob] = useState(empData?.dob ?? "");
   const [ssnLast4, setSsnLast4] = useState(empData?.ssn_last4 ?? "");
@@ -239,10 +203,7 @@ export default function CandidateDetails({ id, empData }: Props) {
   };
 
   const liveDailyRate = calculateDailyRate(requestedRateAmount, rateType);
-  const liveProposedDailyRate = calculateDailyRate(
-    proposedRateAmount,
-    proposedRateType,
-  );
+  const liveProposedDailyRate = calculateDailyRate(proposedRateAmount, proposedRateType);
 
   const router = useRouter();
   const { user } = useUser();
@@ -396,7 +357,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
   }
 
-  async function runJobMatching(candidateData: any) {
+async function runJobMatching(candidateData: any) {
     setMatching(true);
     try {
       const token = localStorage.getItem("access_token") || "";
@@ -417,10 +378,7 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (!res.ok) throw new Error("Failed to match");
       const matchData = await res.json();
       const topMatches = (matchData.results || [])
-        .map((item: any) => ({
-          ...item,
-          match_score: Number(item.match_score) || 0,
-        }))
+        .map((item: any) => ({ ...item, match_score: Number(item.match_score) || 0 }))
         .sort((a: any, b: any) => b.match_score - a.match_score)
         .slice(0, 5);
       setMatches(topMatches);
@@ -452,26 +410,19 @@ export default function CandidateDetails({ id, empData }: Props) {
       payload.last_name = lastName.trim();
       if (email.trim() && email.includes("@")) payload.email = email.trim();
       const cleanPhone = phone.trim();
-      if (cleanPhone && cleanPhone !== "NA" && cleanPhone !== "na")
-        payload.phone = cleanPhone;
+      if (cleanPhone && cleanPhone !== "NA" && cleanPhone !== "na") payload.phone = cleanPhone;
       const cleanLocation = location.trim();
-      if (cleanLocation && cleanLocation !== "NA" && cleanLocation !== "na")
-        payload.location = cleanLocation;
+      if (cleanLocation && cleanLocation !== "NA" && cleanLocation !== "na") payload.location = cleanLocation;
       const cleanLinkedin = linkedinUrl.trim();
-      if (cleanLinkedin && cleanLinkedin !== "NA" && cleanLinkedin !== "na")
-        payload.linkedin_url = cleanLinkedin;
+      if (cleanLinkedin && cleanLinkedin !== "NA" && cleanLinkedin !== "na") payload.linkedin_url = cleanLinkedin;
       if (currentTitle.trim()) payload.current_title = currentTitle.trim();
-      if (currentCompany.trim())
-        payload.current_company = currentCompany.trim();
+      if (currentCompany.trim()) payload.current_company = currentCompany.trim();
       if (yearsOfExperience !== "") {
         const yoe = parseInt(yearsOfExperience);
         if (!isNaN(yoe)) payload.years_of_experience = yoe;
       }
       if (skillsText.trim()) {
-        payload.skills = skillsText
-          .split(",")
-          .map((s) => s.trim().toLowerCase())
-          .filter(Boolean);
+        payload.skills = skillsText.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
       }
       if (availability) payload.availability = availability;
       if (experienceLevel) payload.experience_level = experienceLevel;
@@ -505,10 +456,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
       const res = await fetch(`${apiUrl}/api/v1/candidates/${candidate.id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
 
@@ -522,10 +470,8 @@ export default function CandidateDetails({ id, empData }: Props) {
       setCandidate((prev: any) => ({ ...prev, ...updated }));
       if (updated.rate_type) setRateType(updated.rate_type);
       if (updated.currency) setCurrency(updated.currency);
-      if (updated.proposed_rate_type)
-        setProposedRateType(updated.proposed_rate_type);
-      if (updated.proposed_currency)
-        setProposedCurrency(updated.proposed_currency);
+      if (updated.proposed_rate_type) setProposedRateType(updated.proposed_rate_type);
+      if (updated.proposed_currency) setProposedCurrency(updated.proposed_currency);
       if (updated.first_name) setFirstName(updated.first_name);
       if (updated.last_name !== undefined) setLastName(updated.last_name ?? "");
       if (updated.email !== undefined) setEmail(updated.email ?? "");
@@ -533,24 +479,15 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (updated.location) setLocation(updated.location ?? "");
       if (updated.linkedin_url) setLinkedinUrl(updated.linkedin_url ?? "");
       if (updated.current_title) setCurrentTitle(updated.current_title ?? "");
-      if (updated.current_company)
-        setCurrentCompany(updated.current_company ?? "");
-      if (updated.years_of_experience !== undefined)
-        setYearsOfExperience(updated.years_of_experience?.toString() ?? "");
+      if (updated.current_company) setCurrentCompany(updated.current_company ?? "");
+      if (updated.years_of_experience !== undefined) setYearsOfExperience(updated.years_of_experience?.toString() ?? "");
       if (updated.skills) setSkillsText((updated.skills || []).join(", "));
       if (updated.availability !== undefined) {
         const newAvail = updated.availability ?? "";
         setAvailability(newAvail);
-        setAvailabilityMode(
-          AVAILABILITY_OPTIONS.includes(newAvail)
-            ? newAvail
-            : newAvail
-              ? "custom"
-              : "",
-        );
+        setAvailabilityMode(AVAILABILITY_OPTIONS.includes(newAvail) ? newAvail : newAvail ? "custom" : "");
       }
-      if (updated.experience_level)
-        setExperienceLevel(updated.experience_level ?? "");
+      if (updated.experience_level) setExperienceLevel(updated.experience_level ?? "");
       if (updated.vendor) setVendor(updated.vendor ?? "");
       setDob(updated.dob ?? "");
       setSsnLast4(updated.ssn_last4 ?? "");
@@ -637,9 +574,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="w-8 h-8 border-4 border-[#429ABD] border-t-transparent rounded-full animate-spin" />
-        <p className="text-muted-foreground font-medium">
-          Loading candidate profile...
-        </p>
+        <p className="text-muted-foreground font-medium">Loading candidate profile...</p>
       </div>
     );
   }
@@ -653,22 +588,15 @@ export default function CandidateDetails({ id, empData }: Props) {
     : (candidate.json_data?.education ?? []);
 
   const attachmentTypes = [
-    "Certification",
-    "Portfolio",
-    "Qualification",
-    "License",
-    "Cover Letter",
-    "Reference Letter",
-    "Other",
+    "Certification", "Portfolio", "Qualification", "License",
+    "Cover Letter", "Reference Letter", "Other",
   ];
 
   const fieldClass =
     "w-full border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground placeholder:opacity-350 disabled:bg-muted disabled:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#429ABD] focus:border-[#429ABD]";
 
   const sectionHeader = (title: string, color: string = "#429ABD") => (
-    <h2 className="text-base sm:text-lg font-semibold" style={{ color }}>
-      {title}
-    </h2>
+    <h2 className="text-base sm:text-lg font-semibold" style={{ color }}>{title}</h2>
   );
 
   const rateCard = (
@@ -682,88 +610,36 @@ export default function CandidateDetails({ id, empData }: Props) {
     setCurr: (v: string) => void,
     liveDailyRateValue: number | null,
   ) => (
-    <div
-      className="border-2 rounded-xl p-4 sm:p-5 space-y-4"
-      style={{ borderColor }}
-    >
-      <h3
-        className="text-sm font-bold uppercase tracking-wider"
-        style={{ color: borderColor }}
-      >
-        {title}
-      </h3>
+    <div className="border-2 rounded-xl p-4 sm:p-5 space-y-4" style={{ borderColor }}>
+      <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: borderColor }}>{title}</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium mb-1 text-muted-foreground">
-            Rate Amount
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            value={rateValue}
-            onChange={(e) => setRateValue(e.target.value)}
-            disabled={!isEditing}
-            placeholder={isEditing ? "Enter amount" : "Not set"}
-            className={fieldClass}
-          />
+          <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Amount</label>
+          <input type="number" step="0.01" value={rateValue} onChange={(e) => setRateValue(e.target.value)} disabled={!isEditing} placeholder={isEditing ? "Enter amount" : "Not set"} className={fieldClass} />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1 text-muted-foreground">
-            Rate Type
-          </label>
+          <label className="block text-xs font-medium mb-1 text-muted-foreground">Rate Type</label>
           {isEditing ? (
-            <select
-              value={typeValue}
-              onChange={(e) => setType(e.target.value)}
-              className={fieldClass}
-            >
-              {RATE_TYPE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
+            <select value={typeValue} onChange={(e) => setType(e.target.value)} className={fieldClass}>
+              {RATE_TYPE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           ) : (
-            <input
-              value={formatRateType(typeValue)}
-              disabled
-              className={fieldClass}
-            />
+            <input value={formatRateType(typeValue)} disabled className={fieldClass} />
           )}
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1 text-muted-foreground">
-            Currency
-          </label>
+          <label className="block text-xs font-medium mb-1 text-muted-foreground">Currency</label>
           {isEditing ? (
-            <select
-              value={currValue}
-              onChange={(e) => setCurr(e.target.value)}
-              className={fieldClass}
-            >
-              {CURRENCY_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
+            <select value={currValue} onChange={(e) => setCurr(e.target.value)} className={fieldClass}>
+              {CURRENCY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           ) : (
             <input value={currValue ?? "EUR"} disabled className={fieldClass} />
           )}
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1 text-muted-foreground">
-            Daily Rate (auto)
-          </label>
-          <input
-            value={
-              liveDailyRateValue !== null
-                ? `${getCurrencySymbol(currValue)} ${liveDailyRateValue.toFixed(2)}`
-                : "Not set"
-            }
-            disabled
-            className={`${fieldClass} font-semibold`}
-          />
+          <label className="block text-xs font-medium mb-1 text-muted-foreground">Daily Rate (auto)</label>
+          <input value={liveDailyRateValue !== null ? `${getCurrencySymbol(currValue)} ${liveDailyRateValue.toFixed(2)}` : "Not set"} disabled className={`${fieldClass} font-semibold`} />
         </div>
       </div>
     </div>
@@ -804,22 +680,13 @@ export default function CandidateDetails({ id, empData }: Props) {
             >
               Basic Info
             </TabsTrigger>
-            <TabsTrigger
-              value="experience"
-              className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300"
-            >
+            <TabsTrigger value="experience" className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300">
               Experience
             </TabsTrigger>
-            <TabsTrigger
-              value="resume"
-              className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300"
-            >
+            <TabsTrigger value="resume" className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300">
               Resumes
             </TabsTrigger>
-            <TabsTrigger
-              value="attachments"
-              className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300"
-            >
+            <TabsTrigger value="attachments" className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300">
               Attachments
             </TabsTrigger>
             <TabsTrigger
@@ -899,58 +766,25 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  First Name
-                </label>
-                <input
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="First name"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">First Name</label>
+                <input value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={!isEditing} placeholder="First name" className={fieldClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Last Name
-                </label>
-                <input
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Last name"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">Last Name</label>
+                <input value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={!isEditing} placeholder="Last name" className={fieldClass} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Email
-                </label>
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Email address"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">Email</label>
+                <input value={email} onChange={(e) => setEmail(e.target.value)} disabled={!isEditing} placeholder="Email address" className={fieldClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Status
-                </label>
+                <label className="block text-sm font-medium mb-1 text-foreground">Status</label>
                 {isEditing ? (
-                  <Select
-                    value={candidate?.status ?? "active"}
-                    onValueChange={(value) =>
-                      setCandidate((prev: any) => ({ ...prev, status: value }))
-                    }
-                  >
-                    <SelectTrigger className={fieldClass}>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
+                  <Select value={candidate?.status ?? "active"} onValueChange={(value) => setCandidate((prev: any) => ({ ...prev, status: value }))}>
+                    <SelectTrigger className={fieldClass}><SelectValue placeholder="Select status" /></SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Candidate Status</SelectLabel>
@@ -960,38 +794,18 @@ export default function CandidateDetails({ id, empData }: Props) {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <input
-                    value={
-                      candidate?.status === "active" ? "Active" : "Inactive"
-                    }
-                    disabled
-                    className={fieldClass}
-                  />
+                  <input value={candidate?.status === "active" ? "Active" : "Inactive"} disabled className={fieldClass} />
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
               <div>
-                <label className="block text-sm font-medium mb-2">
-                  DOB (MM/DD)
-                </label>
+                <label className="block text-sm font-medium mb-2">DOB (MM/DD)</label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    value={dob}
-                    onChange={(e) => setDob(e.target.value)}
-                    className={fieldClass}
-                    placeholder="MM/DD"
-                    maxLength={5}
-                  />
+                  <input type="text" value={dob} onChange={(e) => setDob(e.target.value)} className={fieldClass} placeholder="MM/DD" maxLength={5} />
                 ) : (
-                  <input
-                    value={dob}
-                    placeholder="NA"
-                    disabled
-                    className={fieldClass}
-                  />
+                  <input value={dob} placeholder="NA" disabled className={fieldClass} />
                 )}
               </div>
               <div>
@@ -1001,19 +815,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <div className="relative">
                   <input
                     type="text"
-                    value={
-                      isEditing
-                        ? showSsn
-                          ? ssnLast4
-                          : ssnLast4
-                            ? "••••"
-                            : ""
-                        : ssnLast4
-                          ? showSsn
-                            ? ssnLast4
-                            : "••••"
-                          : "NA"
-                    }
+                    value={isEditing ? (showSsn ? ssnLast4 : ssnLast4 ? "••••" : "") : ssnLast4 ? (showSsn ? ssnLast4 : "••••") : "NA"}
                     onChange={(e) => isEditing && setSsnLast4(e.target.value)}
                     disabled={!isEditing}
                     className={`${fieldClass} pr-10`}
@@ -1021,16 +823,8 @@ export default function CandidateDetails({ id, empData }: Props) {
                     maxLength={4}
                   />
                   {ssnLast4 && (
-                    <button
-                      type="button"
-                      onClick={() => setShowSsn((prev) => !prev)}
-                      className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
-                    >
-                      {showSsn ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                    <button type="button" onClick={() => setShowSsn((prev) => !prev)} className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700">
+                      {showSsn ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   )}
                 </div>
@@ -1039,71 +833,30 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Mobile Number
-                </label>
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Phone number"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">Mobile Number</label>
+                <input value={phone} onChange={(e) => setPhone(e.target.value)} disabled={!isEditing} placeholder="Phone number" className={fieldClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Current Location
-                </label>
-                <input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Location"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">Current Location</label>
+                <input value={location} onChange={(e) => setLocation(e.target.value)} disabled={!isEditing} placeholder="Location" className={fieldClass} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Current Title
-                </label>
-                <input
-                  value={currentTitle}
-                  onChange={(e) => setCurrentTitle(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Current title"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">Current Title</label>
+                <input value={currentTitle} onChange={(e) => setCurrentTitle(e.target.value)} disabled={!isEditing} placeholder="Current title" className={fieldClass} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Current Company
-                </label>
-                <input
-                  value={currentCompany}
-                  onChange={(e) => setCurrentCompany(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Current company"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">Current Company</label>
+                <input value={currentCompany} onChange={(e) => setCurrentCompany(e.target.value)} disabled={!isEditing} placeholder="Current company" className={fieldClass} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Years of Experience
-                </label>
-                <input
-                  type="number"
-                  value={yearsOfExperience}
-                  onChange={(e) => setYearsOfExperience(e.target.value)}
-                  disabled={!isEditing}
-                  placeholder="Years of experience"
-                  className={fieldClass}
-                />
+                <label className="block text-sm font-medium mb-1 text-foreground">Years of Experience</label>
+                <input type="number" value={yearsOfExperience} onChange={(e) => setYearsOfExperience(e.target.value)} disabled={!isEditing} placeholder="Years of experience" className={fieldClass} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">
@@ -1121,9 +874,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1 text-foreground">
-                  Availability to join
-                </label>
+                <label className="block text-sm font-medium mb-1 text-foreground">Availability to join</label>
                 {isEditing ? (
                   <div className="space-y-2">
                     <select
@@ -1131,11 +882,7 @@ export default function CandidateDetails({ id, empData }: Props) {
                       onChange={(e) => {
                         const val = e.target.value;
                         setAvailabilityMode(val);
-                        if (val !== "custom") {
-                          setAvailability(val);
-                        } else {
-                          setAvailability("");
-                        }
+                        if (val !== "custom") { setAvailability(val); } else { setAvailability(""); }
                       }}
                       className={fieldClass}
                     >
@@ -1148,21 +895,11 @@ export default function CandidateDetails({ id, empData }: Props) {
                       <option value="custom">Custom</option>
                     </select>
                     {availabilityMode === "custom" && (
-                      <input
-                        value={availability}
-                        onChange={(e) => setAvailability(e.target.value)}
-                        placeholder="e.g. 1 week, 3 weeks, 2 months"
-                        className={fieldClass}
-                        autoFocus
-                      />
+                      <input value={availability} onChange={(e) => setAvailability(e.target.value)} placeholder="e.g. 1 week, 3 weeks, 2 months" className={fieldClass} autoFocus />
                     )}
                   </div>
                 ) : (
-                  <input
-                    value={availability || "NA"}
-                    disabled
-                    className={fieldClass}
-                  />
+                  <input value={availability || "NA"} disabled className={fieldClass} />
                 )}
               </div>
               <div>
@@ -1193,28 +930,13 @@ export default function CandidateDetails({ id, empData }: Props) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1 text-foreground">
-                LinkedIn URL
-              </label>
-              <input
-                value={linkedinUrl}
-                onChange={(e) => setLinkedinUrl(e.target.value)}
-                disabled={!isEditing}
-                placeholder="LinkedIn URL"
-                className={fieldClass}
-              />
+              <label className="block text-sm font-medium mb-1 text-foreground">LinkedIn URL</label>
+              <input value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} disabled={!isEditing} placeholder="LinkedIn URL" className={fieldClass} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="flex items-center gap-2">
-                <Checkbox
-                  checked={willingToTravel}
-                  disabled={!isEditing}
-                  onCheckedChange={(checked) =>
-                    isEditing && setWillingToTravel(checked === true)
-                  }
-                  className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
-                />
+                <Checkbox checked={willingToTravel} disabled={!isEditing} onCheckedChange={(checked) => isEditing && setWillingToTravel(checked === true)} className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100" />
                 Willing to Travel for customer location
               </label>
               <label className="flex items-center gap-2">
@@ -1261,92 +983,37 @@ export default function CandidateDetails({ id, empData }: Props) {
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-1 text-foreground">
-                Skills
-              </label>
-              <textarea
-                value={skillsText}
-                onChange={(e) => setSkillsText(e.target.value)}
-                disabled={!isEditing}
-                rows={6}
-                placeholder="React, Node.js, Python..."
-                className={fieldClass}
-              />
+              <label className="block text-sm font-medium mb-1 text-foreground">Skills</label>
+              <textarea value={skillsText} onChange={(e) => setSkillsText(e.target.value)} disabled={!isEditing} rows={6} placeholder="React, Node.js, Python..." className={fieldClass} />
             </div>
 
             {sectionHeader("Rate & Vendor Details")}
 
             <div>
-              <label className="block text-sm font-medium mb-1 text-foreground">
-                Vendor
-              </label>
-              <input
-                value={vendor}
-                onChange={(e) => setVendor(e.target.value)}
-                disabled={!isEditing}
-                placeholder={isEditing ? "Enter vendor name" : "NA"}
-                className={fieldClass}
-              />
+              <label className="block text-sm font-medium mb-1 text-foreground">Vendor</label>
+              <input value={vendor} onChange={(e) => setVendor(e.target.value)} disabled={!isEditing} placeholder={isEditing ? "Enter vendor name" : "NA"} className={fieldClass} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-              {rateCard(
-                "Requested Rate",
-                "#429ABD",
-                requestedRateAmount,
-                setRequestedRateAmount,
-                rateType,
-                setRateType,
-                currency,
-                setCurrency,
-                liveDailyRate,
-              )}
-              {rateCard(
-                "Proposed Rate",
-                "#F5A623",
-                proposedRateAmount,
-                setProposedRateAmount,
-                proposedRateType,
-                setProposedRateType,
-                proposedCurrency,
-                setProposedCurrency,
-                liveProposedDailyRate,
-              )}
+              {rateCard("Requested Rate", "#429ABD", requestedRateAmount, setRequestedRateAmount, rateType, setRateType, currency, setCurrency, liveDailyRate)}
+              {rateCard("Proposed Rate", "#F5A623", proposedRateAmount, setProposedRateAmount, proposedRateType, setProposedRateType, proposedCurrency, setProposedCurrency, liveProposedDailyRate)}
             </div>
 
             {sectionHeader("Educational Details")}
 
             {education.length > 0 ? (
               education.map((edu: any, index: number) => (
-                <div
-                  key={index}
-                  className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2"
-                >
+                <div key={index} className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2">
                   <div className="font-semibold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-foreground">
-                    <span>
-                      {edu.degree}
-                      {edu.field_of_study ? ` in ${edu.field_of_study}` : ""}
-                    </span>
+                    <span>{edu.degree}{edu.field_of_study ? ` in ${edu.field_of_study}` : ""}</span>
                     {(edu.start_date || edu.end_date) && (
                       <span className="text-muted-foreground text-xs sm:text-sm">
-                        {edu.start_date && edu.end_date
-                          ? `${edu.start_date} - ${edu.end_date}`
-                          : edu.start_date
-                            ? edu.start_date
-                            : edu.end_date}
+                        {edu.start_date && edu.end_date ? `${edu.start_date} - ${edu.end_date}` : edu.start_date ? edu.start_date : edu.end_date}
                       </span>
                     )}
                   </div>
-                  <div>
-                    <span className="text-xs sm:text-sm text-muted-foreground">
-                      {edu.institution}
-                    </span>
-                  </div>
-                  {edu.grade && (
-                    <div className="text-xs sm:text-sm text-muted-foreground">
-                      Grade: {edu.grade}
-                    </div>
-                  )}
+                  <div><span className="text-xs sm:text-sm text-muted-foreground">{edu.institution}</span></div>
+                  {edu.grade && <div className="text-xs sm:text-sm text-muted-foreground">Grade: {edu.grade}</div>}
                 </div>
               ))
             ) : (
@@ -1357,35 +1024,23 @@ export default function CandidateDetails({ id, empData }: Props) {
 
             <div>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                {sectionHeader(
-                  `Matching Requests (${matches.length})`,
-                  "#F5A623",
-                )}
+                {sectionHeader(`Matching Requests (${matches.length})`, "#F5A623")}
                 <button
                   type="button"
                   onClick={() => runJobMatching(candidate)}
                   disabled={matching}
                   className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm text-white disabled:opacity-50 transition-all duration-300 hover:shadow-lg w-full sm:w-auto"
                   style={{ backgroundColor: "#429ABD" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#F5A623")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#429ABD")
-                  }
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#F5A623")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#429ABD")}
                 >
                   {matching ? "Matching..." : "Find Matching Requests"}
                 </button>
               </div>
               {matching ? (
-                <p className="text-muted-foreground text-sm">
-                  Finding matching requests...
-                </p>
+                <p className="text-muted-foreground text-sm">Finding matching requests...</p>
               ) : matches.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  No matching request found. Click the button above to run the
-                  matching process.
-                </p>
+                <p className="text-muted-foreground text-sm">No matching request found. Click the button above to run the matching process.</p>
               ) : (
                 <div className="grid gap-4">
                   {matches.map((job) => (
@@ -1395,39 +1050,22 @@ export default function CandidateDetails({ id, empData }: Props) {
                       onClick={() => router.push(`/requests/${job.job_id}`)}
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-foreground">
-                          {job.job_title || "Request"}
-                        </h3>
-                        <span
-                          className="px-2 py-1 rounded text-xs sm:text-sm font-semibold"
-                          style={{
-                            backgroundColor: "#429ABD20",
-                            color: "#429ABD",
-                          }}
-                        >
+                        <h3 className="font-semibold text-foreground">{job.job_title || "Request"}</h3>
+                        <span className="px-2 py-1 rounded text-xs sm:text-sm font-semibold" style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}>
                           {Number(job.match_score).toFixed(2)}%
                         </span>
                       </div>
                       <p className="text-xs sm:text-sm text-muted-foreground mb-2">
-                        <span className="font-bold text-foreground">
-                          Reasoning:
-                        </span>{" "}
-                        {job.reasoning}
+                        <span className="font-bold text-foreground">Reasoning:</span> {job.reasoning}
                       </p>
                       {job.strengths?.length > 0 && (
                         <div className="text-xs sm:text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-foreground">
-                            Strengths:
-                          </span>{" "}
-                          {job.strengths.join(", ")}
+                          <span className="font-bold text-foreground">Strengths:</span> {job.strengths.join(", ")}
                         </div>
                       )}
                       {job.gaps?.length > 0 && (
                         <div className="text-xs sm:text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-foreground">
-                            Gaps:
-                          </span>{" "}
-                          {job.gaps.join(", ")}
+                          <span className="font-bold text-foreground">Gaps:</span> {job.gaps.join(", ")}
                         </div>
                       )}
                     </div>
@@ -1440,39 +1078,24 @@ export default function CandidateDetails({ id, empData }: Props) {
           <TabsContent value="experience" className="space-y-4 sm:space-y-6">
             {experience.length === 0 ? (
               <div className="text-center py-12 border-2 border-dashed border-border rounded-xl bg-muted/30">
-                <p className="text-sm text-muted-foreground">
-                  No experience data found
-                </p>
+                <p className="text-sm text-muted-foreground">No experience data found</p>
               </div>
             ) : (
               experience.map((exp: any, index: number) => (
-                <div
-                  key={index}
-                  className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2 hover:border-[#429ABD]/30 transition-all duration-300"
-                >
+                <div key={index} className="border border-border rounded-lg p-4 sm:p-5 bg-muted/40 space-y-2 hover:border-[#429ABD]/30 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row justify-between gap-2 text-base sm:text-lg font-semibold text-foreground">
                     <span>{exp.job_title}</span>
                     <span className="text-xs sm:text-sm text-muted-foreground">
                       {(exp.start_date || exp.end_date) && (
-                        <span>
-                          {exp.start_date && exp.end_date
-                            ? `${exp.start_date} - ${exp.end_date}`
-                            : exp.start_date
-                              ? exp.start_date
-                              : exp.end_date}
-                        </span>
+                        <span>{exp.start_date && exp.end_date ? `${exp.start_date} - ${exp.end_date}` : exp.start_date ? exp.start_date : exp.end_date}</span>
                       )}
                     </span>
                   </div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">
-                    {exp.company} {exp.location ? `- ${exp.location}` : ""}
-                  </div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">{exp.company} {exp.location ? `- ${exp.location}` : ""}</div>
                   {exp.responsibilities && (
                     <ul className="list-disc pl-5 text-xs sm:text-sm text-muted-foreground space-y-1">
                       {Array.isArray(exp.responsibilities) ? (
-                        exp.responsibilities.map((resp: string, i: number) => (
-                          <li key={i}>{resp}</li>
-                        ))
+                        exp.responsibilities.map((resp: string, i: number) => <li key={i}>{resp}</li>)
                       ) : (
                         <li>{exp.responsibilities}</li>
                       )}
@@ -1485,160 +1108,66 @@ export default function CandidateDetails({ id, empData }: Props) {
 
           <TabsContent value="resume" className="space-y-4 sm:space-y-6">
             <div className="flex justify-between items-center">
-              <h3
-                className="text-base sm:text-lg font-semibold text-foreground"
-                style={{ color: "#429ABD" }}
-              >
-                Manage Resumes
-              </h3>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: "#429ABD" }}>Manage Resumes</h3>
             </div>
             <div className="grid gap-3 sm:gap-4">
               {(candidate.cvs || []).length === 0 ? (
                 <div className="text-center py-8 sm:py-12 border-2 border-dashed border-border rounded-xl bg-muted/30">
                   <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">
-                    No resumes uploaded yet
-                  </p>
+                  <p className="text-sm text-muted-foreground">No resumes uploaded yet</p>
                 </div>
               ) : (
                 candidate.cvs.map((resume: any) => (
-                  <div
-                    key={resume.id}
-                    onClick={() => openFileViewer(resume.file_url)}
-                    className="rounded-xl border border-border shadow-sm overflow-hidden transition-all duration-300"
-                  >
+                  <div key={resume.id} onClick={() => openFileViewer(resume.file_url)} className="rounded-xl border border-border shadow-sm overflow-hidden transition-all duration-300">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#429ABD08] hover:border-[#429ABD] border border-transparent transition-all duration-300">
                       <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                        <div
-                          className={cn(
-                            "p-2 rounded-lg",
-                            resume.is_primary
-                              ? "bg-[#429ABD20] text-[#429ABD]"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
+                        <div className={cn("p-2 rounded-lg", resume.is_primary ? "bg-[#429ABD20] text-[#429ABD]" : "bg-muted text-muted-foreground")}>
                           <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openFileViewer(resume.file_url);
-                              }}
-                              className="font-medium text-sm text-[#429ABD] hover:underline hover:text-blue-600 text-left"
-                            >
+                            <button type="button" onClick={(e) => { e.stopPropagation(); openFileViewer(resume.file_url); }} className="font-medium text-sm text-[#429ABD] hover:underline hover:text-blue-600 text-left">
                               {resume.file_name || "Resume"}
                             </button>
                             {resume.is_primary && (
-                              <span
-                                className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full"
-                                style={{
-                                  backgroundColor: "#429ABD20",
-                                  color: "#429ABD",
-                                }}
-                              >
-                                Primary
-                              </span>
+                              <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full" style={{ backgroundColor: "#429ABD20", color: "#429ABD" }}>Primary</span>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            Uploaded on{" "}
-                            {new Date(resume.created_at)
-                              .toLocaleDateString("en-GB")
-                              .replace(/\//g, ".")}
-                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">Uploaded on {new Date(resume.created_at).toLocaleDateString("en-GB").replace(/\//g, ".")}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-auto sm:ml-0">
                         {!resume.is_primary && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSetPrimary(resume.id);
-                            }}
-                            disabled={settingPrimaryId === resume.id}
-                            className="px-3 py-1.5 text-sm font-medium text-white bg-[#429ABD] hover:bg-[#F5A623] rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {settingPrimaryId === resume.id
-                              ? "Setting..."
-                              : "Set as primary"}
+                          <button type="button" onClick={(e) => { e.stopPropagation(); handleSetPrimary(resume.id); }} disabled={settingPrimaryId === resume.id} className="px-3 py-1.5 text-sm font-medium text-white bg-[#429ABD] hover:bg-[#F5A623] rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            {settingPrimaryId === resume.id ? "Setting..." : "Set as primary"}
                           </button>
                         )}
                         {(candidate.cvs || []).length > 1 && (
-                          <DeleteResumeButton
-                            candidateId={id}
-                            resumeId={resume.id}
-                            onSuccess={(updated) => setCandidate(updated)}
-                          />
+                          <DeleteResumeButton candidateId={id} resumeId={resume.id} onSuccess={(updated) => setCandidate(updated)} />
                         )}
                       </div>
                     </div>
                     {resume.is_primary && (
                       <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!resume.deloitte_pptx_url) return;
-                          openFileViewer(resume.deloitte_pptx_url);
-                        }}
-                        className={cn(
-                          "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#F5A62308] hover:border-[#F5A623] border border-transparent transition-all duration-300",
-                          resume.deloitte_pptx_url
-                            ? "bg-[#429ABD06]"
-                            : "bg-muted/20",
-                        )}
+                        onClick={(e) => { e.stopPropagation(); if (!resume.deloitte_pptx_url) return; openFileViewer(resume.deloitte_pptx_url); }}
+                        className={cn("flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-3 sm:gap-0 cursor-pointer hover:bg-[#F5A62308] hover:border-[#F5A623] border border-transparent transition-all duration-300", resume.deloitte_pptx_url ? "bg-[#429ABD06]" : "bg-muted/20")}
                       >
                         <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                          <div
-                            className={cn(
-                              "p-2 rounded-lg",
-                              resume.deloitte_pptx_url
-                                ? "bg-[#429ABD20] text-[#429ABD]"
-                                : "bg-muted/60 text-muted-foreground",
-                            )}
-                          >
+                          <div className={cn("p-2 rounded-lg", resume.deloitte_pptx_url ? "bg-[#429ABD20] text-[#429ABD]" : "bg-muted/60 text-muted-foreground")}>
                             <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                           </div>
                           <div>
                             <div className="flex flex-wrap items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (resume.deloitte_pptx_url)
-                                    openFileViewer(resume.deloitte_pptx_url);
-                                }}
-                                className="font-medium text-sm text-[#429ABD] hover:text-blue-600 hover:underline cursor-pointer text-left"
-                              >
+                              <button type="button" onClick={(e) => { e.stopPropagation(); if (resume.deloitte_pptx_url) openFileViewer(resume.deloitte_pptx_url); }} className="font-medium text-sm text-[#429ABD] hover:text-blue-600 hover:underline cursor-pointer text-left">
                                 {`${(resume.file_name || "Resume").replace(/\.[^/.]+$/, "")}_Deloitte.pptx`}
                               </button>
-                              <span
-                                className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full"
-                                style={{
-                                  backgroundColor: "#F5A62320",
-                                  color: "#F5A623",
-                                }}
-                              >
-                                Deloitte
-                              </span>
+                              <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full" style={{ backgroundColor: "#F5A62320", color: "#F5A623" }}>Deloitte</span>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {resume.deloitte_pptx_url
-                                ? "Generated Deloitte Resume"
-                                : "Not generated yet"}
-                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{resume.deloitte_pptx_url ? "Generated Deloitte Resume" : "Not generated yet"}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                          <GenerateDeloitteButton
-                            candidateId={id}
-                            cvId={resume.id}
-                            deloittePptxUrl={resume.deloitte_pptx_url || null}
-                            cvFileName={resume.file_name || "Resume"}
-                            onSuccess={(updated) => setCandidate(updated)}
-                          />
+                          <GenerateDeloitteButton candidateId={id} cvId={resume.id} deloittePptxUrl={resume.deloitte_pptx_url || null} cvFileName={resume.file_name || "Resume"} onSuccess={(updated) => setCandidate(updated)} />
                         </div>
                       </div>
                     )}
@@ -1650,76 +1179,34 @@ export default function CandidateDetails({ id, empData }: Props) {
 
           <TabsContent value="attachments" className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h3
-                className="text-base sm:text-lg font-semibold text-foreground"
-                style={{ color: "#429ABD" }}
-              >
-                Miscellaneous Documents
-              </h3>
-              <UploadAttachmentDialog
-                candidateId={id}
-                attachmentTypes={attachmentTypes}
-                onSuccess={(updated) => setCandidate(updated)}
-              />
+              <h3 className="text-base sm:text-lg font-semibold text-foreground" style={{ color: "#429ABD" }}>Miscellaneous Documents</h3>
+              <UploadAttachmentDialog candidateId={id} attachmentTypes={attachmentTypes} onSuccess={(updated) => setCandidate(updated)} />
             </div>
             <div className="grid gap-3 sm:gap-4">
               {(candidate.attachments || []).length === 0 ? (
                 <div className="text-center py-8 sm:py-12 border-2 border-dashed border-border rounded-xl bg-muted/30">
                   <Paperclip className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">
-                    No attachments found
-                  </p>
+                  <p className="text-sm text-muted-foreground">No attachments found</p>
                 </div>
               ) : (
                 candidate.attachments.map((attachment: any) => (
-                  <div
-                    key={attachment.id}
-                    onClick={() => openFileViewer(attachment.file_url)}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-[#429ABD]/40 hover:bg-[#429ABD08] transition-all duration-300 gap-3 sm:gap-0 cursor-pointer"
-                  >
+                  <div key={attachment.id} onClick={() => openFileViewer(attachment.file_url)} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-card rounded-xl border border-border shadow-sm hover:border-[#429ABD]/40 hover:bg-[#429ABD08] transition-all duration-300 gap-3 sm:gap-0 cursor-pointer">
                     <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                      <div className="p-2 bg-[#429ABD10] text-[#429ABD] rounded-lg">
-                        <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
+                      <div className="p-2 bg-[#429ABD10] text-[#429ABD] rounded-lg"><FileText className="w-4 h-4 sm:w-5 sm:h-5" /></div>
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openFileViewer(attachment.file_url);
-                            }}
-                            className="font-medium text-sm text-[#429ABD] hover:text-blue-600 hover:underline cursor-pointer text-left"
-                          >
+                          <button type="button" onClick={(e) => { e.stopPropagation(); openFileViewer(attachment.file_url); }} className="font-medium text-sm text-[#429ABD] hover:text-blue-600 hover:underline cursor-pointer text-left">
                             {attachment.file_name || attachment.filename}
                           </button>
-                          <span
-                            className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                            style={{
-                              backgroundColor: "#F5A62320",
-                              color: "#F5A623",
-                            }}
-                          >
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: "#F5A62320", color: "#F5A623" }}>
                             {attachment.document_type}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Uploaded on{" "}
-                          {new Date(attachment.created_at)
-                            .toLocaleDateString("en-GB")
-                            .replace(/\//g, ".")}
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">Uploaded on {new Date(attachment.created_at).toLocaleDateString("en-GB").replace(/\//g, ".")}</p>
                       </div>
                     </div>
-                    <div
-                      className="flex items-center gap-2 ml-auto sm:ml-0"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <DeleteAttachmentButton
-                        candidateId={id}
-                        attachmentId={attachment.id}
-                        onSuccess={(updated) => setCandidate(updated)}
-                      />
+                    <div className="flex items-center gap-2 ml-auto sm:ml-0" onClick={(e) => e.stopPropagation()}>
+                      <DeleteAttachmentButton candidateId={id} attachmentId={attachment.id} onSuccess={(updated) => setCandidate(updated)} />
                     </div>
                   </div>
                 ))

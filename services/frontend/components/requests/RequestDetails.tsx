@@ -574,18 +574,7 @@ export default function RequestDetails({
   }
 
   async function handleSubmit(formData?: FormData, isAutoSave = false) {
-    if (proposedDateError) {
-      toast.error(proposedDateError);
-      return;
-    }
-    if (proposedDateValue) {
-      const error = validateProposedDate(proposedDateValue);
-      if (error) {
-        toast.error(error);
-        setProposedDateError(error);
-        return;
-      }
-    }
+    
     if (saving) return;
     setSaving(true);
     if (!isAutoSave) setAutoSaveStatus("saving");
@@ -1271,7 +1260,6 @@ export default function RequestDetails({
                     } as React.ChangeEvent<HTMLInputElement>);
                   }}
                   dateFormat="dd.MM.yyyy"
-                  minDate={parseISO(getMinProposedDate())}
                   className={fieldClass}
                   showYearDropdown
                   showMonthDropdown
@@ -1287,9 +1275,6 @@ export default function RequestDetails({
                 name="proposed_date"
                 value={proposedDateValue}
               />
-              {proposedDateError && (
-                <p className="text-xs text-red-500 mt-1">{proposedDateError}</p>
-              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
@@ -1732,12 +1717,8 @@ export default function RequestDetails({
                       }
                       className="px-4 py-1.5 text-sm text-white rounded-md transition-all duration-300 hover:shadow-lg"
                       style={{ backgroundColor: "#429ABD" }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#F5A623")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#429ABD")
-                      }
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#F5A623")}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#429ABD")}
                     >
                       <EyeIcon className="w-4 h-4" />
                     </button>

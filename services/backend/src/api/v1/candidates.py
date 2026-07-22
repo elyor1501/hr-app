@@ -265,6 +265,15 @@ async def list_candidates(
                 Candidate.first_name.asc(),
                 Candidate.last_name.asc(),
             )
+    elif sort_by == "current_company":
+        if sort_order == "desc":
+            base_query = base_query.order_by(
+                Candidate.current_company.desc().nulls_last(),
+            )
+        else:
+            base_query = base_query.order_by(
+                Candidate.current_company.asc().nulls_last(),
+            )
     else:
         base_query = base_query.order_by(Candidate.created_at.desc())
 
