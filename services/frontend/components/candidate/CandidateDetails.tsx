@@ -895,7 +895,7 @@ async function runJobMatching(candidateData: any) {
                       <option value="custom">Custom</option>
                     </select>
                     {availabilityMode === "custom" && (
-                      <input value={availability} onChange={(e) => setAvailability(e.target.value)} placeholder="e.g. 1 week, 3 weeks, 2 months" className={fieldClass} autoFocus />
+                      <input value={availability} onChange={(e) => setAvailability(e.target.value)} placeholder="e.g. 1 week, 3 weeks, 2 months" className={fieldClass} />
                     )}
                   </div>
                 ) : (

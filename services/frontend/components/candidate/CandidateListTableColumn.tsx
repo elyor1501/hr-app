@@ -57,33 +57,39 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    size: 90,
+    minSize: 80,
+    maxSize: 100,
     cell: ({ row }) => {
       const s = row.original.status as string;
       return (
-        <span
-          className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-            s === "active"
-              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
-              : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-          }`}
-        >
-          {s === "active" ? "Active" : "Inactive"}
-        </span>
+        <div className="flex justify-center">
+          <span
+            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap ${
+              s === "active"
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+            }`}
+          >
+            {s === "active" ? "Active" : "Inactive"}
+          </span>
+        </div>
       );
     },
   },
   {
     accessorKey: "years_of_experience",
-    header: () => <div className="text-center w-full">Experience</div>,
-    cell: ({ row }) => {
-      const years = row.original.years_of_experience;
-      return (
-        <div className="text-center w-full">
-          {years ? `${years} yrs` : "NA"}
-        </div>
-      );
-    },
-    size: 80,
+    header: () => <div className="text-center">Exp</div>,
+    size: 70,
+    minSize: 60,
+    maxSize: 80,
+    cell: ({ row }) => (
+      <div className="text-center whitespace-nowrap">
+        {row.original.years_of_experience
+          ? `${row.original.years_of_experience}yrs`
+          : "-"}
+      </div>
+    ),
   },
   {
     accessorKey: "created_at",
@@ -107,14 +113,14 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
   },
   {
     header: "Actions",
+    size: 20,
+    minSize: 30,
+    maxSize: 40,
     cell: ({ row }) => {
-      const router = useRouter();
       const candidate = row.original;
+
       return (
-        <div className="flex items-center justify-center w-full gap-2">
-          {/* <div onClick={(e) => e.stopPropagation()}>
-            <ViewCandidateButton candidateId={candidate.id} />
-          </div> */}
+        <div className="flex justify-center items-center">
           <div onClick={(e) => e.stopPropagation()}>
             <DeleteCandidateButton candidateId={candidate.id} />
           </div>
