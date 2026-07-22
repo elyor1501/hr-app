@@ -49,8 +49,8 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
   ];
 
   return (
-    <Card className="w-full overflow-hidden border-border/50 shadow-sm h-full">
-      <CardHeader className="px-3 pt-3 pb-1">
+    <Card className="w-full h-full flex flex-col overflow-hidden border-border/50 shadow-sm">
+      <CardHeader className="px-3 pt-3 pb-1 shrink-0">
         <CardTitle className="text-sm font-semibold">
           Request Jobs Overview
         </CardTitle>
@@ -59,7 +59,7 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 ">
+      <CardContent className="flex-1 flex flex-col sm:flex-row items-center justify-center sm:justify-around gap-4 sm:gap-6 p-4">
         <div className="relative flex items-center justify-center">
           <PieChart width={150} height={150}>
             <Pie

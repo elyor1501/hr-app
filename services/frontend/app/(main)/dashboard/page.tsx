@@ -26,7 +26,7 @@ function DashboardSkeleton() {
 
 export default async function Dashboard() {
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col h-[calc(100vh-5rem)] space-y-2">
       <div
         className="relative overflow-hidden rounded-xl px-4 sm:px-6 lg:px-8 py-2 mt-1 text-white flex-shrink-0"
         style={{
@@ -61,7 +61,7 @@ export default async function Dashboard() {
         />
       </div>
 
-      <div className="animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+      <div className="flex-1 min-h-0 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
         <Suspense fallback={<DashboardSkeleton />}>
           <DashboardStats />
         </Suspense>

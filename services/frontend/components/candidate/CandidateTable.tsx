@@ -199,18 +199,12 @@ export default function CandidatesTable({
   const [activeFilter, setActiveFilter] = useState<"name" | "role" | "company" | "status" | null>(null);
   const [nameAnchorRect, setNameAnchorRect] = useState<DOMRect | null>(null);
   const [roleAnchorRect, setRoleAnchorRect] = useState<DOMRect | null>(null);
-  const [companyAnchorRect, setCompanyAnchorRect] = useState<DOMRect | null>(null);
-  const [statusAnchorRect, setStatusAnchorRect] = useState<DOMRect | null>(null);
 
   const [nameSearchText, setNameSearchText] = useState("");
   const [roleSearchText, setRoleSearchText] = useState("");
-  const [companySearchText, setCompanySearchText] = useState("");
-  const [statusSearchText, setStatusSearchText] = useState("");
 
   const [pendingNames, setPendingNames] = useState<string[]>([]);
   const [pendingRoles, setPendingRoles] = useState<string[]>([]);
-  const [pendingCompanies, setPendingCompanies] = useState<string[]>([]);
-  const [pendingStatuses, setPendingStatuses] = useState<string[]>([]);
 
   const [allCandidates, setAllCandidates] = useState<any[]>([]);
 
@@ -238,15 +232,11 @@ export default function CandidatesTable({
     );
     setSelectedNames(parseMulti(searchParams.get("name")));
     setSelectedRoles(parseMulti(searchParams.get("jobTitle")));
-    setSelectedCompanies(parseMulti(searchParams.get("currentCompany")));
-    setSelectedStatuses(parseMulti(searchParams.get("candidateStatus")));
   }, [searchParams]);
 
   useEffect(() => {
     if (activeFilter === "name") setPendingNames([...selectedNames]);
     if (activeFilter === "role") setPendingRoles([...selectedRoles]);
-    if (activeFilter === "company") setPendingCompanies([...selectedCompanies]);
-    if (activeFilter === "status") setPendingStatuses([...selectedStatuses]);
   }, [activeFilter]);
 
   useEffect(() => {
@@ -272,13 +262,6 @@ export default function CandidatesTable({
     return Array.from(new Set(src.map((item: any) => item.current_title).filter(Boolean))).sort();
   }, [allCandidates, data]);
 
-  const uniqueCompanies = useMemo(() => {
-    const src = allCandidates.length > 0 ? allCandidates : data;
-    return Array.from(new Set(src.map((item: any) => item.current_company).filter(Boolean))).sort();
-  }, [allCandidates, data]);
-
-  const uniqueStatuses = ["active", "inactive"];
-
   const applySearch = useCallback(
     (qVal: string, names: string[], roles: string[], companies: string[], statuses: string[]) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -299,8 +282,6 @@ export default function CandidatesTable({
 
       names.length > 0 ? params.set("name", names.join("|")) : params.delete("name");
       roles.length > 0 ? params.set("jobTitle", roles.join("|")) : params.delete("jobTitle");
-      companies.length > 0 ? params.set("currentCompany", companies.join("|")) : params.delete("currentCompany");
-      statuses.length > 0 ? params.set("candidateStatus", statuses[0]) : params.delete("candidateStatus");
 
       router.push(`/candidates?${params.toString()}`);
     },
@@ -311,17 +292,13 @@ export default function CandidatesTable({
     setQ("");
     setSelectedNames([]);
     setSelectedRoles([]);
-    setSelectedCompanies([]);
-    setSelectedStatuses([]);
     setActiveFilter(null);
     router.push("/candidates");
   };
 
   const hasAnyFilter =
     selectedNames.length > 0 ||
-    selectedRoles.length > 0 ||
-    selectedCompanies.length > 0 ||
-    selectedStatuses.length > 0;
+    selectedRoles.length > 0 ;
 
   const columns = useMemo(() => {
     return columns_candidate_list.map((col: any) => {
@@ -396,80 +373,9 @@ export default function CandidatesTable({
         };
       }
 
-      if (col.accessorKey === "current_company") {
-        return {
-          ...col,
-          header: () => (
-            <div className="flex items-center justify-between gap-2 py-1">
-              <Button
-                variant="ghost"
-                className="flex items-center gap-1 px-0 hover:bg-transparent"
-                onClick={() => applySort("current_company")}
-              >
-                <span>Company</span>
-                {sortBy === "current_company" ? (
-                  sortOrder === "asc" ? (
-                    <ArrowUp className="h-3.5 w-3.5 text-[#429ABD]" />
-                  ) : sortOrder === "desc" ? (
-                    <ArrowDown className="h-3.5 w-3.5 text-[#429ABD]" />
-                  ) : (
-                    <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-                  )
-                ) : (
-                  <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-                )}
-              </Button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCompanyAnchorRect((e.currentTarget as HTMLButtonElement).getBoundingClientRect());
-                  setActiveFilter((prev) => (prev === "company" ? null : "company"));
-                }}
-                className={`p-1.5 rounded-lg hover:bg-muted/80 transition-colors flex items-center gap-0.5 flex-shrink-0 ${
-                  selectedCompanies.length > 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30" : "text-muted-foreground"
-                }`}
-              >
-                <Filter className="w-3.5 h-3.5" />
-                {selectedCompanies.length > 0 && (
-                  <span className="text-[10px] font-bold leading-none">{selectedCompanies.length}</span>
-                )}
-              </button>
-            </div>
-          ),
-        };
-      }
-
-      if (col.accessorKey === "status") {
-        return {
-          ...col,
-          header: () => (
-            <div className="flex items-center justify-between gap-2 py-1">
-              <span>Status</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStatusAnchorRect((e.currentTarget as HTMLButtonElement).getBoundingClientRect());
-                  setActiveFilter((prev) => (prev === "status" ? null : "status"));
-                }}
-                className={`p-1.5 rounded-lg hover:bg-muted/80 transition-colors flex items-center gap-0.5 flex-shrink-0 ${
-                  selectedStatuses.length > 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30" : "text-muted-foreground"
-                }`}
-              >
-                <Filter className="w-3.5 h-3.5" />
-                {selectedStatuses.length > 0 && (
-                  <span className="text-[10px] font-bold leading-none">{selectedStatuses.length}</span>
-                )}
-              </button>
-            </div>
-          ),
-        };
-      }
-
       return col;
     });
-  }, [selectedNames, selectedRoles, selectedCompanies, selectedStatuses, sortBy, sortOrder]);
+  }, [selectedNames, selectedRoles, sortBy, sortOrder]);
 
   return (
     <div className="space-y-4">
@@ -564,35 +470,6 @@ export default function CandidatesTable({
         />
       )}
 
-      {activeFilter === "company" && (
-        <FilterPanel
-          anchorRect={companyAnchorRect}
-          title="Filter by Company"
-          searchText={companySearchText}
-          onSearchChange={setCompanySearchText}
-          items={uniqueCompanies}
-          selectedItems={pendingCompanies}
-          onToggleItem={(item) => setPendingCompanies((prev) => prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item])}
-          onReset={() => { setPendingCompanies([]); setCompanySearchText(""); }}
-          onApply={() => { setSelectedCompanies(pendingCompanies); applySearch(q, selectedNames, selectedRoles, pendingCompanies, selectedStatuses); setActiveFilter(null); setCompanySearchText(""); }}
-          onClose={() => { setActiveFilter(null); setCompanySearchText(""); }}
-        />
-      )}
-
-      {activeFilter === "status" && (
-        <FilterPanel
-          anchorRect={statusAnchorRect}
-          title="Filter by Status"
-          searchText={statusSearchText}
-          onSearchChange={setStatusSearchText}
-          items={uniqueStatuses}
-          selectedItems={pendingStatuses}
-          onToggleItem={(item) => setPendingStatuses((prev) => prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item])}
-          onReset={() => { setPendingStatuses([]); setStatusSearchText(""); }}
-          onApply={() => { setSelectedStatuses(pendingStatuses); applySearch(q, selectedNames, selectedRoles, selectedCompanies, pendingStatuses); setActiveFilter(null); setStatusSearchText(""); }}
-          onClose={() => { setActiveFilter(null); setStatusSearchText(""); }}
-        />
-      )}
     </div>
   );
 }
