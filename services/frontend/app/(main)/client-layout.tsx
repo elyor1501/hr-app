@@ -108,7 +108,7 @@ export default function ClientLayout({ children, user }: Props) {
             </header>
 
             <main className="flex-1 overflow-y-auto bg-background/50 custom-scrollbar">
-              <div className="w-full px-0.5 sm:px-1 lg:px-2 py-0.5 sm:py-1 space-y-0.5 sm:space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <div className="w-full px-2 sm:px-4 py-1 sm:py-2 space-y-2 sm:space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
                 {children}
               </div>
             </main>

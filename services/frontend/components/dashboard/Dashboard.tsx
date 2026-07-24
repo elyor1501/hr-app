@@ -136,7 +136,7 @@ export default function DashboardDetail({
   return (
     <div className="flex flex-col h-full space-y-1 sm:space-y-2 lg:space-y-2">
       <section className="shrink-0">
-        <div className="flex items-center gap-1.5 mb-2">
+        <div className="flex items-center gap-1.5 mb-4 mt-2">
           <div
             className="p-1 rounded-md"
             style={{ backgroundColor: "#429ABD20" }}
@@ -150,12 +150,11 @@ export default function DashboardDetail({
           <h2 className="text-sm font-semibold">Overview</h2>
         </div>
 
-        <div className="grid gap-2 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-card border rounded-lg px-4 py-2 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
-            {" "}
-            <div className="absolute top-0 right-0 p-1.5 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="bg-card border rounded-xl p-3 sm:p-4 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
+            <div className="absolute top-0 right-0 p-3 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
               <Briefcase
-                className="w-6 h-6 sm:w-8 sm:h-8 transition-all duration-300"
+                className="w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300"
                 style={{ color: "#429ABD" }}
               />
             </div>
@@ -171,11 +170,10 @@ export default function DashboardDetail({
             </div>
           </div>
 
-          <div className="bg-card border rounded-lg px-4 py-2 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
-            {" "}
-            <div className="absolute top-0 right-0 p-1.5 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+          <div className="bg-card border rounded-xl p-3 sm:p-4 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
+            <div className="absolute top-0 right-0 p-3 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
               <Users
-                className="w-6 h-6 sm:w-8 sm:h-8 transition-all duration-300"
+                className="w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300"
                 style={{ color: "#429ABD" }}
               />
             </div>
@@ -193,11 +191,10 @@ export default function DashboardDetail({
             </div>
           </div>
 
-          <div className="bg-card border rounded-lg px-4 py-2 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
-            {" "}
-            <div className="absolute top-0 right-0 p-1.5 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+          <div className="bg-card border rounded-xl p-3 sm:p-4 shadow-sm card-hover relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-[#F5A623]/30">
+            <div className="absolute top-0 right-0 p-3 opacity-15 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
               <FileText
-                className="w-6 h-6 sm:w-8 sm:h-8 transition-all duration-300"
+                className="w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300"
                 style={{ color: "#429ABD" }}
               />
             </div>
@@ -219,7 +216,7 @@ export default function DashboardDetail({
       </section>
 
       <section className="flex-1 flex flex-col min-h-0 pb-2">
-        <div className="flex items-center gap-1.5 mb-2 shrink-0">
+        <div className="flex items-center gap-1.5 mb-4 mt-2 shrink-0">
           <div
             className="p-1 rounded-md"
             style={{ backgroundColor: "#F5A62315" }}

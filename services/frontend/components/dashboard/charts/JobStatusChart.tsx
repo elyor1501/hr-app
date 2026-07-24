@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Card,
   CardContent,
@@ -59,47 +59,49 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col sm:flex-row items-center justify-center sm:justify-around gap-4 sm:gap-6 p-4">
-        <div className="relative flex items-center justify-center">
-          <PieChart width={150} height={150}>
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={42}
-              outerRadius={62}
-              paddingAngle={2}
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={index} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip
-              wrapperStyle={{
-                pointerEvents: "none",
-                zIndex: 9999,
-              }}
-              contentStyle={{
-                borderRadius: "8px",
-                border: "1px solid hsl(var(--border))",
-                backgroundColor: "hsl(var(--card))",
-                color: "hsl(var(--foreground))",
-                fontSize: "12px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              }}
-              itemStyle={{
-                color: "hsl(var(--foreground))",
-              }}
-              cursor={{ fill: "transparent" }}
-              offset={25}
-            />
-          </PieChart>
+      <CardContent className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 p-4 sm:p-6 w-full">
+        <div className="relative w-full max-w-[250px] aspect-square shrink-0 flex items-center justify-center">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius="65%"
+                outerRadius="90%"
+                paddingAngle={2}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip
+                wrapperStyle={{
+                  pointerEvents: "none",
+                  zIndex: 9999,
+                }}
+                contentStyle={{
+                  borderRadius: "8px",
+                  border: "1px solid hsl(var(--border))",
+                  backgroundColor: "hsl(var(--card))",
+                  color: "hsl(var(--foreground))",
+                  fontSize: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                }}
+                itemStyle={{
+                  color: "hsl(var(--foreground))",
+                }}
+                cursor={{ fill: "transparent" }}
+                offset={25}
+              />
+            </PieChart>
+          </ResponsiveContainer>
 
-          <div className="absolute text-center pointer-events-none z-0">
-            <p className="text-xl sm:text-2xl font-bold">{totalJobs}</p>
-            <p className="text-xs font-medium text-muted-foreground">
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
+            <p className="text-2xl sm:text-3xl font-bold">{totalJobs}</p>
+            <p className="text-xs font-medium text-muted-foreground text-center mt-1 leading-tight">
               Total
               <br />
               Requests
@@ -107,7 +109,7 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 w-full sm:w-44">
+        <div className="flex flex-col gap-3 w-full sm:flex-1 max-w-[320px]">
           {chartData.map((item) => (
             <div key={item.name} className="space-y-1 sm:space-y-2">
               <div className="flex justify-between text-xs">

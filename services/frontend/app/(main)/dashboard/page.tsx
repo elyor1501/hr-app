@@ -27,13 +27,13 @@ function DashboardSkeleton() {
 export default async function Dashboard() {
   return (
     <div className="flex flex-col h-[calc(100vh-5rem)] space-y-2">
-      <div
+      {/* <div
         className="relative overflow-hidden rounded-xl px-4 sm:px-6 lg:px-8 py-2 mt-1 text-white flex-shrink-0"
         style={{
           background: "linear-gradient(135deg, #429ABD 0%, #2d6d8a 100%)",
         }}
-      >
-        <div className="relative z-10">
+      > */}
+        {/* <div className="relative z-10">
           <div className="flex items-center gap-1.5 mb-0.5">
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white/80 animate-pulse" />
             <span className="text-xs sm:text-sm text-white/80 font-medium">
@@ -48,18 +48,18 @@ export default async function Dashboard() {
             You have new candidates to review and job postings reaching their
             peak.
           </p>
-        </div>
+        </div> */}
 
         {/* Decorative elements with new colors */}
-        <div
+        {/* <div
           className="absolute -right-20 -top-20 w-48 h-48 sm:w-64 sm:h-64 rounded-full blur-3xl"
           style={{ background: "#F5A623", opacity: 0.15 }}
         />
         <div
           className="absolute -right-10 -bottom-10 w-32 h-32 sm:w-40 sm:h-40 rounded-full blur-2xl"
           style={{ background: "#F5A623", opacity: 0.1 }}
-        />
-      </div>
+        /> */}
+      {/* </div> */}
 
       <div className="flex-1 min-h-0 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
         <Suspense fallback={<DashboardSkeleton />}>

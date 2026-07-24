@@ -574,7 +574,6 @@ export default function RequestDetails({
   }
 
   async function handleSubmit(formData?: FormData, isAutoSave = false) {
-    
     if (saving) return;
     setSaving(true);
     if (!isAutoSave) setAutoSaveStatus("saving");
@@ -766,7 +765,7 @@ export default function RequestDetails({
   const isSapRequest = !!request.sap_email;
 
   return (
-    <div className="max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-sm border border-border p-8">
+    <div className="w-full bg-card text-card-foreground rounded-xl shadow-sm border border-border p-8 mt-2">
       {showAttachDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg p-6 space-y-4">
@@ -881,14 +880,14 @@ export default function RequestDetails({
         />
 
         <div className="space-y-6">
-          <div className="flex justify-between mb-6">
+          {/* <div className="flex justify-between mb-6">
             <h2
               className="text-lg sm:text-xl font-bold"
               style={{ color: "#429ABD" }}
             >
               Request Details
             </h2>
-            {/* {canEdit && !isEditing && (
+            {canEdit && !isEditing && (
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
@@ -903,8 +902,8 @@ export default function RequestDetails({
               >
                 Edit
               </button>
-            )} */}
-          </div>
+            )}
+          </div> */}
 
           {isEditing && (
             <div className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border border-border/60 bg-background/95 backdrop-blur shadow-sm mb-6">
@@ -970,8 +969,8 @@ export default function RequestDetails({
             </div>
           )}
 
-          <div className="grid md:grid-cols-2 gap-4 p-4 bg-muted/20 rounded-xl border border-border">
-            <div className="md:col-span-2">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Company Name
               </label>
@@ -1011,7 +1010,22 @@ export default function RequestDetails({
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-1 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Request Title
+              </label>
+              <input
+                name="request_title"
+                value={requestTitle}
+                onChange={(e) => setRequestTitle(e.target.value)}
+                disabled={!isEditing}
+                className={fieldClass}
+              />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Request Number
@@ -1024,6 +1038,7 @@ export default function RequestDetails({
                 className={fieldClass}
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Request Status
@@ -1040,21 +1055,6 @@ export default function RequestDetails({
                 <option value="signed">Signed</option>
                 <option value="closed">Closed</option>
               </select>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-1 text-foreground">
-                Request Title
-              </label>
-              <input
-                name="request_title"
-                value={requestTitle}
-                onChange={(e) => setRequestTitle(e.target.value)}
-                disabled={!isEditing}
-                className={fieldClass}
-              />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
@@ -1226,7 +1226,7 @@ export default function RequestDetails({
             </div>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Request Date
@@ -1261,6 +1261,7 @@ export default function RequestDetails({
                   }}
                   dateFormat="dd.MM.yyyy"
                   className={fieldClass}
+                  wrapperClassName="w-full"
                   showYearDropdown
                   showMonthDropdown
                   dropdownMode="select"
@@ -1292,6 +1293,7 @@ export default function RequestDetails({
                   }}
                   dateFormat="dd.MM.yyyy"
                   className={fieldClass}
+                  wrapperClassName="w-full"
                   showYearDropdown
                   showMonthDropdown
                   dropdownMode="select"
@@ -1308,6 +1310,9 @@ export default function RequestDetails({
                 onChange={(e) => setFeedbackDateValue(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Duration of Request
@@ -1320,9 +1325,6 @@ export default function RequestDetails({
                 className={fieldClass}
               />
             </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Number of Candidates
@@ -1351,23 +1353,12 @@ export default function RequestDetails({
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-foreground">
-              Job Description
-            </label>
-            <textarea
-              name="job_description"
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              rows={4}
-              disabled={!isEditing}
-              className={fieldClass}
-            />
-          </div>
-
-          {sectionHeader("SAP Customer Details")}
           {(request.sap_email || isEditing) && (
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end border rounded-lg p-2">
+              <div className=" mt-2 mb-4 ">
+                {sectionHeader("SAP Customer Details :")}
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
                   SAP Email
@@ -1381,6 +1372,7 @@ export default function RequestDetails({
                   className={fieldClass}
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1 text-foreground">
                   SAP C-User ID
@@ -1395,6 +1387,20 @@ export default function RequestDetails({
               </div>
             </div>
           )}
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-foreground">
+              Job Description
+            </label>
+            <textarea
+              name="job_description"
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              rows={4}
+              disabled={!isEditing}
+              className={fieldClass}
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-medium mb-1 text-foreground">
@@ -1548,33 +1554,54 @@ export default function RequestDetails({
                   key={candidate.candidate_id}
                   className="border border-border rounded-lg p-5 shadow-sm space-y-3 bg-card"
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-lg text-foreground">
+                  <div className="flex items-start justify-between gap-6">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-foreground">
                         {candidate.first_name} {candidate.last_name}
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {candidate.current_title || "N/A"}
                         {candidate.current_company
                           ? ` @ ${candidate.current_company}`
                           : ""}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+
+                      <p className="mt-1 text-xs text-muted-foreground break-all">
                         {candidate.location || ""}
                         {candidate.email ? ` • ${candidate.email}` : ""}
                       </p>
                     </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        candidate.match_score >= 70
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                          : candidate.match_score >= 40
-                            ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300"
-                            : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
-                      }`}
-                    >
-                      {candidate.match_score}% Match
-                    </span>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${
+                          candidate.match_score >= 70
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                            : candidate.match_score >= 40
+                              ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300"
+                              : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                        }`}
+                      >
+                        {candidate.match_score}% Match
+                      </span>
+
+                      <button
+                        onClick={() =>
+                          router.push(`/candidates/${candidate.candidate_id}`)
+                        }
+                        className="flex items-center justify-center h-9 w-9 rounded-md text-white transition-all duration-300 hover:shadow-lg"
+                        style={{ backgroundColor: "#429ABD" }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#F5A623")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#429ABD")
+                        }
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
 
                   <p className="text-sm text-muted-foreground">
@@ -1612,7 +1639,7 @@ export default function RequestDetails({
                   )}
 
                   {candidate.skills_comparison && (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="gap-3">
                       {candidate.skills_comparison.matching_skills?.length >
                         0 && (
                         <div>
@@ -1711,17 +1738,6 @@ export default function RequestDetails({
                           ? "Shortlisting..."
                           : "Shortlist"}
                     </button> */}
-                    <button
-                      onClick={() =>
-                        router.push(`/candidates/${candidate.candidate_id}`)
-                      }
-                      className="px-4 py-1.5 text-sm text-white rounded-md transition-all duration-300 hover:shadow-lg"
-                      style={{ backgroundColor: "#429ABD" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#F5A623")}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#429ABD")}
-                    >
-                      <EyeIcon className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
               );
