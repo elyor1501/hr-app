@@ -240,7 +240,7 @@ export default function CandidateProposedRequests({
           <div>
             <h3 className="text-base font-semibold text-foreground">Attached Requests</h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Requests this candidate has been attached to
+              Requests attached to this candidate
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -268,7 +268,7 @@ export default function CandidateProposedRequests({
 
         {attached.length === 0 ? (
           <div className="flex items-center justify-center py-8 rounded-xl border border-dashed border-border bg-muted/20">
-            <p className="text-sm text-muted-foreground">Not attached to any request yet</p>
+            <p className="text-sm text-muted-foreground">No request attached</p>
           </div>
         ) : (
           <div className="space-y-3">

@@ -140,7 +140,7 @@ export function DataTable<TData, TValue>({
   return (
     <>
       {(showSearch || showColumns || renderBulkActions || toolbarActions) && (
-        <div className="flex items-center  mt-2 mb-2 justify-between">
+        <div className="flex items-center mt-2 mb-4 justify-between">
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2">
               {showSearch && (
