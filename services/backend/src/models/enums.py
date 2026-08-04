@@ -4,6 +4,8 @@ from enum import Enum
 class CandidateStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
+    SELECTED = "selected"
+    REJECTED = "rejected"
 
 
 class JobStatus(str, Enum):

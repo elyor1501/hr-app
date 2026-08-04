@@ -63,6 +63,9 @@ class Candidate(BaseModel):
     pending_offers: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True, default=False)
     pending_offers_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     sap_secure_id: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    end_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    special_note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     cvs: Mapped[List["CandidateCV"]] = relationship("CandidateCV", back_populates="candidate", cascade="all, delete-orphan", lazy="noload")
     attachments: Mapped[List["CandidateAttachment"]] = relationship("CandidateAttachment", back_populates="candidate", cascade="all, delete-orphan", lazy="noload")

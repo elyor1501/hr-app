@@ -115,6 +115,9 @@ class CandidateUpdate(BaseSchema):
     pending_offers: Optional[bool] = None
     pending_offers_details: Optional[str] = None
     sap_secure_id: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    special_note: Optional[str] = None
 
     @field_validator("status", mode="before")
     @classmethod
@@ -164,6 +167,9 @@ class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     pending_offers: Optional[bool] = None
     pending_offers_details: Optional[str] = None
     sap_secure_id: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    special_note: Optional[str] = None
 
 
 class CandidateInDB(CandidateResponse, EmbeddingMixin):

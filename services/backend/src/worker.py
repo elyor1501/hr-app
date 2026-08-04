@@ -14,6 +14,13 @@ from src.db.session import async_session_maker
 from src.db.models import Resume, ParsedResume, Candidate, MatchResult, CandidateCV, StaffingRequest, RequestAuditLog
 from src.services.ai_client import AIClient
 
+def _clean_value(value):
+    if value is None:
+        return None
+    if isinstance(value, str) and value.strip().upper() in ("NA", "N/A", "NONE", "NULL", "NOT AVAILABLE", "NOT PROVIDED", ""):
+        return None
+    return value
+
 logger = structlog.get_logger()
 ai_client = AIClient()
 
@@ -262,8 +269,9 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
             new_skills = set(structured_data.get("skills") or [])
             existing_candidate.skills = list(existing_skills | new_skills)
 
-        if structured_data.get("phone"):
-            existing_candidate.phone = structured_data.get("phone")
+        cleaned_phone = _clean_value(structured_data.get("phone"))
+        if cleaned_phone:
+            existing_candidate.phone = cleaned_phone
 
         if structured_data.get("email") and "@" in structured_data.get("email") and "@noemail" not in structured_data.get("email"):
             existing_candidate.email = structured_data.get("email")
@@ -274,11 +282,13 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
         if not existing_candidate.current_company and parsed.current_company:
             existing_candidate.current_company = parsed.current_company
 
-        if structured_data.get("linkedin"):
-            existing_candidate.linkedin_url = structured_data.get("linkedin")
+        cleaned_linkedin = _clean_value(structured_data.get("linkedin"))
+        if cleaned_linkedin:
+            existing_candidate.linkedin_url = cleaned_linkedin
 
-        if structured_data.get("location"):
-            existing_candidate.location = structured_data.get("location")
+        cleaned_location = _clean_value(structured_data.get("location"))
+        if cleaned_location:
+            existing_candidate.location = cleaned_location
 
         if years_exp:
             existing_candidate.years_of_experience = years_exp
@@ -290,13 +300,13 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
         first_name=first_name,
         last_name=last_name,
         email=generated_email,
-        phone=structured_data.get("phone"),
+        phone=_clean_value(structured_data.get("phone")),
         current_title=parsed.current_title,
         current_company=parsed.current_company,
         years_of_experience=years_exp,
         skills=structured_data.get("skills", []),
-        location=structured_data.get("location"),
-        linkedin_url=structured_data.get("linkedin"),
+        location=_clean_value(structured_data.get("location")),
+        linkedin_url=_clean_value(structured_data.get("linkedin")),
         resume_text=raw_text,
         json_data=structured_data,
         embedding=embedding,
@@ -441,17 +451,17 @@ async def _save_resume_result(result: dict) -> bool:
                     resume_id=UUID(resume_id),
                     first_name=first_name,
                     last_name=last_name,
-                    email=structured_data.get("email"),
-                    phone=structured_data.get("phone"),
+                    email=_clean_value(structured_data.get("email")),
+                    phone=_clean_value(structured_data.get("phone")),
                     current_title=None,
                     current_company=None,
                     years_of_experience=years_exp,
                     skills=structured_data.get("skills", []),
-                    location=structured_data.get("location"),
-                    linkedin_url=structured_data.get("linkedin"),
-                    github=structured_data.get("github"),
-                    portfolio=structured_data.get("portfolio"),
-                    summary=structured_data.get("summary"),
+                    location=_clean_value(structured_data.get("location")),
+                    linkedin_url=_clean_value(structured_data.get("linkedin")),
+                    github=_clean_value(structured_data.get("github")),
+                    portfolio=_clean_value(structured_data.get("portfolio")),
+                    summary=_clean_value(structured_data.get("summary")),
                     education=structured_data.get("education", []),
                     experience=structured_data.get("experience", []),
                     projects=structured_data.get("projects", []),
