@@ -60,7 +60,7 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
       </CardHeader>
 
       <CardContent className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 p-4 sm:p-6 w-full">
-        <div className="relative w-full max-w-[250px] aspect-square shrink-0 flex items-center justify-center">
+        <div className="relative w-full max-w-[300px] aspect-square shrink-0 flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -69,8 +69,8 @@ export function JobStatusChart({ stats }: JobStatusChartProps) {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                innerRadius="65%"
-                outerRadius="90%"
+                innerRadius="68%"
+                outerRadius="95%"
                 paddingAngle={2}
               >
                 {chartData.map((entry, index) => (

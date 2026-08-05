@@ -242,7 +242,7 @@ export default function CandidateFilters() {
             <div className="flex space-x-2">
               <Label>Candidate Status</Label>
               <div className="flex gap-2">
-                {["active", "inactive"].map((s) => {
+                {["selected", "rejected", "active", "inactive"].map((s) => {
                   const isSelected = filters.candidateStatus === s;
                   return (
                     <button
@@ -253,7 +253,11 @@ export default function CandidateFilters() {
                         isSelected
                           ? s === "active"
                             ? "bg-green-100 text-green-700 border-green-300"
-                            : "bg-red-100 text-red-700 border-red-300"
+                            : s === "selected"
+                            ? "bg-blue-100 text-blue-700 border-blue-300"
+                            : s === "rejected"
+                            ? "bg-red-100 text-red-700 border-red-300"
+                            : "bg-gray-100 text-gray-700 border-gray-300"
                           : "bg-background hover:bg-muted"
                       }`}
                     >

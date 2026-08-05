@@ -66,6 +66,9 @@ class Candidate(BaseModel):
     start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     end_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     special_note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    contract_based: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True, default=False)
+    contract_start_date: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    contract_end_date: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
     cvs: Mapped[List["CandidateCV"]] = relationship("CandidateCV", back_populates="candidate", cascade="all, delete-orphan", lazy="noload")
     attachments: Mapped[List["CandidateAttachment"]] = relationship("CandidateAttachment", back_populates="candidate", cascade="all, delete-orphan", lazy="noload")

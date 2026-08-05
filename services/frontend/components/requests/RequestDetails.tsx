@@ -28,6 +28,10 @@ export default function RequestDetails({
   const [matchStatus, setMatchStatus] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [proposedDateError, setProposedDateError] = useState<string>("");
+  const [requestedDateError, setRequestedDateError] = useState<string>("");
+  const [requestedDateValue, setRequestedDateValue] = useState<string>(
+    request?.request_date ? request.request_date.split("T")[0] : "",
+  );
   const [proposedDateValue, setProposedDateValue] = useState<string>(
     request?.proposed_date ? request.proposed_date.split("T")[0] : "",
   );
@@ -131,6 +135,9 @@ export default function RequestDetails({
     proposedDateValue: request?.proposed_date
       ? request.proposed_date.split("T")[0]
       : "",
+    requestedDateValue: request?.request_date
+      ? request.request_date.split("T")[0]
+      : "",
     requestedRate,
     requestedRateType,
     requestedCurrency,
@@ -166,6 +173,7 @@ export default function RequestDetails({
     const o = originalValues.current;
     return (
       proposedDateValue !== o.proposedDateValue ||
+      requestedDateValue !== o.requestedDateValue ||
       requestedRate !== o.requestedRate ||
       requestedRateType !== o.requestedRateType ||
       requestedCurrency !== o.requestedCurrency ||
@@ -190,6 +198,7 @@ export default function RequestDetails({
     );
   }, [
     proposedDateValue,
+    requestedDateValue,
     requestedRate,
     requestedRateType,
     requestedCurrency,
@@ -223,12 +232,13 @@ export default function RequestDetails({
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
       handleSubmit(undefined, true);
-    }, 2000);
+    }, 6000);
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
   }, [
     proposedDateValue,
+    requestedDateValue,
     requestedRate,
     requestedRateType,
     requestedCurrency,
@@ -257,6 +267,7 @@ export default function RequestDetails({
   function handleCancel() {
     const o = originalValues.current;
     setProposedDateValue(o.proposedDateValue);
+    setRequestedDateValue(o.requestedDateValue);
     setRequestedRate(o.requestedRate);
     setRequestedRateType(o.requestedRateType);
     setRequestedCurrency(o.requestedCurrency);
@@ -309,6 +320,12 @@ export default function RequestDetails({
     const value = e.target.value;
     setProposedDateValue(value);
     setProposedDateError(validateProposedDate(value));
+  };
+
+  const handleRequestedDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setRequestedDateValue(value);
+    setRequestedDateError("");
   };
 
   useEffect(() => {
@@ -595,12 +612,19 @@ export default function RequestDetails({
           ? updatedRequest.proposed_date.split("T")[0]
           : "",
       );
+      setRequestedDateValue(
+        updatedRequest?.request_date
+          ? updatedRequest.request_date.split("T")[0]
+          : "",
+      );
 
       setAutoSaveStatus("saved");
       originalValues.current = {
         proposedDateValue: updatedRequest?.proposed_date
           ? updatedRequest.proposed_date.split("T")[0]
           : "",
+        requestedDateValue: updatedRequest?.request_date
+          ? updatedRequest.request_date.split("T")[0]: "",
         requestedRate,
         requestedRateType,
         requestedCurrency,
@@ -873,11 +897,6 @@ export default function RequestDetails({
         className="grid grid-cols-1 md:grid-cols-1 gap-10"
       >
         <input type="hidden" name="id" value={request.id} />
-        <input
-          type="hidden"
-          name="request_date"
-          value={request.request_date ? request.request_date.split("T")[0] : ""}
-        />
 
         <div className="space-y-6">
           {/* <div className="flex justify-between mb-6">
@@ -1231,14 +1250,39 @@ export default function RequestDetails({
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Request Date
               </label>
+              <div className="custom-datepicker">
+                <DatePicker
+                  selected={
+                    requestedDateValue ? parseISO(requestedDateValue) : null
+                  }
+                  onChange={(date: Date | null) => {
+                    if (!date) return;
+
+                    handleRequestedDateChange({
+                      target: {
+                        name: "request_date",
+                        value: format(date, "yyyy-MM-dd"),
+                      },
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                  disabled={!isEditing}
+                  dateFormat="dd.MM.yyyy"
+                  className={fieldClass}
+                  wrapperClassName="w-full"
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  yearDropdownItemNumber={15}
+                  scrollableYearDropdown
+                  renderCustomHeader={CustomHeader}
+                  popperClassName="custom-datepicker"
+                />
+              </div>
+
               <input
-                type="text"
-                value={
-                  request.request_date ? formatDate(request.request_date) : ""
-                }
-                disabled
-                readOnly
-                className={fieldClass}
+                type="hidden"
+                name="request_date"
+                value={requestedDateValue}
               />
             </div>
             <div>
@@ -1259,6 +1303,7 @@ export default function RequestDetails({
                       },
                     } as React.ChangeEvent<HTMLInputElement>);
                   }}
+                  disabled={!isEditing}
                   dateFormat="dd.MM.yyyy"
                   className={fieldClass}
                   wrapperClassName="w-full"

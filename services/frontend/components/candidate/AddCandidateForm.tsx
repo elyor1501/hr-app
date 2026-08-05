@@ -25,7 +25,7 @@ type CandidateForm = {
   years_of_experience?: number;
   location?: string;
   linkedin_url?: string;
-  status?: "active" | "inactive";
+  status?: "selected" | "rejected" | "active" | "inactive";
   skills?: string;
   resume?: File | null;
 };
@@ -218,8 +218,10 @@ export default function CreateCandidateForm({ setOpenAction }: Props) {
                   className="w-full border rounded-md h-10 px-3"
                   {...field}
                 >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option value="selected">Selected</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
                 </select>
               </FormControl>
             </FormItem>

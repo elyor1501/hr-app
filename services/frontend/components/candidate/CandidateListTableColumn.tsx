@@ -65,13 +65,17 @@ export const columns_candidate_list: ColumnDef<CandidateList>[] = [
       return (
         <div className="flex justify-center">
           <span
-            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap ${
+            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap capitalize ${
               s === "active"
                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                : s === "selected"
+                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                : s === "rejected"
+                ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
                 : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
             }`}
           >
-            {s === "active" ? "Active" : "Inactive"}
+            {s ? s.charAt(0).toUpperCase() + s.slice(1) : "Active"}
           </span>
         </div>
       );

@@ -10,6 +10,7 @@ export type RequestItem = {
   final_rate: number | null;
   request_date: string;
   proposed_date?: string;
+  requested_date?: string;
   feedback_date?: string;
   customer_feedback?: string | null;
   contract_status: boolean;

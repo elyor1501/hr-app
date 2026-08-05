@@ -118,15 +118,19 @@ class CandidateUpdate(BaseSchema):
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     special_note: Optional[str] = None
+    contract_based: Optional[bool] = None
+    contract_start_date: Optional[str] = None
+    contract_end_date: Optional[str] = None
 
     @field_validator("status", mode="before")
     @classmethod
     def validate_status(cls, v: Optional[str]) -> Optional[str]:
         if v is None:
             return None
-        if v not in ["active", "inactive"]:
-            raise ValueError("Status must be active or inactive")
-        return v
+        allowed = ["selected", "rejected", "active", "inactive"]
+        if v.lower() not in allowed:
+            raise ValueError("Status must be selected, rejected, active, or inactive")
+        return v.lower()
 
     @field_validator("phone")
     @classmethod
@@ -169,8 +173,9 @@ class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     sap_secure_id: Optional[str] = None
     start_date: Optional[str] = None
     end_date: Optional[str] = None
-    special_note: Optional[str] = None
-
+    contract_based: Optional[bool] = None
+    contract_start_date: Optional[str] = None
+    contract_end_date: Optional[str] = None
 
 class CandidateInDB(CandidateResponse, EmbeddingMixin):
     pass

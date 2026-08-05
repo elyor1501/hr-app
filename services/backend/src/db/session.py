@@ -84,6 +84,21 @@ async def init_db_connection() -> None:
     try:
         async with engine.begin() as conn:
             await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+            try:
+                await conn.execute(
+                    text("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS special_note TEXT")
+                )
+                await conn.execute(
+                    text("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS contract_based BOOLEAN DEFAULT FALSE")
+                )
+                await conn.execute(
+                    text("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS contract_start_date VARCHAR(20)")
+                )
+                await conn.execute(
+                    text("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS contract_end_date VARCHAR(20)")
+                )
+            except Exception:
+                pass
         await warm_db_pool()
         logger.info("database_connection_initialized")
     except Exception as e:

@@ -146,6 +146,9 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [skillsText, setSkillsText] = useState<string>(
     (empData?.skills || []).join(", "),
   );
+  const [specialNote, setSpecialNote] = useState<string>(
+    empData?.special_note ?? "",
+  );
   const [availability, setAvailability] = useState<string>(
     empData?.availability ?? "",
   );
@@ -184,6 +187,15 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [pendingOffersDetails, setPendingOffersDetails] = useState(
     empData?.pending_offers_details ?? "",
   );
+  const [contractBased, setContractBased] = useState(
+    empData?.contract_based ?? false,
+  );
+  const [contractStartDate, setContractStartDate] = useState(
+    empData?.contract_start_date ?? "",
+  );
+  const [contractEndDate, setContractEndDate] = useState(
+    empData?.contract_end_date ?? "",
+  );
 
   type AutoSaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
   const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>("idle");
@@ -200,6 +212,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     currentCompany: empData?.current_company ?? "",
     yearsOfExperience: empData?.years_of_experience?.toString() ?? "",
     skillsText: (empData?.skills || []).join(", "),
+    specialNote: empData?.special_note ?? "",
     availability: empData?.availability ?? "",
     availabilityMode:
       empData?.availability &&
@@ -219,6 +232,9 @@ export default function CandidateDetails({ id, empData }: Props) {
     usExperience: empData?.us_experience?.toString() ?? "",
     pendingOffers: empData?.pending_offers ?? false,
     pendingOffersDetails: empData?.pending_offers_details ?? "",
+    contractBased: empData?.contract_based ?? false,
+    contractStartDate: empData?.contract_start_date ?? "",
+    contractEndDate: empData?.contract_end_date ?? "",
     rateType: empData?.rate_type ?? "hourly",
     currency: empData?.currency ?? "EUR",
     proposedRateType: empData?.proposed_rate_type ?? "daily",
@@ -265,6 +281,7 @@ export default function CandidateDetails({ id, empData }: Props) {
       currentCompany !== o.currentCompany ||
       yearsOfExperience !== o.yearsOfExperience ||
       skillsText !== o.skillsText ||
+      specialNote !== o.specialNote ||
       availability !== o.availability ||
       experienceLevel !== o.experienceLevel ||
       vendor !== o.vendor ||
@@ -282,7 +299,10 @@ export default function CandidateDetails({ id, empData }: Props) {
       proposedRateType !== o.proposedRateType ||
       proposedCurrency !== o.proposedCurrency ||
       requestedRateAmount !== o.requestedRateAmount ||
-      proposedRateAmount !== o.proposedRateAmount
+      proposedRateAmount !== o.proposedRateAmount ||
+      contractBased !== o.contractBased ||
+      contractStartDate !== o.contractStartDate ||
+      contractEndDate !== o.contractEndDate
     );
   }, [
     firstName,
@@ -295,6 +315,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     currentCompany,
     yearsOfExperience,
     skillsText,
+    specialNote,
     availability,
     experienceLevel,
     vendor,
@@ -313,6 +334,9 @@ export default function CandidateDetails({ id, empData }: Props) {
     proposedCurrency,
     requestedRateAmount,
     proposedRateAmount,
+    contractBased,
+    contractStartDate,
+    contractEndDate,
   ]);
 
   useEffect(() => {
@@ -358,6 +382,10 @@ export default function CandidateDetails({ id, empData }: Props) {
     proposedCurrency,
     requestedRateAmount,
     proposedRateAmount,
+    specialNote,
+    contractBased,
+    contractStartDate,
+    contractEndDate,
   ]);
 
   function handleCancel() {
@@ -372,6 +400,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     setCurrentCompany(o.currentCompany);
     setYearsOfExperience(o.yearsOfExperience);
     setSkillsText(o.skillsText);
+    setSpecialNote(o.specialNote);
     setAvailability(o.availability);
     setAvailabilityMode(o.availabilityMode);
     setExperienceLevel(o.experienceLevel);
@@ -385,6 +414,9 @@ export default function CandidateDetails({ id, empData }: Props) {
     setUsExperience(o.usExperience);
     setPendingOffers(o.pendingOffers);
     setPendingOffersDetails(o.pendingOffersDetails);
+    setContractBased(o.contractBased);
+    setContractStartDate(o.contractStartDate);
+    setContractEndDate(o.contractEndDate);
     setRateType(o.rateType);
     setCurrency(o.currency);
     setProposedRateType(o.proposedRateType);
@@ -473,6 +505,7 @@ export default function CandidateDetails({ id, empData }: Props) {
           .map((s) => s.trim().toLowerCase())
           .filter(Boolean);
       }
+      payload.special_note = specialNote.trim();
       if (availability) payload.availability = availability;
       if (experienceLevel) payload.experience_level = experienceLevel;
       if (vendor.trim()) payload.vendor = vendor.trim();
@@ -490,6 +523,11 @@ export default function CandidateDetails({ id, empData }: Props) {
       payload.pending_offers_details = pendingOffers
         ? pendingOffersDetails.trim()
         : "";
+      payload.contract_based = contractBased;
+      payload.contract_start_date = contractBased
+        ? contractStartDate.trim()
+        : "";
+      payload.contract_end_date = contractBased ? contractEndDate.trim() : "";
       if (requestedRateAmount !== "") {
         const parsed = parseFloat(requestedRateAmount);
         if (!isNaN(parsed)) payload.hourly_rate = parsed;
@@ -538,6 +576,8 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (updated.years_of_experience !== undefined)
         setYearsOfExperience(updated.years_of_experience?.toString() ?? "");
       if (updated.skills) setSkillsText((updated.skills || []).join(", "));
+      if (updated.special_note !== undefined)
+        setSpecialNote(updated.special_note ?? "");
       if (updated.availability !== undefined) {
         const newAvail = updated.availability ?? "";
         setAvailability(newAvail);
@@ -561,6 +601,9 @@ export default function CandidateDetails({ id, empData }: Props) {
       setUsExperience(updated.us_experience?.toString() ?? "");
       setPendingOffers(updated.pending_offers ?? false);
       setPendingOffersDetails(updated.pending_offers_details ?? "");
+      setContractBased(updated.contract_based ?? false);
+      setContractStartDate(updated.contract_start_date ?? "");
+      setContractEndDate(updated.contract_end_date ?? "");
 
       setAutoSaveStatus("saved");
       originalValues.current = {
@@ -577,6 +620,10 @@ export default function CandidateDetails({ id, empData }: Props) {
         skillsText: updated.skills
           ? (updated.skills as string[]).join(", ")
           : skillsText,
+        specialNote: updated.special_note ?? specialNote,
+        contractBased: updated.contract_based ?? contractBased,
+        contractStartDate: updated.contract_start_date ?? contractStartDate,
+        contractEndDate: updated.contract_end_date ?? contractEndDate,
         availability: updated.availability ?? availability,
         availabilityMode: AVAILABILITY_OPTIONS.includes(
           updated.availability ?? "",
@@ -608,7 +655,7 @@ export default function CandidateDetails({ id, empData }: Props) {
           updated.proposed_rate?.toString() ?? proposedRateAmount,
         candidateStatus: updated.status ?? candidate?.status ?? "",
       };
-      setTimeout(() => setAutoSaveStatus("idle"), 3000);
+      setTimeout(() => setAutoSaveStatus("idle"), 6000);
       toast.success("Candidate updated successfully");
       router.refresh();
     } catch (error: any) {
@@ -1017,6 +1064,8 @@ export default function CandidateDetails({ id, empData }: Props) {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Candidate Status</SelectLabel>
+                        <SelectItem value="selected">Selected</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
                         <SelectItem value="active">Active</SelectItem>
                         <SelectItem value="inactive">Inactive</SelectItem>
                       </SelectGroup>
@@ -1025,7 +1074,10 @@ export default function CandidateDetails({ id, empData }: Props) {
                 ) : (
                   <input
                     value={
-                      candidate?.status === "active" ? "Active" : "Inactive"
+                      candidate?.status
+                        ? candidate.status.charAt(0).toUpperCase() +
+                          candidate.status.slice(1)
+                        : "Active"
                     }
                     disabled
                     className={fieldClass}
@@ -1245,6 +1297,52 @@ export default function CandidateDetails({ id, empData }: Props) {
               </label>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={contractBased}
+                  disabled={!isEditing}
+                  onCheckedChange={(checked) =>
+                    isEditing && setContractBased(checked === true)
+                  }
+                  className="border-gray-400 data-[state=checked]:bg-blue-700 data-[state=checked]:border-blue-700 disabled:opacity-100"
+                />
+                Contract based
+              </label>
+              {contractBased && (
+                <div>
+                  <div>
+                    <label className="flex items-center gap-2">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      value={contractStartDate}
+                      onChange={(e) =>
+                        isEditing && setContractStartDate(e.target.value)
+                      }
+                      disabled={!isEditing}
+                      className={fieldClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-2">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      value={contractEndDate}
+                      onChange={(e) =>
+                        isEditing && setContractEndDate(e.target.value)
+                      }
+                      disabled={!isEditing}
+                      className={fieldClass}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             {pendingOffers && (
               <div>
                 <label className="block text-sm font-medium mb-1">
@@ -1271,6 +1369,20 @@ export default function CandidateDetails({ id, empData }: Props) {
                 disabled={!isEditing}
                 rows={6}
                 placeholder="React, Node.js, Python..."
+                className={fieldClass}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-foreground">
+                Special Note
+              </label>
+              <textarea
+                value={specialNote}
+                onChange={(e) => setSpecialNote(e.target.value)}
+                disabled={!isEditing}
+                rows={3}
+                placeholder="Add special notes about the candidate..."
                 className={fieldClass}
               />
             </div>

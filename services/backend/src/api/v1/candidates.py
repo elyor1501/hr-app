@@ -83,6 +83,10 @@ CANDIDATE_LIST_COLUMNS = [
     Candidate.pending_offers,
     Candidate.pending_offers_details,
     Candidate.sap_secure_id,
+    Candidate.special_note,
+    Candidate.contract_based,
+    Candidate.contract_start_date,
+    Candidate.contract_end_date,
 ]
 
 
@@ -175,7 +179,7 @@ async def create_candidate(
         "years_of_experience": years_of_experience,
         "location": location,
         "linkedin_url": linkedin_url,
-        "status": status_field if status_field in ["active", "inactive"] else "active",
+        "status": status_field if status_field in ["selected", "rejected", "active", "inactive"] else "active",
         "experience_level": experience_level,
         "hourly_rate": hourly_rate,
         "availability": availability,
@@ -763,10 +767,10 @@ async def update_candidate(
                 update_dict["proposed_daily_rate"] = round(float(p_rate) / 22, 2)
 
     if "status" in update_dict:
-        if update_dict["status"] not in ["active", "inactive"]:
+        if update_dict["status"] not in ["selected", "rejected", "active", "inactive"]:
             raise HTTPException(
                 status_code=400,
-                detail="Status must be active or inactive"
+                detail="Status must be selected, rejected, active, or inactive"
             )
 
     existing = await repo.get_by_id(id)

@@ -32,6 +32,8 @@ type Employee = {
 type EmployeeStatusChartProps = {
   employees?: Employee[];
   stats?: {
+    selected?: number;
+    rejected?: number;
     active: number;
     inactive: number;
   };
@@ -45,16 +47,28 @@ export function EmployeeStatusChart({
 
   if (stats) {
     chartData = [
+      { status: "Selected", total: stats.selected ?? 0 },
+      { status: "Rejected", total: stats.rejected ?? 0 },
       { status: "Active", total: stats.active },
       { status: "Inactive", total: stats.inactive },
     ];
   } else if (employees) {
+    const selectedCount = employees.filter(
+      (emp) => emp.candidate_status?.toLowerCase() === "selected",
+    ).length;
+    const rejectedCount = employees.filter(
+      (emp) => emp.candidate_status?.toLowerCase() === "rejected",
+    ).length;
     const activeCount = employees.filter(
       (emp) => emp.candidate_status?.toLowerCase() === "active",
     ).length;
-    const inactiveCount = employees.length - activeCount;
+    const inactiveCount = employees.filter(
+      (emp) => emp.candidate_status?.toLowerCase() === "inactive",
+    ).length;
 
     chartData = [
+      { status: "Selected", total: selectedCount },
+      { status: "Rejected", total: rejectedCount },
       { status: "Active", total: activeCount },
       { status: "Inactive", total: inactiveCount },
     ];

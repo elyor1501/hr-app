@@ -48,6 +48,7 @@ class RequestUpdate(BaseModel):
     job_description: Optional[str] = Field(default=None)
     prepared_rate: Optional[float] = Field(default=None, ge=0)
     final_rate: Optional[float] = Field(default=None, ge=0)
+    request_date: Optional[date] = Field(default=None)
     proposed_date: Optional[date] = Field(default=None)
     feedback_date: Optional[date] = Field(default=None)
     customer_feedback: Optional[str] = Field(default=None)
@@ -795,6 +796,8 @@ async def update_request(
             )
     jd_changed = "job_description" in update_data and update_data["job_description"] != req.job_description
     for field, value in update_data.items():
+        if value is None and field in ("request_date",):
+            continue
         setattr(req, field, value)
     await session.commit()
     await session.refresh(req)

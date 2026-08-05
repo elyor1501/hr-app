@@ -24,6 +24,8 @@ class JobsByStatus(BaseModel):
 
 
 class CandidatesByStatus(BaseModel):
+    selected: int = 0
+    rejected: int = 0
     active: int = 0
     inactive: int = 0
 
@@ -70,6 +72,8 @@ async def _build_stats_from_row(row) -> StatsResponse:
             closed_jobs=row.closed_jobs or 0
         ),
         candidates_by_status=CandidatesByStatus(
+            selected=row.selected_candidates or 0,
+            rejected=row.rejected_candidates or 0,
             active=row.active_candidates or 0,
             inactive=row.inactive_candidates or 0
         ),
@@ -96,6 +100,8 @@ async def _fetch_fresh_stats(session: AsyncSession) -> StatsResponse:
             (SELECT COUNT(*) FROM jobs WHERE LOWER(employment_type) = 'entry level') as entry_level,
             (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'open') as open_jobs,
             (SELECT COUNT(*) FROM jobs WHERE LOWER(status) = 'closed') as closed_jobs,
+            (SELECT COUNT(*) FROM candidates WHERE status = 'selected') as selected_candidates,
+            (SELECT COUNT(*) FROM candidates WHERE status = 'rejected') as rejected_candidates,
             (SELECT COUNT(*) FROM candidates WHERE status = 'active') as active_candidates,
             (SELECT COUNT(*) FROM candidates WHERE status = 'inactive') as inactive_candidates,
             (SELECT COUNT(*) FROM staffing_requests WHERE state = 'open') as open_requests,

@@ -385,9 +385,13 @@ export default function CompareView({ candidates: initialCandidates }: Props) {
                 </div>
                 {c.status && (
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${
                       c.status.toLowerCase() === "active"
                         ? "bg-green-100 text-green-700"
+                        : c.status.toLowerCase() === "selected"
+                        ? "bg-blue-100 text-blue-700"
+                        : c.status.toLowerCase() === "rejected"
+                        ? "bg-red-100 text-red-700"
                         : "bg-gray-100 text-gray-500"
                     }`}
                   >

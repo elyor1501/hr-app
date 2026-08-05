@@ -45,6 +45,7 @@ export async function updateRequest(formData: FormData): Promise<void> {
     final_rate: formData.get("final_rate")
       ? Number(formData.get("final_rate"))
       : null,
+    request_date: formData.get("request_date") || null,
     proposed_date: formData.get("proposed_date") || null,
     feedback_date: formData.get("feedback_date") || null,
 

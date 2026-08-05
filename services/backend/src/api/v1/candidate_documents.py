@@ -122,6 +122,10 @@ class CandidateProfileResponse(BaseModel):
     us_experience: Optional[int] = None
     pending_offers: Optional[bool] = None
     pending_offers_details: Optional[str] = None
+    special_note: Optional[str] = None
+    contract_based: Optional[bool] = None
+    contract_start_date: Optional[str] = None
+    contract_end_date: Optional[str] = None
     sap_secure_id: Optional[str] = None
     cvs: List[CVResponse] = []
     attachments: List[AttachmentResponse] = []
@@ -221,6 +225,8 @@ async def get_candidate_profile(
                 c.dob, c.ssn_last4, c.work_authorization, c.interview_availability,
                 c.willing_to_travel, c.willing_inperson, c.us_experience,
                 c.pending_offers, c.pending_offers_details,
+                c.special_note,
+                c.contract_based, c.contract_start_date, c.contract_end_date,
                 c.sap_secure_id,
                 pr.github, pr.portfolio, pr.summary,
                 pr.education, pr.experience, pr.projects,
@@ -325,6 +331,10 @@ async def get_candidate_profile(
         pending_offers=row["pending_offers"],
         pending_offers_details=row["pending_offers_details"],
         sap_secure_id=row["sap_secure_id"],
+        special_note=row["special_note"],
+        contract_based=row["contract_based"],
+        contract_start_date=row["contract_start_date"],
+        contract_end_date=row["contract_end_date"],
         cvs=[_cv_to_response(cv) for cv in cvs],
         attachments=[_attachment_to_response(att) for att in attachments],
         created_at=row["created_at"].isoformat(),
