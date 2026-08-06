@@ -1310,36 +1310,28 @@ export default function CandidateDetails({ id, empData }: Props) {
                 Contract based
               </label>
               {contractBased && (
-                <div>
+                <>
                   <div>
-                    <label className="flex items-center gap-2">
-                      Start Date
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Start Date</label>
                     <input
                       type="date"
                       value={contractStartDate}
-                      onChange={(e) =>
-                        isEditing && setContractStartDate(e.target.value)
-                      }
+                      onChange={(e) => isEditing && setContractStartDate(e.target.value)}
                       disabled={!isEditing}
                       className={fieldClass}
                     />
                   </div>
                   <div>
-                    <label className="flex items-center gap-2">
-                      End Date
-                    </label>
+                    <label className="block text-sm font-medium mb-1">End Date</label>
                     <input
                       type="date"
                       value={contractEndDate}
-                      onChange={(e) =>
-                        isEditing && setContractEndDate(e.target.value)
-                      }
+                      onChange={(e) => isEditing && setContractEndDate(e.target.value)}
                       disabled={!isEditing}
                       className={fieldClass}
                     />
                   </div>
-                </div>
+                </>
               )}
             </div>
 
