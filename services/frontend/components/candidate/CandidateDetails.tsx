@@ -163,6 +163,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     empData?.experience_level ?? "",
   );
   const [vendor, setVendor] = useState<string>(empData?.vendor ?? "");
+  const [vendorEmail, setVendorEmail] = useState<string>(empData?.vendor_email ?? "");
+  const [vendorPhone, setVendorPhone] = useState<string>(empData?.vendor_phone ?? "");
   const [dob, setDob] = useState(empData?.dob ?? "");
   const [ssnLast4, setSsnLast4] = useState(empData?.ssn_last4 ?? "");
   const [showSsn, setShowSsn] = useState(false);
@@ -196,6 +198,8 @@ export default function CandidateDetails({ id, empData }: Props) {
   const [contractEndDate, setContractEndDate] = useState(
     empData?.contract_end_date ?? "",
   );
+  const [sapEmail, setSapEmail] = useState(empData?.sap_email ?? "");
+  const [sapCuser, setSapCuser] = useState(empData?.sap_cuser ?? "");
 
   type AutoSaveStatus = "idle" | "pending" | "saving" | "saved" | "error";
   const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>("idle");
@@ -223,6 +227,8 @@ export default function CandidateDetails({ id, empData }: Props) {
           : "",
     experienceLevel: empData?.experience_level ?? "",
     vendor: empData?.vendor ?? "",
+    vendorEmail: empData?.vendor_email ?? "",
+    vendorPhone: empData?.vendor_phone ?? "",
     dob: empData?.dob ?? "",
     ssnLast4: empData?.ssn_last4 ?? "",
     workAuthorization: empData?.work_authorization ?? "",
@@ -242,6 +248,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     requestedRateAmount: empData?.hourly_rate?.toString() ?? "",
     proposedRateAmount: empData?.proposed_rate?.toString() ?? "",
     candidateStatus: empData?.status ?? "",
+    sapEmail: empData?.sap_email ?? "",
+    sapCuser: empData?.sap_cuser ?? "",
   });
 
   const calculateDailyRate = (amount: string, type: string): number | null => {
@@ -285,6 +293,8 @@ export default function CandidateDetails({ id, empData }: Props) {
       availability !== o.availability ||
       experienceLevel !== o.experienceLevel ||
       vendor !== o.vendor ||
+      vendorEmail !== o.vendorEmail ||
+      vendorPhone !== o.vendorPhone ||
       dob !== o.dob ||
       ssnLast4 !== o.ssnLast4 ||
       workAuthorization !== o.workAuthorization ||
@@ -302,7 +312,9 @@ export default function CandidateDetails({ id, empData }: Props) {
       proposedRateAmount !== o.proposedRateAmount ||
       contractBased !== o.contractBased ||
       contractStartDate !== o.contractStartDate ||
-      contractEndDate !== o.contractEndDate
+      contractEndDate !== o.contractEndDate ||
+      sapEmail !== o.sapEmail ||
+      sapCuser !== o.sapCuser
     );
   }, [
     firstName,
@@ -319,6 +331,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     availability,
     experienceLevel,
     vendor,
+    vendorEmail,
+    vendorPhone,
     dob,
     ssnLast4,
     workAuthorization,
@@ -337,6 +351,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     contractBased,
     contractStartDate,
     contractEndDate,
+    sapEmail,
+    sapCuser,
   ]);
 
   useEffect(() => {
@@ -367,6 +383,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     availability,
     experienceLevel,
     vendor,
+    vendorEmail,
+    vendorPhone,
     dob,
     ssnLast4,
     workAuthorization,
@@ -386,6 +404,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     contractBased,
     contractStartDate,
     contractEndDate,
+    sapEmail,
+    sapCuser,
   ]);
 
   function handleCancel() {
@@ -405,6 +425,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     setAvailabilityMode(o.availabilityMode);
     setExperienceLevel(o.experienceLevel);
     setVendor(o.vendor);
+    setVendorEmail(o.vendorEmail);
+    setVendorPhone(o.vendorPhone);
     setDob(o.dob);
     setSsnLast4(o.ssnLast4);
     setWorkAuthorization(o.workAuthorization);
@@ -417,6 +439,8 @@ export default function CandidateDetails({ id, empData }: Props) {
     setContractBased(o.contractBased);
     setContractStartDate(o.contractStartDate);
     setContractEndDate(o.contractEndDate);
+    setSapEmail(o.sapEmail);
+    setSapCuser(o.sapCuser);
     setRateType(o.rateType);
     setCurrency(o.currency);
     setProposedRateType(o.proposedRateType);
@@ -509,6 +533,8 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (availability) payload.availability = availability;
       if (experienceLevel) payload.experience_level = experienceLevel;
       if (vendor.trim()) payload.vendor = vendor.trim();
+      payload.vendor_email = vendorEmail.trim();
+      payload.vendor_phone = vendorPhone.trim();
       payload.dob = dob.trim();
       payload.ssn_last4 = ssnLast4.trim();
       payload.work_authorization = workAuthorization.trim();
@@ -540,6 +566,8 @@ export default function CandidateDetails({ id, empData }: Props) {
       }
       payload.proposed_rate_type = proposedRateType;
       payload.proposed_currency = proposedCurrency;
+      payload.sap_email = sapEmail.trim();
+      payload.sap_cuser = sapCuser.trim();
 
       const res = await fetch(`${apiUrl}/api/v1/candidates/${candidate.id}`, {
         method: "PATCH",
@@ -592,6 +620,8 @@ export default function CandidateDetails({ id, empData }: Props) {
       if (updated.experience_level)
         setExperienceLevel(updated.experience_level ?? "");
       if (updated.vendor) setVendor(updated.vendor ?? "");
+      setVendorEmail(updated.vendor_email ?? "");
+      setVendorPhone(updated.vendor_phone ?? "");
       setDob(updated.dob ?? "");
       setSsnLast4(updated.ssn_last4 ?? "");
       setWorkAuthorization(updated.work_authorization ?? "");
@@ -604,6 +634,8 @@ export default function CandidateDetails({ id, empData }: Props) {
       setContractBased(updated.contract_based ?? false);
       setContractStartDate(updated.contract_start_date ?? "");
       setContractEndDate(updated.contract_end_date ?? "");
+      setSapEmail(updated.sap_email ?? "");
+      setSapCuser(updated.sap_cuser ?? "");
 
       setAutoSaveStatus("saved");
       originalValues.current = {
@@ -634,6 +666,8 @@ export default function CandidateDetails({ id, empData }: Props) {
             : "",
         experienceLevel: updated.experience_level ?? experienceLevel,
         vendor: updated.vendor ?? vendor,
+        vendorEmail: updated.vendor_email ?? vendorEmail,
+        vendorPhone: updated.vendor_phone ?? vendorPhone,
         dob: updated.dob ?? dob,
         ssnLast4: updated.ssn_last4 ?? ssnLast4,
         workAuthorization: updated.work_authorization ?? workAuthorization,
@@ -654,6 +688,8 @@ export default function CandidateDetails({ id, empData }: Props) {
         proposedRateAmount:
           updated.proposed_rate?.toString() ?? proposedRateAmount,
         candidateStatus: updated.status ?? candidate?.status ?? "",
+        sapEmail: updated.sap_email ?? sapEmail,
+        sapCuser: updated.sap_cuser ?? sapCuser,
       };
       setTimeout(() => setAutoSaveStatus("idle"), 6000);
       toast.success("Candidate updated successfully");
@@ -1379,19 +1415,88 @@ export default function CandidateDetails({ id, empData }: Props) {
               />
             </div>
 
+            {candidate?.status === "selected" && (
+              <>
+                {sectionHeader("SAP Customer Details")}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-foreground">
+                      SAP Email
+                    </label>
+                    <input
+                      value={sapEmail}
+                      onChange={(e) => setSapEmail(e.target.value)}
+                      disabled={!isEditing}
+                      placeholder="e.g. Micky.Mouse@sap.com"
+                      className={fieldClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-foreground">
+                      SAP C-User ID
+                    </label>
+                    <input
+                      value={sapCuser}
+                      onChange={(e) => setSapCuser(e.target.value)}
+                      disabled={!isEditing}
+                      placeholder="e.g. MMOUSE"
+                      className={fieldClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-foreground">
+                      SAP Secure ID
+                    </label>
+                    <input
+                      value={sapSecureId ?? ""}
+                      disabled
+                      placeholder="Auto-generated from DOB + SSN"
+                      className={fieldClass}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
             {sectionHeader("Rate & Vendor Details")}
 
-            <div>
-              <label className="block text-sm font-medium mb-1 text-foreground">
-                Vendor
-              </label>
-              <input
-                value={vendor}
-                onChange={(e) => setVendor(e.target.value)}
-                disabled={!isEditing}
-                placeholder={isEditing ? "Enter vendor name" : "NA"}
-                className={fieldClass}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">
+                  Vendor Name
+                </label>
+                <input
+                  value={vendor}
+                  onChange={(e) => setVendor(e.target.value)}
+                  disabled={!isEditing}
+                  placeholder={isEditing ? "Enter vendor name" : "NA"}
+                  className={fieldClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">
+                  Vendor Email
+                </label>
+                <input
+                  value={vendorEmail}
+                  onChange={(e) => setVendorEmail(e.target.value)}
+                  disabled={!isEditing}
+                  placeholder={isEditing ? "Enter vendor email" : "NA"}
+                  className={fieldClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-foreground">
+                  Vendor Phone
+                </label>
+                <input
+                  value={vendorPhone}
+                  onChange={(e) => setVendorPhone(e.target.value)}
+                  disabled={!isEditing}
+                  placeholder={isEditing ? "Enter vendor phone" : "NA"}
+                  className={fieldClass}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">

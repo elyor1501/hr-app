@@ -786,7 +786,7 @@ export default function RequestDetails({
   const proposedCandidateIds = new Set(
     proposedCandidates.map((c: any) => c.id),
   );
-  const isSapRequest = !!request.sap_email;
+  // const isSapRequest = !!request.sap_email;
 
   return (
     <div className="w-full bg-card text-card-foreground rounded-xl shadow-sm border border-border p-8 mt-2">
@@ -1398,7 +1398,7 @@ export default function RequestDetails({
             </div>
           </div>
 
-          {(request.sap_email || isEditing) && (
+          {/* {(request.sap_email || isEditing) && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end border rounded-lg p-2">
               <div className=" mt-2 mb-4 ">
                 {sectionHeader("SAP Customer Details :")}
@@ -1431,7 +1431,9 @@ export default function RequestDetails({
                 />
               </div>
             </div>
-          )}
+          )} */}
+          <input type="hidden" name="sap_email" value={sapEmail} />
+          <input type="hidden" name="sap_cuser" value={sapCuser} />
 
           <div>
             <label className="block text-sm font-medium mb-1 text-foreground">
@@ -1734,7 +1736,7 @@ export default function RequestDetails({
                     </p>
                   )}
 
-                  {isSapRequest && candidate.sap_secure_id && (
+                  {/* {isSapRequest && candidate.sap_secure_id && (
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs font-semibold text-foreground">
                         SAP Secure ID:
@@ -1754,7 +1756,7 @@ export default function RequestDetails({
                     <p className="text-xs text-orange-500 mt-1">
                       SAP Secure ID: Incomplete (DOB or SSN missing)
                     </p>
-                  )}
+                  )} */}
 
                   <div className="flex justify-end gap-2">
                     {/* <button

@@ -106,6 +106,10 @@ class CandidateProfileResponse(BaseModel):
     status: Optional[str] = None
     candidate_status: Optional[str] = None
     vendor: Optional[str] = None
+    vendor_email: Optional[str] = None
+    vendor_phone: Optional[str] = None
+    sap_email: Optional[str] = None
+    sap_cuser: Optional[str] = None
     rate_type: Optional[str] = None
     currency: Optional[str] = None
     daily_rate: Optional[float] = None
@@ -219,7 +223,7 @@ async def get_candidate_profile(
                 c.current_title, c.current_company, c.years_of_experience,
                 c.skills, c.location, c.status, c.linkedin_url,
                 c.experience_level, c.hourly_rate, c.availability,
-                c.vendor, c.rate_type, c.currency, c.daily_rate,
+                c.vendor, c.vendor_email, c.vendor_phone, c.rate_type, c.currency, c.daily_rate,
                 c.proposed_rate, c.proposed_rate_type, c.proposed_daily_rate,
                 c.proposed_currency, c.json_data, c.created_at, c.updated_at,
                 c.dob, c.ssn_last4, c.work_authorization, c.interview_availability,
@@ -227,7 +231,7 @@ async def get_candidate_profile(
                 c.pending_offers, c.pending_offers_details,
                 c.special_note,
                 c.contract_based, c.contract_start_date, c.contract_end_date,
-                c.sap_secure_id,
+                c.sap_secure_id, c.sap_email, c.sap_cuser,
                 pr.github, pr.portfolio, pr.summary,
                 pr.education, pr.experience, pr.projects,
                 pr.certifications, pr.candidate_status
@@ -314,6 +318,10 @@ async def get_candidate_profile(
         status=row["status"],
         candidate_status=row["candidate_status"],
         vendor=row["vendor"],
+        vendor_email=row["vendor_email"],
+        vendor_phone=row["vendor_phone"],
+        sap_email=row["sap_email"],
+        sap_cuser=row["sap_cuser"],
         rate_type=row["rate_type"],
         currency=row["currency"],
         daily_rate=float(row["daily_rate"]) if row["daily_rate"] else None,

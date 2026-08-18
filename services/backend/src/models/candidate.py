@@ -101,6 +101,8 @@ class CandidateUpdate(BaseSchema):
     rate_type: Optional[str] = None
     currency: Optional[str] = None
     vendor: Optional[str] = None
+    vendor_email: Optional[str] = None
+    vendor_phone: Optional[str] = None
     proposed_rate: Optional[float] = None
     proposed_rate_type: Optional[str] = None
     proposed_daily_rate: Optional[float] = None
@@ -115,6 +117,8 @@ class CandidateUpdate(BaseSchema):
     pending_offers: Optional[bool] = None
     pending_offers_details: Optional[str] = None
     sap_secure_id: Optional[str] = None
+    sap_email: Optional[str] = None
+    sap_cuser: Optional[str] = None
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     special_note: Optional[str] = None
@@ -157,6 +161,8 @@ class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     rate_type: Optional[str] = None
     currency: Optional[str] = None
     vendor: Optional[str] = None
+    vendor_email: Optional[str] = None
+    vendor_phone: Optional[str] = None
     proposed_rate: Optional[float] = None
     proposed_rate_type: Optional[str] = None
     proposed_daily_rate: Optional[float] = None
@@ -171,6 +177,8 @@ class CandidateResponse(CandidateBase, IDSchema, TimestampSchema):
     pending_offers: Optional[bool] = None
     pending_offers_details: Optional[str] = None
     sap_secure_id: Optional[str] = None
+    sap_email: Optional[str] = None
+    sap_cuser: Optional[str] = None
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     contract_based: Optional[bool] = None
