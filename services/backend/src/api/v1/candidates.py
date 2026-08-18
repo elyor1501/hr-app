@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
-from sqlalchemy import select, func, or_, and_, text
+from sqlalchemy import select, func, or_, and_, text, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
@@ -397,7 +397,10 @@ async def search_candidates(
             filters.append(or_(*title_clauses))
 
     if currentCompany:
-        filters.append(Candidate.current_company.ilike(f"%{currentCompany}%"))
+        company_values = [c.strip() for c in currentCompany.split("|") if c.strip()]
+        if company_values:
+            company_clauses = [Candidate.current_company.ilike(f"%{c}%") for c in company_values]
+            filters.append(or_(*company_clauses))
 
     if experienceMin is not None:
         filters.append(Candidate.years_of_experience >= experienceMin)
@@ -415,7 +418,13 @@ async def search_candidates(
             filters.append(or_(*skills_filters))
 
     if candidateStatus:
-        filters.append(Candidate.status == candidateStatus)
+        status_values = []
+        for s in candidateStatus.split("|"):
+            s = s.strip()
+            if s:
+                status_values.append(s)
+        if status_values:
+            filters.append(cast(Candidate.status, String).in_(status_values))
 
     if experience_level:
         filters.append(Candidate.experience_level == experience_level)

@@ -589,7 +589,9 @@ async def list_requests(
     filters = []
 
     if state:
-        filters.append(StaffingRequest.state == state)
+        state_values = [s.strip() for s in state.split("|") if s.strip()]
+        if state_values:
+            filters.append(StaffingRequest.state.in_(state_values))
 
     if q and q.strip():
         filters.append(

@@ -38,7 +38,8 @@ export async function getRequests(
   sortBy?: string,
   sortOrder?: string,
   requestNumber?: string,
-  company?: string
+  company?: string,
+  state?: string
 ): Promise<RequestItem[]> {
   const apiUrl = getApiUrl();
   const token = getAuthToken();
@@ -55,6 +56,7 @@ export async function getRequests(
   if (sortOrder) queryParams.set("sortOrder", sortOrder);
   if (requestNumber) queryParams.set("requestNumber", requestNumber);
   if (company) queryParams.set("company", company);
+  if (state) queryParams.set("state", state);
   const url = `${apiUrl}/api/v1/requests?${queryParams.toString()}`;
   try {
     const res = await fetch(

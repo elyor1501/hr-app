@@ -137,7 +137,12 @@ function FilterPanel({
           )}
         </div>
         <div className="flex gap-2 justify-end border-border/60">
-          <Button variant="ghost" size="sm" onClick={onReset} className="h-7 px-2 text-xs">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onReset}
+            className="h-7 px-2 text-xs"
+          >
             Reset
           </Button>
           <Button
@@ -155,7 +160,9 @@ function FilterPanel({
   );
 }
 
-function parseSearchDate(value: string): { dateFrom: string; dateTo: string } | null {
+function parseSearchDate(
+  value: string,
+): { dateFrom: string; dateTo: string } | null {
   const ddmmyyyy = value.match(/^(\d{2})[.\-\/](\d{2})[.\-\/](\d{4})$/);
   if (ddmmyyyy) {
     const formatted = `${ddmmyyyy[3]}-${ddmmyyyy[2]}-${ddmmyyyy[1]}`;
@@ -189,22 +196,47 @@ export default function CandidatesTable({
   );
 
   const parseMulti = (val: string | null) =>
-    val ? val.split("|").map((v) => v.trim()).filter(Boolean) : [];
+    val
+      ? val
+          .split("|")
+          .map((v) => v.trim())
+          .filter(Boolean)
+      : [];
 
-  const [selectedNames, setSelectedNames] = useState<string[]>(parseMulti(searchParams.get("name")));
-  const [selectedRoles, setSelectedRoles] = useState<string[]>(parseMulti(searchParams.get("jobTitle")));
-  const [selectedCompanies, setSelectedCompanies] = useState<string[]>(parseMulti(searchParams.get("currentCompany")));
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(parseMulti(searchParams.get("candidateStatus")));
+  const [selectedNames, setSelectedNames] = useState<string[]>(
+    parseMulti(searchParams.get("name")),
+  );
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(
+    parseMulti(searchParams.get("jobTitle")),
+  );
+  const [selectedCompanies, setSelectedCompanies] = useState<string[]>(
+    parseMulti(searchParams.get("currentCompany")),
+  );
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(
+    parseMulti(searchParams.get("candidateStatus")),
+  );
 
-  const [activeFilter, setActiveFilter] = useState<"name" | "role" | "company" | "status" | null>(null);
+  const [activeFilter, setActiveFilter] = useState<
+    "name" | "role" | "company" | "status" | null
+  >(null);
   const [nameAnchorRect, setNameAnchorRect] = useState<DOMRect | null>(null);
   const [roleAnchorRect, setRoleAnchorRect] = useState<DOMRect | null>(null);
+  const [companyAnchorRect, setCompanyAnchorRect] = useState<DOMRect | null>(
+    null,
+  );
+  const [statusAnchorRect, setStatusAnchorRect] = useState<DOMRect | null>(
+    null,
+  );
 
   const [nameSearchText, setNameSearchText] = useState("");
   const [roleSearchText, setRoleSearchText] = useState("");
+  const [companySearchText, setCompanySearchText] = useState("");
+  const [statusSearchText, setStatusSearchText] = useState("");
 
   const [pendingNames, setPendingNames] = useState<string[]>([]);
   const [pendingRoles, setPendingRoles] = useState<string[]>([]);
+  const [pendingCompanies, setPendingCompanies] = useState<string[]>([]);
+  const [pendingStatuses, setPendingStatuses] = useState<string[]>([]);
 
   const [allCandidates, setAllCandidates] = useState<any[]>([]);
 
@@ -232,11 +264,15 @@ export default function CandidatesTable({
     );
     setSelectedNames(parseMulti(searchParams.get("name")));
     setSelectedRoles(parseMulti(searchParams.get("jobTitle")));
+    setSelectedCompanies(parseMulti(searchParams.get("currentCompany")));
+    setSelectedStatuses(parseMulti(searchParams.get("candidateStatus")));
   }, [searchParams]);
 
   useEffect(() => {
     if (activeFilter === "name") setPendingNames([...selectedNames]);
     if (activeFilter === "role") setPendingRoles([...selectedRoles]);
+    if (activeFilter === "company") setPendingCompanies([...selectedCompanies]);
+    if (activeFilter === "status") setPendingStatuses([...selectedStatuses]);
   }, [activeFilter]);
 
   useEffect(() => {
@@ -253,17 +289,38 @@ export default function CandidatesTable({
 
   const uniqueNames = useMemo(() => {
     const src = allCandidates.length > 0 ? allCandidates : data;
-    const names = src.map((item: any) => `${item.first_name || ""} ${item.last_name || ""}`.trim()).filter(Boolean);
+    const names = src
+      .map((item: any) =>
+        `${item.first_name || ""} ${item.last_name || ""}`.trim(),
+      )
+      .filter(Boolean);
     return Array.from(new Set(names)).sort();
   }, [allCandidates, data]);
 
   const uniqueRoles = useMemo(() => {
     const src = allCandidates.length > 0 ? allCandidates : data;
-    return Array.from(new Set(src.map((item: any) => item.current_title).filter(Boolean))).sort();
+    return Array.from(
+      new Set(src.map((item: any) => item.current_title).filter(Boolean)),
+    ).sort();
   }, [allCandidates, data]);
 
+  const uniqueCompanies = useMemo(() => {
+    const src = allCandidates.length > 0 ? allCandidates : data;
+    return Array.from(
+      new Set(src.map((item: any) => item.current_company).filter(Boolean)),
+    ).sort();
+  }, [allCandidates, data]);
+
+  const uniqueStatuses = ["active", "inactive", "selected", "rejected"];
+
   const applySearch = useCallback(
-    (qVal: string, names: string[], roles: string[], companies: string[], statuses: string[]) => {
+    (
+      qVal: string,
+      names: string[],
+      roles: string[],
+      companies: string[],
+      statuses: string[],
+    ) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("page", "1");
       params.delete("q");
@@ -280,8 +337,18 @@ export default function CandidatesTable({
         }
       }
 
-      names.length > 0 ? params.set("name", names.join("|")) : params.delete("name");
-      roles.length > 0 ? params.set("jobTitle", roles.join("|")) : params.delete("jobTitle");
+      names.length > 0
+        ? params.set("name", names.join("|"))
+        : params.delete("name");
+      roles.length > 0
+        ? params.set("jobTitle", roles.join("|"))
+        : params.delete("jobTitle");
+      companies.length > 0
+        ? params.set("currentCompany", companies.join("|"))
+        : params.delete("currentCompany");
+      statuses.length > 0
+        ? params.set("candidateStatus", statuses.join("|"))
+        : params.delete("candidateStatus");
 
       router.push(`/candidates?${params.toString()}`);
     },
@@ -292,13 +359,17 @@ export default function CandidatesTable({
     setQ("");
     setSelectedNames([]);
     setSelectedRoles([]);
+    setSelectedCompanies([]);
+    setSelectedStatuses([]);
     setActiveFilter(null);
     router.push("/candidates");
   };
 
   const hasAnyFilter =
     selectedNames.length > 0 ||
-    selectedRoles.length > 0 ;
+    selectedRoles.length > 0 ||
+    selectedCompanies.length > 0 ||
+    selectedStatuses.length > 0;
 
   const columns = useMemo(() => {
     return columns_candidate_list.map((col: any) => {
@@ -329,16 +400,24 @@ export default function CandidatesTable({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setNameAnchorRect((e.currentTarget as HTMLButtonElement).getBoundingClientRect());
+                  setNameAnchorRect(
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).getBoundingClientRect(),
+                  );
                   setActiveFilter((prev) => (prev === "name" ? null : "name"));
                 }}
                 className={`p-1.5 rounded-lg hover:bg-muted/80 transition-colors flex items-center gap-0.5 flex-shrink-0 ${
-                  selectedNames.length > 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30" : "text-muted-foreground"
+                  selectedNames.length > 0
+                    ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30"
+                    : "text-muted-foreground"
                 }`}
               >
                 <Filter className="w-3.5 h-3.5" />
                 {selectedNames.length > 0 && (
-                  <span className="text-[10px] font-bold leading-none">{selectedNames.length}</span>
+                  <span className="text-[10px] font-bold leading-none">
+                    {selectedNames.length}
+                  </span>
                 )}
               </button>
             </div>
@@ -356,16 +435,115 @@ export default function CandidatesTable({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setRoleAnchorRect((e.currentTarget as HTMLButtonElement).getBoundingClientRect());
+                  setRoleAnchorRect(
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).getBoundingClientRect(),
+                  );
                   setActiveFilter((prev) => (prev === "role" ? null : "role"));
                 }}
                 className={`p-1.5 rounded-lg hover:bg-muted/80 transition-colors flex items-center gap-0.5 flex-shrink-0 ${
-                  selectedRoles.length > 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30" : "text-muted-foreground"
+                  selectedRoles.length > 0
+                    ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30"
+                    : "text-muted-foreground"
                 }`}
               >
                 <Filter className="w-3.5 h-3.5" />
                 {selectedRoles.length > 0 && (
-                  <span className="text-[10px] font-bold leading-none">{selectedRoles.length}</span>
+                  <span className="text-[10px] font-bold leading-none">
+                    {selectedRoles.length}
+                  </span>
+                )}
+              </button>
+            </div>
+          ),
+        };
+      }
+
+      if (col.accessorKey === "current_company") {
+        return {
+          ...col,
+          header: () => (
+            <div className="flex items-center justify-between gap-2 py-1">
+              <Button
+                variant="ghost"
+                className="flex items-center gap-1 px-0 hover:bg-transparent"
+                onClick={() => applySort("current_company")}
+              >
+                <span>Company</span>
+                {sortBy === "current_company" ? (
+                  sortOrder === "asc" ? (
+                    <ArrowUp className="h-3.5 w-3.5 text-[#429ABD]" />
+                  ) : sortOrder === "desc" ? (
+                    <ArrowDown className="h-3.5 w-3.5 text-[#429ABD]" />
+                  ) : (
+                    <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  )
+                ) : (
+                  <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
+              </Button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCompanyAnchorRect(
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).getBoundingClientRect(),
+                  );
+                  setActiveFilter((prev) =>
+                    prev === "company" ? null : "company",
+                  );
+                }}
+                className={`p-1.5 rounded-lg hover:bg-muted/80 transition-colors flex items-center gap-0.5 flex-shrink-0 ${
+                  selectedCompanies.length > 0
+                    ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30"
+                    : "text-muted-foreground"
+                }`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                {selectedCompanies.length > 0 && (
+                  <span className="text-[10px] font-bold leading-none">
+                    {selectedCompanies.length}
+                  </span>
+                )}
+              </button>
+            </div>
+          ),
+        };
+      }
+
+      if (col.accessorKey === "status") {
+        return {
+          ...col,
+          header: () => (
+            <div className="flex items-center justify-between gap-2 py-1">
+              <span>Status</span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setStatusAnchorRect(
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).getBoundingClientRect(),
+                  );
+                  setActiveFilter((prev) =>
+                    prev === "status" ? null : "status",
+                  );
+                }}
+                className={`p-1.5 rounded-lg hover:bg-muted/80 transition-colors flex items-center gap-0.5 flex-shrink-0 ${
+                  selectedStatuses.length > 0
+                    ? "text-blue-600 bg-blue-50 dark:bg-blue-900/30"
+                    : "text-muted-foreground"
+                }`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                {selectedStatuses.length > 0 && (
+                  <span className="text-[10px] font-bold leading-none">
+                    {selectedStatuses.length}
+                  </span>
                 )}
               </button>
             </div>
@@ -375,45 +553,121 @@ export default function CandidatesTable({
 
       return col;
     });
-  }, [selectedNames, selectedRoles, sortBy, sortOrder]);
+  }, [
+    selectedNames,
+    selectedRoles,
+    selectedCompanies,
+    selectedStatuses,
+    sortBy,
+    sortOrder,
+  ]);
 
   return (
     <div className="space-y-4">
       {hasAnyFilter && (
         <div className="flex flex-wrap items-center mt-4 gap-2">
           {selectedNames.map((n) => (
-            <span key={n} className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1">
+            <span
+              key={n}
+              className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1"
+            >
               {n}
-              <button type="button" onClick={() => { const next = selectedNames.filter((x) => x !== n); setSelectedNames(next); applySearch(q, next, selectedRoles, selectedCompanies, selectedStatuses); }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = selectedNames.filter((x) => x !== n);
+                  setSelectedNames(next);
+                  applySearch(
+                    q,
+                    next,
+                    selectedRoles,
+                    selectedCompanies,
+                    selectedStatuses,
+                  );
+                }}
+              >
                 <X className="w-3 h-3" />
               </button>
             </span>
           ))}
           {selectedRoles.map((r) => (
-            <span key={r} className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1">
+            <span
+              key={r}
+              className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1"
+            >
               {r}
-              <button type="button" onClick={() => { const next = selectedRoles.filter((x) => x !== r); setSelectedRoles(next); applySearch(q, selectedNames, next, selectedCompanies, selectedStatuses); }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = selectedRoles.filter((x) => x !== r);
+                  setSelectedRoles(next);
+                  applySearch(
+                    q,
+                    selectedNames,
+                    next,
+                    selectedCompanies,
+                    selectedStatuses,
+                  );
+                }}
+              >
                 <X className="w-3 h-3" />
               </button>
             </span>
           ))}
           {selectedCompanies.map((c) => (
-            <span key={c} className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1">
+            <span
+              key={c}
+              className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1"
+            >
               {c}
-              <button type="button" onClick={() => { const next = selectedCompanies.filter((x) => x !== c); setSelectedCompanies(next); applySearch(q, selectedNames, selectedRoles, next, selectedStatuses); }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = selectedCompanies.filter((x) => x !== c);
+                  setSelectedCompanies(next);
+                  applySearch(
+                    q,
+                    selectedNames,
+                    selectedRoles,
+                    next,
+                    selectedStatuses,
+                  );
+                }}
+              >
                 <X className="w-3 h-3" />
               </button>
             </span>
           ))}
           {selectedStatuses.map((s) => (
-            <span key={s} className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1">
+            <span
+              key={s}
+              className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1"
+            >
               {s}
-              <button type="button" onClick={() => { const next = selectedStatuses.filter((x) => x !== s); setSelectedStatuses(next); applySearch(q, selectedNames, selectedRoles, selectedCompanies, next); }}>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = selectedStatuses.filter((x) => x !== s);
+                  setSelectedStatuses(next);
+                  applySearch(
+                    q,
+                    selectedNames,
+                    selectedRoles,
+                    selectedCompanies,
+                    next,
+                  );
+                }}
+              >
                 <X className="w-3 h-3" />
               </button>
             </span>
           ))}
-          <Button variant="ghost" size="sm" onClick={handleClear} className="text-xs h-7 px-2 ml-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClear}
+            className="text-xs h-7 px-2 ml-auto"
+          >
             Clear All
           </Button>
         </div>
@@ -431,7 +685,13 @@ export default function CandidatesTable({
           globalFilterValue={q}
           onGlobalFilterChange={(value) => {
             setQ(value);
-            applySearch(value, selectedNames, selectedRoles, selectedCompanies, selectedStatuses);
+            applySearch(
+              value,
+              selectedNames,
+              selectedRoles,
+              selectedCompanies,
+              selectedStatuses,
+            );
           }}
           searchPlaceholder="Search candidates..."
           onRowClick={(row: any) => {
@@ -448,10 +708,33 @@ export default function CandidatesTable({
           onSearchChange={setNameSearchText}
           items={uniqueNames}
           selectedItems={pendingNames}
-          onToggleItem={(item) => setPendingNames((prev) => prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item])}
-          onReset={() => { setPendingNames([]); setNameSearchText(""); }}
-          onApply={() => { setSelectedNames(pendingNames); applySearch(q, pendingNames, selectedRoles, selectedCompanies, selectedStatuses); setActiveFilter(null); setNameSearchText(""); }}
-          onClose={() => { setActiveFilter(null); setNameSearchText(""); }}
+          onToggleItem={(item) =>
+            setPendingNames((prev) =>
+              prev.includes(item)
+                ? prev.filter((x) => x !== item)
+                : [...prev, item],
+            )
+          }
+          onReset={() => {
+            setPendingNames([]);
+            setNameSearchText("");
+          }}
+          onApply={() => {
+            setSelectedNames(pendingNames);
+            applySearch(
+              q,
+              pendingNames,
+              selectedRoles,
+              selectedCompanies,
+              selectedStatuses,
+            );
+            setActiveFilter(null);
+            setNameSearchText("");
+          }}
+          onClose={() => {
+            setActiveFilter(null);
+            setNameSearchText("");
+          }}
         />
       )}
 
@@ -463,13 +746,111 @@ export default function CandidatesTable({
           onSearchChange={setRoleSearchText}
           items={uniqueRoles}
           selectedItems={pendingRoles}
-          onToggleItem={(item) => setPendingRoles((prev) => prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item])}
-          onReset={() => { setPendingRoles([]); setRoleSearchText(""); }}
-          onApply={() => { setSelectedRoles(pendingRoles); applySearch(q, selectedNames, pendingRoles, selectedCompanies, selectedStatuses); setActiveFilter(null); setRoleSearchText(""); }}
-          onClose={() => { setActiveFilter(null); setRoleSearchText(""); }}
+          onToggleItem={(item) =>
+            setPendingRoles((prev) =>
+              prev.includes(item)
+                ? prev.filter((x) => x !== item)
+                : [...prev, item],
+            )
+          }
+          onReset={() => {
+            setPendingRoles([]);
+            setRoleSearchText("");
+          }}
+          onApply={() => {
+            setSelectedRoles(pendingRoles);
+            applySearch(
+              q,
+              selectedNames,
+              pendingRoles,
+              selectedCompanies,
+              selectedStatuses,
+            );
+            setActiveFilter(null);
+            setRoleSearchText("");
+          }}
+          onClose={() => {
+            setActiveFilter(null);
+            setRoleSearchText("");
+          }}
         />
       )}
 
+      {activeFilter === "company" && (
+        <FilterPanel
+          anchorRect={companyAnchorRect}
+          title="Filter by Company"
+          searchText={companySearchText}
+          onSearchChange={setCompanySearchText}
+          items={uniqueCompanies}
+          selectedItems={pendingCompanies}
+          onToggleItem={(item) =>
+            setPendingCompanies((prev) =>
+              prev.includes(item)
+                ? prev.filter((x) => x !== item)
+                : [...prev, item],
+            )
+          }
+          onReset={() => {
+            setPendingCompanies([]);
+            setCompanySearchText("");
+          }}
+          onApply={() => {
+            setSelectedCompanies(pendingCompanies);
+            applySearch(
+              q,
+              selectedNames,
+              selectedRoles,
+              pendingCompanies,
+              selectedStatuses,
+            );
+            setActiveFilter(null);
+            setCompanySearchText("");
+          }}
+          onClose={() => {
+            setActiveFilter(null);
+            setCompanySearchText("");
+          }}
+        />
+      )}
+
+      {activeFilter === "status" && (
+        <FilterPanel
+          anchorRect={statusAnchorRect}
+          title="Filter by Status"
+          searchText={statusSearchText}
+          onSearchChange={setStatusSearchText}
+          items={uniqueStatuses}
+          selectedItems={pendingStatuses}
+          onToggleItem={(item) =>
+            setPendingStatuses((prev) =>
+              prev.includes(item)
+                ? prev.filter((x) => x !== item)
+                : [...prev, item],
+            )
+          }
+          onReset={() => {
+            setPendingStatuses([]);
+            setStatusSearchText("");
+          }}
+          onApply={() => {
+            setSelectedStatuses(pendingStatuses);
+            applySearch(
+              q,
+              selectedNames,
+              selectedRoles,
+              selectedCompanies,
+              pendingStatuses,
+            );
+            setActiveFilter(null);
+            setStatusSearchText("");
+          }}
+          onClose={() => {
+            setActiveFilter(null);
+            setStatusSearchText("");
+          }}
+        />
+      )}
     </div>
   );
 }

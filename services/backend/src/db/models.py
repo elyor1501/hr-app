@@ -38,7 +38,7 @@ class Candidate(BaseModel):
     resume_text: Mapped[Optional[str]] = deferred(mapped_column(Text, nullable=True))
     resume: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     location: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
-    status: Mapped[str] = mapped_column(Enum(CandidateStatus, values_callable=lambda x: [e.value for e in x], name="candidatestatus", create_type=False), default=CandidateStatus.ACTIVE.value, index=True)
+    status: Mapped[str] = mapped_column(String(50), default=CandidateStatus.ACTIVE.value, index=True)
     linkedin_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     embedding: Mapped[Optional[List[float]]] = deferred(mapped_column(Vector(768), nullable=True))
     json_data: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)

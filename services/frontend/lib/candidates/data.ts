@@ -243,6 +243,8 @@ export async function searchCandidates(
     }
     if (params.dateFrom) queryParams.set("dateFrom", params.dateFrom as string);
     if (params.dateTo) queryParams.set("dateTo", params.dateTo as string);
+    if (params.currentCompany) queryParams.set("currentCompany", params.currentCompany as string);
+    if (params.candidateStatus) queryParams.set("candidateStatus", params.candidateStatus as string);
 
     queryParams.set("page", page.toString());
     queryParams.set("page_size", page_size.toString());

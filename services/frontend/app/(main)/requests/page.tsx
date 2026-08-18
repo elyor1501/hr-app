@@ -21,6 +21,7 @@ export default async function Page({ searchParams }: PageProps) {
 
   const requestNumber = params.requestNumber as string | undefined;
   const company = params.company as string | undefined;
+  const state = params.state as string | undefined;
 
   const data = await getRequests(
     page,
@@ -32,6 +33,7 @@ export default async function Page({ searchParams }: PageProps) {
     sortOrder,
     requestNumber,
     company,
+    state,
   );
   const hasNext = data.length === 10;
   const totalPages = hasNext ? page + 1 : page;

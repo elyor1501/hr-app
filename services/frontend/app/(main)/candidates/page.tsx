@@ -31,6 +31,8 @@ export default async function Page({ searchParams }: PageProps) {
     params.experienceLevel ||
     params.availability ||
     params.skills ||
+    params.currentCompany ||
+    params.candidateStatus ||
     dateFrom ||
     dateTo;
 

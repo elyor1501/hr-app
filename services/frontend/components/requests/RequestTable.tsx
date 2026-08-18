@@ -211,27 +211,50 @@ export default function RequestTable({ data }: { data: any[] }) {
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>(
     parseMulti(searchParams.get("company")),
   );
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(
+    parseMulti(searchParams.get("state")),
+  );
 
   const [activeFilter, setActiveFilter] = useState<
-    "requestNumber" | "company" | null
+    "requestNumber" | "company" | "status" | null
   >(null);
 
   const [requestAnchorRect, setRequestAnchorRect] = useState<DOMRect | null>(
     null,
   );
-
   const [companyAnchorRect, setCompanyAnchorRect] = useState<DOMRect | null>(
+    null,
+  );
+  const [statusAnchorRect, setStatusAnchorRect] = useState<DOMRect | null>(
     null,
   );
 
   const [requestSearchText, setRequestSearchText] = useState("");
   const [companySearchText, setCompanySearchText] = useState("");
+  const [statusSearchText, setStatusSearchText] = useState("");
 
   const [pendingRequestNumbers, setPendingRequestNumbers] = useState<string[]>(
     [],
   );
-
   const [pendingCompanies, setPendingCompanies] = useState<string[]>([]);
+  const [pendingStatuses, setPendingStatuses] = useState<string[]>([]);
+  const [allRequests, setAllRequests] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchAll() {
+      try {
+        const res = await fetch(`/api/v1/requests?skip=0&limit=1000`);
+        if (res.ok) {
+          const result = await res.json();
+          if (Array.isArray(result)) setAllRequests(result);
+          else if (result?.items) setAllRequests(result.items);
+        }
+      } catch (e) {
+        console.error("Error fetching requests for filters:", e);
+      }
+    }
+    fetchAll();
+  }, []);
 
   const applySort = (field: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -260,29 +283,33 @@ export default function RequestTable({ data }: { data: any[] }) {
     );
     setSelectedRequestNumbers(parseMulti(searchParams.get("requestNumber")));
     setSelectedCompanies(parseMulti(searchParams.get("company")));
+    setSelectedStatuses(parseMulti(searchParams.get("state")));
   }, [searchParams]);
 
   useEffect(() => {
     if (activeFilter === "requestNumber")
       setPendingRequestNumbers([...selectedRequestNumbers]);
-
     if (activeFilter === "company") setPendingCompanies([...selectedCompanies]);
+    if (activeFilter === "status") setPendingStatuses([...selectedStatuses]);
   }, [activeFilter]);
 
   const uniqueRequestNumbers = useMemo(() => {
-    const values = data.map((item: any) => item.request_number).filter(Boolean);
+    const src = allRequests.length > 0 ? allRequests : data;
+    const values = src.map((item: any) => item.request_number).filter(Boolean);
 
     return Array.from(new Set(values)).sort();
-  }, [data]);
+  }, [allRequests, data]);
 
   const uniqueCompanies = useMemo(() => {
-    const values = data.map((item: any) => item.company_name).filter(Boolean);
-
+    const src = allRequests.length > 0 ? allRequests : data;
+    const values = src.map((item: any) => item.company_name).filter(Boolean);
     return Array.from(new Set(values)).sort();
-  }, [data]);
+  }, [allRequests, data]);
+
+  const uniqueStatuses = ["open", "in_progress", "signed", "closed"];
 
   const applySearch = useCallback(
-    (qVal: string, requestNumbers: string[], companies: string[]) => {
+    (qVal: string, requestNumbers: string[], companies: string[], statuses: string[]) => {
       const params = new URLSearchParams(searchParams.toString());
 
       params.set("page", "1");
@@ -310,6 +337,10 @@ export default function RequestTable({ data }: { data: any[] }) {
         ? params.set("company", companies.join("|"))
         : params.delete("company");
 
+      statuses.length > 0
+        ? params.set("state", statuses.join("|"))
+        : params.delete("state");
+
       router.push(`/requests?${params.toString()}`);
     },
     [router, searchParams],
@@ -319,12 +350,13 @@ export default function RequestTable({ data }: { data: any[] }) {
     setQ("");
     setSelectedRequestNumbers([]);
     setSelectedCompanies([]);
+    setSelectedStatuses([]);
     setActiveFilter(null);
     router.push("/requests");
   };
 
   const hasAnyFilter =
-    selectedRequestNumbers.length > 0 || selectedCompanies.length > 0;
+    selectedRequestNumbers.length > 0 || selectedCompanies.length > 0 || selectedStatuses.length > 0;
 
   const columns = useMemo(() => {
     return columns_request_list.map((col: any) => {
@@ -421,9 +453,46 @@ export default function RequestTable({ data }: { data: any[] }) {
         };
       }
 
+      if (col.accessorKey === "state") {
+        return {
+          ...col,
+          header: () => (
+            <div className="flex items-center justify-between gap-2 py-1">
+              <span>Status</span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setStatusAnchorRect(
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).getBoundingClientRect(),
+                  );
+                  setActiveFilter((prev) =>
+                    prev === "status" ? null : "status",
+                  );
+                }}
+                className={`p-1.5 rounded-lg hover:bg-muted/80 flex items-center gap-0.5 ${
+                  selectedStatuses.length
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-muted-foreground"
+                }`}
+              >
+                <Filter className="w-3 h-3" />
+                {selectedStatuses.length > 0 && (
+                  <span className="text-[10px] font-bold">
+                    {selectedStatuses.length}
+                  </span>
+                )}
+              </button>
+            </div>
+          ),
+        };
+      }
+
       return col;
     });
-  }, [selectedRequestNumbers, selectedCompanies, sortBy, sortOrder]);
+  }, [selectedRequestNumbers, selectedCompanies, selectedStatuses, sortBy, sortOrder]);
 
   return (
     <div className="space-y-4">
@@ -442,7 +511,7 @@ export default function RequestTable({ data }: { data: any[] }) {
                     (x) => x !== requestNo,
                   );
                   setSelectedRequestNumbers(next);
-                  applySearch(q, next, selectedCompanies);
+                  applySearch(q, next, selectedCompanies, selectedStatuses);
                 }}
               >
                 <X className="w-3 h-3" />
@@ -461,7 +530,26 @@ export default function RequestTable({ data }: { data: any[] }) {
                 onClick={() => {
                   const next = selectedCompanies.filter((x) => x !== company);
                   setSelectedCompanies(next);
-                  applySearch(q, selectedRequestNumbers, next);
+                  applySearch(q, selectedRequestNumbers, next, selectedStatuses);
+                }}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+
+          {selectedStatuses.map((statusVal) => (
+            <span
+              key={statusVal}
+              className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full px-2.5 py-1"
+            >
+              {statusVal}
+              <button
+                type="button"
+                onClick={() => {
+                  const next = selectedStatuses.filter((x) => x !== statusVal);
+                  setSelectedStatuses(next);
+                  applySearch(q, selectedRequestNumbers, selectedCompanies, next);
                 }}
               >
                 <X className="w-3 h-3" />
@@ -497,7 +585,7 @@ export default function RequestTable({ data }: { data: any[] }) {
           globalFilterValue={q}
           onGlobalFilterChange={(value) => {
             setQ(value);
-            applySearch(value, selectedRequestNumbers, selectedCompanies);
+            applySearch(value, selectedRequestNumbers, selectedCompanies, selectedStatuses);
           }}
           searchPlaceholder="Search requests..."
           onRowClick={(row: any) => {
@@ -527,7 +615,7 @@ export default function RequestTable({ data }: { data: any[] }) {
           }}
           onApply={() => {
             setSelectedRequestNumbers(pendingRequestNumbers);
-            applySearch(q, pendingRequestNumbers, selectedCompanies);
+            applySearch(q, pendingRequestNumbers, selectedCompanies, selectedStatuses);
             setActiveFilter(null);
             setRequestSearchText("");
           }}
@@ -559,13 +647,45 @@ export default function RequestTable({ data }: { data: any[] }) {
           }}
           onApply={() => {
             setSelectedCompanies(pendingCompanies);
-            applySearch(q, selectedRequestNumbers, pendingCompanies);
+            applySearch(q, selectedRequestNumbers, pendingCompanies, selectedStatuses);
             setActiveFilter(null);
             setCompanySearchText("");
           }}
           onClose={() => {
             setActiveFilter(null);
             setCompanySearchText("");
+          }}
+        />
+      )}
+
+      {activeFilter === "status" && (
+        <FilterPanel
+          anchorRect={statusAnchorRect}
+          title="Filter by Status"
+          searchText={statusSearchText}
+          onSearchChange={setStatusSearchText}
+          items={uniqueStatuses}
+          selectedItems={pendingStatuses}
+          onToggleItem={(item) =>
+            setPendingStatuses((prev) =>
+              prev.includes(item)
+                ? prev.filter((x) => x !== item)
+                : [...prev, item],
+            )
+          }
+          onReset={() => {
+            setPendingStatuses([]);
+            setStatusSearchText("");
+          }}
+          onApply={() => {
+            setSelectedStatuses(pendingStatuses);
+            applySearch(q, selectedRequestNumbers, selectedCompanies, pendingStatuses);
+            setActiveFilter(null);
+            setStatusSearchText("");
+          }}
+          onClose={() => {
+            setActiveFilter(null);
+            setStatusSearchText("");
           }}
         />
       )}
