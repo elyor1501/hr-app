@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { DeleteResumeButton } from "./DeleteCandiResumeButton";
 import { DeleteAttachmentButton } from "./DeleteAttachmentButton";
 import { UploadAttachmentDialog } from "./UploadCandiAttachment";
+import { DatePicker } from "@/components/ui/date-picker";
 import CandidateProposedRequests from "./CandidateProposedRequests";
 import {
   Select,
@@ -852,6 +853,7 @@ export default function CandidateDetails({ id, empData }: Props) {
     </div>
   );
 
+
   return (
     <div className="w-full bg-card text-card-foreground rounded-xl shadow-sm border border-border p-2 sm:p-4 md:p-6 mt-2">
       {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
@@ -880,7 +882,7 @@ export default function CandidateDetails({ id, empData }: Props) {
 
       <Tabs defaultValue="basic" className="w-full">
         <div className="overflow-x-auto pb-2 sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <TabsList className="inline-flex w-full sm:grid sm:grid-cols-5 min-w-max sm:min-w-0 gap-1">
+          <TabsList className={`inline-flex w-full sm:grid ${contractBased ? "sm:grid-cols-6" : "sm:grid-cols-5"} min-w-max sm:min-w-0 gap-1`}>
             <TabsTrigger
               value="basic"
               className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300"
@@ -911,6 +913,14 @@ export default function CandidateDetails({ id, empData }: Props) {
             >
               Requests
             </TabsTrigger>
+            {contractBased && (
+              <TabsTrigger
+                value="financial"
+                className="text-xs sm:text-sm px-3 sm:px-4 data-[state=active]:bg-[#429ABD] data-[state=active]:text-white transition-all duration-300"
+              >
+                Financial
+              </TabsTrigger>
+            )}
           </TabsList>
         </div>
 
@@ -1349,22 +1359,22 @@ export default function CandidateDetails({ id, empData }: Props) {
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-1">Start Date</label>
-                    <input
-                      type="date"
+                    <DatePicker
                       value={contractStartDate}
-                      onChange={(e) => isEditing && setContractStartDate(e.target.value)}
+                      onChange={(dateStr: string) => {
+                        if (isEditing) setContractStartDate(dateStr);
+                      }}
                       disabled={!isEditing}
-                      className={fieldClass}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">End Date</label>
-                    <input
-                      type="date"
+                    <DatePicker
                       value={contractEndDate}
-                      onChange={(e) => isEditing && setContractEndDate(e.target.value)}
+                      onChange={(dateStr: string) => {
+                        if (isEditing) setContractEndDate(dateStr);
+                      }}
                       disabled={!isEditing}
-                      className={fieldClass}
                     />
                   </div>
                 </>
@@ -1940,6 +1950,12 @@ export default function CandidateDetails({ id, empData }: Props) {
           <TabsContent value="requests" className="pt-2">
             <CandidateProposedRequests candidateId={id} />
           </TabsContent>
+
+          {contractBased && (
+            <TabsContent value="financial" className="space-y-4 sm:space-y-6">
+              No Info Available Currently
+            </TabsContent>
+          )}
         </div>
       </Tabs>
     </div>

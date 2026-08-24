@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { updateRequest } from "@/lib/requests/action";
 import { getRequestById } from "@/lib/requests/data";
 import { EyeIcon, X, Search, UserPlus, Trash2 } from "lucide-react";
-import DatePicker from "react-datepicker";
+import { DatePicker } from "@/components/ui/date-picker";
 import { format, parseISO } from "date-fns";
 import { useUser } from "@/app/contexts/UserContext";
 
@@ -679,103 +679,7 @@ export default function RequestDetails({
     }
   };
 
-  const CustomHeader = ({
-    date,
-    changeYear,
-    changeMonth,
-    decreaseMonth,
-    increaseMonth,
-    prevMonthButtonDisabled,
-    nextMonthButtonDisabled,
-  }: any) => {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    const currentYear = date.getFullYear();
-    const currentMonth = date.getMonth();
-    const startYear = new Date().getFullYear();
-    const years = Array.from({ length: 20 }, (_, i) => startYear + i);
 
-    return (
-      <div className="flex items-center justify-between px-2 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t-lg">
-        <button
-          type="button"
-          onClick={decreaseMonth}
-          disabled={prevMonthButtonDisabled}
-          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded disabled:opacity-50 transition-colors"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <div className="flex gap-2">
-          <select
-            value={currentMonth}
-            onChange={({ target: { value } }) => changeMonth(parseInt(value))}
-            className="text-sm font-medium bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
-          >
-            {months.map((month, index) => (
-              <option key={index} value={index}>
-                {month}
-              </option>
-            ))}
-          </select>
-          <select
-            value={currentYear}
-            onChange={({ target: { value } }) => changeYear(parseInt(value))}
-            className="text-sm font-medium bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
-          >
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          type="button"
-          onClick={increaseMonth}
-          disabled={nextMonthButtonDisabled}
-          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded disabled:opacity-50 transition-colors"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
-    );
-  };
 
   const sectionHeader = (title: string, color: string = "#429ABD") => (
     <h2 className="text-base sm:text-lg font-semibold" style={{ color }}>
@@ -1250,32 +1154,18 @@ export default function RequestDetails({
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Request Date
               </label>
-              <div className="custom-datepicker">
+              <div>
                 <DatePicker
-                  selected={
-                    requestedDateValue ? parseISO(requestedDateValue) : null
-                  }
-                  onChange={(date: Date | null) => {
-                    if (!date) return;
-
+                  value={requestedDateValue}
+                  onChange={(dateStr: string) => {
                     handleRequestedDateChange({
                       target: {
                         name: "request_date",
-                        value: format(date, "yyyy-MM-dd"),
+                        value: dateStr,
                       },
                     } as React.ChangeEvent<HTMLInputElement>);
                   }}
                   disabled={!isEditing}
-                  dateFormat="dd.MM.yyyy"
-                  className={fieldClass}
-                  wrapperClassName="w-full"
-                  showYearDropdown
-                  showMonthDropdown
-                  dropdownMode="select"
-                  yearDropdownItemNumber={15}
-                  scrollableYearDropdown
-                  renderCustomHeader={CustomHeader}
-                  popperClassName="custom-datepicker"
                 />
               </div>
 
@@ -1289,31 +1179,18 @@ export default function RequestDetails({
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Proposed Date
               </label>
-              <div className="custom-datepicker">
+              <div>
                 <DatePicker
-                  selected={
-                    proposedDateValue ? parseISO(proposedDateValue) : null
-                  }
-                  onChange={(date: Date | null) => {
-                    if (!date) return;
+                  value={proposedDateValue}
+                  onChange={(dateStr: string) => {
                     handleProposedDateChange({
                       target: {
                         name: "proposed_date",
-                        value: format(date, "yyyy-MM-dd"),
+                        value: dateStr,
                       },
                     } as React.ChangeEvent<HTMLInputElement>);
                   }}
                   disabled={!isEditing}
-                  dateFormat="dd.MM.yyyy"
-                  className={fieldClass}
-                  wrapperClassName="w-full"
-                  showYearDropdown
-                  showMonthDropdown
-                  dropdownMode="select"
-                  yearDropdownItemNumber={15}
-                  scrollableYearDropdown
-                  renderCustomHeader={CustomHeader}
-                  popperClassName="custom-datepicker"
                 />
               </div>
               <input
@@ -1326,26 +1203,13 @@ export default function RequestDetails({
               <label className="block text-sm font-medium mb-1 text-foreground">
                 Feedback Date
               </label>
-              <div className="custom-datepicker">
+              <div>
                 <DatePicker
-                  selected={
-                    feedbackDateValue ? parseISO(feedbackDateValue) : null
-                  }
-                  onChange={(date: Date | null) => {
-                    setFeedbackDateValue(
-                      date ? format(date, "yyyy-MM-dd") : "",
-                    );
+                  value={feedbackDateValue}
+                  onChange={(dateStr: string) => {
+                    setFeedbackDateValue(dateStr);
                   }}
-                  dateFormat="dd.MM.yyyy"
-                  className={fieldClass}
-                  wrapperClassName="w-full"
-                  showYearDropdown
-                  showMonthDropdown
-                  dropdownMode="select"
-                  yearDropdownItemNumber={15}
-                  scrollableYearDropdown
-                  renderCustomHeader={CustomHeader}
-                  popperClassName="custom-datepicker"
+                  disabled={!isEditing}
                 />
               </div>
               <input

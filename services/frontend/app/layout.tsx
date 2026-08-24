@@ -4,7 +4,6 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { UserProvider } from "@/app/contexts/UserContext";
 import "./globals.css";
-import "react-datepicker/dist/react-datepicker.css";
 import { ThemeToaster } from "@/components/theme-toaster";
 
 const defaultUrl = process.env.VERCEL_URL
