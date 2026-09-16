@@ -319,8 +319,6 @@ async def _auto_create_or_link_candidate(session, resume, structured_data, first
 
 
 def _filename_to_title(file_name: str) -> str:
-    # JD filenames follow the "JD_<title>_<audience>.docx" template; strip the
-    # template framing so the form lands on a human-readable title.
     base = os.path.splitext(file_name or "")[0]
     base = re.sub(r"^JD[_\-\s]+", "", base, flags=re.IGNORECASE)
     base = re.sub(r"[_\-\s]+(Partner|Internal|Client|External)\s*$", "", base, flags=re.IGNORECASE)
@@ -344,9 +342,25 @@ async def _auto_create_staffing_request(session, doc_id: str, raw_text: str):
         job_title = _filename_to_title(file_name)
         job_description = raw_text if raw_text and raw_text.strip() else "No description available"
 
-        unique_suffix = uuid_module.uuid4().hex[:6].upper()
         year = datetime.now().year
-        request_number = f"REQ-{year}-{unique_suffix}"
+        prefix = f"REQ-{year}-"
+        result = await session.execute(
+            select(StaffingRequest.request_number).where(
+                StaffingRequest.request_number.like(f"{prefix}%")
+            )
+        )
+        request_numbers = result.scalars().all()
+        max_num = 0
+        for rn in request_numbers:
+            if rn:
+                parts = rn.strip().split("-")
+                if len(parts) == 3 and parts[0].upper() == "REQ" and parts[1] == str(year):
+                    suffix = parts[2]
+                    if suffix.isdigit():
+                        num = int(suffix)
+                        if num > max_num:
+                            max_num = num
+        request_number = f"{prefix}{max_num + 1}"
 
         staffing_req = StaffingRequest(
             request_number=request_number,
@@ -377,6 +391,21 @@ async def _auto_create_staffing_request(session, doc_id: str, raw_text: str):
             text("UPDATE requirement_documents SET staffing_request_id = :req_id WHERE id = :doc_id"),
             {"req_id": str(staffing_req.id), "doc_id": doc_id}
         )
+
+        try:
+            from src.core.redis import get_redis_pool
+            redis = await get_redis_pool()
+            keys = await redis.keys("hr_app:requests:*")
+            if keys:
+                await redis.delete(*keys)
+            stats_keys = await redis.keys("hr_app:stats:*")
+            if stats_keys:
+                await redis.delete(*stats_keys)
+            doc_keys = await redis.keys("hr_app:requirement_doc*")
+            if doc_keys:
+                await redis.delete(*doc_keys)
+        except Exception:
+            pass
 
         logger.info("auto_created_staffing_request", doc_id=doc_id, request_number=request_number, job_title=job_title)
 
@@ -592,11 +621,6 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
 
         await update_job_status(ctx, job_id, "in_progress", progress=75)
 
-        # JD embedding is computed on-demand by the match-candidates endpoint from the
-        # current Job Description textarea, so no embedding is stored on the document
-        # row. This also avoids a schema mismatch (the legacy column was sized for the
-        # Gemini 3072-dim model while the active embedding pipeline returns 768-dim
-        # local vectors).
         async with async_session_maker() as session:
             from sqlalchemy import text
             await session.execute(

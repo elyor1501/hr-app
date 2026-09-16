@@ -187,9 +187,6 @@ class RequestListItem(BaseModel):
     class Config:
         from_attributes = True
 
-    class Config:
-        from_attributes = True
-
 
 class RequestCountResponse(BaseModel):
     open_count: int
@@ -200,21 +197,15 @@ class RequestCountResponse(BaseModel):
 async def _invalidate_requests_cache():
     try:
         redis = await get_redis_pool()
-        cursor = 0
-        keys_to_delete = []
-        while True:
-            cursor, keys = await redis.scan(cursor, match="hr_app:requests:*", count=100)
-            keys_to_delete.extend(keys)
-            if cursor == 0:
-                break
-        cursor = 0
-        while True:
-            cursor, keys = await redis.scan(cursor, match="hr_app:stats:*", count=100)
-            keys_to_delete.extend(keys)
-            if cursor == 0:
-                break
-        if keys_to_delete:
-            await redis.delete(*keys_to_delete)
+        keys = await redis.keys("hr_app:requests:*")
+        if keys:
+            await redis.delete(*keys)
+        stats_keys = await redis.keys("hr_app:stats:*")
+        if stats_keys:
+            await redis.delete(*stats_keys)
+        doc_keys = await redis.keys("hr_app:requirement_doc*")
+        if doc_keys:
+            await redis.delete(*doc_keys)
     except Exception:
         pass
 
@@ -223,12 +214,22 @@ async def _generate_request_number(session: AsyncSession) -> str:
     year = datetime.now().year
     prefix = f"REQ-{year}-"
     result = await session.execute(
-        select(func.count(StaffingRequest.id)).where(
+        select(StaffingRequest.request_number).where(
             StaffingRequest.request_number.like(f"{prefix}%")
         )
     )
-    count = result.scalar() or 0
-    return f"{prefix}{count + 1}"
+    request_numbers = result.scalars().all()
+    max_num = 0
+    for rn in request_numbers:
+        if rn:
+            parts = rn.strip().split("-")
+            if len(parts) == 3 and parts[0].upper() == "REQ" and parts[1] == str(year):
+                suffix = parts[2]
+                if suffix.isdigit():
+                    num = int(suffix)
+                    if num > max_num:
+                        max_num = num
+    return f"{prefix}{max_num + 1}"
 
 
 def _extract_skills_from_jd(job_description: str) -> List[str]:
@@ -565,8 +566,6 @@ async def list_requests(
     sortOrder: str = Query(default="asc"),
     session: AsyncSession = Depends(get_db_session),
 ):
-    from datetime import timezone
-
     sort_by = sortBy.strip() if sortBy else None
     sort_order = (sortOrder or "asc").lower()
     if sort_order not in {"asc", "desc"}:
@@ -620,17 +619,15 @@ async def list_requests(
 
     if dateFrom:
         try:
-            from datetime import timezone
-            date_from_dt = datetime.strptime(dateFrom, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            date_from_dt = datetime.strptime(dateFrom, "%Y-%m-%d")
             filters.append(StaffingRequest.created_at >= date_from_dt)
         except ValueError:
             pass
 
     if dateTo:
         try:
-            from datetime import timezone
             date_to_dt = datetime.strptime(dateTo, "%Y-%m-%d").replace(
-                hour=23, minute=59, second=59, microsecond=999999, tzinfo=timezone.utc
+                hour=23, minute=59, second=59, microsecond=999999
             )
             filters.append(StaffingRequest.created_at <= date_to_dt)
         except ValueError:
@@ -1152,7 +1149,41 @@ async def delete_request(
     )
     req = result.scalar_one_or_none()
     if not req:
-        raise HTTPException(status_code=404, detail="Request not found")
+        await _invalidate_requests_cache()
+        return
+
+    try:
+        await session.execute(
+            text("DELETE FROM candidate_match_scores WHERE request_id = :req_id"),
+            {"req_id": str(request_id)}
+        )
+    except Exception:
+        pass
+
+    try:
+        await session.execute(
+            text("DELETE FROM request_candidates WHERE request_id = :req_id"),
+            {"req_id": str(request_id)}
+        )
+    except Exception:
+        pass
+
+    try:
+        await session.execute(
+            text("DELETE FROM request_audit_logs WHERE request_id = :req_id"),
+            {"req_id": str(request_id)}
+        )
+    except Exception:
+        pass
+
+    try:
+        await session.execute(
+            text("DELETE FROM requirement_documents WHERE staffing_request_id = :req_id"),
+            {"req_id": str(request_id)}
+        )
+    except Exception:
+        pass
+
     await session.delete(req)
     await session.commit()
     await _invalidate_requests_cache()

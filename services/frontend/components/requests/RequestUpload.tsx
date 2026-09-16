@@ -1,6 +1,6 @@
 "use client";
 
-import { EyeIcon, TrashIcon } from "lucide-react";
+import { EyeIcon, TrashIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -8,9 +8,7 @@ import { toast } from "sonner";
 import { uploadJobDescriptions } from "@/lib/jobs/action";
 import { getApiUrl, getAuthToken } from "@/lib/api-config";
 
-// Worker pipeline takes ~10–20s end-to-end (extract + embed + auto-create request).
-// We poll the document until staffing_request_id is populated, then redirect.
-const POLL_INTERVAL_MS = 1500;
+const POLL_INTERVAL_MS = 1000;
 const POLL_TIMEOUT_MS = 60_000;
 
 async function waitForStaffingRequest(docId: string): Promise<string | null> {
@@ -31,7 +29,6 @@ async function waitForStaffingRequest(docId: string): Promise<string | null> {
         }
       }
     } catch {
-      // Transient network errors are tolerated; the poll loop retries until the deadline.
     }
     await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
   }
@@ -178,27 +175,28 @@ export function FileUpload({
     try {
       setIsUploading(true);
       setError(null);
-      setUploadStatus(`Uploading ${uploads.length} files...`);
+      setUploadStatus("Uploading document...");
+      toast.loading("Uploading document...", { id: "upload-req-status" });
 
       const filesToUpload = uploads.map((u) => u.file);
       const result = await uploadJobDescriptions(filesToUpload);
 
       if (Array.isArray(result) && result.length > 0) {
-        toast.success(`${result.length} file(s) uploaded`);
-        setUploadStatus("Extracting text and creating request...");
+        setUploadStatus("Extracting content...");
+        toast.loading("Extracting content...", { id: "upload-req-status" });
 
         const firstDocId = result[0]?.id;
         if (firstDocId) {
           const requestId = await waitForStaffingRequest(firstDocId);
           if (requestId) {
+            toast.success("File extracted successfully", { id: "upload-req-status" });
             onClose();
             setUploads([]);
+            router.refresh();
             router.push(`/requests/${requestId}`);
             return;
           }
-          toast.error(
-            "Request did not finish processing in time. Refresh the requests list.",
-          );
+          toast.error("Request creation timed out. Refreshing list...", { id: "upload-req-status" });
         }
       }
 
@@ -209,7 +207,7 @@ export function FileUpload({
     } catch (error: any) {
       console.error("Upload failed:", error);
       setError(error?.message || "Upload failed. Check console.");
-      toast.error(error?.message || "Upload failed");
+      toast.error(error?.message || "Upload failed", { id: "upload-req-status" });
     } finally {
       setIsUploading(false);
     }
@@ -235,7 +233,10 @@ export function FileUpload({
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
       {uploadStatus && !error && (
-        <p className="text-green-600 text-sm">{uploadStatus}</p>
+        <div className="flex items-center gap-2 text-sm text-[#429ABD] font-medium">
+          {isUploading && <Loader2 className="w-4 h-4 animate-spin" />}
+          <span>{uploadStatus}</span>
+        </div>
       )}
 
       {paginatedUploads.map((upload, i) => {
@@ -308,9 +309,11 @@ export function FileUpload({
           <button
             onClick={handleBulkSubmit}
             disabled={isUploading}
-            className="bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50"
+            className="text-white px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-300 disabled:opacity-50 flex items-center gap-1.5"
+            style={{ backgroundColor: isUploading ? "#F5A623" : "#429ABD" }}
           >
-            {isUploading ? "Uploading..." : `Upload ${uploads.length} Files`}
+            {isUploading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            {isUploading ? "Processing..." : `Upload ${uploads.length} Files`}
           </button>
         </div>
       )}

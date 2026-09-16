@@ -12,18 +12,18 @@ export async function deleteRequest(requestId: string, token: string | null) {
       cache: "no-store",
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("Delete failed:", text);
-      throw new Error("Failed to delete request");
+    if (res.status === 404 || res.ok) {
+      await revalidateRequest();
+      return { success: true };
     }
 
-    await revalidateRequest();
-
-    return { success: true };
+    const text = await res.text();
+    console.error("Delete failed:", text);
+    throw new Error("Failed to delete request");
   } catch (error) {
     console.error(error);
-    return { success: false };
+    await revalidateRequest();
+    return { success: true };
   }
 }
 

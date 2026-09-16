@@ -62,6 +62,9 @@ async def invalidate_cache():
         keys = await redis.keys("hr_app:requirement_docs:*")
         if keys:
             await redis.delete(*keys)
+        keys_req = await redis.keys("hr_app:requests:*")
+        if keys_req:
+            await redis.delete(*keys_req)
     except Exception:
         pass
 
@@ -138,9 +141,10 @@ async def list_requirement_documents(
 
     result = await session.execute(
         text("""
-            SELECT id, file_name, file_url, job_title, processing_status, created_at, updated_at
-            FROM requirement_documents
-            ORDER BY created_at DESC
+            SELECT rd.id, rd.file_name, rd.file_url, rd.job_title, rd.processing_status, rd.created_at, rd.updated_at
+            FROM requirement_documents rd
+            WHERE (rd.processing_status = 'pending' OR (rd.staffing_request_id IS NOT NULL AND EXISTS (SELECT 1 FROM staffing_requests sr WHERE sr.id = rd.staffing_request_id)))
+            ORDER BY rd.created_at DESC
             OFFSET :skip LIMIT :limit
         """),
         {"skip": skip, "limit": limit}
