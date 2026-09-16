@@ -11,7 +11,7 @@ import { getApiUrl, getAuthToken } from "@/lib/api-config";
 // Worker pipeline takes ~10–20s end-to-end (extract + embed + auto-create request).
 // We poll the document until staffing_request_id is populated, then redirect.
 const POLL_INTERVAL_MS = 1500;
-const POLL_TIMEOUT_MS = 60_000;
+const POLL_TIMEOUT_MS = 180_000;
 
 async function waitForStaffingRequest(docId: string): Promise<string | null> {
   const apiUrl = getApiUrl();
@@ -184,28 +184,28 @@ export function FileUpload({
       const result = await uploadJobDescriptions(filesToUpload);
 
       if (Array.isArray(result) && result.length > 0) {
-        toast.success(`${result.length} file(s) uploaded`);
-        setUploadStatus("Extracting text and creating request...");
-
         const firstDocId = result[0]?.id;
+        
+        onClose();
+        setUploads([]);
+        
         if (firstDocId) {
-          const requestId = await waitForStaffingRequest(firstDocId);
-          if (requestId) {
-            onClose();
-            setUploads([]);
-            router.push(`/requests/${requestId}`);
-            return;
-          }
-          toast.error(
-            "Request did not finish processing in time. Refresh the requests list.",
+          toast.promise(
+            waitForStaffingRequest(firstDocId).then((reqId) => {
+              if (!reqId) throw new Error("Timeout");
+              return reqId;
+            }),
+            {
+              loading: "Extracting Job Description...",
+              success: () => {
+                router.refresh();
+                return "Request created successfully!";
+              },
+              error: "Processing timed out or failed. Please refresh."
+            }
           );
         }
       }
-
-      setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
-      onClose();
-      router.refresh();
-      setUploads([]);
     } catch (error: any) {
       console.error("Upload failed:", error);
       setError(error?.message || "Upload failed. Check console.");

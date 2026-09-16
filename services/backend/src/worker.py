@@ -627,6 +627,36 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
             await session.commit()
 
         try:
+            from src.core.redis import get_redis_pool
+            redis = await get_redis_pool()
+            await redis.delete(f"hr_app:requirement_doc:{doc_id}")
+            
+            keys_to_delete = []
+            
+            cursor = 0
+            while True:
+                cursor, keys = await redis.scan(cursor, match="hr_app:requirement_docs:*", count=100)
+                keys_to_delete.extend(keys)
+                if cursor == 0: break
+                
+            cursor = 0
+            while True:
+                cursor, keys = await redis.scan(cursor, match="hr_app:requests:*", count=100)
+                keys_to_delete.extend(keys)
+                if cursor == 0: break
+                
+            cursor = 0
+            while True:
+                cursor, keys = await redis.scan(cursor, match="hr_app:stats:*", count=100)
+                keys_to_delete.extend(keys)
+                if cursor == 0: break
+                
+            if keys_to_delete:
+                await redis.delete(*keys_to_delete)
+        except Exception:
+            pass
+
+        try:
             async with async_session_maker() as session:
                 from sqlalchemy import text
                 await session.execute(text("REFRESH MATERIALIZED VIEW dashboard_stats"))
@@ -655,6 +685,36 @@ async def process_requirement_doc(ctx: Dict[str, Any], doc_id: str, file_url: st
                 {"doc_id": doc_id}
             )
             await session.commit()
+
+        try:
+            from src.core.redis import get_redis_pool
+            redis = await get_redis_pool()
+            await redis.delete(f"hr_app:requirement_doc:{doc_id}")
+            
+            keys_to_delete = []
+            
+            cursor = 0
+            while True:
+                cursor, keys = await redis.scan(cursor, match="hr_app:requirement_docs:*", count=100)
+                keys_to_delete.extend(keys)
+                if cursor == 0: break
+                
+            cursor = 0
+            while True:
+                cursor, keys = await redis.scan(cursor, match="hr_app:requests:*", count=100)
+                keys_to_delete.extend(keys)
+                if cursor == 0: break
+                
+            cursor = 0
+            while True:
+                cursor, keys = await redis.scan(cursor, match="hr_app:stats:*", count=100)
+                keys_to_delete.extend(keys)
+                if cursor == 0: break
+                
+            if keys_to_delete:
+                await redis.delete(*keys_to_delete)
+        except Exception:
+            pass
 
         job_try = ctx.get("job_try", 1)
         if job_try >= settings.job_max_retries:

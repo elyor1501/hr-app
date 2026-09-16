@@ -1153,9 +1153,39 @@ async def delete_request(
     req = result.scalar_one_or_none()
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
+
+    try:
+        from src.services.storage import delete_requirement_doc_from_storage
+        doc_res = await session.execute(
+            text("SELECT id, file_url FROM requirement_documents WHERE staffing_request_id = :req_id"),
+            {"req_id": str(request_id)}
+        )
+        for doc_row in doc_res.fetchall():
+            if doc_row.file_url:
+                await delete_requirement_doc_from_storage(doc_row.file_url)
+            await session.execute(
+                text("DELETE FROM requirement_documents WHERE id = :doc_id"),
+                {"doc_id": doc_row.id}
+            )
+    except Exception as e:
+        logger.error("failed_to_delete_requirement_doc", error=str(e))
+
     await session.delete(req)
     await session.commit()
     await _invalidate_requests_cache()
+
+    try:
+        redis = await get_redis_pool()
+        keys_to_delete = []
+        cursor = 0
+        while True:
+            cursor, keys = await redis.scan(cursor, match="hr_app:requirement_docs:*", count=100)
+            keys_to_delete.extend(keys)
+            if cursor == 0: break
+        if keys_to_delete:
+            await redis.delete(*keys_to_delete)
+    except Exception:
+        pass
 
 
 def _quick_overlap_score(job_description: str, candidate: Candidate, structured_cv: dict) -> int:
