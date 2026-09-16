@@ -3,7 +3,8 @@ import RequestTable from "@/components/requests/RequestTable";
 import { getRequests } from "@/lib/requests/data";
 import ServerPagination from "@/components/ServerPagination";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

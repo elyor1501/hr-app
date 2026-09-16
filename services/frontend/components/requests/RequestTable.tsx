@@ -233,9 +233,7 @@ export default function RequestTable({ data }: { data: any[] }) {
   const [companySearchText, setCompanySearchText] = useState("");
   const [statusSearchText, setStatusSearchText] = useState("");
 
-  const [pendingRequestNumbers, setPendingRequestNumbers] = useState<string[]>(
-    [],
-  );
+  const [pendingRequestNumbers, setPendingRequestNumbers] = useState<string[]>([]);
   const [pendingCompanies, setPendingCompanies] = useState<string[]>([]);
   const [pendingStatuses, setPendingStatuses] = useState<string[]>([]);
   const [allRequests, setAllRequests] = useState<any[]>([]);

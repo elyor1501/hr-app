@@ -7,9 +7,10 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { uploadJobDescriptions } from "@/lib/jobs/action";
 import { getApiUrl, getAuthToken } from "@/lib/api-config";
+import { revalidateRequest } from "@/lib/requests/revalidate";
 
 const POLL_INTERVAL_MS = 1000;
-const POLL_TIMEOUT_MS = 60_000;
+const POLL_TIMEOUT_MS = 180_000;
 
 async function waitForStaffingRequest(docId: string): Promise<string | null> {
   const apiUrl = getApiUrl();
@@ -186,24 +187,24 @@ export function FileUpload({
         toast.loading("Extracting content...", { id: "upload-req-status" });
 
         const firstDocId = result[0]?.id;
+
+        onClose();
+        setUploads([]);
+
         if (firstDocId) {
           const requestId = await waitForStaffingRequest(firstDocId);
           if (requestId) {
+            await revalidateRequest(requestId);
             toast.success("File extracted successfully", { id: "upload-req-status" });
-            onClose();
-            setUploads([]);
             router.refresh();
             router.push(`/requests/${requestId}`);
             return;
           }
-          toast.error("Request creation timed out. Refreshing list...", { id: "upload-req-status" });
+          toast.error("Processing timed out. Please refresh the requests list.", { id: "upload-req-status" });
+          await revalidateRequest();
+          router.refresh();
         }
       }
-
-      setUploads((prev) => prev.map((u) => ({ ...u, progress: 100 })));
-      onClose();
-      router.refresh();
-      setUploads([]);
     } catch (error: any) {
       console.error("Upload failed:", error);
       setError(error?.message || "Upload failed. Check console.");

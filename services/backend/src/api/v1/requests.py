@@ -1149,8 +1149,23 @@ async def delete_request(
     )
     req = result.scalar_one_or_none()
     if not req:
-        await _invalidate_requests_cache()
-        return
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    try:
+        from src.services.storage import delete_requirement_doc_from_storage
+        doc_res = await session.execute(
+            text("SELECT id, file_url FROM requirement_documents WHERE staffing_request_id = :req_id"),
+            {"req_id": str(request_id)}
+        )
+        for doc_row in doc_res.fetchall():
+            if doc_row.file_url:
+                await delete_requirement_doc_from_storage(doc_row.file_url)
+            await session.execute(
+                text("DELETE FROM requirement_documents WHERE id = :doc_id"),
+                {"doc_id": str(doc_row.id)}
+            )
+    except Exception as e:
+        logger.error("failed_to_delete_requirement_doc", error=str(e))
 
     try:
         await session.execute(
@@ -1176,18 +1191,9 @@ async def delete_request(
     except Exception:
         pass
 
-    try:
-        await session.execute(
-            text("DELETE FROM requirement_documents WHERE staffing_request_id = :req_id"),
-            {"req_id": str(request_id)}
-        )
-    except Exception:
-        pass
-
     await session.delete(req)
     await session.commit()
     await _invalidate_requests_cache()
-
 
 def _quick_overlap_score(job_description: str, candidate: Candidate, structured_cv: dict) -> int:
     jd_lower = job_description.lower()
