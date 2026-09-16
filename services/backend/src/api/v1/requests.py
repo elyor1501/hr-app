@@ -9,6 +9,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, s
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select, and_, or_, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 
 from src.db.session import get_db_session, async_session_maker
 from src.db.models import StaffingRequest, RequestCandidate, RequestAuditLog, Candidate, ParsedResume
@@ -43,6 +44,7 @@ class RequestCreate(BaseModel):
 
 
 class RequestUpdate(BaseModel):
+    request_number: Optional[str] = Field(default=None, max_length=20)
     company_name: Optional[str] = Field(default=None, max_length=255)
     request_title: Optional[str] = Field(default=None, max_length=255)
     job_description: Optional[str] = Field(default=None)
@@ -801,7 +803,14 @@ async def update_request(
         if value is None and field in ("request_date",):
             continue
         setattr(req, field, value)
-    await session.commit()
+    try:
+        await session.commit()
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Update failed: A request with this number already exists or there is a database constraint error."
+        )
     await session.refresh(req)
     await _invalidate_requests_cache()
     try:

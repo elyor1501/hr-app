@@ -33,6 +33,7 @@ export async function updateRequest(formData: FormData): Promise<void> {
   const token = getAuthToken();
 
   const payload = {
+    request_number: formData.get("request_number") || undefined,
     company_name: formData.get("company_name"),
     contact_person: formData.get("contact_person") || null,
     contact_phone: formData.get("contact_phone") || null,
@@ -84,7 +85,7 @@ export async function updateRequest(formData: FormData): Promise<void> {
       errorMessage = text || errorMessage;
     }
     console.error("Update failed:", text);
-    throw new Error("Failed to update request");
+    throw new Error(errorMessage);
   }
 
   await revalidateRequest(id);
